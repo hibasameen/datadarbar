@@ -1,0 +1,11 @@
+{
+  "_comment": "Replace this file with the ETL output. Keys should be normalized district names. Values must include numeric percentages.",
+  "lahore": {
+    "literacy_total": 76.5,
+    "literacy_male": 80.2,
+    "literacy_female": 72.4,
+    "school_attendance": 68.1,
+    "disability_rate": 1.9,
+    "no_health_facility_5km": 14.7
+  }
+}

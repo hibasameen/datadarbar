@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pakistan Census Explorer — Education & Health (District)</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
+  <script src="https://unpkg.com/fuse.js@6.6.2"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Pakistan Census Explorer</h1>
+    <p class="subtitle">District-level education & health indicators (PBS 2023)</p>
+  </header>
+
+  <section class="controls">
+    <div class="control">
+      <label for="indicatorSelect">Indicator</label>
+      <select id="indicatorSelect">
+        <option value="literacy_total">Literacy (Total %)</option>
+        <option value="literacy_male">Literacy (Male %)</option>
+        <option value="literacy_female">Literacy (Female %)</option>
+        <option value="school_attendance">School Attendance (Net %, 5–16)</option>
+        <option value="disability_rate">Disability Rate (%)</option>
+        <option value="no_health_facility_5km">No Health Facility within 5km (%)</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="provinceSelect">Province / Area</label>
+      <select id="provinceSelect">
+        <option value="ALL">All</option>
+      </select>
+    </div>
+    <div class="control grow">
+      <label for="searchInput">Find a district</label>
+      <input id="searchInput" placeholder="Start typing… (e.g., Lahore, Sukkur)" />
+    </div>
+    <div class="control">
+      <button id="resetBtn" class="btn">Reset</button>
+      <a id="downloadData" class="btn btn-outline" href="#" download="pbs_census_selected.csv">Download data</a>
+    </div>
+  </section>
+
+  <main>
+    <div id="map"></div>
+    <aside id="sidebar">
+      <div class="panel">
+        <h2 id="districtName">Click a district</h2>
+        <div id="stats"></div>
+      </div>
+      <div class="panel">
+        <h3>Legend</h3>
+        <div id="legend"></div>
+      </div>
+      <div class="panel">
+        <h3>About</h3>
+        <p>This is a community-built explorer using Pakistan Bureau of Statistics (PBS) 2023 census tables. Data are parsed from PBS tables and joined to a district GeoJSON.</p>
+        <ul class="about-list">
+          <li><strong>Source:</strong> PBS 2023 Census (district tables 12 & 13).</li>
+          <li><strong>Notes:</strong> Some districts may be missing where PBS tables don’t report or naming differs. Please raise issues on GitHub.</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>Built for Data Darbar • <a href="https://www.pbs.gov.pk/" target="_blank" rel="noreferrer">PBS</a> • <a href="#" id="viewSource">View source</a></span>
+  </footer>
+
+  <script>
+    // Path to your district GeoJSON (replace with your file name if different)
+    const GEOJSON_PATH = "data/pakistan_districts_province_boundries.geojson";
+    // Dataset produced by the ETL, keyed by district name (normalized)
+    const DATA_PATH = "data/pbs_district_indicators.json";
+  </script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

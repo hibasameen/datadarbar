@@ -1,0 +1,39 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji"; color: #0f172a; background: #f8fafc; }
+a { color: #0ea5e9; text-decoration: none; }
+.site-header { padding: 16px 20px; background: white; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
+.site-header h1 { margin: 0; font-size: 20px; }
+.subtitle { margin: 4px 0 0 0; color: #475569; }
+
+.controls { display: flex; gap: 12px; padding: 10px 12px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; align-items: end; flex-wrap: wrap; }
+.control { display: grid; gap: 6px; }
+.control.grow { flex: 1 1 280px; }
+label { font-size: 12px; color: #64748b; }
+select, input { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: white; min-width: 200px; }
+input#searchInput { min-width: unset; width: 100%; }
+.btn { padding: 10px 12px; border-radius: 10px; border: none; background: #0ea5e9; color: white; cursor: pointer; }
+.btn:hover { filter: brightness(0.95); }
+.btn:active { transform: translateY(1px); }
+.btn-outline { background: transparent; color: #0ea5e9; border: 1px solid #0ea5e9; }
+
+main { display: grid; grid-template-columns: 1fr 360px; gap: 12px; padding: 12px; }
+#map { height: calc(100vh - 210px); border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+#sidebar { display: grid; gap: 12px; height: calc(100vh - 210px); overflow: auto; }
+.panel { background: white; padding: 12px; border: 1px solid #e2e8f0; border-radius: 16px; }
+.panel h2, .panel h3 { margin-top: 0; }
+
+#legend { display: grid; gap: 8px; }
+.legend-scale { display: grid; grid-template-columns: repeat(5, 1fr); height: 12px; border-radius: 8px; overflow: hidden; }
+.legend-scale span { display: block; }
+.legend-labels { display: flex; justify-content: space-between; font-size: 12px; color: #475569; }
+
+.site-footer { padding: 10px 12px; font-size: 13px; color: #475569; border-top: 1px solid #e2e8f0; background: #fafafa; }
+
+/* Popups */
+.leaflet-popup-content-wrapper { border-radius: 12px; }
+.leaflet-tooltip { border-radius: 8px; }
+@media (max-width: 1024px) {
+  main { grid-template-columns: 1fr; }
+  #map { height: 60vh; }
+  #sidebar { height: auto; }
+}
