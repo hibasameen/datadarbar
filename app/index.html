@@ -4,154 +4,99 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Data Darbar — Pakistan in Numbers</title>
+  <meta name="description" content="An interactive district-level explorer for Pakistan's census and survey data." />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Chroma.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
 
-  <!-- App -->
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-left">
-      <img src="assets/img/logo.svg" alt="Data Darbar" class="header-logo" />
-      <div class="header-brand">
-        <span class="header-title">Data Darbar</span>
-        <span class="header-tagline">Pakistan in Numbers</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <button id="resetBtn" class="header-link" title="Reset all filters">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        Clear Filters
-      </button>
-      <button id="aboutBtn" class="header-link">About</button>
-      <button id="methodologyBtn" class="header-link">Methodology</button>
-      <button id="contactBtn" class="header-link">Contact</button>
-      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">
-        PBS
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </a>
-    </div>
-    <!-- Mobile hamburger -->
-    <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-  </header>
-
-  <!-- Mobile nav drawer -->
-  <div id="mobileNav" class="mobile-nav hidden">
-    <button id="mobileResetBtn" class="mobile-nav-link">Clear Filters</button>
-    <button id="mobileAboutBtn" class="mobile-nav-link">About</button>
-    <button id="mobileMethodologyBtn" class="mobile-nav-link">Methodology</button>
-    <button id="mobileContactBtn" class="mobile-nav-link">Contact</button>
-    <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS</a>
-  </div>
-
-  <!-- Summary stats bar -->
-  <div class="summary-bar">
-    <div class="summary-item">
-      <span class="summary-label">Districts Showing</span>
-      <span class="summary-value" id="summaryDistricts">—</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label" id="summaryIndicatorLabel">Indicator</span>
-      <span class="summary-value" id="summaryIndicatorValue">—</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label">Year</span>
-      <span class="summary-value" id="summaryYear">2023</span>
-    </div>
-  </div>
-
-  <!-- Zoom-out bar (shown when zoomed into a district) -->
-  <div id="zoomBar" class="zoom-bar hidden">
-    <button id="zoomOutBtn" class="btn btn-zoom-out">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to all districts
-      <kbd>Esc</kbd>
-    </button>
-    <span id="zoomDistrictName" class="zoom-district-label"></span>
-  </div>
-
-  <!-- Main 3-column layout -->
-  <main>
-    <!-- Left sidebar: controls -->
-    <aside id="controlPanel" class="left-sidebar">
-
-      <!-- Mobile toggle for controls -->
-      <button id="mobileControlToggle" class="mobile-control-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        Filters &amp; Options
-      </button>
-
-      <div id="controlPanelInner" class="left-sidebar-inner">
-        <!-- Search -->
-        <div class="panel panel-search">
-          <div class="search-wrap">
-            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Search districts…" />
-          </div>
+  <div class="app-shell">
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark-wrap">
+          <img src="assets/img/logo.svg" alt="Data Darbar" class="brand-mark" />
         </div>
+        <div class="brand-copy">
+          <div class="brand-title">Data Darbar</div>
+          <div class="brand-subtitle">Pakistan in Numbers</div>
+        </div>
+      </div>
 
-        <!-- Topic -->
-        <div class="panel panel-control">
-          <label for="groupSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            Topic
-          </label>
+      <nav class="topbar-nav" id="desktopNav">
+        <button id="aboutBtn" class="nav-link">About</button>
+        <button id="methodologyBtn" class="nav-link">Methodology</button>
+        <button id="contactBtn" class="nav-link">Contact</button>
+        <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="nav-link nav-link--external">
+          PBS
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+        </a>
+      </nav>
+
+      <!-- Mobile hamburger -->
+      <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </header>
+
+    <!-- Mobile nav drawer -->
+    <div id="mobileNav" class="mobile-nav hidden">
+      <button id="mobileAboutBtn" class="mobile-nav-link">About</button>
+      <button id="mobileMethodologyBtn" class="mobile-nav-link">Methodology</button>
+      <button id="mobileContactBtn" class="mobile-nav-link">Contact</button>
+      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS</a>
+    </div>
+
+    <!-- ── Hero strip ──────────────────────────────────────────── -->
+    <section class="hero-strip">
+      <div>
+        <p class="eyebrow">Explore &middot; Compare &middot; Export</p>
+        <h1>Census and survey indicators across Pakistan's districts.</h1>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-card">
+          <span class="hero-stat-label">Selection</span>
+          <strong id="summarySelection">All districts</strong>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-label">Visible districts</span>
+          <strong id="summaryVisible">&mdash;</strong>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-label">Median value</span>
+          <strong id="summaryMedian">&mdash;</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Controls panel ──────────────────────────────────────── -->
+    <section class="controls-panel">
+      <div class="control-grid">
+        <div class="control">
+          <label for="groupSelect">Topic</label>
           <div class="select-wrap">
             <select id="groupSelect"></select>
             <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
 
-        <!-- Indicator -->
-        <div class="panel panel-control">
-          <label for="indicatorSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Indicator
-          </label>
+        <div class="control">
+          <label for="indicatorSelect">Indicator</label>
           <div class="select-wrap">
             <select id="indicatorSelect"></select>
             <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
 
-        <!-- Legend -->
-        <div class="panel panel-legend">
-          <div id="legend"></div>
-        </div>
-
-        <!-- Province -->
-        <div class="panel panel-control">
-          <label for="provinceSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Province
-          </label>
-          <div class="select-wrap">
-            <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
-            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-
-        <!-- Year -->
-        <div class="panel panel-control">
-          <label>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Year
-          </label>
+        <div class="control">
+          <label>Year</label>
           <div class="year-toggle">
             <button data-year="2017">2017</button>
             <button data-year="2023" class="active">2023</button>
@@ -159,41 +104,86 @@
           </div>
         </div>
 
-        <!-- Download CSV -->
-        <div class="panel panel-control">
-          <label>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download CSV
-          </label>
-          <a id="downloadData" href="#" download="data_darbar.csv" class="btn-export">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download CSV
-          </a>
+        <div class="control">
+          <label for="provinceSelect">Province / territory</label>
+          <div class="select-wrap">
+            <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
+            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
         </div>
 
-        <!-- Diagnostics -->
-        <div class="panel panel-meta">
-          <div id="diagnostics" class="diagnostics"></div>
+        <div class="control control--search">
+          <label for="searchInput">Search district</label>
+          <div class="search-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Start typing a district name…" />
+          </div>
+        </div>
+
+        <div class="control control--actions">
+          <label>Actions</label>
+          <div class="action-row">
+            <button id="resetBtn" class="btn btn-outline" title="Reset all filters">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Reset
+            </button>
+            <a id="downloadData" href="#" download="data_darbar.csv" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </a>
+          </div>
         </div>
       </div>
-    </aside>
+    </section>
 
-    <!-- Map -->
-    <div id="map"></div>
+    <!-- ── Zoom bar ────────────────────────────────────────────── -->
+    <div id="zoomBar" class="zoom-bar hidden">
+      <button id="zoomOutBtn" class="btn btn-zoom-out">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to all districts
+        <kbd>Esc</kbd>
+      </button>
+      <span id="zoomDistrictName" class="zoom-district-label"></span>
+    </div>
 
-    <!-- Right sidebar: district detail -->
-    <aside id="sidebar" class="right-sidebar">
-      <div class="panel panel-district">
-        <div id="districtName" class="district-name">Select a district</div>
-        <div id="districtProvince" class="district-province"></div>
-        <div id="stats">
-          <p class="stats-placeholder">Click any district on the map to explore its data.</p>
-        </div>
-      </div>
-    </aside>
-  </main>
+    <!-- ── Workspace: map + sidebar ────────────────────────────── -->
+    <main class="workspace">
+      <section class="map-stage">
+        <div id="map"></div>
+      </section>
 
-  <!-- About Modal -->
+      <aside id="sidebar" class="sidebar">
+        <section class="panel panel-district panel--feature">
+          <span class="panel-kicker">District profile</span>
+          <div id="districtName" class="district-name">Select a district</div>
+          <div id="districtProvince" class="district-province"></div>
+          <div id="stats">
+            <p class="stats-placeholder">Click any district on the map to explore the current indicator and compare related measures.</p>
+          </div>
+        </section>
+
+        <section class="panel panel-legend">
+          <div class="panel-heading-row">
+            <h3>Legend</h3>
+            <span id="diagnostics" class="diagnostics"></span>
+          </div>
+          <div id="legend"></div>
+        </section>
+
+        <section class="panel panel-guide">
+          <h3>How to use</h3>
+          <ul class="guide-list">
+            <li>Choose a topic and indicator from the controls above.</li>
+            <li>Switch between 2017, 2023, and change where available.</li>
+            <li>Filter by province or search for a district directly.</li>
+            <li>Click a district to zoom in and inspect its profile.</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ── About modal ─────────────────────────────────────────── -->
   <div id="aboutModal" class="modal-overlay hidden" role="dialog" aria-labelledby="aboutTitle">
     <div class="modal">
       <div class="modal-header">
@@ -257,7 +247,7 @@
     </div>
   </div>
 
-  <!-- Methodology Modal -->
+  <!-- ── Methodology modal ───────────────────────────────────── -->
   <div id="methodologyModal" class="modal-overlay hidden" role="dialog" aria-labelledby="methTitle">
     <div class="modal">
       <div class="modal-header">
@@ -283,15 +273,12 @@
         </p>
         <p>
           <strong>1. Normalisation:</strong> All district names are lowercased, stripped of
-          punctuation, and collapsed to a canonical form (e.g. "d.g. khan" and "dera ghazi khan"
-          both become "dera ghazi khan").
+          punctuation, and collapsed to a canonical form.
         </p>
         <p>
           <strong>2. Crosswalk table:</strong> A manually curated lookup of over 1,800 name
           variants maps alternative spellings, abbreviations, and historical names to a single
-          canonical name that matches the GeoJSON boundary file. Examples include
-          "Abbotabad" &rarr; "Abbottabad", "Naushero Feroze" &rarr; "Naushahro Firoz",
-          and "Mianwali" variants.
+          canonical name that matches the GeoJSON boundary file.
         </p>
 
         <h3>Multi-District Aggregation</h3>
@@ -300,78 +287,39 @@
           a single polygon in the boundary data. The pipeline aggregates these automatically:
         </p>
         <ul>
-          <li><strong>Karachi</strong> &mdash; 7 sub-districts (Central, East, West, South, Malir, Korangi, Kemari) summed into one</li>
+          <li><strong>Karachi</strong> &mdash; 7 sub-districts summed into one</li>
           <li><strong>Kohistan</strong> &mdash; Upper and Lower Kohistan merged</li>
           <li><strong>Chitral</strong> &mdash; Upper and Lower Chitral merged</li>
         </ul>
         <p>
-          For count-based indicators (population, literate count, establishments), sub-district
-          values are summed. For rate-based indicators (literacy ratio, unemployment rate),
+          For count-based indicators, sub-district values are summed. For rate-based indicators,
           the pipeline recomputes the rate from aggregated numerator and denominator counts
-          rather than averaging percentages, which would be statistically incorrect.
-        </p>
-
-        <h3>Mapping Data to GeoJSON</h3>
-        <p>
-          The GeoJSON boundary file contains 141 district polygons sourced from publicly
-          available shapefiles at the ADM2 administrative level. Each polygon has a
-          <code>districts</code> property containing the official district name. The
-          pipeline matches each data record to a GeoJSON feature by normalising both
-          the data district name and the GeoJSON property name through the same crosswalk,
-          then joining on the canonical key.
-        </p>
-        <p>
-          A match report is generated on each build showing how many data districts
-          successfully mapped to GeoJSON features, which data districts had no matching
-          boundary (CSV-only), and which GeoJSON features had no data (GeoJSON-only,
-          typically AJK and Gilgit-Baltistan districts not covered by PBS surveys).
+          rather than averaging percentages.
         </p>
 
         <h3>Choropleth Colour Mapping</h3>
         <p>
           Indicator values are mapped to fill colours using quantile breaks (5 classes)
           computed via <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>.
-          Quantile classification ensures each colour class contains roughly the same
-          number of districts, which is useful for revealing spatial patterns in
-          skewed distributions (e.g. population, where a few large cities dominate).
-        </p>
-        <p>
-          For year-on-year change views ("Change" toggle), a diverging colour scale
-          centred at zero is used: red shades indicate decline, green shades indicate
-          growth, and near-white indicates little change. The scale is symmetric,
-          anchored to the maximum absolute value in either direction.
-        </p>
-
-        <h3>Change Computation</h3>
-        <p>
-          The "Change" view for census indicators computes a simple difference:
-          <code>value_2023 &minus; value_2017</code>. For percentage-point indicators
-          (literacy rate, urban proportion), the difference is expressed in percentage
-          points. This approach does not adjust for boundary changes or definitional
-          shifts between census rounds. Users should interpret large changes in smaller
-          districts with caution, as boundary revisions may explain some variation.
+          For change views, a diverging colour scale centred at zero is used.
         </p>
 
         <h3>Limitations</h3>
         <ul>
           <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry
-              sampling error, particularly for smaller districts with fewer primary
-              sampling units.</li>
+              sampling error, particularly for smaller districts.</li>
           <li>Not all indicators are available for every district. Missing data is shown
-              as a grey fill with a dash (&mdash;) in the tooltip and sidebar.</li>
+              as a grey fill with a dash in the tooltip and sidebar.</li>
           <li>Census 2023 results used are provisional and may differ from final
               published figures.</li>
           <li>District boundaries may not perfectly align with the administrative units
               used in all data sources, especially for newly created districts.</li>
-          <li>Gender-disaggregated literacy rates for 2023 are unavailable for merged
-              districts (Karachi, Kohistan, Chitral) because sub-district gender
-              breakdowns cannot be reliably reaggregated from rate data alone.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Contact Modal -->
+  <!-- ── Contact modal ───────────────────────────────────────── -->
   <div id="contactModal" class="modal-overlay hidden" role="dialog" aria-labelledby="contactTitle">
     <div class="modal">
       <div class="modal-header">
@@ -384,38 +332,35 @@
           it will reach Hiba directly.
         </p>
         <form id="contactForm" class="contact-form">
-          <div class="form-group">
-            <label for="contactName">Your name</label>
-            <input type="text" id="contactName" name="name" required placeholder="Name" />
+          <div class="form-grid">
+            <label>
+              <span>Name</span>
+              <input id="contactName" type="text" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input id="contactEmail" type="email" required />
+            </label>
           </div>
-          <div class="form-group">
-            <label for="contactEmail">Your email</label>
-            <input type="email" id="contactEmail" name="email" required placeholder="you@example.com" />
+          <label>
+            <span>Subject</span>
+            <input id="contactSubject" type="text" />
+          </label>
+          <label>
+            <span>Message</span>
+            <textarea id="contactMessage" rows="6" required></textarea>
+          </label>
+          <div class="form-actions">
+            <button id="contactSubmit" type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send message
+            </button>
+            <div id="contactStatus" class="contact-status"></div>
           </div>
-          <div class="form-group">
-            <label for="contactSubject">Subject</label>
-            <input type="text" id="contactSubject" name="subject" placeholder="Optional" />
-          </div>
-          <div class="form-group">
-            <label for="contactMessage">Message</label>
-            <textarea id="contactMessage" name="message" rows="5" required placeholder="Your message…"></textarea>
-          </div>
-          <button type="submit" class="btn btn-send" id="contactSubmit">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send Message
-          </button>
-          <p id="contactStatus" class="contact-status"></p>
         </form>
       </div>
     </div>
   </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <span>&copy; 2025 Hiba Sameen. All rights reserved.</span>
-    <span class="footer-sep">&middot;</span>
-    <span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span>
-  </footer>
 
   <script src="assets/js/app.js"></script>
 </body>

@@ -13,11 +13,11 @@ const INDICATOR_GROUPS = {
       pop_male:           'Male Population',
       pop_female:         'Female Population',
       sex_ratio:          'Sex Ratio (M per 100 F)',
-      density_per_sq_km:  'Population Density (per km\u00B2)',
+      density_per_sq_km:  'Population Density (per km²)',
       urban_proportion:   'Urban Proportion (%)',
       avg_household_size: 'Avg. Household Size',
       annual_growth_rate: 'Annual Growth Rate (%)',
-      area_sq_km:         'Area (km\u00B2)',
+      area_sq_km:         'Area (km²)',
     },
     prefix: 't1', hasYears: true,
   },
@@ -179,7 +179,7 @@ const INDICATOR_GROUPS = {
   },
 };
 
-// Colour ramps per group — now using greens/teals for better harmony
+// Colour ramps per group
 const COLOR_RAMPS = {
   demographics:   ['#e6f4ec', '#145228'],
   urbanRural:     ['#fef6dc', '#1a5632'],
@@ -196,26 +196,11 @@ const COLOR_RAMPS = {
 };
 
 // Indicators where an INCREASE is bad (red) and a DECREASE is good (green).
-// All other indicators default to: increase = good (green), decrease = bad (red).
 const HIGHER_IS_WORSE = new Set([
-  // Demographics
-  'sex_ratio',            // gender imbalance
-  'avg_household_size',   // overcrowding
-  // Literacy
-  'illiterate_all',       // more illiterate = worse
-  // Education
-  'pct_never_attended',   // never attended school
-  'pct_below_primary',    // didn't finish primary
-  // Employment
-  'seeking_work',         // more job seekers = worse
-  // Economic activity
-  'unemployment_rate',    // higher unemployment = worse
-  // PSLM
-  'pct_no_toilet',        // no toilet = worse
-  // HIES
-  'food_share',           // higher food expenditure share = poorer
-  'food_insecurity_pct',  // food insecure households
-  'avg_fies_score',       // food insecurity score (0-8)
+  'sex_ratio', 'avg_household_size', 'illiterate_all',
+  'pct_never_attended', 'pct_below_primary', 'seeking_work',
+  'unemployment_rate', 'pct_no_toilet',
+  'food_share', 'food_insecurity_pct', 'avg_fies_score',
 ]);
 
 // ── State ───────────────────────────────────────────────────────────────────
@@ -228,7 +213,6 @@ let selectedDistrict = null;
 let isZoomedIn = false;
 let originalBounds = null;
 
-// Store per-layer fill so hover can restore it
 const layerFills = new WeakMap();
 
 // ── DOM refs ────────────────────────────────────────────────────────────────
@@ -256,6 +240,9 @@ const methodologyModal = document.getElementById('methodologyModal');
 const contactModal    = document.getElementById('contactModal');
 const contactForm     = document.getElementById('contactForm');
 const contactStatus   = document.getElementById('contactStatus');
+const summarySelection = document.getElementById('summarySelection');
+const summaryVisible   = document.getElementById('summaryVisible');
+const summaryMedian    = document.getElementById('summaryMedian');
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -278,6 +265,13 @@ function isPct(indicator) {
 }
 function isPctLabel(label) {
   return /\(.*%\)|rate|ratio|proportion/i.test(label);
+}
+
+function median(values) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
 function dataKey(group, year, indicator) {
@@ -400,7 +394,6 @@ function getVal(props) {
   return (v === null || v === undefined) ? null : Number(v);
 }
 
-// Build rich tooltip content showing district name + current indicator value
 function getTooltipContent(props) {
   const dist = props.districts || props.district_agency || '';
   const v = getVal(props);
@@ -423,7 +416,6 @@ function getTooltipContent(props) {
 function onEachDistrict(feature, layer) {
   const p = feature.properties || {};
 
-  // Rich tooltip with value
   layer.bindTooltip(() => getTooltipContent(p), {
     sticky: true,
     direction: 'top',
@@ -435,7 +427,6 @@ function onEachDistrict(feature, layer) {
     mouseover: e => {
       const l = e.target;
       const stored = layerFills.get(l);
-      // Don't highlight hidden (province-filtered) districts
       if (stored && stored.fillOpacity === 0) return;
       l.setStyle({ weight: 2.5, color: '#0c3a1e' });
       l.bringToFront();
@@ -454,9 +445,7 @@ function onEachDistrict(feature, layer) {
     },
     click: e => {
       const stored = layerFills.get(e.target);
-      // Don't select hidden districts
       if (stored && stored.fillOpacity === 0) return;
-      // Deselect previous
       if (selectedDistrict && selectedDistrict !== e.target) {
         const prev = layerFills.get(selectedDistrict);
         if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity });
@@ -465,8 +454,6 @@ function onEachDistrict(feature, layer) {
       e.target.setStyle({ weight: 2.5, color: '#0c3a1e' });
       e.target.bringToFront();
       showDistrictDetail(e.target.feature.properties);
-
-      // Zoom into the district
       zoomToDistrict(e.target);
     }
   });
@@ -478,7 +465,6 @@ function zoomToDistrict(layer) {
   if (!originalBounds) {
     originalBounds = map.getBounds();
   }
-
   const bounds = layer.getBounds();
   map.fitBounds(bounds, { padding: [60, 60], maxZoom: 10 });
   isZoomedIn = true;
@@ -527,6 +513,7 @@ function colorize() {
       layerFills.set(l, s);
     });
     legendDiv.innerHTML = '<p class="legend-empty">No data for this selection</p>';
+    updateSummary([]);
     return;
   }
 
@@ -536,13 +523,11 @@ function colorize() {
 
   if (isDiff) {
     const absMax = Math.max(Math.abs(Math.min(...values)), Math.abs(Math.max(...values))) || 1;
-    // For "higher is worse" indicators, flip: positive change = red, negative = green
-    // For normal indicators: positive change = green, negative = red
     const inverted = HIGHER_IS_WORSE.has(currentIndicator);
-    const worse = '#c0392b';  // red
-    const better = '#1a5632'; // green
-    const lo = inverted ? better : worse;   // color for negative values
-    const hi = inverted ? worse  : better;  // color for positive values
+    const worse = '#c0392b';
+    const better = '#1a5632';
+    const lo = inverted ? better : worse;
+    const hi = inverted ? worse  : better;
     scale = chroma.scale([lo, '#fafafa', hi]).domain([-absMax, 0, absMax]);
     breaks = [-absMax, -absMax / 2, 0, absMax / 2, absMax];
   } else {
@@ -550,7 +535,6 @@ function colorize() {
     scale = chroma.scale(ramp).domain([breaks[0], breaks[breaks.length - 1]]);
   }
 
-  // Build bounds for the visible (filtered) province
   const provBoundsGroup = L.featureGroup();
 
   districtLayer.eachLayer(l => {
@@ -558,7 +542,6 @@ function colorize() {
     const prov = p.province_territory || 'Unknown';
     let style;
     if (provFilter !== 'ALL' && prov !== provFilter) {
-      // Hide non-matching provinces entirely
       style = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0 };
     } else {
       provBoundsGroup.addLayer(l);
@@ -573,14 +556,12 @@ function colorize() {
     layerFills.set(l, style);
   });
 
-  // Zoom to the selected province, or back to all
   if (provFilter !== 'ALL' && provBoundsGroup.getLayers().length) {
     map.fitBounds(provBoundsGroup.getBounds(), { padding: [30, 30] });
   } else if (provFilter === 'ALL' && !isZoomedIn) {
     map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
   }
 
-  // Keep selected district highlighted
   if (selectedDistrict) {
     const selProv = (selectedDistrict.feature.properties || {}).province_territory || '';
     if (provFilter === 'ALL' || selProv === provFilter) {
@@ -591,10 +572,9 @@ function colorize() {
 
   renderLegend(breaks, scale, isDiff);
   updateDiagnostics(values.length);
-  updateSummaryBar();
+  updateSummary(values);
   prepareDownload();
 
-  // Refresh sidebar detail if a district is currently selected
   if (selectedDistrict) {
     showDistrictDetail(selectedDistrict.feature.properties);
   }
@@ -676,12 +656,23 @@ function quickStatRaw(row, key, label, pct = false) {
   return `<div class="stat stat-quick"><span>${label}</span><strong>${fmt(v, pct)}</strong></div>`;
 }
 
-// ── Diagnostics ─────────────────────────────────────────────────────────────
+// ── Diagnostics & summary ───────────────────────────────────────────────────
 
 function updateDiagnostics(matched) {
   let total = 0;
   districtLayer.eachLayer(() => total++);
   diagEl.textContent = `${matched} / ${total} districts matched`;
+}
+
+function updateSummary(values) {
+  if (!summarySelection || !summaryVisible || !summaryMedian) return;
+  const g = INDICATOR_GROUPS[currentGroup];
+  const indicator = g?.indicators?.[currentIndicator] || '';
+  summarySelection.textContent = `${g.label} \u00B7 ${indicator}`;
+  summaryVisible.textContent = `${values.length}`;
+  const med = median(values);
+  const pct = isPct(currentIndicator);
+  summaryMedian.textContent = med === null ? '\u2014' : (currentYear === 'diff' ? fmtDiff(med, pct) : fmt(med, pct));
 }
 
 // ── CSV download ────────────────────────────────────────────────────────────
@@ -769,18 +760,16 @@ function wireEvents() {
     searchInput.value = '';
     districtNameEl.textContent = 'Select a district';
     districtProvEl.textContent = '';
-    statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+    statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore the current indicator and compare related measures.</p>';
     updateYearButtons();
     colorize();
     map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
   });
 
   searchInput.addEventListener('input', handleSearch);
-
-  // Zoom out on button click
   zoomOutBtn.addEventListener('click', zoomOut);
 
-  // Escape key: close modals first, then zoom out
+  // Escape key
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       const modals = [aboutModal, methodologyModal, contactModal];
@@ -791,12 +780,11 @@ function wireEvents() {
     }
   });
 
-  // Modal open buttons
+  // Modals
   aboutBtn.addEventListener('click', () => aboutModal.classList.remove('hidden'));
   methodologyBtn.addEventListener('click', () => methodologyModal.classList.remove('hidden'));
   contactBtn.addEventListener('click', () => contactModal.classList.remove('hidden'));
 
-  // Close modal buttons
   document.querySelectorAll('.modal-close').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.close;
@@ -804,20 +792,18 @@ function wireEvents() {
     });
   });
 
-  // Close modal on overlay click
   [aboutModal, methodologyModal, contactModal].forEach(modal => {
     modal.addEventListener('click', e => {
       if (e.target === modal) modal.classList.add('hidden');
     });
   });
 
-  // Contact form — uses FormSubmit.co to forward to Gmail without exposing email
-  // The email is obfuscated in JS to avoid scraping
+  // Contact form
   contactForm.addEventListener('submit', e => {
     e.preventDefault();
     const submitBtn = document.getElementById('contactSubmit');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
+    submitBtn.textContent = 'Sending\u2026';
     contactStatus.textContent = '';
     contactStatus.className = 'contact-status';
 
@@ -826,19 +812,13 @@ function wireEvents() {
     const subject = document.getElementById('contactSubject').value.trim() || 'Data Darbar Contact';
     const message = document.getElementById('contactMessage').value.trim();
 
-    // Obfuscated recipient — assembled at runtime to prevent scraping
     const r = ['hiba', 'sameen', '@', 'gmail', '.com'].join('');
 
-    // Use FormSubmit.co API (free, no signup, sends to email)
     fetch(`https://formsubmit.co/ajax/${r}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        name: name,
-        email: email,
-        _subject: subject,
-        message: message,
-        _template: 'table',
+        name: name, email: email, _subject: subject, message: message, _template: 'table',
       }),
     })
     .then(res => res.json())
@@ -858,96 +838,27 @@ function wireEvents() {
     })
     .finally(() => {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Message';
+      submitBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message';
     });
   });
 }
 
-// ── Summary bar ────────────────────────────────────────────────────────────
-
-function updateSummaryBar() {
-  const provFilter = provinceSelect.value;
-  const g = INDICATOR_GROUPS[currentGroup];
-  let count = 0, total = 0;
-
-  districtLayer.eachLayer(l => {
-    const p = l.feature.properties || {};
-    const prov = p.province_territory || 'Unknown';
-    if (provFilter !== 'ALL' && prov !== provFilter) return;
-    total++;
-    const v = getVal(p);
-    if (v !== null && !isNaN(v)) count++;
-  });
-
-  const summDistricts = document.getElementById('summaryDistricts');
-  const summIndLabel  = document.getElementById('summaryIndicatorLabel');
-  const summIndValue  = document.getElementById('summaryIndicatorValue');
-  const summYear      = document.getElementById('summaryYear');
-
-  if (summDistricts) summDistricts.textContent = count;
-  if (summIndLabel)  summIndLabel.textContent = g.indicators[currentIndicator] || 'Indicator';
-  if (summIndValue) {
-    // Show national/filtered aggregate (simple mean for rates, sum for counts)
-    const values = [];
-    districtLayer.eachLayer(l => {
-      const p = l.feature.properties || {};
-      const prov = p.province_territory || 'Unknown';
-      if (provFilter !== 'ALL' && prov !== provFilter) return;
-      const v = getVal(p);
-      if (v !== null && !isNaN(v)) values.push(v);
-    });
-    if (values.length) {
-      const pct = isPct(currentIndicator);
-      if (pct) {
-        const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        summIndValue.textContent = avg.toFixed(1) + '%';
-      } else {
-        const sum = values.reduce((a, b) => a + b, 0);
-        summIndValue.textContent = sum >= 1e6
-          ? (sum / 1e6).toFixed(1) + 'M'
-          : sum.toLocaleString('en-US', { maximumFractionDigits: 0 });
-      }
-    } else {
-      summIndValue.textContent = '\u2014';
-    }
-  }
-  if (summYear) {
-    const g2 = INDICATOR_GROUPS[currentGroup];
-    if (g2.noYear) {
-      summYear.textContent = g2.label.match(/\d{4}/)?.[0] || '\u2014';
-    } else if (currentYear === 'diff') {
-      summYear.textContent = '\u0394 2017\u21922023';
-    } else {
-      summYear.textContent = currentYear;
-    }
-  }
-}
-
-// ── Mobile nav & controls ──────────────────────────────────────────────────
+// ── Mobile nav ──────────────────────────────────────────────────────────────
 
 function wireMobile() {
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const mobileNav = document.getElementById('mobileNav');
-  const mobileControlToggle = document.getElementById('mobileControlToggle');
-  const controlPanelInner = document.getElementById('controlPanelInner');
 
-  // Hamburger menu toggle
   if (mobileMenuBtn && mobileNav) {
     mobileMenuBtn.addEventListener('click', () => {
       mobileNav.classList.toggle('hidden');
     });
   }
 
-  // Mobile nav links → same actions as header
-  const mobileResetBtn = document.getElementById('mobileResetBtn');
   const mobileAboutBtn = document.getElementById('mobileAboutBtn');
   const mobileMethodologyBtn = document.getElementById('mobileMethodologyBtn');
   const mobileContactBtn = document.getElementById('mobileContactBtn');
 
-  if (mobileResetBtn) mobileResetBtn.addEventListener('click', () => {
-    resetBtn.click();
-    mobileNav.classList.add('hidden');
-  });
   if (mobileAboutBtn) mobileAboutBtn.addEventListener('click', () => {
     aboutModal.classList.remove('hidden');
     mobileNav.classList.add('hidden');
@@ -960,14 +871,6 @@ function wireMobile() {
     contactModal.classList.remove('hidden');
     mobileNav.classList.add('hidden');
   });
-
-  // Control panel toggle on mobile
-  if (mobileControlToggle && controlPanelInner) {
-    mobileControlToggle.addEventListener('click', () => {
-      const expanded = controlPanelInner.classList.toggle('expanded');
-      mobileControlToggle.classList.toggle('expanded', expanded);
-    });
-  }
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
