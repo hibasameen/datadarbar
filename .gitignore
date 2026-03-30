@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# ETL downloads
+etl/downloads/
+
+# Node (if ever needed)
+node_modules/

@@ -1,82 +1,362 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pakistan Census Explorer — Education & Health (District)</title>
-  <link rel="preconnect" href="https://unpkg.com">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Darbar — Pakistan Data Explorer</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
-  <script src="https://unpkg.com/fuse.js@6.6.2"></script>
+
+  <!-- Chroma.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+
+  <!-- App -->
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
+
+  <!-- Header -->
   <header class="site-header">
-    <h1>Pakistan Census Explorer</h1>
-    <p class="subtitle">District-level education & health indicators (PBS 2023)</p>
+    <div class="header-left">
+      <img src="assets/img/logo.svg" alt="Data Darbar" class="header-logo" />
+      <span class="header-tagline">Pakistan Data Explorer</span>
+    </div>
+    <div class="header-right">
+      <button id="aboutBtn" class="header-link">About</button>
+      <button id="methodologyBtn" class="header-link">Methodology</button>
+      <button id="contactBtn" class="header-link">Contact</button>
+      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">
+        PBS
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+    </div>
   </header>
 
-  <section class="controls">
-    <div class="control">
-      <label for="indicatorSelect">Indicator</label>
-      <select id="indicatorSelect">
-        <option value="literacy_total">Literacy (Total %)</option>
-        <option value="literacy_male">Literacy (Male %)</option>
-        <option value="literacy_female">Literacy (Female %)</option>
-        <option value="school_attendance">School Attendance (Net %, 5–16)</option>
-        <option value="disability_rate">Disability Rate (%)</option>
-        <option value="no_health_facility_5km">No Health Facility within 5km (%)</option>
-      </select>
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <div class="control">
+        <label for="groupSelect">Topic</label>
+        <div class="select-wrap">
+          <select id="groupSelect"></select>
+          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="control">
+        <label for="indicatorSelect">Indicator</label>
+        <div class="select-wrap">
+          <select id="indicatorSelect"></select>
+          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
     </div>
-    <div class="control">
-      <label for="provinceSelect">Province / Area</label>
-      <select id="provinceSelect">
-        <option value="ALL">All</option>
-      </select>
-    </div>
-    <div class="control grow">
-      <label for="searchInput">Find a district</label>
-      <input id="searchInput" placeholder="Start typing… (e.g., Lahore, Sukkur)" />
-    </div>
-    <div class="control">
-      <button id="resetBtn" class="btn">Reset</button>
-      <a id="downloadData" class="btn btn-outline" href="#" download="pbs_census_selected.csv">Download data</a>
-    </div>
-  </section>
 
+    <div class="control-group">
+      <div class="control">
+        <label>Year</label>
+        <div class="year-toggle">
+          <button data-year="2017">2017</button>
+          <button data-year="2023" class="active">2023</button>
+          <button data-year="diff">Change</button>
+        </div>
+      </div>
+      <div class="control">
+        <label for="provinceSelect">Province</label>
+        <div class="select-wrap">
+          <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
+          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-group control-group--actions">
+      <div class="control grow">
+        <label for="searchInput">Search</label>
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Find a district…" />
+        </div>
+      </div>
+      <button id="resetBtn" class="btn btn-outline" title="Reset all filters">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Zoom-out bar (shown when zoomed into a district) -->
+  <div id="zoomBar" class="zoom-bar hidden">
+    <button id="zoomOutBtn" class="btn btn-zoom-out">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to all districts
+      <kbd>Esc</kbd>
+    </button>
+    <span id="zoomDistrictName" class="zoom-district-label"></span>
+  </div>
+
+  <!-- Map + Sidebar -->
   <main>
     <div id="map"></div>
-    <aside id="sidebar">
-      <div class="panel">
-        <h2 id="districtName">Click a district</h2>
-        <div id="stats"></div>
+    <div id="sidebar">
+
+      <div class="panel panel-district">
+        <div id="districtName" class="district-name">Select a district</div>
+        <div id="districtProvince" class="district-province"></div>
+        <div id="stats">
+          <p class="stats-placeholder">Click any district on the map to explore its data.</p>
+        </div>
       </div>
-      <div class="panel">
+
+      <div class="panel panel-legend">
         <h3>Legend</h3>
         <div id="legend"></div>
       </div>
-      <div class="panel">
-        <h3>About</h3>
-        <p>This is a community-built explorer using Pakistan Bureau of Statistics (PBS) 2023 census tables. Data are parsed from PBS tables and joined to a district GeoJSON.</p>
-        <ul class="about-list">
-          <li><strong>Source:</strong> PBS 2023 Census (district tables 12 & 13).</li>
-          <li><strong>Notes:</strong> Some districts may be missing where PBS tables don’t report or naming differs. Please raise issues on GitHub.</li>
-        </ul>
+
+      <div class="panel panel-actions">
+        <a id="downloadData" href="#" download="data_darbar.csv" class="btn-export">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </a>
       </div>
-    </aside>
+
+      <div class="panel panel-meta">
+        <div id="diagnostics" class="diagnostics"></div>
+      </div>
+
+    </div>
   </main>
 
+  <!-- About Modal -->
+  <div id="aboutModal" class="modal-overlay hidden" role="dialog" aria-labelledby="aboutTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="aboutTitle">About Data Darbar</h2>
+        <button class="modal-close" data-close="aboutModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h3>The Project</h3>
+        <p>
+          Data Darbar is an interactive data explorer for Pakistan, bringing together district-level
+          statistics from multiple official sources published by the
+          <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>.
+        </p>
+        <p>
+          The platform visualises demographic, economic, education, and social indicators across
+          all districts of Pakistan, enabling researchers, policymakers, journalists, and citizens
+          to explore spatial patterns and changes over time. The name "Data Darbar" is a nod to
+          the famous shrine in Lahore &mdash; reimagined here as a place of gathering for Pakistan's data.
+        </p>
+
+        <h3>Built By</h3>
+        <p>
+          Data Darbar was created by <strong>Hiba Sameen</strong>, an economist and data scientist
+          based in London, UK. Hiba has a PhD in Economics and her background spans working across
+          academia, government and think tanks on economic policy. She also has an interest in data
+          science and data engineering, focussing on making public data more accessible and useful
+          for evidence-based decision-making. This project was born out of a frustration with how
+          difficult it is to explore and compare district-level statistics from PBS publications,
+          which are often buried in PDF tables and scattered across multiple reports.
+        </p>
+        <p class="about-links">
+          <a href="https://github.com/hibasameen" target="_blank" rel="noopener" class="about-link-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+            GitHub
+          </a>
+          <a href="https://www.linkedin.com/in/hiba-sameen-86750819/" target="_blank" rel="noopener" class="about-link-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+        </p>
+
+        <h3>Data Sources</h3>
+        <ul>
+          <li><strong>Population &amp; Housing Census 2017 and 2023</strong> &mdash; Tables 1, 5, 12, 15, 16 and education/employment breakdowns</li>
+          <li><strong>PSLM 2019-20</strong> &mdash; Pakistan Social and Living Standards Measurement Survey (district-level microdata aggregates)</li>
+          <li><strong>LFS 2020-21 &amp; 2024-25</strong> &mdash; Labour Force Survey (employment, LFPR, industry breakdown)</li>
+          <li><strong>HIES 2024-25</strong> &mdash; Household Integrated Economic Survey (expenditure, food security, housing)</li>
+          <li><strong>Economic Census 2023</strong> &mdash; Establishment counts, workforce size, industry composition</li>
+        </ul>
+
+        <h3>Coverage</h3>
+        <p>
+          The map covers 141 districts across all provinces and territories: Punjab, Sindh,
+          Khyber Pakhtunkhwa, Balochistan, Islamabad Capital Territory,
+          Azad Jammu &amp; Kashmir, Gilgit-Baltistan, and the former Federally
+          Administered Tribal Areas (FATA). 124 districts currently have matched data; the
+          remaining 17 (primarily in AJK and Gilgit-Baltistan) appear on the map but lack
+          PBS coverage in the datasets used.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methodology Modal -->
+  <div id="methodologyModal" class="modal-overlay hidden" role="dialog" aria-labelledby="methTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="methTitle">Methodology</h2>
+        <button class="modal-close" data-close="methodologyModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h3>Data Pipeline</h3>
+        <p>
+          Raw data is sourced from official PBS publications including PDF tables (parsed
+          programmatically), CSV releases, and survey microdata files. A Python ETL pipeline
+          (<code>build_dataset.py</code>, ~1,800 lines) parses, cleans, and normalises all
+          sources into a single unified JSON file (<code>districts.json</code>) keyed by
+          normalised district name.
+        </p>
+
+        <h3>District Name Matching &amp; Crosswalk</h3>
+        <p>
+          One of the core challenges in working with Pakistani administrative data is the
+          inconsistency in district naming across sources. The same district may appear as
+          "D.G. Khan", "Dera Ghazi Khan", "DG Khan", or "D. G. Khan" depending on the
+          publication. The pipeline addresses this through a two-step process:
+        </p>
+        <p>
+          <strong>1. Normalisation:</strong> All district names are lowercased, stripped of
+          punctuation, and collapsed to a canonical form (e.g. "d.g. khan" and "dera ghazi khan"
+          both become "dera ghazi khan").
+        </p>
+        <p>
+          <strong>2. Crosswalk table:</strong> A manually curated lookup of over 1,800 name
+          variants maps alternative spellings, abbreviations, and historical names to a single
+          canonical name that matches the GeoJSON boundary file. Examples include
+          "Abbotabad" &rarr; "Abbottabad", "Naushero Feroze" &rarr; "Naushahro Firoz",
+          and "Mianwali" variants.
+        </p>
+
+        <h3>Multi-District Aggregation</h3>
+        <p>
+          Several districts in the census are reported at sub-district level but appear as
+          a single polygon in the boundary data. The pipeline aggregates these automatically:
+        </p>
+        <ul>
+          <li><strong>Karachi</strong> &mdash; 7 sub-districts (Central, East, West, South, Malir, Korangi, Kemari) summed into one</li>
+          <li><strong>Kohistan</strong> &mdash; Upper and Lower Kohistan merged</li>
+          <li><strong>Chitral</strong> &mdash; Upper and Lower Chitral merged</li>
+        </ul>
+        <p>
+          For count-based indicators (population, literate count, establishments), sub-district
+          values are summed. For rate-based indicators (literacy ratio, unemployment rate),
+          the pipeline recomputes the rate from aggregated numerator and denominator counts
+          rather than averaging percentages, which would be statistically incorrect.
+        </p>
+
+        <h3>Mapping Data to GeoJSON</h3>
+        <p>
+          The GeoJSON boundary file contains 141 district polygons sourced from publicly
+          available shapefiles at the ADM2 administrative level. Each polygon has a
+          <code>districts</code> property containing the official district name. The
+          pipeline matches each data record to a GeoJSON feature by normalising both
+          the data district name and the GeoJSON property name through the same crosswalk,
+          then joining on the canonical key.
+        </p>
+        <p>
+          A match report is generated on each build showing how many data districts
+          successfully mapped to GeoJSON features, which data districts had no matching
+          boundary (CSV-only), and which GeoJSON features had no data (GeoJSON-only,
+          typically AJK and Gilgit-Baltistan districts not covered by PBS surveys).
+        </p>
+
+        <h3>Choropleth Colour Mapping</h3>
+        <p>
+          Indicator values are mapped to fill colours using quantile breaks (5 classes)
+          computed via <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>.
+          Quantile classification ensures each colour class contains roughly the same
+          number of districts, which is useful for revealing spatial patterns in
+          skewed distributions (e.g. population, where a few large cities dominate).
+        </p>
+        <p>
+          For year-on-year change views ("Change" toggle), a diverging colour scale
+          centred at zero is used: red shades indicate decline, green shades indicate
+          growth, and near-white indicates little change. The scale is symmetric,
+          anchored to the maximum absolute value in either direction.
+        </p>
+
+        <h3>Change Computation</h3>
+        <p>
+          The "Change" view for census indicators computes a simple difference:
+          <code>value_2023 &minus; value_2017</code>. For percentage-point indicators
+          (literacy rate, urban proportion), the difference is expressed in percentage
+          points. This approach does not adjust for boundary changes or definitional
+          shifts between census rounds. Users should interpret large changes in smaller
+          districts with caution, as boundary revisions may explain some variation.
+        </p>
+
+        <h3>Limitations</h3>
+        <ul>
+          <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry
+              sampling error, particularly for smaller districts with fewer primary
+              sampling units.</li>
+          <li>Not all indicators are available for every district. Missing data is shown
+              as a grey fill with a dash (&mdash;) in the tooltip and sidebar.</li>
+          <li>Census 2023 results used are provisional and may differ from final
+              published figures.</li>
+          <li>District boundaries may not perfectly align with the administrative units
+              used in all data sources, especially for newly created districts.</li>
+          <li>Gender-disaggregated literacy rates for 2023 are unavailable for merged
+              districts (Karachi, Kohistan, Chitral) because sub-district gender
+              breakdowns cannot be reliably reaggregated from rate data alone.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contactModal" class="modal-overlay hidden" role="dialog" aria-labelledby="contactTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="contactTitle">Contact</h2>
+        <button class="modal-close" data-close="contactModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Have a question, suggestion, or found a data issue? Send a message and
+          it will reach Hiba directly.
+        </p>
+        <form id="contactForm" class="contact-form">
+          <div class="form-group">
+            <label for="contactName">Your name</label>
+            <input type="text" id="contactName" name="name" required placeholder="Name" />
+          </div>
+          <div class="form-group">
+            <label for="contactEmail">Your email</label>
+            <input type="email" id="contactEmail" name="email" required placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="contactSubject">Subject</label>
+            <input type="text" id="contactSubject" name="subject" placeholder="Optional" />
+          </div>
+          <div class="form-group">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" required placeholder="Your message…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-send" id="contactSubmit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Message
+          </button>
+          <p id="contactStatus" class="contact-status"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <footer class="site-footer">
-    <span>Built for Data Darbar • <a href="https://www.pbs.gov.pk/" target="_blank" rel="noreferrer">PBS</a> • <a href="#" id="viewSource">View source</a></span>
+    <span>&copy; 2025 Hiba Sameen. All rights reserved.</span>
+    <span class="footer-sep">&middot;</span>
+    <span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span>
   </footer>
 
-  <script>
-    // Path to your district GeoJSON (replace with your file name if different)
-    const GEOJSON_PATH = "data/pakistan_districts_province_boundries.geojson";
-    // Dataset produced by the ETL, keyed by district name (normalized)
-    const DATA_PATH = "data/pbs_district_indicators.json";
-  </script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>
