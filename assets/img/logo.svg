@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 58" fill="none">
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0cc5a"/>
+      <stop offset="50%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#b8941a"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5d96b"/>
+      <stop offset="100%" stop-color="#c49515"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Pointed Mughal/ogee arch: straight sides, curves inward to a point -->
+  <path d="M6 54 V24 C6 16 12 12 28 4 C44 12 50 16 50 24 V54 Z"
+        fill="none" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Small finial circle at the pointed top -->
+  <circle cx="28" cy="3" r="2.2" fill="url(#goldGrad)"/>
+
+  <!-- Bar chart inside the arch -->
+  <rect x="13" y="37" width="8" height="15" rx="1.2" fill="url(#barGrad)" filter="url(#glow)"/>
+  <rect x="24" y="27" width="8" height="25" rx="1.2" fill="url(#barGrad)" filter="url(#glow)"/>
+  <rect x="35" y="17" width="8" height="35" rx="1.2" fill="url(#barGrad)" filter="url(#glow)"/>
+
+  <!-- Base line -->
+  <line x1="9" y1="54" x2="47" y2="54" stroke="url(#goldGrad)" stroke-width="2.2"/>
+
+  <!-- Text: "Data" stacked above "Darbar" -->
+  <text x="62" y="26" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="url(#goldGrad)" letter-spacing="-0.3">Data</text>
+  <text x="62" y="50" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="url(#goldGrad)" letter-spacing="-0.3">Darbar</text>
+</svg>

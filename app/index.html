@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Darbar — Pakistan Data Explorer</title>
+  <title>Data Darbar — Pakistan in Numbers</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,9 +26,16 @@
   <header class="site-header">
     <div class="header-left">
       <img src="assets/img/logo.svg" alt="Data Darbar" class="header-logo" />
-      <span class="header-tagline">Pakistan Data Explorer</span>
+      <div class="header-brand">
+        <span class="header-title">Data Darbar</span>
+        <span class="header-tagline">Pakistan in Numbers</span>
+      </div>
     </div>
     <div class="header-right">
+      <button id="resetBtn" class="header-link" title="Reset all filters">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Clear Filters
+      </button>
       <button id="aboutBtn" class="header-link">About</button>
       <button id="methodologyBtn" class="header-link">Methodology</button>
       <button id="contactBtn" class="header-link">Contact</button>
@@ -37,57 +44,34 @@
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
       </a>
     </div>
+    <!-- Mobile hamburger -->
+    <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </header>
 
-  <!-- Controls -->
-  <div class="controls">
-    <div class="control-group">
-      <div class="control">
-        <label for="groupSelect">Topic</label>
-        <div class="select-wrap">
-          <select id="groupSelect"></select>
-          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
-      <div class="control">
-        <label for="indicatorSelect">Indicator</label>
-        <div class="select-wrap">
-          <select id="indicatorSelect"></select>
-          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
-    </div>
+  <!-- Mobile nav drawer -->
+  <div id="mobileNav" class="mobile-nav hidden">
+    <button id="mobileResetBtn" class="mobile-nav-link">Clear Filters</button>
+    <button id="mobileAboutBtn" class="mobile-nav-link">About</button>
+    <button id="mobileMethodologyBtn" class="mobile-nav-link">Methodology</button>
+    <button id="mobileContactBtn" class="mobile-nav-link">Contact</button>
+    <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS</a>
+  </div>
 
-    <div class="control-group">
-      <div class="control">
-        <label>Year</label>
-        <div class="year-toggle">
-          <button data-year="2017">2017</button>
-          <button data-year="2023" class="active">2023</button>
-          <button data-year="diff">Change</button>
-        </div>
-      </div>
-      <div class="control">
-        <label for="provinceSelect">Province</label>
-        <div class="select-wrap">
-          <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
-          <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-      </div>
+  <!-- Summary stats bar -->
+  <div class="summary-bar">
+    <div class="summary-item">
+      <span class="summary-label">Districts Showing</span>
+      <span class="summary-value" id="summaryDistricts">—</span>
     </div>
-
-    <div class="control-group control-group--actions">
-      <div class="control grow">
-        <label for="searchInput">Search</label>
-        <div class="search-wrap">
-          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Find a district…" />
-        </div>
-      </div>
-      <button id="resetBtn" class="btn btn-outline" title="Reset all filters">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        Reset
-      </button>
+    <div class="summary-item">
+      <span class="summary-label" id="summaryIndicatorLabel">Indicator</span>
+      <span class="summary-value" id="summaryIndicatorValue">—</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Year</span>
+      <span class="summary-value" id="summaryYear">2023</span>
     </div>
   </div>
 
@@ -101,11 +85,104 @@
     <span id="zoomDistrictName" class="zoom-district-label"></span>
   </div>
 
-  <!-- Map + Sidebar -->
+  <!-- Main 3-column layout -->
   <main>
-    <div id="map"></div>
-    <div id="sidebar">
+    <!-- Left sidebar: controls -->
+    <aside id="controlPanel" class="left-sidebar">
 
+      <!-- Mobile toggle for controls -->
+      <button id="mobileControlToggle" class="mobile-control-toggle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        Filters &amp; Options
+      </button>
+
+      <div id="controlPanelInner" class="left-sidebar-inner">
+        <!-- Search -->
+        <div class="panel panel-search">
+          <div class="search-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Search districts…" />
+          </div>
+        </div>
+
+        <!-- Topic -->
+        <div class="panel panel-control">
+          <label for="groupSelect">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Topic
+          </label>
+          <div class="select-wrap">
+            <select id="groupSelect"></select>
+            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <!-- Indicator -->
+        <div class="panel panel-control">
+          <label for="indicatorSelect">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Indicator
+          </label>
+          <div class="select-wrap">
+            <select id="indicatorSelect"></select>
+            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="panel panel-legend">
+          <div id="legend"></div>
+        </div>
+
+        <!-- Province -->
+        <div class="panel panel-control">
+          <label for="provinceSelect">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Province
+          </label>
+          <div class="select-wrap">
+            <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
+            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <!-- Year -->
+        <div class="panel panel-control">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Year
+          </label>
+          <div class="year-toggle">
+            <button data-year="2017">2017</button>
+            <button data-year="2023" class="active">2023</button>
+            <button data-year="diff">Change</button>
+          </div>
+        </div>
+
+        <!-- Download CSV -->
+        <div class="panel panel-control">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CSV
+          </label>
+          <a id="downloadData" href="#" download="data_darbar.csv" class="btn-export">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CSV
+          </a>
+        </div>
+
+        <!-- Diagnostics -->
+        <div class="panel panel-meta">
+          <div id="diagnostics" class="diagnostics"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Right sidebar: district detail -->
+    <aside id="sidebar" class="right-sidebar">
       <div class="panel panel-district">
         <div id="districtName" class="district-name">Select a district</div>
         <div id="districtProvince" class="district-province"></div>
@@ -113,24 +190,7 @@
           <p class="stats-placeholder">Click any district on the map to explore its data.</p>
         </div>
       </div>
-
-      <div class="panel panel-legend">
-        <h3>Legend</h3>
-        <div id="legend"></div>
-      </div>
-
-      <div class="panel panel-actions">
-        <a id="downloadData" href="#" download="data_darbar.csv" class="btn-export">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
-        </a>
-      </div>
-
-      <div class="panel panel-meta">
-        <div id="diagnostics" class="diagnostics"></div>
-      </div>
-
-    </div>
+    </aside>
   </main>
 
   <!-- About Modal -->
