@@ -80,21 +80,23 @@ a:hover { text-decoration: underline; }
   z-index: 100;
 }
 .header-left {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 8px;
+  margin-left: calc(var(--sidebar-w) - 20px);
 }
 .header-logo {
-  height: 36px; width: auto;
+  height: 34px; width: auto; flex-shrink: 0;
 }
 .header-text {
-  display: flex; flex-direction: column; line-height: 1.2;
+  display: flex; flex-direction: column; gap: 0; line-height: 1;
 }
 .header-title {
-  font-size: 20px; font-weight: 800; letter-spacing: -0.01em;
-  color: var(--white);
+  font-size: 22px; font-weight: 800; letter-spacing: -0.01em;
+  color: var(--gold-400); line-height: 1.1;
 }
 .header-tagline {
-  font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5);
-  letter-spacing: 0.04em; text-transform: uppercase;
+  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.55);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-top: 1px;
 }
 .header-right {
   display: flex; align-items: center; gap: 6px;
