@@ -62,6 +62,16 @@ cd etl
 python3 build_dataset.py
 ```
 
+## Statistical methodology for survey data
+
+The Labour Force Survey (LFS) and Household Integrated Economic Survey (HIES) are designed to be representative at the provincial level, not the district level. To produce district-level estimates from these surveys, the pipeline applies two adjustments:
+
+**Minimum sample-size filter.** Districts with fewer than 30 survey observations have all derived indicators suppressed (set to null) and are flagged with a `low_n` marker. On the map, these districts appear with a distinct gold dashed border and a warning in the tooltip. This threshold reflects the standard convention that small samples produce unreliable estimates — particularly for ratio and proportion indicators where a handful of observations can swing values wildly. In the current data, this affects 6 HIES districts (Dera Bugti, Khuzdar, Mastung, Orakzai Agency, Panjgur, and Ziarat), all in remote areas with limited survey coverage.
+
+**Post-stratification to 2023 census totals.** Survey weights are recalibrated so that weighted district-level totals align with known population counts from Census 2023 (Table 1). For LFS (individual-level microdata), this takes the form of a sex-ratio adjustment: within each district, male and female observations are reweighted so that the weighted sex composition matches the census male/female population shares. For HIES (household-level data), a simpler population calibration factor scales all household weights in a district so that the weighted population total matches the census figure. This corrects for the fact that PBS survey sampling frames may not reflect post-census population shifts across districts, and reduces bias from differential non-response by sex.
+
+These adjustments improve the plausibility of district-level estimates but do not eliminate the fundamental limitation that provincial-level surveys have limited statistical power at finer geographies. Users should interpret district-level survey indicators as approximate and treat cross-district rankings with appropriate caution. The sample size (n) is shown in tooltips for all survey-based indicator groups.
+
 ## Data sources
 
 | Source | Years | Coverage |

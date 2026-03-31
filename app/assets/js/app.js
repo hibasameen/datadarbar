@@ -265,6 +265,27 @@ function isPctLabel(label) {
   return /\(.*%\)|rate|ratio|proportion/i.test(label);
 }
 
+// Survey groups that carry sample-size metadata from ETL
+const SURVEY_PREFIXES = new Set(['lfs21', 'lfs25', 'hies']);
+
+function isLowN(props) {
+  const g = INDICATOR_GROUPS[currentGroup];
+  if (!g || !SURVEY_PREFIXES.has(g.prefix)) return false;
+  const dist = props.districts || props.district_agency || '';
+  const row = rawData[normName(dist)];
+  if (!row) return false;
+  return !!row[`${g.prefix}_low_n`];
+}
+
+function getNObs(props) {
+  const g = INDICATOR_GROUPS[currentGroup];
+  if (!g || !SURVEY_PREFIXES.has(g.prefix)) return null;
+  const dist = props.districts || props.district_agency || '';
+  const row = rawData[normName(dist)];
+  if (!row) return null;
+  return row[`${g.prefix}_n_obs`] ?? null;
+}
+
 function dataKey(group, year, indicator) {
   const g = INDICATOR_GROUPS[group];
   if (g.noYear) return `${g.prefix}_${indicator}`;
@@ -417,9 +438,22 @@ function getTooltipContent(props) {
     valStr = fmt(v, pct);
   }
 
+  let lowNNote = '';
+  if (isLowN(props)) {
+    const nObs = getNObs(props);
+    lowNNote = `<span class="tooltip-lown">⚠ Small sample (n=${nObs ?? '?'})</span>`;
+    valStr = '—';
+  } else {
+    const nObs = getNObs(props);
+    if (nObs !== null) {
+      lowNNote = `<span class="tooltip-nobs">n=${nObs}</span>`;
+    }
+  }
+
   return `<strong>${dist}</strong>`
     + `<span class="tooltip-value">${valStr}</span>`
-    + `<span class="tooltip-indicator">${indicatorLabel}</span>`;
+    + `<span class="tooltip-indicator">${indicatorLabel}</span>`
+    + lowNNote;
 }
 
 function onEachDistrict(feature, layer) {
@@ -583,7 +617,10 @@ function colorize() {
     } else {
       provBoundsGroup.addLayer(l);
       const v = getVal(p);
-      if (v === null || isNaN(v)) {
+      if (isLowN(p)) {
+        // Low sample size — distinct striped appearance
+        style = { fillOpacity: 0.25, fillColor: '#f5e6b8', weight: 1.5, color: '#c49515', opacity: 0.8, dashArray: '4 3' };
+      } else if (v === null || isNaN(v)) {
         style = { fillOpacity: 0.35, fillColor: '#e2e5ea', weight: 1, color: '#8a9480', opacity: 1 };
       } else {
         style = { fillColor: scale(v).hex(), fillOpacity: 0.92, weight: 1, color: '#8a9480', opacity: 1 };
@@ -638,6 +675,10 @@ function renderLegend(breaks, scale, isDiff) {
   }
   html += '</div>';
   html += `<div class="legend-labels"><span>${fmt(breaks[0], pct)}</span><span>${fmt(breaks[breaks.length - 1], pct)}</span></div>`;
+  // Add low-n legend entry for survey groups
+  if (SURVEY_PREFIXES.has(g.prefix)) {
+    html += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — estimate suppressed</div>';
+  }
   legendDiv.innerHTML = html;
 }
 

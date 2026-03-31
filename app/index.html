@@ -365,6 +365,40 @@
           districts with caution, as boundary revisions may explain some variation.
         </p>
 
+        <h3>Survey Statistical Adjustments (LFS &amp; HIES)</h3>
+        <p>
+          The Labour Force Survey and HIES are designed to be representative at the
+          <em>provincial</em> level, not at the district level. To produce district-level
+          estimates, the pipeline applies two adjustments:
+        </p>
+        <p>
+          <strong>1. Minimum sample-size filter (n&lt;30):</strong> Districts with fewer than
+          30 survey observations have all derived indicators suppressed and are flagged on the
+          map with a distinct gold dashed border. This reflects the standard convention that
+          small samples produce unreliable ratio and proportion estimates. In the current data,
+          this affects 6 HIES districts in remote areas with limited survey coverage: Dera Bugti,
+          Khuzdar, Mastung, Orakzai Agency, Panjgur, and Ziarat. The sample size (<em>n</em>)
+          is shown in tooltips for all survey-based indicators.
+        </p>
+        <p>
+          <strong>2. Post-stratification to 2023 Census totals:</strong> Survey weights are
+          recalibrated so that weighted district-level totals align with known population counts
+          from Census 2023 (Table 1). For LFS (individual-level microdata), this takes the form
+          of a sex-ratio adjustment: male and female observations within each district are
+          reweighted so that the weighted sex composition matches the census male/female
+          population shares. For HIES (household-level data), a population calibration factor
+          scales household weights so the weighted population total per district matches
+          the census figure. This corrects for the fact that PBS survey sampling frames may
+          not reflect post-census population shifts across districts, and reduces bias from
+          differential non-response by sex.
+        </p>
+        <p>
+          These adjustments improve the plausibility of district-level estimates but do not
+          eliminate the fundamental limitation that provincial-level surveys have limited
+          statistical power at finer geographies. Users should interpret district-level survey
+          indicators as approximate and treat cross-district rankings with caution.
+        </p>
+
         <h3>Limitations</h3>
         <ul>
           <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry

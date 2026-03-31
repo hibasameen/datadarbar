@@ -455,6 +455,15 @@ select:focus, input:focus {
   font-variant-numeric: tabular-nums;
 }
 .legend-empty { font-size: 12px; color: var(--slate-400); }
+.legend-lown {
+  font-size: 10px; color: var(--slate-400);
+  margin-top: 6px; display: flex; align-items: center; gap: 5px;
+}
+.legend-lown-swatch {
+  display: inline-block; width: 16px; height: 10px;
+  background: #f5e6b8; border: 1.5px dashed #c49515; border-radius: 2px;
+  opacity: 0.7; flex-shrink: 0;
+}
 
 /* ── Diagnostics ────────────────────────────────────────────────── */
 .diagnostics {
@@ -635,6 +644,18 @@ select:focus, input:focus {
   font-size: 10px; font-weight: 500;
   color: rgba(255,255,255,0.6);
   margin-top: 1px;
+}
+.tooltip-lown {
+  display: block;
+  font-size: 10px; font-weight: 600;
+  color: #f5d96b;
+  margin-top: 3px;
+}
+.tooltip-nobs {
+  display: block;
+  font-size: 9px; font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
 }
 
 /* ── Responsive: Tablet ────────────────────────────────────────── */

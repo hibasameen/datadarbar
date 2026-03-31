@@ -198,6 +198,75 @@ def load_geojson_names():
         index[key] = {"display": name, "province": province}
     return index
 
+# ── Survey adjustment helpers ────────────────────────────────────────────────
+# Minimum sample-size threshold and post-stratification to census totals.
+
+MIN_SAMPLE_SIZE = 30  # suppress district estimates with fewer observations
+
+def _load_census_pop(tables_so_far):
+    """Extract 2023 census population by sex for post-stratification.
+
+    Returns: { norm_district: { 'pop_total': N, 'pop_male': N, 'pop_female': N } }
+    Pulls from data already loaded by Table 1 (2023).
+    """
+    pop = {}
+    for dk, vals in tables_so_far.items():
+        total = vals.get("t1_2023_pop_total")
+        male = vals.get("t1_2023_pop_male")
+        female = vals.get("t1_2023_pop_female")
+        if total and male and female:
+            pop[dk] = {"pop_total": total, "pop_male": male, "pop_female": female}
+    return pop
+
+
+def _poststratify_sex(grp, weight_col, sex_col, census_male, census_female):
+    """Compute sex-ratio post-stratification adjustment factors.
+
+    Reweights survey observations so that the weighted male/female totals in
+    this district match the 2023 census male/female population counts.
+
+    Returns a Series of adjusted weights (same index as grp).
+    """
+    import pandas as pd
+
+    w = grp[weight_col].copy()
+    sex = grp[sex_col]
+
+    w_male = w[sex == 1].sum()
+    w_female = w[sex == 2].sum()
+    w_total = w_male + w_female
+
+    if w_total <= 0 or w_male <= 0 or w_female <= 0:
+        return w  # can't adjust, return original weights
+
+    census_total = census_male + census_female
+    # Survey sex proportions vs census sex proportions
+    adj_male = (census_male / census_total) / (w_male / w_total)
+    adj_female = (census_female / census_total) / (w_female / w_total)
+
+    adj = pd.Series(1.0, index=grp.index)
+    adj[sex == 1] = adj_male
+    adj[sex == 2] = adj_female
+    # For transgender/other (very rare in LFS), keep original weight
+    return w * adj
+
+
+def _suppress_low_n(out, prefix, n_obs, threshold=MIN_SAMPLE_SIZE):
+    """For a district output dict, set all indicators to None if n < threshold.
+
+    Always stores the observation count and a low_n flag.
+    """
+    out[f"{prefix}n_obs"] = n_obs
+    if n_obs < threshold:
+        out[f"{prefix}low_n"] = True
+        # Null out all indicators (keep n_obs and low_n)
+        for k in list(out.keys()):
+            if k.startswith(prefix) and k not in (f"{prefix}n_obs", f"{prefix}low_n"):
+                out[k] = None
+    else:
+        out[f"{prefix}low_n"] = False
+
+
 # ── Table loaders ────────────────────────────────────────────────────────────
 # Each returns: { norm_district: { indicator: value, ... } }
 
@@ -1063,11 +1132,17 @@ LFS_DISTRICT_CROSSWALK = {
     "mardan": "mardan",  # fix duplicate "Mardan" / "MARDAN"
 }
 
-def load_lfs_2021(lfs_dir):
+def load_lfs_2021(lfs_dir, census_pop=None):
     """Aggregate LFS 2020-21 microdata to district-level labour indicators.
 
     Key design: reads in chunks (file is ~1 GB), maps district text names
     through crosswalk, computes weighted employment and LFPR indicators.
+
+    Post-stratification: if census_pop is provided, reweights observations
+    so that male/female weighted totals match 2023 census proportions.
+
+    Minimum sample-size: districts with < MIN_SAMPLE_SIZE observations
+    have all indicators suppressed (set to None) with a low_n flag.
 
     Returns: { norm_district: { lfs21_*: value, … } }
     """
@@ -1098,25 +1173,40 @@ def load_lfs_2021(lfs_dir):
     df = pd.concat(chunks, ignore_index=True)
     print(f"    {len(df):,} rows, {df['dk'].nunique()} mapped districts")
 
+    n_poststrat = 0
+    n_suppressed = 0
     out = {}
     for dk, grp in df.groupby("dk"):
         if not dk:
             continue
 
+        n_obs = len(grp)
+        d = {}
+
         g10 = grp[grp["S4C6"] >= 10]
-        w10 = g10["Weights"].sum()
+
+        # ── Post-stratification: adjust weights by sex ratio ──
+        wt_col = "Weights"
+        if census_pop and dk in census_pop:
+            cp = census_pop[dk]
+            g10 = g10.copy()
+            g10["_adj_wt"] = _poststratify_sex(
+                g10, wt_col, "S4C5", cp["pop_male"], cp["pop_female"]
+            )
+            wt_col = "_adj_wt"
+            n_poststrat += 1
+
+        w10 = g10[wt_col].sum()
         if w10 <= 0:
             continue
 
-        d = {}
-
         # Employed = S5C1==1 OR (S5C1==2 AND S5C2==1)  (ILO broad)
         employed = g10[(g10["S5C1"] == 1) | ((g10["S5C1"] == 2) & (g10["S5C2"] == 1))]
-        w_emp = employed["Weights"].sum()
+        w_emp = employed[wt_col].sum()
 
         # Looking for work = S5C1==2, S5C2==2, S5C3==1
         looking = g10[(g10["S5C1"] == 2) & (g10["S5C2"] == 2) & (g10["S5C3"] == 1)]
-        w_look = looking["Weights"].sum()
+        w_look = looking[wt_col].sum()
         w_lf = w_emp + w_look
 
         d[f"{prefix}employment_ratio"] = round(w_emp / w10 * 100, 2)
@@ -1126,33 +1216,39 @@ def load_lfs_2021(lfs_dir):
         # By gender (S4C5: 1=male, 2=female — NOT RSex which is respondent sex)
         for code, label in [(1, "male"), (2, "female")]:
             gs = g10[g10["S4C5"] == code]
-            ws = gs["Weights"].sum()
+            ws = gs[wt_col].sum()
             if ws > 0:
-                emp_s = gs[(gs["S5C1"] == 1) | ((gs["S5C1"] == 2) & (gs["S5C2"] == 1))]["Weights"].sum()
-                look_s = gs[(gs["S5C1"] == 2) & (gs["S5C2"] == 2) & (gs["S5C3"] == 1)]["Weights"].sum()
+                emp_s = gs[(gs["S5C1"] == 1) | ((gs["S5C1"] == 2) & (gs["S5C2"] == 1))][wt_col].sum()
+                look_s = gs[(gs["S5C1"] == 2) & (gs["S5C2"] == 2) & (gs["S5C3"] == 1)][wt_col].sum()
                 lf_s = emp_s + look_s
                 d[f"{prefix}employment_ratio_{label}"] = round(emp_s / ws * 100, 2)
                 d[f"{prefix}lfpr_{label}"] = round(lf_s / ws * 100, 2)
 
-        # Youth (15-24)
-        gy = grp[(grp["S4C6"] >= 15) & (grp["S4C6"] <= 24)]
-        wy = gy["Weights"].sum()
+        # Youth (15-24) — subset of g10 which already has adjusted weights
+        gy = g10[(g10["S4C6"] >= 15) & (g10["S4C6"] <= 24)]
+        wy = gy[wt_col].sum()
         if wy > 0:
-            emp_y = gy[(gy["S5C1"] == 1) | ((gy["S5C1"] == 2) & (gy["S5C2"] == 1))]["Weights"].sum()
+            emp_y_mask = (gy["S5C1"] == 1) | ((gy["S5C1"] == 2) & (gy["S5C2"] == 1))
+            emp_y = gy.loc[emp_y_mask, wt_col].sum()
             d[f"{prefix}youth_employment_ratio"] = round(emp_y / wy * 100, 2)
 
         # Industry composition (S5C7: 1=agri, 3=manuf, 6=trade, rest=services)
         if w_emp > 0:
-            agri = employed[employed["S5C7"] == 1]["Weights"].sum()
-            manuf = employed[employed["S5C7"] == 3]["Weights"].sum()
-            trade = employed[employed["S5C7"] == 6]["Weights"].sum()
+            agri = employed[employed["S5C7"] == 1][wt_col].sum()
+            manuf = employed[employed["S5C7"] == 3][wt_col].sum()
+            trade = employed[employed["S5C7"] == 6][wt_col].sum()
             d[f"{prefix}pct_agriculture"] = round(agri / w_emp * 100, 2)
             d[f"{prefix}pct_manufacturing"] = round(manuf / w_emp * 100, 2)
             d[f"{prefix}pct_trade"] = round(trade / w_emp * 100, 2)
 
+        # ── Sample-size filter ──
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
         out[dk] = d
 
-    print(f"  LFS 2020-21: {len(out)} districts")
+    print(f"  LFS 2020-21: {len(out)} districts, {n_poststrat} post-stratified, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
     return out
 
 
@@ -1255,7 +1351,7 @@ def _build_lfs25_crosswalk(lfs_dir):
     return pd3_xwalk, eb_xwalk
 
 
-def load_lfs_2025(lfs_dir):
+def load_lfs_2025(lfs_dir, census_pop=None):
     """Aggregate LFS 2024-25 microdata to district-level labour indicators.
 
     Employment (ILO broad): S5C1==1 OR S5C2==1 OR S5C3==1
@@ -1269,6 +1365,9 @@ def load_lfs_2025(lfs_dir):
     District identification uses TWO methods:
       - PCode[:3] for district-level strata (position 3 ≠ 0)
       - Census EBCode[:3] for divisional strata (position 3 = 0)
+
+    Post-stratification: if census_pop is provided, reweights by sex ratio.
+    Minimum sample-size: districts with < MIN_SAMPLE_SIZE obs are suppressed.
 
     Returns: { norm_district: { lfs25_*: value, … } }
     """
@@ -1313,18 +1412,33 @@ def load_lfs_2025(lfs_dir):
     df = pd.concat(chunks, ignore_index=True)
     print(f"    {len(df):,} rows, {df['dk'].nunique()} mapped districts")
 
+    n_poststrat = 0
+    n_suppressed = 0
     out = {}
     for dk, grp in df.groupby("dk"):
         if not dk:
             continue
 
+        n_obs = len(grp)
+        d = {}
+
         # Age 10+ population for denominator
         g10 = grp[grp["S4C6"] >= 10]
-        w10 = g10["Weights"].sum()
+
+        # ── Post-stratification: adjust weights by sex ratio ──
+        wt_col = "Weights"
+        if census_pop and dk in census_pop:
+            cp = census_pop[dk]
+            g10 = g10.copy()
+            g10["_adj_wt"] = _poststratify_sex(
+                g10, wt_col, "S4C5", cp["pop_male"], cp["pop_female"]
+            )
+            wt_col = "_adj_wt"
+            n_poststrat += 1
+
+        w10 = g10[wt_col].sum()
         if w10 <= 0:
             continue
-
-        d = {}
 
         # ── Employment (ILO broad) ──
         # S5C1/2/3 are skip-pattern: NaN means "not asked because already
@@ -1336,11 +1450,11 @@ def load_lfs_2025(lfs_dir):
         ).fillna(False)
 
         emp_rows = g10[employed]
-        w_emp = emp_rows["Weights"].sum()
+        w_emp = emp_rows[wt_col].sum()
 
         # Looking for work: S9C1==1  (asked only to non-employed in LFS 2024-25)
         looking = (~employed & (g10["S9C1"] == 1)).fillna(False)
-        w_look = g10.loc[looking, "Weights"].sum()
+        w_look = g10.loc[looking, wt_col].sum()
         w_lf = w_emp + w_look
 
         d[f"{prefix}employment_ratio"] = round(w_emp / w10 * 100, 2)
@@ -1350,22 +1464,21 @@ def load_lfs_2025(lfs_dir):
         # ── By gender ──
         for code, label in [(1, "male"), (2, "female")]:
             gs = g10[g10["S4C5"] == code]
-            ws = gs["Weights"].sum()
+            ws = gs[wt_col].sum()
             if ws > 0:
                 emp_mask_s = ((gs["S5C1"] == 1) | (gs["S5C2"] == 1) | (gs["S5C3"] == 1)).fillna(False)
-                emp_s = gs[emp_mask_s]["Weights"].sum()
-                look_s = gs[~emp_mask_s & (gs["S9C1"] == 1).fillna(False)]["Weights"].sum()
+                emp_s = gs[emp_mask_s][wt_col].sum()
+                look_s = gs[~emp_mask_s & (gs["S9C1"] == 1).fillna(False)][wt_col].sum()
                 lf_s = emp_s + look_s
                 d[f"{prefix}employment_ratio_{label}"] = round(emp_s / ws * 100, 2)
                 d[f"{prefix}lfpr_{label}"] = round(lf_s / ws * 100, 2)
 
-        # ── Youth (15-24) ──
-        gy = grp[(grp["S4C6"] >= 15) & (grp["S4C6"] <= 24)]
-        wy = gy["Weights"].sum()
+        # ── Youth (15-24) — subset of g10 which already has adjusted weights ──
+        gy = g10[(g10["S4C6"] >= 15) & (g10["S4C6"] <= 24)]
+        wy = gy[wt_col].sum()
         if wy > 0:
-            emp_y = gy[
-                ((gy["S5C1"] == 1) | (gy["S5C2"] == 1) | (gy["S5C3"] == 1)).fillna(False)
-            ]["Weights"].sum()
+            emp_y_mask = ((gy["S5C1"] == 1) | (gy["S5C2"] == 1) | (gy["S5C3"] == 1)).fillna(False)
+            emp_y = gy.loc[emp_y_mask, wt_col].sum()
             d[f"{prefix}youth_employment_ratio"] = round(emp_y / wy * 100, 2)
 
         # ── Industry composition (S5C13 = ISIC Rev 4, stored without leading zero)
@@ -1375,7 +1488,7 @@ def load_lfs_2025(lfs_dir):
             isic = emp_rows["S5C13"].dropna().astype(int)
             div_series = isic.apply(lambda x: int(str(x).zfill(4)[:2]))
 
-            w_isic = emp_rows.loc[isic.index, "Weights"]
+            w_isic = emp_rows.loc[isic.index, wt_col]
             agri = w_isic[div_series.between(1, 3)].sum()
             manuf = w_isic[div_series.between(10, 33)].sum()
             trade = w_isic[div_series.between(45, 47)].sum()
@@ -1383,9 +1496,14 @@ def load_lfs_2025(lfs_dir):
             d[f"{prefix}pct_manufacturing"] = round(manuf / w_emp * 100, 2)
             d[f"{prefix}pct_trade"] = round(trade / w_emp * 100, 2)
 
+        # ── Sample-size filter ──
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
         out[dk] = d
 
-    print(f"  LFS 2024-25: {len(out)} districts")
+    print(f"  LFS 2024-25: {len(out)} districts, {n_poststrat} post-stratified, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
     return out
 
 
@@ -1463,12 +1581,19 @@ def _build_hies_crosswalk():
     return xwalk
 
 
-def load_hies(hies_dir):
+def load_hies(hies_dir, census_pop=None):
     """Aggregate HIES 2024-25 to district-level household welfare indicators.
 
     Reads consumption expenditure, FIES food insecurity, water/sanitation,
     housing characteristics, and roster data.  Joins on weight file for
     population-representative estimates.
+
+    Post-stratification: if census_pop is provided, calibrates household
+    weights so that weighted household counts scale proportionally to
+    2023 census population totals per district.
+
+    Minimum sample-size: districts with < MIN_SAMPLE_SIZE households
+    have all indicators suppressed (set to None) with a low_n flag.
 
     Returns: { norm_district: { hies_*: value, … } }
     """
@@ -1567,8 +1692,25 @@ def load_hies(hies_dir):
     # Owner-occupied (1 or 2)
     housing["owner_occupied"] = housing["s5m1q01"].isin([1, 2]).astype(int)
 
+    # ── Post-stratification: compute district-level calibration factors ──
+    # For HIES (household-level), we calibrate so weighted household counts
+    # scale proportionally to census population per district.
+    hies_cal = {}  # dk → calibration factor
+    if census_pop:
+        # Compute weighted population per district from roster
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            dk_roster = roster[roster["dk"] == dk_val]
+            w_pop = dk_roster["weight"].sum()
+            if w_pop > 0:
+                census_total = census_pop[dk_val]["pop_total"]
+                hies_cal[dk_val] = census_total / w_pop
+        print(f"  HIES post-stratification: {len(hies_cal)} districts calibrated to census pop")
+
     # ── Aggregate to district ──
     print("  Aggregating HIES to district level…")
+    n_suppressed = 0
     out = {}
 
     for dk in set(hh_exp["dk"].dropna().unique()) | set(fies["dk"].dropna().unique()):
@@ -1576,10 +1718,16 @@ def load_hies(hies_dir):
             continue
         d = {}
 
+        # Count households for sample-size check
+        n_hh = len(hh_exp[hh_exp["dk"] == dk])
+
+        # Calibration factor for this district (1.0 if not available)
+        cal = hies_cal.get(dk, 1.0)
+
         # Expenditure
         de = hh_exp[hh_exp["dk"] == dk]
         if len(de) > 0:
-            wt = de["weight"].fillna(1)
+            wt = de["weight"].fillna(1) * cal
             d[f"{prefix}median_monthly_percapita"] = round(de["per_capita_monthly"].median(), 0)
             d[f"{prefix}mean_monthly_percapita"] = round(
                 (de["per_capita_monthly"] * wt).sum() / wt.sum(), 0)
@@ -1591,7 +1739,7 @@ def load_hies(hies_dir):
         # FIES
         df_fies = fies[fies["dk"] == dk]
         if len(df_fies) > 0:
-            wt = df_fies["weight"].fillna(1)
+            wt = df_fies["weight"].fillna(1) * cal
             d[f"{prefix}food_insecurity_pct"] = round(
                 (df_fies["food_insecure"] * wt).sum() / wt.sum() * 100, 1)
             d[f"{prefix}avg_fies_score"] = round(
@@ -1600,20 +1748,25 @@ def load_hies(hies_dir):
         # Water
         dw = ws[ws["dk"] == dk]
         if len(dw) > 0:
-            wt = dw["weight"].fillna(1)
+            wt = dw["weight"].fillna(1) * cal
             d[f"{prefix}pct_piped_water"] = round(
                 (dw["piped_water"] * wt).sum() / wt.sum() * 100, 1)
 
         # Housing
         dh = housing[housing["dk"] == dk]
         if len(dh) > 0:
-            wt = dh["weight"].fillna(1)
+            wt = dh["weight"].fillna(1) * cal
             d[f"{prefix}pct_electricity"] = round(
                 (dh["has_electricity"] * wt).sum() / wt.sum() * 100, 1)
             d[f"{prefix}pct_owner_occupied"] = round(
                 (dh["owner_occupied"] * wt).sum() / wt.sum() * 100, 1)
 
         if d:
+            # ── Sample-size filter ──
+            _suppress_low_n(d, prefix, n_hh)
+            if d.get(f"{prefix}low_n"):
+                n_suppressed += 1
+
             # Use accumulate for merged districts (Karachi, Kohistan, etc.)
             if dk in _MERGED_DISTRICTS:
                 accumulate(out, dk, d)
@@ -1625,7 +1778,7 @@ def load_hies(hies_dir):
     # For merged districts, the rates from the LAST sub-district will dominate via
     # the accumulate logic. Since these are weighted averages already, just keep them.
 
-    print(f"  HIES 2024-25: {len(out)} districts")
+    print(f"  HIES 2024-25: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
     return out
 
 
@@ -1733,18 +1886,26 @@ def main():
         except Exception as e:
             print(f"  WARNING: Economic Census failed: {e}")
 
+    # ── Build census population reference for post-stratification ──
+    # Merge census tables loaded so far to extract 2023 pop by sex
+    _census_data = {}
+    for name, tbl in tables:
+        merge_into(_census_data, tbl)
+    census_pop = _load_census_pop(_census_data)
+    print(f"  Census pop for post-stratification: {len(census_pop)} districts")
+
     # LFS 2020-21
     lfs_dir = PBS / "Microdata" / "LFS"
     if lfs_dir.exists():
         try:
-            tables.append(("LFS 2020-21", load_lfs_2021(lfs_dir)))
+            tables.append(("LFS 2020-21", load_lfs_2021(lfs_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: LFS 2020-21 failed: {e}")
 
     # LFS 2024-25
     if lfs_dir.exists():
         try:
-            tables.append(("LFS 2024-25", load_lfs_2025(lfs_dir)))
+            tables.append(("LFS 2024-25", load_lfs_2025(lfs_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: LFS 2024-25 failed: {e}")
 
@@ -1752,7 +1913,7 @@ def main():
     hies_dir = PBS / "Microdata" / "HEIS"
     if hies_dir.exists():
         try:
-            tables.append(("HIES 2024-25", load_hies(hies_dir)))
+            tables.append(("HIES 2024-25", load_hies(hies_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: HIES 2024-25 failed: {e}")
 
