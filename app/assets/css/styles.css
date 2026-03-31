@@ -85,7 +85,7 @@ a:hover { text-decoration: underline; }
 .header-logo {
   height: 36px; width: auto;
 }
-.header-brand {
+.header-text {
   display: flex; flex-direction: column; line-height: 1.2;
 }
 .header-title {

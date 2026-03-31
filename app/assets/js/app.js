@@ -756,24 +756,26 @@ function wireEvents() {
   });
 
   // Reset
-  resetBtn.addEventListener('click', () => {
-    currentGroup = 'demographics';
-    currentIndicator = 'pop_total';
-    currentYear = '2023';
-    selectedDistrict = null;
-    isZoomedIn = false;
-    zoomBar.classList.add('hidden');
-    groupSelect.value = currentGroup;
-    populateIndicatorSelect();
-    provinceSelect.value = 'ALL';
-    searchInput.value = '';
-    districtNameEl.textContent = 'Select a district';
-    districtProvEl.textContent = '';
-    statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
-    updateYearButtons();
-    colorize();
-    map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
-  });
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      currentGroup = 'demographics';
+      currentIndicator = 'pop_total';
+      currentYear = '2023';
+      selectedDistrict = null;
+      isZoomedIn = false;
+      zoomBar.classList.add('hidden');
+      groupSelect.value = currentGroup;
+      populateIndicatorSelect();
+      provinceSelect.value = 'ALL';
+      searchInput.value = '';
+      districtNameEl.textContent = 'Select a district';
+      districtProvEl.textContent = '';
+      statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+      updateYearButtons();
+      colorize();
+      map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
+    });
+  }
 
   searchInput.addEventListener('input', handleSearch);
 
