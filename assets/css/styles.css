@@ -640,9 +640,10 @@ select:focus, input:focus {
 /* ── Responsive: Tablet ────────────────────────────────────────── */
 @media (max-width: 1100px) {
   :root {
-    --sidebar-w: 240px;
-    --detail-w: 280px;
+    --sidebar-w: 220px;
+    --detail-w: 260px;
   }
+  .header-left { margin-left: calc(var(--sidebar-w) - 20px); }
 }
 
 /* ── Responsive: Mobile ────────────────────────────────────────── */
@@ -651,16 +652,20 @@ select:focus, input:focus {
     overflow: auto;
     height: auto;
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--slate-50);
   }
 
-  /* Header: show hamburger, hide desktop nav */
+  /* Header: show hamburger, hide desktop nav, fix logo alignment */
+  .header-left { margin-left: 0; }
   .header-right { display: none; }
   .mobile-menu-btn { display: block; }
-  .header-logo { height: 30px; }
-  .header-title { font-size: 17px; }
+  .header-logo { height: 28px; }
+  .header-title { font-size: 18px; }
+  .header-tagline { font-size: 10px; }
+  .site-header { padding: 0 14px; height: 48px; }
 
-  /* Main: single column, stacked */
+  /* Main: single column, stacked — map first */
   main {
     display: flex;
     flex-direction: column;
@@ -668,23 +673,42 @@ select:focus, input:focus {
     min-height: 0;
   }
 
-  /* Summary bar: full width, scrollable */
+  /* Summary bar: compact, full width */
   .summary-bar {
+    order: 0;
     overflow-x: auto;
     height: auto;
-    min-height: 44px;
+    min-height: 40px;
     flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
   }
   .summary-item {
-    padding: 6px 14px;
-    min-width: 100px;
-    flex: 0 0 auto;
+    padding: 5px 12px;
+    min-width: 90px;
+    flex: 1 0 auto;
   }
   .summary-value { font-size: 14px; }
+  .summary-label { font-size: 8px; }
 
-  /* Left sidebar: collapsible on mobile */
-  .left-sidebar {
+  /* Map: takes most of the viewport */
+  #map {
     order: 1;
+    height: 60vh;
+    height: 60dvh;
+    min-height: 300px;
+  }
+
+  /* Zoom bar */
+  .zoom-bar {
+    order: 1;
+    padding: 6px 12px;
+  }
+  .btn-zoom-out { font-size: 11px; padding: 5px 10px; }
+  .btn-zoom-out kbd { display: none; }
+
+  /* Left sidebar: collapsible controls BELOW map */
+  .left-sidebar {
+    order: 2;
     border-right: none;
     border-bottom: 1px solid var(--slate-200);
     overflow: visible;
@@ -716,48 +740,67 @@ select:focus, input:focus {
     display: flex;
   }
 
-  /* Map */
-  #map {
-    order: 2;
-    height: 55vh;
-    min-height: 320px;
-  }
-
-  /* Zoom bar */
-  .zoom-bar {
-    order: 2;
-  }
-
-  /* Right sidebar: below map */
+  /* Right sidebar: below controls */
   .right-sidebar {
     order: 3;
     border-left: none;
     border-top: 1px solid var(--slate-200);
-    min-height: 200px;
+    min-height: 120px;
   }
 
-  /* Panels: tighter padding */
+  /* Panels: tighter padding, bigger touch targets */
   .panel { padding: 12px 14px; }
   .panel-control { padding: 10px 14px; }
   .panel-search { padding: 10px 14px; }
   .panel-legend { padding: 10px 14px; }
 
-  /* Year toggle: full width */
-  .year-toggle button { padding: 8px 10px; font-size: 11px; }
+  /* Bigger touch targets for form elements */
+  select, input[type="text"] {
+    font-size: 16px;
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+  .search-wrap input { padding-left: 34px; }
+  .search-icon { left: 11px; }
 
-  /* Modal: full-width on mobile */
-  .modal-overlay { padding: 12px; }
-  .modal { max-height: 90vh; }
-  .modal-body { padding: 16px 18px 20px; font-size: 13px; }
+  /* Year toggle: bigger tap targets */
+  .year-toggle button {
+    padding: 10px 10px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  /* Export button: bigger tap target */
+  .btn-export { min-height: 44px; font-size: 13px; }
+
+  /* District detail: more readable on mobile */
+  .district-name { font-size: 18px; }
+  .stat { padding: 8px 0; font-size: 13px; }
+  .stat:hover { margin: 0; padding: 8px 0; }
+
+  /* Legend: readable */
+  .legend-scale { height: 12px; }
+
+  /* Modal: nearly full-screen on mobile */
+  .modal-overlay { padding: 8px; }
+  .modal { max-height: 92vh; max-height: 92dvh; border-radius: var(--radius-md); }
+  .modal-body { padding: 16px 18px 20px; font-size: 14px; line-height: 1.6; }
   .modal-header { padding: 14px 18px 10px; }
+  .modal-header h2 { font-size: 16px; }
+  .modal-close { font-size: 26px; padding: 8px 12px; }
+
+  /* Footer */
+  .site-footer { font-size: 10px; padding: 8px 12px; }
 }
 
 /* ── Very small screens ────────────────────────────────────────── */
 @media (max-width: 400px) {
-  .site-header { padding: 0 12px; }
-  .header-title { font-size: 15px; }
-  .header-tagline { font-size: 10px; }
-  .summary-item { padding: 6px 10px; min-width: 80px; }
+  .site-header { padding: 0 10px; height: 44px; }
+  .header-logo { height: 24px; }
+  .header-title { font-size: 16px; }
+  .header-tagline { font-size: 9px; }
+  .summary-item { padding: 5px 8px; min-width: 80px; }
   .summary-value { font-size: 13px; }
-  .summary-label { font-size: 8px; }
+
+  #map { height: 55vh; height: 55dvh; min-height: 280px; }
 }
