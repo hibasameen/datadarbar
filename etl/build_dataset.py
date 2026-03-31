@@ -673,25 +673,59 @@ def load_employment_table_clean(path, year):
             f"{prefix}house_keeping": to_num(r.get("house_keeping")),
         }
         accumulate(out, key, vals)
+
+    # Compute derived rates (so 2017 rates are comparable with 2023)
+    for key, d in out.items():
+        pop = d.get(f"{prefix}total")
+        emp = d.get(f"{prefix}worked")
+        unemp = d.get(f"{prefix}seeking_work")
+        if pop and pop > 0:
+            lf = (emp or 0) + (unemp or 0)
+            d[f"{prefix}lfpr"] = round(lf / pop * 100, 2)
+            d[f"{prefix}employment_ratio"] = round((emp or 0) / pop * 100, 2)
+            d[f"{prefix}unemployment_rate"] = round(unemp / lf * 100, 2) if lf > 0 else None
+
     return out
 
 def load_employment_2023_raw(raw_dir):
     """Table 14 (2023): Read raw per-province CSVs directly.
-    Format: Hierarchical — 'NAME DISTRICT' header row, then indicator rows
-    like 'Population', 'Employed', 'Unemployed', 'Not L.F & Stud'.
-    Columns: indicator, total, male, female, trans, rural_total, ..., urban_total, ..."""
+
+    The 2023 census changed the employment classification vs 2017.
+    2017 had: Worked, Seeking Work, Student, House Keeping, Others.
+    2023 has: Population (10+), Employed (with sub-categories),
+              Unemployed, Not in LF & Students (15-24 only).
+
+    Columns: indicator, total, male, female, trans, rural_total, rural_male,
+             rural_female, rural_trans, urban_total, urban_male, urban_female,
+             urban_trans.
+
+    We store both the raw counts AND compute derived rates (LFPR,
+    unemployment rate, employment ratio) that are comparable across years.
+    """
     prefix = "t_emp_2023_"
     out = {}
     for fpath in sorted(raw_dir.glob("table_14_*.csv")):
         with open(fpath, newline="", encoding="utf-8-sig") as f:
             raw_lines = f.readlines()
 
-        # Use a raw_name tracker so each raw sub-district (e.g. "karachi central")
-        # is parsed once, then accumulated into the merged key
         current_raw = None
         current_key = None
-        got_raw = set()   # track raw names, not merged keys
+        got_raw = set()
         pending = {}      # raw_name -> {indicator vals}
+
+        # Indicator → (field_name, also_store_male_female)
+        # Cols: [0]=indicator, [1]=total, [2]=male, [3]=female
+        INDICATOR_MAP = {
+            "population":               ("total",           True),
+            "employed":                  ("worked",          True),
+            "paid employee":             ("paid_employee",   False),
+            "own account (agri)":        ("own_account_agri", False),
+            "own account (non-a)":       ("own_account_nonagri", False),
+            "employer":                  ("employer",        False),
+            "unpaid f.helper (agri)":    ("unpaid_agri",     False),
+            "unpaid f.helper (non-a)":   ("unpaid_nonagri",  False),
+            "unemployed":                ("seeking_work",    True),
+        }
 
         for line in raw_lines:
             line = line.strip()
@@ -701,7 +735,6 @@ def load_employment_2023_raw(raw_dir):
             first = parts[0]
 
             if first.upper().endswith("DISTRICT"):
-                # Flush previous district
                 if current_raw and current_raw in pending:
                     accumulate(out, current_key, pending[current_raw])
                 name = re.sub(r"\s+DISTRICT\s*$", "", first, flags=re.I).strip()
@@ -724,15 +757,20 @@ def load_employment_2023_raw(raw_dir):
 
             indicator = first.lower().strip()
             total_val = to_num(parts[1]) if len(parts) > 1 else None
+            male_val  = to_num(parts[2]) if len(parts) > 2 else None
+            female_val = to_num(parts[3]) if len(parts) > 3 else None
 
-            if indicator == "population":
-                pending[current_raw][f"{prefix}total"] = total_val
-            elif indicator == "employed":
-                pending[current_raw][f"{prefix}worked"] = total_val
-            elif indicator == "unemployed":
-                pending[current_raw][f"{prefix}seeking_work"] = total_val
+            if indicator in INDICATOR_MAP:
+                field, store_gender = INDICATOR_MAP[indicator]
+                pending[current_raw][f"{prefix}{field}"] = total_val
+                if store_gender:
+                    pending[current_raw][f"{prefix}{field}_male"] = male_val
+                    pending[current_raw][f"{prefix}{field}_female"] = female_val
             elif "not l.f" in indicator and "stud" in indicator:
-                pending[current_raw][f"{prefix}student"] = total_val
+                pending[current_raw][f"{prefix}not_lf_student_youth"] = total_val
+                pending[current_raw][f"{prefix}not_lf_student_youth_male"] = male_val
+                pending[current_raw][f"{prefix}not_lf_student_youth_female"] = female_val
+                # This is the last indicator per district block
                 accumulate(out, current_key, pending[current_raw])
                 got_raw.add(current_raw)
 
@@ -741,6 +779,51 @@ def load_employment_2023_raw(raw_dir):
             accumulate(out, current_key, pending[current_raw])
 
         print(f"    {fpath.name}: parsed")
+
+    # ── Compute derived rates ──
+    for key, d in out.items():
+        pop = d.get(f"{prefix}total")
+        emp = d.get(f"{prefix}worked")
+        unemp = d.get(f"{prefix}seeking_work")
+
+        if pop and pop > 0:
+            lf = (emp or 0) + (unemp or 0)
+            d[f"{prefix}lfpr"] = round(lf / pop * 100, 2)
+            d[f"{prefix}employment_ratio"] = round((emp or 0) / pop * 100, 2)
+            d[f"{prefix}unemployment_rate"] = round(unemp / lf * 100, 2) if lf > 0 else None
+
+            # Not-in-labour-force residual (includes house keeping, elderly, etc.)
+            not_lf = pop - lf
+            d[f"{prefix}not_in_lf"] = round(not_lf)
+
+            # Employment composition (% of employed)
+            if emp and emp > 0:
+                paid = d.get(f"{prefix}paid_employee", 0) or 0
+                own_a = d.get(f"{prefix}own_account_agri", 0) or 0
+                own_na = d.get(f"{prefix}own_account_nonagri", 0) or 0
+                employer = d.get(f"{prefix}employer", 0) or 0
+                unpaid = (d.get(f"{prefix}unpaid_agri", 0) or 0) + (d.get(f"{prefix}unpaid_nonagri", 0) or 0)
+                d[f"{prefix}pct_paid_employee"] = round(paid / emp * 100, 2)
+                d[f"{prefix}pct_self_employed"] = round((own_a + own_na + employer) / emp * 100, 2)
+                d[f"{prefix}pct_unpaid_family"] = round(unpaid / emp * 100, 2)
+
+        # Gender rates
+        for sex, label in [("male", "male"), ("female", "female")]:
+            pop_s = d.get(f"{prefix}total_{sex}")
+            emp_s = d.get(f"{prefix}worked_{sex}")
+            unemp_s = d.get(f"{prefix}seeking_work_{sex}")
+            if pop_s and pop_s > 0:
+                lf_s = (emp_s or 0) + (unemp_s or 0)
+                d[f"{prefix}lfpr_{label}"] = round(lf_s / pop_s * 100, 2)
+                d[f"{prefix}employment_ratio_{label}"] = round((emp_s or 0) / pop_s * 100, 2)
+
+        # Clean up sub-category counts (keep only derived rates + main counts)
+        for tmp in ("paid_employee", "own_account_agri", "own_account_nonagri",
+                     "employer", "unpaid_agri", "unpaid_nonagri",
+                     "total_male", "total_female", "worked_male", "worked_female",
+                     "seeking_work_male", "seeking_work_female",
+                     "not_lf_student_youth_male", "not_lf_student_youth_female"):
+            d.pop(f"{prefix}{tmp}", None)
 
     out = {k: v for k, v in out.items() if v}
     return out
@@ -1697,7 +1780,7 @@ def load_hies(hies_dir, census_pop=None):
     ws["dist_code"] = ws["prcode"].astype(str).str[:4].astype(int)
     ws["dk"] = ws["dist_code"].map(xwalk)
     ws = ws.merge(w[["prcode", "weight"]], on="prcode", how="left")
-    ws["piped_water"] = (ws["s5m2q01"] == 1).astype(int)  # 1=piped water
+    ws["piped_water"] = ws["s5m2q01"].isin([1, 8]).astype(int)  # 1=piped water, 8=piped/public tap/standpipe
 
     # ── Housing: electricity ──
     housing = pd.read_stata(str(hies_dir / "sec_05m1_housingchar.dta"), convert_categoricals=False,
@@ -1883,9 +1966,13 @@ def main():
     elif t13_2023.exists():
         tables.append(("Education 2023 (combined)", load_education_table_clean(t13_2023, "2023")))
 
-    # Census 2023 Employment (Table 14) — combined CSV (preferred over raw per-province)
+    # Census 2023 Employment (Table 14) — prefer raw per-province (correct categories),
+    # fall back to combined CSV
+    t14_raw_dir = PBS / "Census 2023" / "census2023_all_tables" / "table_14"
     t14_2023 = PBS / "Census 2023" / "final tables" / "table14_combined_2023.csv"
-    if t14_2023.exists():
+    if t14_raw_dir.exists() and any(t14_raw_dir.glob("table_14_*.csv")):
+        tables.append(("Employment 2023 (raw per-province)", load_employment_2023_raw(t14_raw_dir)))
+    elif t14_2023.exists():
         tables.append(("Employment 2023 (combined)", load_employment_table_clean(t14_2023, "2023")))
 
     # PSLM 2019-20 microdata
