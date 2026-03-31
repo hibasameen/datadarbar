@@ -402,15 +402,22 @@ def load_table12_2023(path):
         # Look for literacy % row — only keep the FIRST occurrence per raw district
         if indicator_lower in ("literate %", "literacy ratio", "literacy rate", "literacy %"):
             if f"{prefix}literacy_ratio_all" not in d:
-                d[f"{prefix}literacy_ratio_all"]    = to_num(r.get("total_all_sexes"))
-                d[f"{prefix}literacy_ratio_male"]   = to_num(r.get("male"))
-                d[f"{prefix}literacy_ratio_female"] = to_num(r.get("female"))
+                v_all = to_num(r.get("total_all_sexes"))
+                v_m = to_num(r.get("male"))
+                v_f = to_num(r.get("female"))
+                d[f"{prefix}literacy_ratio_all"]    = round(v_all, 2) if v_all is not None else None
+                d[f"{prefix}literacy_ratio_male"]   = round(v_m, 2) if v_m is not None else None
+                d[f"{prefix}literacy_ratio_female"] = round(v_f, 2) if v_f is not None else None
         elif indicator_lower.startswith("literate") and ">=" in indicator_lower:
             if f"{prefix}literate_all" not in d:
                 d[f"{prefix}literate_all"] = to_num(r.get("total_all_sexes"))
+                d[f"{prefix}literate_male"] = to_num(r.get("male"))
+                d[f"{prefix}literate_female"] = to_num(r.get("female"))
         elif indicator_lower == "population >=10":
             if f"{prefix}pop_10plus" not in d:
                 d[f"{prefix}pop_10plus"] = to_num(r.get("total_all_sexes"))
+                d[f"{prefix}pop_10plus_male"] = to_num(r.get("male"))
+                d[f"{prefix}pop_10plus_female"] = to_num(r.get("female"))
         elif indicator_lower.startswith("never to school") and "all" in indicator_lower:
             if f"{prefix}never_school_all" not in d:
                 d[f"{prefix}never_school_all"] = to_num(r.get("total_all_sexes"))
@@ -439,19 +446,30 @@ def load_table12_2023(path):
                 out[key][f"{prefix}literacy_ratio_all"] = round(lit / pop10 * 100, 2)
             else:
                 out[key].pop(f"{prefix}literacy_ratio_all", None)
-            # Male/female ratios can't be recomputed from merged data without
-            # gender-level pop counts, so remove them for merged districts
-            out[key].pop(f"{prefix}literacy_ratio_male", None)
-            out[key].pop(f"{prefix}literacy_ratio_female", None)
+            # Recompute male/female ratios from aggregated gender counts
+            lit_m = out[key].get(f"{prefix}literate_male")
+            pop10_m = out[key].get(f"{prefix}pop_10plus_male")
+            if lit_m is not None and pop10_m and pop10_m > 0:
+                out[key][f"{prefix}literacy_ratio_male"] = round(lit_m / pop10_m * 100, 2)
+            else:
+                out[key].pop(f"{prefix}literacy_ratio_male", None)
+            lit_f = out[key].get(f"{prefix}literate_female")
+            pop10_f = out[key].get(f"{prefix}pop_10plus_female")
+            if lit_f is not None and pop10_f and pop10_f > 0:
+                out[key][f"{prefix}literacy_ratio_female"] = round(lit_f / pop10_f * 100, 2)
+            else:
+                out[key].pop(f"{prefix}literacy_ratio_female", None)
 
     # Compute illiterate_all = pop_10plus - literate_all
     for key, vals in out.items():
         pop10 = vals.get(f"{prefix}pop_10plus")
         lit = vals.get(f"{prefix}literate_all")
         if pop10 is not None and lit is not None:
-            vals[f"{prefix}illiterate_all"] = round(pop10 - lit, 4)
-        # Clean up temporary pop_10plus (not needed in final output)
-        vals.pop(f"{prefix}pop_10plus", None)
+            vals[f"{prefix}illiterate_all"] = round(pop10 - lit)
+        # Clean up intermediate fields (not needed in final output)
+        for tmp in (f"{prefix}pop_10plus", f"{prefix}pop_10plus_male", f"{prefix}pop_10plus_female",
+                    f"{prefix}literate_male", f"{prefix}literate_female"):
+            vals.pop(tmp, None)
 
     out = {k: v for k, v in out.items() if v}
     return out
