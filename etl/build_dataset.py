@@ -161,7 +161,8 @@ CROSSWALK = {
 
 # GeoJSON keys that receive multiple CSV rows (need aggregation, not overwrite)
 _MERGED_DISTRICTS = {"karachi", "kohistan", "chitral", "killa abdullah", "kalat", "loralai",
-                      "peshawar", "kohat", "bannu", "lakki marwat", "dera ismail khan", "tank", "sibi"}
+                      "peshawar", "kohat", "bannu", "lakki marwat", "dera ismail khan", "tank", "sibi",
+                      "chaghi", "nushki"}  # chaghi/nushki may appear under both div 41 & 47 (Rakhshan)
 
 # Names to skip entirely (not real district entries)
 SKIP_NAMES = {
@@ -1432,15 +1433,23 @@ _HIES_DIVISION_DISTRICTS = {
     42: ["loralai", "barkhan", "musakhail", "killa saifullah", "zhob", "sherani", None],
     43: ["sibi", "harnai", "ziarat", "kohlu", "dera bugti", "sibi"],  # pos 5 = Lehri → merged into Sibi
     44: ["kachhi", "jaffarabad", "nasirabad", "jhal magsi", "sohbatpur", None],
+    # NOTE: If HIES uses post-reorganisation codes, kharan & washuk moved to div 47
+    # (Rakhshan), so div 45 positions may have shifted.  Keeping old mapping for
+    # backward compatibility; if lasbela still missing after div 47 fix, try moving
+    # lasbela to position 4 (code 4541) in this list.
     45: ["kalat", "mastung", "khuzdar", "awaran", "kharan", "washuk", "lasbela", None, None],
     46: ["kech", "gwadar", "panjgur", None],
-    # Divisions 47-48: likely new administrative divisions (post-2020 Balochistan
-    # reorganisation).  Precise district assignment requires the full HIES 2024-25
-    # coding scheme documentation from PBS.  Population matching is ambiguous
-    # because Balochistan Census 2023 growth rates vary widely across districts.
-    # Conservatively set to None until verified.
-    47: [None, None, None, None, None],
-    48: [None, None, None, None, None],
+    # Division 47 = Rakhshan Division (est. 2017, carved from Kalat + Quetta divs)
+    # Districts: Kharan (HQ), Washuk, Chagai, Nushki
+    # NOTE: Chagai & Nushki may ALSO appear under div 41 (old Quetta coding).
+    # The pipeline deduplicates via _MERGED_DISTRICTS or last-write-wins.
+    # District ordering within division is a best guess — verify against
+    # HIES coding scheme XLS if available.
+    47: ["kharan", "washuk", "chaghi", "nushki", None],
+    # Division 48 = Loralai Division (est. 2021, carved from Zhob div)
+    # Districts: Loralai (HQ), Barkhan, Musakhail, Duki (→ merged into Loralai polygon)
+    # NOTE: Loralai may ALSO appear under div 42 (old Zhob coding).
+    48: ["loralai", "barkhan", "musakhail", "loralai", None],  # pos 3 = Duki → merged into Loralai
 }
 
 def _build_hies_crosswalk():
@@ -1475,6 +1484,25 @@ def load_hies(hies_dir):
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
     w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
     w["dk"] = w["dist_code"].map(xwalk)
+
+    # ── Diagnostic: show all district codes and mapping status ──
+    all_codes = sorted(w["dist_code"].unique())
+    unmapped = [c for c in all_codes if c not in xwalk]
+    mapped_none = [c for c in all_codes if xwalk.get(c) is None and c in xwalk]
+    print(f"  HIES district codes found: {len(all_codes)}")
+    if unmapped:
+        print(f"  ⚠ UNMAPPED codes (not in crosswalk): {unmapped}")
+    if mapped_none:
+        print(f"  ⚠ Codes mapped to None (skipped): {mapped_none}")
+    # Show per-division summary
+    div_counts = {}
+    for c in all_codes:
+        div = c // 100
+        div_counts.setdefault(div, []).append(c)
+    for div in sorted(div_counts):
+        codes = div_counts[div]
+        names = [xwalk.get(c, '???') for c in codes]
+        print(f"    Div {div}: codes {codes} → {names}")
 
     # ── Roster: household size ──
     roster = pd.read_stata(str(hies_dir / "plist_roster.dta"), convert_categoricals=False,
@@ -1675,9 +1703,13 @@ def main():
     if t16_2017.exists():
         tables.append(("Table 16 - Econ Activity (2017)", load_table16_2017(t16_2017)))
 
-    # Census 2023 Education (Table 13) — combined CSV (preferred over raw per-province)
+    # Census 2023 Education (Table 13) — try raw per-province first (includes Sindh/Karachi),
+    # fall back to combined CSV
+    t13_raw_dir = PBS / "Census 2023" / "census2023_all_tables" / "table_13"
     t13_2023 = PBS / "Census 2023" / "final tables" / "table13_combined_2023.csv"
-    if t13_2023.exists():
+    if t13_raw_dir.exists() and any(t13_raw_dir.glob("table_13_*.csv")):
+        tables.append(("Education 2023 (raw per-province)", load_education_2023_raw(t13_raw_dir)))
+    elif t13_2023.exists():
         tables.append(("Education 2023 (combined)", load_education_table_clean(t13_2023, "2023")))
 
     # Census 2023 Employment (Table 14) — combined CSV (preferred over raw per-province)
@@ -1740,13 +1772,22 @@ def main():
                     count = vals.get(f"t_edu_{year}_{level}")
                     if count is not None:
                         vals[f"t_edu_{year}_pct_{level}"] = round(count / total * 100, 2)
-                # Compute % never attended: total - sum(levels) = never attended
-                attended_sum = sum(vals.get(f"t_edu_{year}_{lvl}", 0) or 0
-                                   for lvl in ("below_primary", "primary", "middle", "matric",
-                                               "intermediate", "graduate", "masters_above"))
-                if attended_sum > 0:
-                    vals[f"t_edu_{year}_pct_never_attended"] = round(
-                        (total - attended_sum) / total * 100, 2)
+                # Compute % never attended
+                # If we have an explicit never_attended count, use it
+                never = vals.get(f"t_edu_{year}_never_attended")
+                if never is not None:
+                    vals[f"t_edu_{year}_pct_never_attended"] = round(never / total * 100, 2)
+                else:
+                    # Residual method: total - sum(levels) = never attended
+                    # Only valid when total = total_population (2023), not total_literate (2017)
+                    attended_sum = sum(vals.get(f"t_edu_{year}_{lvl}", 0) or 0
+                                       for lvl in ("below_primary", "primary", "middle", "matric",
+                                                   "intermediate", "graduate", "masters_above"))
+                    residual = total - attended_sum
+                    # Only use residual if it's a significant portion (>5%) — otherwise
+                    # it's just rounding noise from a literate-only table
+                    if attended_sum > 0 and residual / total > 0.05:
+                        vals[f"t_edu_{year}_pct_never_attended"] = round(residual / total * 100, 2)
 
     # ── Recompute urban proportion from T5 for merged districts ─────────
     for key, vals in data.items():
