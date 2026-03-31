@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 58" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 58" fill="none">
   <defs>
     <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#f0cc5a"/>
@@ -29,8 +29,4 @@
 
   <!-- Base line -->
   <line x1="9" y1="54" x2="47" y2="54" stroke="url(#goldGrad)" stroke-width="2.2"/>
-
-  <!-- Text: "Data" stacked above "Darbar" -->
-  <text x="62" y="26" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="url(#goldGrad)" letter-spacing="-0.3">Data</text>
-  <text x="62" y="50" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="url(#goldGrad)" letter-spacing="-0.3">Darbar</text>
 </svg>

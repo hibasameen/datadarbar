@@ -354,6 +354,23 @@ function populateIndicatorSelect() {
   indicatorSelect.value = currentIndicator;
 }
 
+// Display names for province filter dropdown
+const PROVINCE_LABELS = {
+  'Federally Administered Tribal Areas': 'Former FATA',
+};
+
+// When filtering by province, also include these extra province_territory values
+const PROVINCE_INCLUDES = {
+  'Khyber Pakhtunkhwa': ['Federally Administered Tribal Areas'],
+};
+
+function matchesProvince(provFilter, districtProv) {
+  if (provFilter === 'ALL') return true;
+  if (districtProv === provFilter) return true;
+  const extras = PROVINCE_INCLUDES[provFilter];
+  return extras && extras.includes(districtProv);
+}
+
 function populateProvinceSelect() {
   const provinces = new Set();
   districtLayer.eachLayer(l => {
@@ -362,7 +379,7 @@ function populateProvinceSelect() {
   provinceSelect.innerHTML = '<option value="ALL">All Provinces</option>';
   [...provinces].sort().forEach(p => {
     const opt = document.createElement('option');
-    opt.value = p; opt.textContent = p;
+    opt.value = p; opt.textContent = PROVINCE_LABELS[p] || p;
     provinceSelect.appendChild(opt);
   });
 }
@@ -445,10 +462,11 @@ function onEachDistrict(feature, layer) {
       const stored = layerFills.get(l);
       if (stored) {
         l.setStyle({
-          weight: l === selectedDistrict ? 2.5 : stored.weight || 1,
-          color: l === selectedDistrict ? '#0c3a1e' : stored.color || '#8a9480',
+          weight: l === selectedDistrict ? 2.5 : (stored.weight ?? 1),
+          color: l === selectedDistrict ? '#0c3a1e' : (stored.color || '#8a9480'),
           fillColor: stored.fillColor,
           fillOpacity: stored.fillOpacity,
+          opacity: stored.opacity ?? 1,
         });
       }
     },
@@ -456,8 +474,15 @@ function onEachDistrict(feature, layer) {
       const stored = layerFills.get(e.target);
       // Don't select hidden districts
       if (stored && stored.fillOpacity === 0) return;
+
+      // If clicking the already-selected district, zoom in
+      if (selectedDistrict === e.target) {
+        zoomToDistrict(e.target);
+        return;
+      }
+
       // Deselect previous
-      if (selectedDistrict && selectedDistrict !== e.target) {
+      if (selectedDistrict) {
         const prev = layerFills.get(selectedDistrict);
         if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity });
       }
@@ -465,9 +490,6 @@ function onEachDistrict(feature, layer) {
       e.target.setStyle({ weight: 2.5, color: '#0c3a1e' });
       e.target.bringToFront();
       showDistrictDetail(e.target.feature.properties);
-
-      // Zoom into the district
-      zoomToDistrict(e.target);
     }
   });
 }
@@ -515,18 +537,31 @@ function colorize() {
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
     const prov = p.province_territory || 'Unknown';
-    if (provFilter !== 'ALL' && prov !== provFilter) return;
+    if (!matchesProvince(provFilter, prov)) return;
     const v = getVal(p);
     if (v !== null && !isNaN(v)) values.push(v);
   });
 
   if (!values.length) {
+    const provBoundsGroup = L.featureGroup();
     districtLayer.eachLayer(l => {
-      const s = { fillOpacity: 0.5, fillColor: '#e2e5ea', color: '#8a9480', weight: 1 };
+      const p = l.feature.properties || {};
+      const prov = p.province_territory || 'Unknown';
+      let s;
+      if (!matchesProvince(provFilter, prov)) {
+        s = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0 };
+      } else {
+        provBoundsGroup.addLayer(l);
+        s = { fillOpacity: 0.5, fillColor: '#e2e5ea', color: '#8a9480', weight: 1, opacity: 1 };
+      }
       l.setStyle(s);
       layerFills.set(l, s);
     });
+    if (provFilter !== 'ALL' && provBoundsGroup.getLayers().length) {
+      map.fitBounds(provBoundsGroup.getBounds(), { padding: [30, 30] });
+    }
     legendDiv.innerHTML = '<p class="legend-empty">No data for this selection</p>';
+    updateSummary([]);
     return;
   }
 
@@ -557,16 +592,16 @@ function colorize() {
     const p = l.feature.properties || {};
     const prov = p.province_territory || 'Unknown';
     let style;
-    if (provFilter !== 'ALL' && prov !== provFilter) {
+    if (!matchesProvince(provFilter, prov)) {
       // Hide non-matching provinces entirely
       style = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0 };
     } else {
       provBoundsGroup.addLayer(l);
       const v = getVal(p);
       if (v === null || isNaN(v)) {
-        style = { fillOpacity: 0.35, fillColor: '#e2e5ea', weight: 1, color: '#8a9480' };
+        style = { fillOpacity: 0.35, fillColor: '#e2e5ea', weight: 1, color: '#8a9480', opacity: 1 };
       } else {
-        style = { fillColor: scale(v).hex(), fillOpacity: 0.92, weight: 1, color: '#8a9480' };
+        style = { fillColor: scale(v).hex(), fillOpacity: 0.92, weight: 1, color: '#8a9480', opacity: 1 };
       }
     }
     l.setStyle(style);
@@ -694,7 +729,7 @@ function prepareDownload() {
     const p = l.feature.properties || {};
     const dist = p.districts || p.district_agency || '';
     const prov = p.province_territory || 'Unknown';
-    if (provFilter !== 'ALL' && prov !== provFilter) return;
+    if (!matchesProvince(provFilter, prov)) return;
     const key = normName(dist);
     const row = rawData[key] || {};
     const entry = { district: dist, province: prov };
@@ -756,26 +791,24 @@ function wireEvents() {
   });
 
   // Reset
-  if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      currentGroup = 'demographics';
-      currentIndicator = 'pop_total';
-      currentYear = '2023';
-      selectedDistrict = null;
-      isZoomedIn = false;
-      zoomBar.classList.add('hidden');
-      groupSelect.value = currentGroup;
-      populateIndicatorSelect();
-      provinceSelect.value = 'ALL';
-      searchInput.value = '';
-      districtNameEl.textContent = 'Select a district';
-      districtProvEl.textContent = '';
-      statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
-      updateYearButtons();
-      colorize();
-      map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
-    });
-  }
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    currentGroup = 'demographics';
+    currentIndicator = 'pop_total';
+    currentYear = '2023';
+    selectedDistrict = null;
+    isZoomedIn = false;
+    zoomBar.classList.add('hidden');
+    groupSelect.value = currentGroup;
+    populateIndicatorSelect();
+    provinceSelect.value = 'ALL';
+    searchInput.value = '';
+    districtNameEl.textContent = 'Select a district';
+    districtProvEl.textContent = '';
+    statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+    updateYearButtons();
+    colorize();
+    map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
+  });
 
   searchInput.addEventListener('input', handleSearch);
 
@@ -875,7 +908,7 @@ function updateSummaryBar() {
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
     const prov = p.province_territory || 'Unknown';
-    if (provFilter !== 'ALL' && prov !== provFilter) return;
+    if (!matchesProvince(provFilter, prov)) return;
     total++;
     const v = getVal(p);
     if (v !== null && !isNaN(v)) count++;
@@ -894,7 +927,7 @@ function updateSummaryBar() {
     districtLayer.eachLayer(l => {
       const p = l.feature.properties || {};
       const prov = p.province_territory || 'Unknown';
-      if (provFilter !== 'ALL' && prov !== provFilter) return;
+      if (!matchesProvince(provFilter, prov)) return;
       const v = getVal(p);
       if (v !== null && !isNaN(v)) values.push(v);
     });
