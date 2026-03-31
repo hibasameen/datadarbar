@@ -1681,22 +1681,22 @@ def main():
     if t12_2023.exists():
         tables.append(("Table 12 (2023)", load_table12_2023(t12_2023)))
 
-    # Education attainment: table14 (2017)
-    t14_2017 = PBS / "Census 2017" / "final tables" / "table14_combined_2017csv.csv"
-    if t14_2017.exists():
-        tables.append(("Education (2017)", load_education_table_clean(t14_2017, "2017")))
-    # Education 2023 loaded above from combined table13_combined_2023.csv
+    # Education (2017): Use Table 15 (total pop 5+, includes never-attended)
+    # instead of Table 14 (literate-only), so 2017 is comparable to 2023 Table 13.
+    # We map Table 15 output to t_edu_2017_* keys for unified Education group.
+    t15_2017 = PBS / "Census 2017" / "final tables" / "table15_combined_2017.csv"
+    if t15_2017.exists():
+        t15_data = load_table15_2017(t15_2017)
+        # Remap t15_2017_* keys → t_edu_2017_* keys
+        remapped = {}
+        for dist, vals in t15_data.items():
+            remapped[dist] = {k.replace("t15_2017_", "t_edu_2017_"): v for k, v in vals.items()}
+        tables.append(("Education 2017 (Table 15 → t_edu)", remapped))
 
     # Employment: table16 (2017)
     t16_2017 = PBS / "Census 2017" / "final tables" / "table16_combined_2017csv.csv"
     if t16_2017.exists():
         tables.append(("Employment (2017)", load_employment_table_clean(t16_2017, "2017")))
-    # Employment 2023 loaded above from combined table14_combined_2023.csv
-
-    # Table 15: Education attainment (2017)
-    t15_2017 = PBS / "Census 2017" / "final tables" / "table15_combined_2017.csv"
-    if t15_2017.exists():
-        tables.append(("Table 15 - Edu Attainment (2017)", load_table15_2017(t15_2017)))
 
     # Table 16: Economic activity (2017)
     t16_2017 = PBS / "Census 2017" / "final tables" / "table16_combined_2017csv.csv"
@@ -1779,15 +1779,23 @@ def main():
                     vals[f"t_edu_{year}_pct_never_attended"] = round(never / total * 100, 2)
                 else:
                     # Residual method: total - sum(levels) = never attended
-                    # Only valid when total = total_population (2023), not total_literate (2017)
                     attended_sum = sum(vals.get(f"t_edu_{year}_{lvl}", 0) or 0
                                        for lvl in ("below_primary", "primary", "middle", "matric",
                                                    "intermediate", "graduate", "masters_above"))
                     residual = total - attended_sum
                     # Only use residual if it's a significant portion (>5%) — otherwise
-                    # it's just rounding noise from a literate-only table
+                    # it's just rounding noise
                     if attended_sum > 0 and residual / total > 0.05:
                         vals[f"t_edu_{year}_pct_never_attended"] = round(residual / total * 100, 2)
+                # Compute % matric or above
+                matric_plus = sum(filter(None, [
+                    vals.get(f"t_edu_{year}_matric"),
+                    vals.get(f"t_edu_{year}_intermediate"),
+                    vals.get(f"t_edu_{year}_graduate"),
+                    vals.get(f"t_edu_{year}_masters_above"),
+                ]))
+                if matric_plus > 0:
+                    vals[f"t_edu_{year}_pct_matric_plus"] = round(matric_plus / total * 100, 2)
 
     # ── Recompute urban proportion from T5 for merged districts ─────────
     for key, vals in data.items():
