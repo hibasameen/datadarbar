@@ -13,7 +13,7 @@ Run:  python build_dataset.py
 Output: ../app/data/districts.json
 """
 
-import csv, json, os, re, sys
+import csv, json, os, re, subprocess, sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -816,6 +816,7 @@ def load_employment_2023_raw(raw_dir):
                 lf_s = (emp_s or 0) + (unemp_s or 0)
                 d[f"{prefix}lfpr_{label}"] = round(lf_s / pop_s * 100, 2)
                 d[f"{prefix}employment_ratio_{label}"] = round((emp_s or 0) / pop_s * 100, 2)
+                d[f"{prefix}unemployment_rate_{label}"] = round((unemp_s or 0) / lf_s * 100, 2) if lf_s > 0 else None
 
         # Clean up sub-category counts (keep only derived rates + main counts)
         for tmp in ("paid_employee", "own_account_agri", "own_account_nonagri",
@@ -893,6 +894,140 @@ def load_table16_2017(path):
         d[f"{prefix}lfpr"] = round(labour_force / total * 100, 2) if total and labour_force is not None else None
         d[f"{prefix}unemployment_rate"] = round(seeking / labour_force * 100, 2) if labour_force and seeking is not None else None
         d[f"{prefix}employment_ratio"] = round(worked / total * 100, 2) if total and worked is not None else None
+    return out
+
+
+# ── Table 16 PDF parser (gender-disaggregated 2017 employment) ──────────────
+
+def _pdftotext(path):
+    """Run pdftotext with layout mode and return text."""
+    out = subprocess.check_output(
+        ["pdftotext", "-layout", "-nopgbrk", str(path), "-"],
+        stderr=subprocess.STDOUT,
+    )
+    return out.decode("utf-8", errors="ignore")
+
+
+def _parse_10_above_row(lines, start_idx):
+    """Find '10 & ABOVE' row and return 6 values: pop, worked, seeking, student, house_keeping, others."""
+    for i in range(start_idx, min(start_idx + 5, len(lines))):
+        m = re.search(r"10\s*[&]\s*ABOVE\s+", lines[i], re.I)
+        if m:
+            rest = lines[i][m.end():]
+            parts = re.split(r"\s{2,}", rest.strip())
+            vals = []
+            for p in parts:
+                p = p.strip()
+                if re.match(r"^[\d,]+$", p):
+                    val = p.replace(",", "")
+                    vals.append(int(val) if val.isdigit() else None)
+                elif p in ("-", "–"):
+                    vals.append(0)
+            if len(vals) >= 6:
+                return vals[:6]
+            # Fallback: grab all numbers
+            nums = re.findall(r"[\d,]+", rest)
+            if len(nums) >= 6:
+                return [int(n.replace(",", "")) for n in nums[:6]]
+    return None
+
+
+def _extract_district_name_from_pdf(text, filename):
+    """Extract district name from Table 16 PDF header or filename."""
+    m = re.search(r"([A-Z][A-Z\s\.\-/\(\)]+?)\s+DISTRICT", text[:500])
+    if m:
+        raw = re.sub(r"TABLE.*", "", m.group(1).strip()).strip()
+        raw = re.sub(r"\s+", " ", raw)
+        if len(raw) > 2:
+            return raw.title().strip()
+    base = os.path.basename(filename)
+    name_part = re.sub(r"^\d+_", "", base)
+    name_part = name_part.replace("_table16", "").replace(".pdf", "").replace("_", " ")
+    return name_part.title().strip()
+
+
+def load_table16_2017_pdfs(pdf_dir):
+    """Parse all Table 16 PDFs to extract gender-disaggregated employment (10+ population).
+
+    Adds male/female breakdowns of worked, seeking_work, student, house_keeping
+    to the t_emp_2017_ prefix, plus computes gender-specific rates.
+    """
+    prefix = "t_emp_2017_"
+    out = {}
+
+    for fname in sorted(os.listdir(pdf_dir)):
+        if not fname.lower().endswith(".pdf"):
+            continue
+        fpath = os.path.join(str(pdf_dir), fname)
+        try:
+            text = _pdftotext(fpath)
+        except Exception as e:
+            print(f"  WARNING: pdftotext failed for {fname}: {e}")
+            continue
+
+        district_raw = _extract_district_name_from_pdf(text, fname)
+        key = apply_crosswalk(norm(district_raw))
+        if not key:
+            continue
+
+        lines = text.split("\n")
+
+        # Find OVERALL section
+        overall_start = None
+        rural_start = None
+        for i, line in enumerate(lines):
+            if re.search(r"\bOVER\s*ALL\b", line, re.I) and overall_start is None:
+                overall_start = i
+            if re.search(r"\bRURAL\b", line, re.I) and overall_start is not None and rural_start is None:
+                for j in range(i, min(i + 5, len(lines))):
+                    if re.search(r"ALL\s+SEXES", lines[j], re.I):
+                        rural_start = i
+                        break
+
+        if overall_start is None:
+            print(f"  WARNING: No OVERALL section in {fname}")
+            continue
+
+        end = rural_start if rural_start else len(lines)
+        section = lines[overall_start:end]
+
+        # Find sex section headers
+        sex_idx = {}
+        for i, line in enumerate(section):
+            stripped = line.strip().rstrip("- –")
+            if re.search(r"^ALL\s+SEXES\s*$", stripped, re.I):
+                sex_idx["all"] = i
+            elif re.match(r"^MALE\s*$", stripped, re.I):
+                sex_idx["male"] = i
+            elif re.match(r"^FEMALE\s*$", stripped, re.I):
+                sex_idx["female"] = i
+
+        vals = {}
+        for sex_key, idx in sex_idx.items():
+            row = _parse_10_above_row(section, idx + 1)
+            if row is None:
+                continue
+            sfx = "" if sex_key == "all" else f"_{sex_key}"
+            vals[f"{prefix}total{sfx}"] = row[0]
+            vals[f"{prefix}worked{sfx}"] = row[1]
+            vals[f"{prefix}seeking_work{sfx}"] = row[2]
+            vals[f"{prefix}student{sfx}"] = row[3]
+            vals[f"{prefix}house_keeping{sfx}"] = row[4]
+
+        accumulate(out, key, vals)
+
+    # Compute derived rates (total, male, female)
+    for key, d in out.items():
+        for sfx in ("", "_male", "_female"):
+            pop = d.get(f"{prefix}total{sfx}")
+            emp = d.get(f"{prefix}worked{sfx}")
+            unemp = d.get(f"{prefix}seeking_work{sfx}")
+            if pop and pop > 0:
+                lf = (emp or 0) + (unemp or 0)
+                d[f"{prefix}lfpr{sfx}"] = round(lf / pop * 100, 2)
+                d[f"{prefix}employment_ratio{sfx}"] = round((emp or 0) / pop * 100, 2)
+                d[f"{prefix}unemployment_rate{sfx}"] = round(unemp / lf * 100, 2) if lf > 0 else None
+
     return out
 
 
@@ -1956,6 +2091,14 @@ def main():
     t16_2017 = PBS / "Census 2017" / "final tables" / "table16_combined_2017csv.csv"
     if t16_2017.exists():
         tables.append(("Table 16 - Econ Activity (2017)", load_table16_2017(t16_2017)))
+
+    # Table 16 PDFs: gender-disaggregated employment (2017)
+    t16_pdf_dir = PBS / "Census 2017" / "pbs_2017_table16"
+    if t16_pdf_dir.exists() and any(t16_pdf_dir.glob("*.pdf")):
+        try:
+            tables.append(("Employment 2017 Gender (PDFs)", load_table16_2017_pdfs(t16_pdf_dir)))
+        except Exception as e:
+            print(f"  WARNING: Table 16 PDF parsing failed: {e}")
 
     # Census 2023 Education (Table 13) — try raw per-province first (includes Sindh/Karachi),
     # fall back to combined CSV
