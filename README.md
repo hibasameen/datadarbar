@@ -51,7 +51,7 @@ To set up Pages for the first time:
 1. Push this repo to GitHub
 2. Go to **Settings → Pages**
 3. Set source to **GitHub Actions**
-4. The site will be live at <https://hibasameen.github.io/datadarbar/>
+4. The site will be live at <https://user.github.io/datadarbar/>
 
 ## Rebuild the dataset
 
