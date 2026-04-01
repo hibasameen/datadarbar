@@ -433,6 +433,11 @@ select:focus, input:focus {
 }
 .stat-quick span { color: var(--slate-400); font-size: 12px; }
 .stat-quick strong { color: var(--slate-600); font-size: 12px; }
+.stat-notice {
+  font-size: 11px; color: var(--slate-500); font-style: italic;
+  padding: 8px 0; border-bottom: 1px solid var(--slate-200);
+  line-height: 1.4;
+}
 
 /* ── Legend ──────────────────────────────────────────────────────── */
 .legend-title {
@@ -463,6 +468,11 @@ select:focus, input:focus {
   display: inline-block; width: 16px; height: 10px;
   background: #f5e6b8; border: 1.5px dashed #c49515; border-radius: 2px;
   opacity: 0.7; flex-shrink: 0;
+}
+.legend-nosurv-swatch {
+  display: inline-block; width: 16px; height: 10px;
+  background: #b0b8c1; border: 1.5px dashed #8a9480; border-radius: 2px;
+  opacity: 0.5; flex-shrink: 0;
 }
 
 /* ── Diagnostics ────────────────────────────────────────────────── */

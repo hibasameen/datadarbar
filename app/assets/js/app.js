@@ -506,6 +506,20 @@ function getNObs(props) {
   return obs.length ? Math.min(...obs) : null;
 }
 
+/**
+ * Returns true if the current group is survey-based and this district
+ * was NOT sampled (no n_obs key at all — distinct from low_n suppression).
+ */
+function isNotSurveyed(props) {
+  const mps = _surveyMetaPrefixes();
+  if (!mps.length) return false;  // census group, always covered
+  const dist = props.districts || props.district_agency || '';
+  const row = rawData[normName(dist)];
+  if (!row) return false;
+  // Not surveyed = none of the expected n_obs keys exist
+  return mps.every(mp => row[`${mp}_n_obs`] == null);
+}
+
 function dataKey(group, year, indicator) {
   const g = INDICATOR_GROUPS[group];
   // Mixed-prefix groups: explicit key mapping overrides the prefix convention
@@ -680,7 +694,10 @@ function getTooltipContent(props) {
   }
 
   let lowNNote = '';
-  if (isLowN(props)) {
+  if (isNotSurveyed(props)) {
+    lowNNote = `<span class="tooltip-lown">District not sampled in this survey</span>`;
+    valStr = '—';
+  } else if (isLowN(props)) {
     const nObs = getNObs(props);
     lowNNote = `<span class="tooltip-lown">⚠ Small sample (n=${nObs ?? '?'})</span>`;
     valStr = '—';
@@ -858,7 +875,10 @@ function colorize() {
     } else {
       provBoundsGroup.addLayer(l);
       const v = getVal(p);
-      if (isLowN(p)) {
+      if (isNotSurveyed(p)) {
+        // District not in survey sample frame — distinct crosshatch appearance
+        style = { fillOpacity: 0.15, fillColor: '#b0b8c1', weight: 1.5, color: '#8a9480', opacity: 0.6, dashArray: '2 4' };
+      } else if (isLowN(p)) {
         // Low sample size — distinct striped appearance
         style = { fillOpacity: 0.25, fillColor: '#f5e6b8', weight: 1.5, color: '#c49515', opacity: 0.8, dashArray: '4 3' };
       } else if (v === null || isNaN(v)) {
@@ -916,9 +936,10 @@ function renderLegend(breaks, scale, isDiff) {
   }
   html += '</div>';
   html += `<div class="legend-labels"><span>${fmt(breaks[0], pct)}</span><span>${fmt(breaks[breaks.length - 1], pct)}</span></div>`;
-  // Add low-n legend entry for survey groups
+  // Add legend entries for survey groups
   if (_surveyMetaPrefixes().length) {
-    html += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — estimate suppressed</div>';
+    html += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — suppressed</div>';
+    html += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> Not sampled in this survey</div>';
   }
   legendDiv.innerHTML = html;
 }
@@ -936,6 +957,12 @@ function showDistrictDetail(props) {
 
   const g = INDICATOR_GROUPS[currentGroup];
   let html = '';
+
+  // Check if district was not surveyed for this group
+  const notSurveyed = isNotSurveyed(props);
+  if (notSurveyed) {
+    html += `<div class="stat stat-notice">This district was not sampled in the ${g.dataset || 'survey'} sample frame.</div>`;
+  }
 
   for (const [ind, label] of Object.entries(g.indicators)) {
     const pct = isPctLabel(label);

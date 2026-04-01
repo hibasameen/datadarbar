@@ -385,9 +385,9 @@ def load_table12_2023(path):
         indicator = (r.get("indicator") or "").strip()
         indicator_lower = indicator.lower()
 
-        # Detect district header rows (e.g. "ABBOTTABAD DISTRICT")
-        if "DISTRICT" in indicator:
-            name = re.sub(r"\s+DISTRICT\s*$", "", indicator, flags=re.I).strip()
+        # Detect district header rows (e.g. "ABBOTTABAD DISTRICT", "MALAKAND PROTECTED AREA")
+        if "DISTRICT" in indicator or "PROTECTED AREA" in indicator:
+            name = re.sub(r"\s+(DISTRICT|PROTECTED AREA)\s*$", "", indicator, flags=re.I).strip()
             current_district_key = apply_crosswalk(norm(name))
             current_district_raw = norm(name)
             if current_district_raw and current_district_raw not in raw_out:
@@ -734,10 +734,10 @@ def load_employment_2023_raw(raw_dir):
             parts = [p.strip().strip('"') for p in line.split(",")]
             first = parts[0]
 
-            if first.upper().endswith("DISTRICT"):
+            if first.upper().endswith("DISTRICT") or first.upper().endswith("PROTECTED AREA"):
                 if current_raw and current_raw in pending:
                     accumulate(out, current_key, pending[current_raw])
-                name = re.sub(r"\s+DISTRICT\s*$", "", first, flags=re.I).strip()
+                name = re.sub(r"\s+(DISTRICT|PROTECTED AREA)\s*$", "", first, flags=re.I).strip()
                 current_raw = norm(name)
                 current_key = apply_crosswalk(current_raw)
                 if current_raw not in got_raw:

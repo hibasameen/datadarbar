@@ -434,13 +434,69 @@
           indicators as approximate and treat cross-district rankings with caution.
         </p>
 
+        <h3>District Coverage Gaps</h3>
+        <p>
+          Not all districts appear in every PBS publication or survey. Where data is
+          missing for a particular source, the map shows a faded dashed outline and
+          tooltips and the sidebar indicate the reason. Coverage gaps fall into two
+          categories: survey sampling decisions and census publication gaps.
+        </p>
+
+        <h4>Survey Sampling Gaps</h4>
+        <p>
+          <strong>HIES 2024-25</strong> uses stratified sampling at the division level
+          and did not sample 4 districts: Kasur, Killa Saifullah, Lasbela, and Mansehra.
+        </p>
+        <p>
+          <strong>PSLM 2019-20</strong> did not cover 5 districts in Balochistan, likely
+          due to security and logistics constraints: Chaghi, Jhal Magsi, Musakhail,
+          Panjgur, and Zhob.
+        </p>
+        <p>
+          <strong>LFS 2024-25</strong> does not include North Waziristan Agency and
+          South Waziristan Agency, reflecting boundary changes after the 25th Amendment
+          merged tribal agencies into settled districts. Both agencies do appear in the
+          LFS 2020-21 data.
+        </p>
+
+        <h4>Census Publication Gaps</h4>
+        <p>
+          <strong>Economic Census 2023</strong> does not include Islamabad, which as a
+          federal territory was excluded from the provincial enumeration.
+        </p>
+        <p>
+          <strong>Census 2017 Employment (Table 16):</strong> Kohlu district in
+          Balochistan was not included in the published employment tables. The PBS
+          publication numbering skips Kohlu entirely (jumping from 125&nbsp;Harnai to
+          127&nbsp;Sibi), suggesting the data was not released, possibly due to
+          enumeration difficulties in one of Balochistan&rsquo;s smallest and most
+          remote districts during the 2017 Census. Kohlu&rsquo;s data is present in all
+          other 2017 census tables and in the 2023 employment table.
+        </p>
+        <p>
+          <strong>Census 2023 Tables 5, 12, 14:</strong> Malakand Protected Area was
+          initially missing from these tables because PBS published it under the heading
+          &ldquo;MALAKAND PROTECTED AREA&rdquo; rather than the standard
+          &ldquo;&hellip;&nbsp;DISTRICT&rdquo; format used for all other districts.
+          The pipeline now recognises both formats and Malakand data is fully included.
+        </p>
+        <p>
+          <strong>Census 2017 Table 1:</strong> Pakpattan was missing from the combined
+          CSV due to a PDF extraction error in the original data preparation. The
+          district-level figures have been manually verified against the source PDF
+          (063_pakpattan_table1.pdf) and corrected.
+        </p>
+
         <h3>Limitations</h3>
         <ul>
           <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry
               sampling error, particularly for smaller districts with fewer primary
               sampling units.</li>
           <li>Not all indicators are available for every district. Missing data is shown
-              as a grey fill with a dash (&mdash;) in the tooltip and sidebar.</li>
+              as a grey fill with a dash (&mdash;) in the tooltip and sidebar. For
+              survey-based indicators, this may reflect either low sample size
+              (n&lt;30, shown with gold dashed border) or the district not being
+              in the survey&rsquo;s sample frame (shown with a faded dashed border).</li>
           <li>Census 2023 results used are provisional and may differ from final
               published figures.</li>
           <li>District boundaries may not perfectly align with the administrative units
