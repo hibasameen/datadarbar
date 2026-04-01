@@ -437,11 +437,13 @@ function fmt(v, pct) {
 
 function isPct(indicator) {
   const label = INDICATOR_GROUPS[currentGroup]?.indicators?.[indicator] || '';
-  return isPctLabel(label);
+  return isPctLabel(label) || /^pct_/.test(indicator);
 }
 function isPctLabel(label) {
-  // Match "rate", "ratio", "proportion", or "(%)" — but not "literate"/"illiterate"
+  // Match: "(%)", "ratio", "proportion", labels starting with "% ",
+  // or "rate" (excluding "literate"/"illiterate")
   return /\(.*%\)|\bratio\b|\bproportion\b/i.test(label) ||
+         /^%\s/.test(label) ||
          (/\brate\b/i.test(label) && !/literate|illiterate/i.test(label));
 }
 
