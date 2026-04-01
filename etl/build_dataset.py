@@ -1992,6 +1992,561 @@ def load_hies(hies_dir, census_pop=None):
     return out
 
 
+# ── HIES ICT & Digital Access ────────────────────────────────────────────────
+
+def load_hies_ict(hies_dir, census_pop=None):
+    """Aggregate HIES 2024-25 sec_02c ICT data to district-level indicators.
+
+    Individual-level (161K rows). Key variables:
+      s2cq01: phone ownership (smart phone / mobile / none / both)
+      s2cq03: computer access (none / laptop / desktop / tablet)
+      s2cq05: internet use (yes / no)
+      s2cq08: internet frequency (daily / weekly / monthly)
+      s2cq15: mobile money (no / bank account / easypaisa-jazzcash / both)
+
+    Returns: { norm_district: { hies_ict_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "hies_ict_"
+    xwalk = _build_hies_crosswalk()
+
+    # Load weights
+    w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
+    w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
+
+    # Load ICT section
+    cols_needed = ["prcode", "hhno", "idc", "s2cq01", "s2cq03", "s2cq05", "s2cq08", "s2cq15"]
+    ict = pd.read_stata(str(hies_dir / "sec_02c_ict.dta"), convert_categoricals=False,
+                        columns=cols_needed)
+    ict["dist_code"] = ict["prcode"].astype(str).str[:4].astype(int)
+    ict["dk"] = ict["dist_code"].map(xwalk)
+    ict = ict.merge(w[["prcode", "weight"]], on="prcode", how="left")
+
+    # Post-stratification
+    hies_cal = {}
+    if census_pop:
+        roster = pd.read_stata(str(hies_dir / "plist_roster.dta"), convert_categoricals=False,
+                               columns=["prcode", "weight"])
+        roster["dist_code"] = roster["prcode"].astype(str).str[:4].astype(int)
+        roster["dk"] = roster["dist_code"].map(xwalk)
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = roster[roster["dk"] == dk_val]["weight"].sum()
+            if w_pop > 0:
+                hies_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+
+    out = {}
+    n_suppressed = 0
+
+    for dk, grp in ict.groupby("dk"):
+        if not dk:
+            continue
+        n_obs = len(grp)
+        cal = hies_cal.get(dk, 1.0)
+        wt = grp["weight"].fillna(1) * cal
+        wtot = wt.sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # Smartphone ownership: s2cq01: 1=mobile, 2=smart phone, 3=both, 4=none
+        smartphone = wt[grp["s2cq01"].isin([2, 3])].sum()
+        d[f"{prefix}pct_smartphone"] = round(smartphone / wtot * 100, 1)
+
+        # Any mobile phone: s2cq01 in (1=mobile, 2=smart, 3=both)
+        any_mobile = wt[grp["s2cq01"].isin([1, 2, 3])].sum()
+        d[f"{prefix}pct_any_mobile"] = round(any_mobile / wtot * 100, 1)
+
+        # Computer access: s2cq03: 1=desktop, 2=laptop, 3=tablet, 4=none
+        has_computer = wt[grp["s2cq03"].isin([1, 2, 3])].sum()
+        d[f"{prefix}pct_computer"] = round(has_computer / wtot * 100, 1)
+
+        # Internet use: s2cq05 == 1 (yes)
+        internet_user = wt[grp["s2cq05"] == 1].sum()
+        d[f"{prefix}pct_internet_user"] = round(internet_user / wtot * 100, 1)
+
+        # Daily internet: s2cq08 == 1 (at least once a day)
+        daily = wt[grp["s2cq08"] == 1].sum()
+        d[f"{prefix}pct_daily_internet"] = round(daily / wtot * 100, 1)
+
+        # Mobile money / digital finance: s2cq15: 1=bank, 2=easypaisa, 3=both, 4=no
+        digital_finance = wt[grp["s2cq15"].isin([1, 2, 3])].sum()
+        d[f"{prefix}pct_digital_finance"] = round(digital_finance / wtot * 100, 1)
+
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
+        if dk in _MERGED_DISTRICTS:
+            accumulate(out, dk, d)
+        else:
+            out[dk] = d
+
+    print(f"  HIES ICT: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
+    return out
+
+
+# ── HIES Housing Quality ─────────────────────────────────────────────────────
+
+def load_hies_housing_quality(hies_dir, census_pop=None):
+    """Aggregate HIES 2024-25 sec_05m1 housing materials to district-level.
+
+    HH-level (30K rows). Variables:
+      s5m1q04: number of rooms
+      s5m1q05: floor material (1=earth, 2=cement, 3=ceramic, 4=brick, 5=dung, 6=parquet)
+      s5m1q06: roof material (1=metal/tin, 2=RCC/RBC, 3=wood/bamboo, 4=iron/cement sheets)
+      s5m1q07: wall material (1=burnt bricks, 2=raw bricks/mud, 3=stone, 4=wood/bamboo)
+
+    Returns: { norm_district: { hies_hq_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "hies_hq_"
+    xwalk = _build_hies_crosswalk()
+
+    w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
+    w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
+
+    cols = ["prcode", "hhno", "s5m1q04", "s5m1q05", "s5m1q06", "s5m1q07"]
+    h = pd.read_stata(str(hies_dir / "sec_05m1_housingchar.dta"), convert_categoricals=False,
+                      columns=cols)
+    h["dist_code"] = h["prcode"].astype(str).str[:4].astype(int)
+    h["dk"] = h["dist_code"].map(xwalk)
+    h = h.merge(w[["prcode", "weight"]], on="prcode", how="left")
+
+    # Post-stratification (reuse roster)
+    hies_cal = {}
+    if census_pop:
+        roster = pd.read_stata(str(hies_dir / "plist_roster.dta"), convert_categoricals=False,
+                               columns=["prcode", "weight"])
+        roster["dist_code"] = roster["prcode"].astype(str).str[:4].astype(int)
+        roster["dk"] = roster["dist_code"].map(xwalk)
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = roster[roster["dk"] == dk_val]["weight"].sum()
+            if w_pop > 0:
+                hies_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+
+    out = {}
+    n_suppressed = 0
+
+    for dk, grp in h.groupby("dk"):
+        if not dk:
+            continue
+        n_obs = len(grp)
+        cal = hies_cal.get(dk, 1.0)
+        wt = grp["weight"].fillna(1) * cal
+        wtot = wt.sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # Average rooms
+        d[f"{prefix}avg_rooms"] = round((grp["s5m1q04"] * wt).sum() / wtot, 1)
+
+        # s5m1q05: 1=earth, 2=dung, 3=ceramic, 4=parquet, 5=cement, 6=brick, 7=other
+        # s5m1q06: 1=RCC/RBC, 2=wood, 3=iron sheets, 4=metal/tin, 5=other
+        # s5m1q07: 1=burnt brick, 2=raw brick/mud, 3=wood, 4=plywood, 5=stone, 6=other
+
+        # Pucca floor (cement=5, ceramic=3, parquet=4)
+        pucca_floor = wt[grp["s5m1q05"].isin([3, 4, 5])].sum()
+        d[f"{prefix}pct_pucca_floor"] = round(pucca_floor / wtot * 100, 1)
+
+        # RCC/RBC roof (strong roof: 1=RCC/RBC)
+        rcc_roof = wt[grp["s5m1q06"] == 1].sum()
+        d[f"{prefix}pct_rcc_roof"] = round(rcc_roof / wtot * 100, 1)
+
+        # Burnt brick walls (1=burnt bricks/block)
+        brick_walls = wt[grp["s5m1q07"] == 1].sum()
+        d[f"{prefix}pct_brick_walls"] = round(brick_walls / wtot * 100, 1)
+
+        # Composite "pucca" housing: all three (pucca floor + RCC roof + brick walls)
+        pucca_all = wt[
+            grp["s5m1q05"].isin([3, 4, 5]) &
+            (grp["s5m1q06"] == 1) &
+            (grp["s5m1q07"] == 1)
+        ].sum()
+        d[f"{prefix}pct_pucca_house"] = round(pucca_all / wtot * 100, 1)
+
+        # Katcha (earth/dung floor + raw brick/mud or wood walls)
+        katcha = wt[
+            grp["s5m1q05"].isin([1, 2]) &  # earth or dung floor
+            grp["s5m1q07"].isin([2, 3])     # raw bricks/mud or wood/bamboo walls
+        ].sum()
+        d[f"{prefix}pct_katcha_house"] = round(katcha / wtot * 100, 1)
+
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
+        if dk in _MERGED_DISTRICTS:
+            accumulate(out, dk, d)
+        else:
+            out[dk] = d
+
+    print(f"  HIES Housing Quality: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
+    return out
+
+
+# ── HIES Waste Management ────────────────────────────────────────────────────
+
+def load_hies_waste(hies_dir, census_pop=None):
+    """Aggregate HIES 2024-25 sec_05m3 waste management to district-level.
+
+    HH-level (30K rows). Variables:
+      s5m3q01: disposal method (1=open space, 2=municipal van, 3=private van,
+               4=public bin, 5=road/street, 6=lake/river, 7=other)
+      s5m3q02: time to nearest bin (1=not available, 2=1-5 min, 3=6-10 min, etc.)
+
+    Returns: { norm_district: { hies_waste_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "hies_waste_"
+    xwalk = _build_hies_crosswalk()
+
+    w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
+    w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
+
+    cols = ["prcode", "hhno", "s5m3q01", "s5m3q02"]
+    waste = pd.read_stata(str(hies_dir / "sec_05m3_wastemanagment.dta"), convert_categoricals=False,
+                          columns=cols)
+    waste["dist_code"] = waste["prcode"].astype(str).str[:4].astype(int)
+    waste["dk"] = waste["dist_code"].map(xwalk)
+    waste = waste.merge(w[["prcode", "weight"]], on="prcode", how="left")
+
+    # Post-stratification
+    hies_cal = {}
+    if census_pop:
+        roster = pd.read_stata(str(hies_dir / "plist_roster.dta"), convert_categoricals=False,
+                               columns=["prcode", "weight"])
+        roster["dist_code"] = roster["prcode"].astype(str).str[:4].astype(int)
+        roster["dk"] = roster["dist_code"].map(xwalk)
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = roster[roster["dk"] == dk_val]["weight"].sum()
+            if w_pop > 0:
+                hies_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+
+    out = {}
+    n_suppressed = 0
+
+    for dk, grp in waste.groupby("dk"):
+        if not dk:
+            continue
+        n_obs = len(grp)
+        cal = hies_cal.get(dk, 1.0)
+        wt = grp["weight"].fillna(1) * cal
+        wtot = wt.sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # Open dumping: s5m3q01 in (1=open space, 5=road/street, 6=lake/river)
+        open_dump = wt[grp["s5m3q01"].isin([1, 5, 6])].sum()
+        d[f"{prefix}pct_open_dumping"] = round(open_dump / wtot * 100, 1)
+
+        # Municipal collection: s5m3q01 == 2 (municipal van from doorstep)
+        municipal = wt[grp["s5m3q01"] == 2].sum()
+        d[f"{prefix}pct_municipal_collection"] = round(municipal / wtot * 100, 1)
+
+        # Any formal collection: municipal van (2), private van (3), public bin (4)
+        formal = wt[grp["s5m3q01"].isin([2, 3, 4])].sum()
+        d[f"{prefix}pct_formal_collection"] = round(formal / wtot * 100, 1)
+
+        # Bin not accessible: s5m3q02 == 1
+        no_bin = wt[grp["s5m3q02"] == 1].sum()
+        d[f"{prefix}pct_no_bin_access"] = round(no_bin / wtot * 100, 1)
+
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
+        if dk in _MERGED_DISTRICTS:
+            accumulate(out, dk, d)
+        else:
+            out[dk] = d
+
+    print(f"  HIES Waste: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
+    return out
+
+
+# ── HIES Women's Decision-Making ─────────────────────────────────────────────
+
+def load_hies_decisions(hies_dir, census_pop=None):
+    """Aggregate HIES 2024-25 sec_04e women's decision-making to district-level.
+
+    Individual-level (44K women). Key questions:
+      s4eq01: who decides about women's education (1=father alone … 4=woman herself)
+      s4eq02: who decides about women's work
+      s4eq04: who decides about women's healthcare
+      s4eq05: who decides family planning (contraception)
+      s4eq06: who decides number of children
+      s4eq03: reason women don't work
+
+    Returns: { norm_district: { hies_wdm_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "hies_wdm_"
+    xwalk = _build_hies_crosswalk()
+
+    w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
+    w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
+
+    cols = ["prcode", "hhno", "idc", "s4eq01", "s4eq02", "s4eq03", "s4eq04", "s4eq05", "s4eq06"]
+    dm = pd.read_stata(str(hies_dir / "Sec_04e_decisionmaking.dta"), convert_categoricals=False,
+                       columns=cols)
+    dm["dist_code"] = dm["prcode"].astype(str).str[:4].astype(int)
+    dm["dk"] = dm["dist_code"].map(xwalk)
+    dm = dm.merge(w[["prcode", "weight"]], on="prcode", how="left")
+
+    # Post-stratification
+    hies_cal = {}
+    if census_pop:
+        roster = pd.read_stata(str(hies_dir / "plist_roster.dta"), convert_categoricals=False,
+                               columns=["prcode", "weight"])
+        roster["dist_code"] = roster["prcode"].astype(str).str[:4].astype(int)
+        roster["dk"] = roster["dist_code"].map(xwalk)
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = roster[roster["dk"] == dk_val]["weight"].sum()
+            if w_pop > 0:
+                hies_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+
+    out = {}
+    n_suppressed = 0
+
+    for dk, grp in dm.groupby("dk"):
+        if not dk:
+            continue
+        n_obs = len(grp)
+        cal = hies_cal.get(dk, 1.0)
+        wt = grp["weight"].fillna(1) * cal
+        wtot = wt.sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # s4eq01: 1=woman herself, 2=father alone, 3=father+spouse,
+        #         4=father consults woman, 5=father+spouse+woman, 6=male members, 7=other, 8=too old, 9=no interest
+        edu_self = wt[grp["s4eq01"] == 1].sum()
+        d[f"{prefix}pct_edu_self"] = round(edu_self / wtot * 100, 1)
+
+        # Woman consulted: self(1) + father consults woman(4) + father+spouse+woman(5)
+        edu_consulted = wt[grp["s4eq01"].isin([1, 4, 5])].sum()
+        d[f"{prefix}pct_edu_consulted"] = round(edu_consulted / wtot * 100, 1)
+
+        # Work decisions: s4eq02 same codes → woman herself = 1
+        work_self = wt[grp["s4eq02"] == 1].sum()
+        d[f"{prefix}pct_work_self"] = round(work_self / wtot * 100, 1)
+
+        # Healthcare: s4eq04: 1=woman herself, 4=father consults woman, 5=father+spouse+woman
+        health_consulted = wt[grp["s4eq04"].isin([1, 4, 5])].sum()
+        d[f"{prefix}pct_health_consulted"] = round(health_consulted / wtot * 100, 1)
+
+        # Family planning: s4eq05: 1=husband alone, 2=woman, 3=joint
+        fp_joint = wt[grp["s4eq05"].isin([2, 3])].sum()
+        d[f"{prefix}pct_fp_joint_or_self"] = round(fp_joint / wtot * 100, 1)
+
+        fp_husband = wt[grp["s4eq05"] == 1].sum()
+        d[f"{prefix}pct_fp_husband_alone"] = round(fp_husband / wtot * 100, 1)
+
+        # Reason not working: s4eq03: 1=not permitted, 5=domestic burden
+        not_permitted = wt[grp["s4eq03"] == 1].sum()
+        d[f"{prefix}pct_not_permitted_work"] = round(not_permitted / wtot * 100, 1)
+
+        domestic = wt[grp["s4eq03"] == 5].sum()
+        d[f"{prefix}pct_domestic_burden"] = round(domestic / wtot * 100, 1)
+
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
+
+        if dk in _MERGED_DISTRICTS:
+            accumulate(out, dk, d)
+        else:
+            out[dk] = d
+
+    print(f"  HIES Women's Decision-Making: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
+    return out
+
+
+# ── PSLM Health Access ───────────────────────────────────────────────────────
+
+def load_pslm_health(pslm_dir):
+    """Aggregate PSLM 2019-20 secd health access to district-level.
+
+    Individual-level (870K rows). Variables:
+      sdaq01: ill/injured in last 2 weeks (1=yes, 2=no)
+      sdaq02: consulted anyone (1=yes, 2=no)
+      sdaq03: where consulted (1=private, 2=govt hospital, 3=BHU/RHC, etc.)
+      sdaq07: immunised (1=yes, 2=no) — for children
+      sdaq08: has health card (1=yes, 2=no)
+
+    Returns: { norm_district: { pslm_health_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "pslm_health_"
+    out = {}
+
+    # Load weights
+    weight_path = pslm_dir / "weight_file.dta"
+    wdf = pd.read_stata(str(weight_path), convert_categoricals=False)
+    wdf["psu"] = wdf["psu"].astype(int)
+    weights = wdf.set_index("psu")["weights"].to_dict()
+
+    # District crosswalk
+    with pd.io.stata.StataReader(str(pslm_dir / "roster.dta")) as reader:
+        dist_labels = reader.value_labels().get("district", {})
+    dist_code_to_key = {}
+    for code, label in dist_labels.items():
+        label_lower = label.strip().lower()
+        if label_lower in PSLM_DISTRICT_CROSSWALK:
+            dist_code_to_key[code] = PSLM_DISTRICT_CROSSWALK[label_lower]
+        else:
+            dist_code_to_key[code] = apply_crosswalk(norm(label_lower))
+
+    # Load health data
+    print("  Loading PSLM health (secd)...")
+    health = pd.read_stata(str(pslm_dir / "secd.dta"), convert_categoricals=False,
+                           columns=["hhcode", "psu", "district", "idc", "sdaq01", "sdaq02", "sdaq03"])
+    health["psu_int"] = health["psu"].astype(int)
+    health["w"] = health["psu_int"].map(weights)
+    health["dk"] = health["district"].map(dist_code_to_key)
+
+    for dk, grp in health.groupby("dk"):
+        if not dk:
+            continue
+        wtot = grp["w"].sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # Morbidity rate: % ill in last 2 weeks
+        ill = grp[grp["sdaq01"] == 1]["w"].sum()
+        d[f"{prefix}morbidity_rate"] = round(ill / wtot * 100, 2)
+
+        # Treatment seeking: among those ill, % who consulted
+        ill_grp = grp[grp["sdaq01"] == 1]
+        w_ill = ill_grp["w"].sum()
+        if w_ill > 0:
+            consulted = ill_grp[ill_grp["sdaq02"] == 1]["w"].sum()
+            d[f"{prefix}pct_sought_treatment"] = round(consulted / w_ill * 100, 2)
+
+            # Among those who consulted, % using govt facilities (2=govt hospital, 3=BHU/RHC)
+            consulted_grp = ill_grp[ill_grp["sdaq02"] == 1]
+            w_consulted = consulted_grp["w"].sum()
+            if w_consulted > 0:
+                govt = consulted_grp[consulted_grp["sdaq03"].isin([2, 3])]["w"].sum()
+                private = consulted_grp[consulted_grp["sdaq03"] == 1]["w"].sum()
+                d[f"{prefix}pct_govt_facility"] = round(govt / w_consulted * 100, 2)
+                d[f"{prefix}pct_private_facility"] = round(private / w_consulted * 100, 2)
+
+        out[dk] = d
+
+    print(f"  PSLM Health: {len(out)} districts")
+    return out
+
+
+# ── PSLM Digital Literacy ────────────────────────────────────────────────────
+
+def load_pslm_digital(pslm_dir):
+    """Aggregate PSLM 2019-20 secc2 digital literacy to district-level.
+
+    Individual-level (870K rows). Variables:
+      sc2q01: computer access (0=no, 1=desktop, 2=laptop, 3=tablet, 4=other)
+      sc2q05: mobile phone ownership (1=none, 2=mobile, 3=smartphone)
+      sc2q06: mobile phone use by HH (1=mobile, 2=none, 3=smartphone)
+      sc2q08: internet use (1=yes, 2=no)
+
+    Returns: { norm_district: { pslm_digital_*: value, … } }
+    """
+    import pandas as pd
+
+    prefix = "pslm_digital_"
+    out = {}
+
+    # Load weights
+    weight_path = pslm_dir / "weight_file.dta"
+    wdf = pd.read_stata(str(weight_path), convert_categoricals=False)
+    wdf["psu"] = wdf["psu"].astype(int)
+    weights = wdf.set_index("psu")["weights"].to_dict()
+
+    # District crosswalk
+    with pd.io.stata.StataReader(str(pslm_dir / "roster.dta")) as reader:
+        dist_labels = reader.value_labels().get("district", {})
+    dist_code_to_key = {}
+    for code, label in dist_labels.items():
+        label_lower = label.strip().lower()
+        if label_lower in PSLM_DISTRICT_CROSSWALK:
+            dist_code_to_key[code] = PSLM_DISTRICT_CROSSWALK[label_lower]
+        else:
+            dist_code_to_key[code] = apply_crosswalk(norm(label_lower))
+
+    # Load digital data (district column is NaN in secc2, get it from roster)
+    print("  Loading PSLM digital literacy (secc2)...")
+    digi = pd.read_stata(str(pslm_dir / "secc2.dta"), convert_categoricals=False,
+                         columns=["hhcode", "psu", "idc", "sc2q01", "sc2q05", "sc2q06", "sc2q08"])
+    digi["psu_int"] = digi["psu"].astype(int)
+    digi["w"] = digi["psu_int"].map(weights)
+
+    # Get district, age, sex from roster
+    roster = pd.read_stata(str(pslm_dir / "roster.dta"), convert_categoricals=False,
+                           columns=["hhcode", "idc", "district", "age", "sb1q4"])
+    digi = digi.merge(roster[["hhcode", "idc", "district", "age", "sb1q4"]], on=["hhcode", "idc"], how="left")
+    digi["dk"] = digi["district"].map(dist_code_to_key)
+
+    for dk, grp in digi.groupby("dk"):
+        if not dk:
+            continue
+        # Focus on 10+ population for digital literacy
+        g10 = grp[grp["age"] >= 10]
+        wtot = g10["w"].sum()
+        if wtot <= 0:
+            continue
+
+        d = {}
+        # Computer access: sc2q01 in (1=desktop, 2=laptop, 3=tablet, 4=other) — anything not 0/"no"
+        has_computer = g10[g10["sc2q01"].isin([1, 2, 3, 4])]["w"].sum()
+        d[f"{prefix}pct_computer_access"] = round(has_computer / wtot * 100, 2)
+
+        # Smartphone ownership: sc2q05: 1=mobile, 2=smartphone, 3=none
+        smartphone = g10[g10["sc2q05"] == 2]["w"].sum()
+        d[f"{prefix}pct_smartphone"] = round(smartphone / wtot * 100, 2)
+
+        # Any mobile: sc2q05 in (1=mobile, 2=smartphone)
+        any_mobile = g10[g10["sc2q05"].isin([1, 2])]["w"].sum()
+        d[f"{prefix}pct_any_mobile"] = round(any_mobile / wtot * 100, 2)
+
+        # Internet use: sc2q08 == 1
+        internet = g10[g10["sc2q08"] == 1]["w"].sum()
+        d[f"{prefix}pct_internet_user"] = round(internet / wtot * 100, 2)
+
+        # Gender gap: male vs female internet
+        g10m = g10[g10["sb1q4"] == 1]
+        g10f = g10[g10["sb1q4"] == 2]
+        w10m = g10m["w"].sum()
+        w10f = g10f["w"].sum()
+        if w10m > 0:
+            d[f"{prefix}pct_internet_male"] = round(
+                g10m[g10m["sc2q08"] == 1]["w"].sum() / w10m * 100, 2)
+        if w10f > 0:
+            d[f"{prefix}pct_internet_female"] = round(
+                g10f[g10f["sc2q08"] == 1]["w"].sum() / w10f * 100, 2)
+
+        out[dk] = d
+
+    print(f"  PSLM Digital: {len(out)} districts")
+    return out
+
+
 # ── Main builder ─────────────────────────────────────────────────────────────
 
 def merge_into(target, source):
@@ -2134,6 +2689,48 @@ def main():
         except Exception as e:
             print(f"  WARNING: HIES 2024-25 failed: {e}")
 
+    # HIES ICT & Digital Access
+    if hies_dir.exists():
+        try:
+            tables.append(("HIES ICT", load_hies_ict(hies_dir, census_pop=census_pop)))
+        except Exception as e:
+            print(f"  WARNING: HIES ICT failed: {e}")
+
+    # HIES Housing Quality (materials)
+    if hies_dir.exists():
+        try:
+            tables.append(("HIES Housing Quality", load_hies_housing_quality(hies_dir, census_pop=census_pop)))
+        except Exception as e:
+            print(f"  WARNING: HIES Housing Quality failed: {e}")
+
+    # HIES Waste Management
+    if hies_dir.exists():
+        try:
+            tables.append(("HIES Waste Management", load_hies_waste(hies_dir, census_pop=census_pop)))
+        except Exception as e:
+            print(f"  WARNING: HIES Waste Management failed: {e}")
+
+    # HIES Women's Decision-Making
+    if hies_dir.exists():
+        try:
+            tables.append(("HIES Women's Decisions", load_hies_decisions(hies_dir, census_pop=census_pop)))
+        except Exception as e:
+            print(f"  WARNING: HIES Women's Decisions failed: {e}")
+
+    # PSLM Health Access
+    if pslm_dir.exists():
+        try:
+            tables.append(("PSLM Health Access", load_pslm_health(pslm_dir)))
+        except Exception as e:
+            print(f"  WARNING: PSLM Health failed: {e}")
+
+    # PSLM Digital Literacy
+    if pslm_dir.exists():
+        try:
+            tables.append(("PSLM Digital Literacy", load_pslm_digital(pslm_dir)))
+        except Exception as e:
+            print(f"  WARNING: PSLM Digital failed: {e}")
+
     # ── Merge ────────────────────────────────────────────────────────────
     print(f"Loaded {len(tables)} table-year combinations:")
     for name, tbl in tables:
@@ -2233,12 +2830,20 @@ def main():
         for u in sorted(unmatched_geo):
             print(f"    {u}")
 
-    # ── Sanitise NaN / Infinity (invalid in JSON) ─────────────────────────
+    # ── Sanitise NaN / Infinity / numpy types (invalid in JSON) ────────────
     import math
+    import numpy as np
     for vals in output.values():
         for k, v in list(vals.items()):
-            if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
-                vals[k] = None
+            if isinstance(v, (np.floating, np.integer)):
+                v = v.item()  # convert numpy scalar to Python native
+                vals[k] = v
+            if isinstance(v, float):
+                if math.isnan(v) or math.isinf(v):
+                    vals[k] = None
+                else:
+                    # Clean up float32 precision artifacts (e.g. 86.800003 → 86.8)
+                    vals[k] = round(v, 4)
 
     # ── Write output ─────────────────────────────────────────────────────
     os.makedirs(OUT.parent, exist_ok=True)

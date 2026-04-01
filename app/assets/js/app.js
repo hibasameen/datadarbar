@@ -165,6 +165,76 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'lfs25', hasYears: false, noYear: true,
   },
+  hiesIct: {
+    label: 'ICT & Digital Access (HIES 2024-25)',
+    indicators: {
+      pct_smartphone:       '% Smartphone Ownership',
+      pct_any_mobile:       '% Any Mobile Phone',
+      pct_computer:         '% Computer Access',
+      pct_internet_user:    '% Internet Users',
+      pct_daily_internet:   '% Daily Internet Users',
+      pct_digital_finance:  '% Digital Finance (Mobile Money/Bank)',
+    },
+    prefix: 'hies_ict', hasYears: false, noYear: true,
+  },
+  hiesHousing: {
+    label: 'Housing Quality (HIES 2024-25)',
+    indicators: {
+      avg_rooms:          'Avg. Rooms per HH',
+      pct_pucca_floor:    '% Pucca Floor (Cement/Tiles)',
+      pct_rcc_roof:       '% RCC/RBC Roof',
+      pct_brick_walls:    '% Burnt Brick Walls',
+      pct_pucca_house:    '% Fully Pucca House',
+      pct_katcha_house:   '% Katcha House',
+    },
+    prefix: 'hies_hq', hasYears: false, noYear: true,
+  },
+  hiesWaste: {
+    label: 'Waste Management (HIES 2024-25)',
+    indicators: {
+      pct_open_dumping:          '% Open Dumping',
+      pct_municipal_collection:  '% Municipal Collection',
+      pct_formal_collection:     '% Any Formal Collection',
+      pct_no_bin_access:         '% No Bin Access',
+    },
+    prefix: 'hies_waste', hasYears: false, noYear: true,
+  },
+  hiesDecisions: {
+    label: "Women's Decision-Making (HIES 2024-25)",
+    indicators: {
+      pct_edu_self:              '% Women Decide Own Education',
+      pct_edu_consulted:         '% Women Consulted on Education',
+      pct_work_self:             '% Women Decide Own Work',
+      pct_health_consulted:      '% Women Consulted on Healthcare',
+      pct_fp_joint_or_self:      '% FP Decisions Joint/Self',
+      pct_fp_husband_alone:      '% FP Husband Decides Alone',
+      pct_not_permitted_work:    '% Not Permitted to Work',
+      pct_domestic_burden:       '% Too Busy with Domestic Work',
+    },
+    prefix: 'hies_wdm', hasYears: false, noYear: true,
+  },
+  pslmHealth: {
+    label: 'Health Access (PSLM 2019-20)',
+    indicators: {
+      morbidity_rate:        'Morbidity Rate (% ill in 2 weeks)',
+      pct_sought_treatment:  '% Sought Treatment (if ill)',
+      pct_govt_facility:     '% Used Govt. Facility',
+      pct_private_facility:  '% Used Private Facility',
+    },
+    prefix: 'pslm_health', hasYears: false, noYear: true,
+  },
+  pslmDigital: {
+    label: 'Digital Literacy (PSLM 2019-20)',
+    indicators: {
+      pct_computer_access:  '% Computer Access (10+)',
+      pct_smartphone:       '% Smartphone (10+)',
+      pct_any_mobile:       '% Any Mobile (10+)',
+      pct_internet_user:    '% Internet User (10+)',
+      pct_internet_male:    '% Internet Male (10+)',
+      pct_internet_female:  '% Internet Female (10+)',
+    },
+    prefix: 'pslm_digital', hasYears: false, noYear: true,
+  },
 };
 
 // Colour ramps per group — now using greens/teals for better harmony
@@ -180,6 +250,12 @@ const COLOR_RAMPS = {
   lfs:            ['#e6f4ec', '#0c3a1e'],
   hies:           ['#fef6dc', '#b8941a'],
   lfs25:          ['#e6f4ec', '#1e6b3e'],
+  hiesIct:        ['#e8eaf6', '#1a237e'],   // indigo — tech/digital
+  hiesHousing:    ['#fbe9e7', '#bf360c'],   // deep orange — construction
+  hiesWaste:      ['#e0f2f1', '#004d40'],   // teal — environment
+  hiesDecisions:  ['#fce4ec', '#880e4f'],   // pink — gender/empowerment
+  pslmHealth:     ['#e8f5e9', '#1b5e20'],   // green — health
+  pslmDigital:    ['#e3f2fd', '#0d47a1'],   // blue — digital
 };
 
 // Indicators where an INCREASE is bad (red) and a DECREASE is good (green).
@@ -203,6 +279,17 @@ const HIGHER_IS_WORSE = new Set([
   'food_share',           // higher food expenditure share = poorer
   'food_insecurity_pct',  // food insecure households
   'avg_fies_score',       // food insecurity score (0-8)
+  // Housing Quality
+  'pct_katcha_house',     // katcha = worse quality
+  // Waste Management
+  'pct_open_dumping',     // open dumping = worse
+  'pct_no_bin_access',    // no bin = worse
+  // Women's Decision-Making
+  'pct_fp_husband_alone',     // husband alone = less agency
+  'pct_not_permitted_work',   // not permitted = less agency
+  'pct_domestic_burden',      // domestic burden = constraint
+  // Health
+  'morbidity_rate',           // higher illness = worse
 ]);
 
 // ── State ───────────────────────────────────────────────────────────────────
