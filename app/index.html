@@ -516,11 +516,15 @@
           <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry
               sampling error, particularly for smaller districts with fewer primary
               sampling units.</li>
-          <li>Not all indicators are available for every district. Missing data is shown
-              as a grey fill with a dash (&mdash;) in the tooltip and sidebar. For
-              survey-based indicators, this may reflect either low sample size
-              (n&lt;30, shown with gold dashed border) or the district not being
-              in the survey&rsquo;s sample frame (shown with a faded dashed border).</li>
+          <li>Not all indicators are available for every district. Missing data is
+              shown as a grey fill with a dash (&mdash;) in the tooltip and sidebar.
+              For survey-based indicators, two distinct visual cues indicate the
+              reason: a <strong>gold dashed border</strong> marks districts where the
+              sample size was too small (n&lt;30) and the estimate has been
+              suppressed, while a <strong>faded grey dashed border</strong> marks
+              districts that were not included in the survey&rsquo;s sample frame
+              at all. Census indicators use solid borders throughout, since every
+              district is enumerated.</li>
           <li>Census 2023 results used are provisional and may differ from final
               published figures.</li>
           <li>District boundaries may not perfectly align with the administrative units
