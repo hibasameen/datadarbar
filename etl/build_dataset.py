@@ -1041,13 +1041,14 @@ PSLM_DISTRICT_CROSSWALK = {
 }
 
 
-def load_pslm(pslm_dir):
+def load_pslm(pslm_dir, census_pop=None):
     """Aggregate PSLM 2019-20 microdata to district-level indicators.
 
     Key design: map district codes to GeoJSON keys BEFORE groupby, so
     Karachi sub-districts (7), Kohistan (3), Chitral (2) are naturally
     aggregated with proper survey weights.
 
+    Post-stratifies to census population and applies n<30 suppression.
     Returns: { norm_district: { indicator: value, ... } }
     """
     import pandas as pd
@@ -1073,6 +1074,26 @@ def load_pslm(pslm_dir):
         else:
             dist_code_to_key[code] = apply_crosswalk(norm(label_lower))
 
+    # ── Post-stratification calibration ─────────────────────────
+    pslm_cal = {}
+    if census_pop:
+        _roster_cal = pd.read_stata(str(pslm_dir / "roster.dta"), convert_categoricals=False,
+                                    columns=["hhcode", "psu", "district"])
+        _roster_cal["psu_int"] = _roster_cal["psu"].astype(int)
+        _roster_cal["w"] = _roster_cal["psu_int"].map(weights)
+        _roster_cal["dk"] = _roster_cal["district"].map(dist_code_to_key)
+        for dk_val in _roster_cal["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = _roster_cal[_roster_cal["dk"] == dk_val]["w"].sum()
+            if w_pop > 0:
+                pslm_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+        print(f"  PSLM base post-stratification: {len(pslm_cal)} districts")
+        del _roster_cal
+
+    # Track n_obs per district (min across sub-sections)
+    n_obs_all = {}
+
     # ── 1. Literacy, numeracy, school attendance (secc1 + roster) ──
     print("  Loading PSLM education (secc1 + roster)...")
     roster = pd.read_stata(str(pslm_dir / "roster.dta"), convert_categoricals=False,
@@ -1092,30 +1113,32 @@ def load_pslm(pslm_dir):
     for dk, grp in edu.groupby("dk"):
         if not dk:
             continue
+        n_obs_all[dk] = min(n_obs_all.get(dk, float('inf')), len(grp))
+        cal = pslm_cal.get(dk, 1.0)
         g10 = grp[grp["age"] >= 10]
         g5_16 = grp[(grp["age"] >= 5) & (grp["age"] <= 16)]
         currently_attending = grp[grp["sc1q01"] == 3]
 
-        w10 = g10["w"].sum()
-        w5_16 = g5_16["w"].sum()
+        w10 = (g10["w"] * cal).sum()
+        w5_16 = (g5_16["w"] * cal).sum()
 
         d = {}
         if w10 > 0:
-            literate = g10[(g10["sc1q1a"] == 1) & (g10["sc1q2a"] == 1)]["w"].sum()
+            literate = (g10[(g10["sc1q1a"] == 1) & (g10["sc1q2a"] == 1)]["w"] * cal).sum()
             d[f"{prefix}literacy_rate"] = round(literate / w10 * 100, 2)
-            numerate = g10[g10["sc1q3a"] == 1]["w"].sum()
+            numerate = (g10[g10["sc1q3a"] == 1]["w"] * cal).sum()
             d[f"{prefix}numeracy_rate"] = round(numerate / w10 * 100, 2)
-            never = g10[g10["sc1q01"] == 1]["w"].sum()
+            never = (g10[g10["sc1q01"] == 1]["w"] * cal).sum()
             d[f"{prefix}pct_never_attended"] = round(never / w10 * 100, 2)
 
         if w5_16 > 0:
-            attending = g5_16[g5_16["sc1q01"] == 3]["w"].sum()
+            attending = (g5_16[g5_16["sc1q01"] == 3]["w"] * cal).sum()
             d[f"{prefix}net_enrolment_rate"] = round(attending / w5_16 * 100, 2)
 
-        w_att = currently_attending["w"].sum()
+        w_att = (currently_attending["w"] * cal).sum()
         if w_att > 0:
-            govt = currently_attending[currently_attending["sc1q11"] == 1]["w"].sum()
-            private = currently_attending[currently_attending["sc1q11"].isin([2, 7])]["w"].sum()
+            govt = (currently_attending[currently_attending["sc1q11"] == 1]["w"] * cal).sum()
+            private = (currently_attending[currently_attending["sc1q11"].isin([2, 7])]["w"] * cal).sum()
             d[f"{prefix}pct_govt_school"] = round(govt / w_att * 100, 2)
             d[f"{prefix}pct_private_school"] = round(private / w_att * 100, 2)
 
@@ -1136,24 +1159,26 @@ def load_pslm(pslm_dir):
     for dk, grp in emp.groupby("dk"):
         if not dk:
             continue
+        n_obs_all[dk] = min(n_obs_all.get(dk, float('inf')), len(grp))
+        cal = pslm_cal.get(dk, 1.0)
         g10 = grp[grp["age"] >= 10]
-        w10 = g10["w"].sum()
+        w10 = (g10["w"] * cal).sum()
         if w10 > 0:
-            employed = g10[g10["seaq01"] == 1]["w"].sum()
+            employed = (g10[g10["seaq01"] == 1]["w"] * cal).sum()
             d = {f"{prefix}work_participation_rate": round(employed / w10 * 100, 2)}
 
             # Male (sb1q4==1)
             g10m = g10[g10["sb1q4"] == 1]
-            w10m = g10m["w"].sum()
+            w10m = (g10m["w"] * cal).sum()
             if w10m > 0:
-                emp_m = g10m[g10m["seaq01"] == 1]["w"].sum()
+                emp_m = (g10m[g10m["seaq01"] == 1]["w"] * cal).sum()
                 d[f"{prefix}work_participation_male"] = round(emp_m / w10m * 100, 2)
 
             # Female (sb1q4==2)
             g10f = g10[g10["sb1q4"] == 2]
-            w10f = g10f["w"].sum()
+            w10f = (g10f["w"] * cal).sum()
             if w10f > 0:
-                emp_f = g10f[g10f["seaq01"] == 1]["w"].sum()
+                emp_f = (g10f[g10f["seaq01"] == 1]["w"] * cal).sum()
                 d[f"{prefix}work_participation_female"] = round(emp_f / w10f * 100, 2)
 
             agg_emp[dk] = d
@@ -1170,10 +1195,12 @@ def load_pslm(pslm_dir):
     for dk, grp in housing.groupby("dk"):
         if not dk:
             continue
-        wtot = grp["w"].sum()
+        n_obs_all[dk] = min(n_obs_all.get(dk, float('inf')), len(grp))
+        cal = pslm_cal.get(dk, 1.0)
+        wtot = (grp["w"] * cal).sum()
         if wtot > 0:
-            internet = grp[grp["sf1q11_1a"] == 1]["w"].sum()
-            mobile = grp[grp["sf1q11_1b"] == 1]["w"].sum()
+            internet = (grp[grp["sf1q11_1a"] == 1]["w"] * cal).sum()
+            mobile = (grp[grp["sf1q11_1b"] == 1]["w"] * cal).sum()
             agg_ict[dk] = {
                 f"{prefix}pct_internet": round(internet / wtot * 100, 2),
                 f"{prefix}pct_mobile": round(mobile / wtot * 100, 2),
@@ -1191,11 +1218,13 @@ def load_pslm(pslm_dir):
     for dk, grp in wash.groupby("dk"):
         if not dk:
             continue
-        wtot = grp["w"].sum()
+        n_obs_all[dk] = min(n_obs_all.get(dk, float('inf')), len(grp))
+        cal = pslm_cal.get(dk, 1.0)
+        wtot = (grp["w"] * cal).sum()
         if wtot > 0:
-            piped = grp[grp["sf2q01"].isin([1, 8])]["w"].sum()
-            flush = grp[grp["sf2q11"].isin([2, 3, 4, 5])]["w"].sum()
-            no_toilet = grp[grp["sf2q11"] == 1]["w"].sum()
+            piped = (grp[grp["sf2q01"].isin([1, 8])]["w"] * cal).sum()
+            flush = (grp[grp["sf2q11"].isin([2, 3, 4, 5])]["w"] * cal).sum()
+            no_toilet = (grp[grp["sf2q11"] == 1]["w"] * cal).sum()
             agg_wash[dk] = {
                 f"{prefix}pct_piped_water": round(piped / wtot * 100, 2),
                 f"{prefix}pct_flush_toilet": round(flush / wtot * 100, 2),
@@ -1213,21 +1242,31 @@ def load_pslm(pslm_dir):
     for dk, grp in hh_sizes.groupby("dk"):
         if not dk:
             continue
-        wtot = grp["w"].sum()
+        n_obs_all[dk] = min(n_obs_all.get(dk, float('inf')), len(grp))
+        cal = pslm_cal.get(dk, 1.0)
+        wtot = (grp["w"] * cal).sum()
         if wtot > 0:
-            avg_size = (grp["members"] * grp["w"]).sum() / wtot
+            avg_size = (grp["members"] * grp["w"] * cal).sum() / wtot
             agg_hh[dk] = {f"{prefix}avg_hh_size": round(avg_size, 2)}
 
     # ── Combine all PSLM indicators ──────────────────────────────
     all_dists = set(agg_edu) | set(agg_emp) | set(agg_ict) | set(agg_wash) | set(agg_hh)
+    n_suppressed = 0
     for dk in all_dists:
         if dk not in out:
             out[dk] = {}
         for src in (agg_edu, agg_emp, agg_ict, agg_wash, agg_hh):
             if dk in src:
                 out[dk].update(src[dk])
+        # Apply n<30 suppression
+        n = n_obs_all.get(dk, 0)
+        if n == float('inf'):
+            n = 0
+        _suppress_low_n(out[dk], prefix, n)
+        if n < MIN_SAMPLE_SIZE:
+            n_suppressed += 1
 
-    print(f"  PSLM: {len(out)} districts with indicators")
+    print(f"  PSLM: {len(out)} districts with indicators ({n_suppressed} suppressed for n<{MIN_SAMPLE_SIZE})")
     return out
 
 
@@ -2379,16 +2418,15 @@ def load_hies_decisions(hies_dir, census_pop=None):
 
 # ── PSLM Health Access ───────────────────────────────────────────────────────
 
-def load_pslm_health(pslm_dir):
+def load_pslm_health(pslm_dir, census_pop=None):
     """Aggregate PSLM 2019-20 secd health access to district-level.
 
     Individual-level (870K rows). Variables:
       sdaq01: ill/injured in last 2 weeks (1=yes, 2=no)
       sdaq02: consulted anyone (1=yes, 2=no)
       sdaq03: where consulted (1=private, 2=govt hospital, 3=BHU/RHC, etc.)
-      sdaq07: immunised (1=yes, 2=no) — for children
-      sdaq08: has health card (1=yes, 2=no)
 
+    Post-stratifies to census population and applies n<30 suppression.
     Returns: { norm_district: { pslm_health_*: value, … } }
     """
     import pandas as pd
@@ -2413,6 +2451,22 @@ def load_pslm_health(pslm_dir):
         else:
             dist_code_to_key[code] = apply_crosswalk(norm(label_lower))
 
+    # Post-stratification calibration
+    pslm_cal = {}
+    if census_pop:
+        roster = pd.read_stata(str(pslm_dir / "roster.dta"), convert_categoricals=False,
+                               columns=["hhcode", "psu", "district"])
+        roster["psu_int"] = roster["psu"].astype(int)
+        roster["w"] = roster["psu_int"].map(weights)
+        roster["dk"] = roster["district"].map(dist_code_to_key)
+        for dk_val in roster["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = roster[roster["dk"] == dk_val]["w"].sum()
+            if w_pop > 0:
+                pslm_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+        print(f"  PSLM Health post-stratification: {len(pslm_cal)} districts")
+
     # Load health data
     print("  Loading PSLM health (secd)...")
     health = pd.read_stata(str(pslm_dir / "secd.dta"), convert_categoricals=False,
@@ -2421,51 +2475,58 @@ def load_pslm_health(pslm_dir):
     health["w"] = health["psu_int"].map(weights)
     health["dk"] = health["district"].map(dist_code_to_key)
 
+    n_suppressed = 0
     for dk, grp in health.groupby("dk"):
         if not dk:
             continue
-        wtot = grp["w"].sum()
+        n_obs = len(grp)
+        cal = pslm_cal.get(dk, 1.0)
+        wt = grp["w"].fillna(1) * cal
+        wtot = wt.sum()
         if wtot <= 0:
             continue
 
         d = {}
         # Morbidity rate: % ill in last 2 weeks
-        ill = grp[grp["sdaq01"] == 1]["w"].sum()
+        ill = wt[grp["sdaq01"] == 1].sum()
         d[f"{prefix}morbidity_rate"] = round(ill / wtot * 100, 2)
 
         # Treatment seeking: among those ill, % who consulted
-        ill_grp = grp[grp["sdaq01"] == 1]
-        w_ill = ill_grp["w"].sum()
+        ill_mask = grp["sdaq01"] == 1
+        w_ill = wt[ill_mask].sum()
         if w_ill > 0:
-            consulted = ill_grp[ill_grp["sdaq02"] == 1]["w"].sum()
+            consulted = wt[ill_mask & (grp["sdaq02"] == 1)].sum()
             d[f"{prefix}pct_sought_treatment"] = round(consulted / w_ill * 100, 2)
 
             # Among those who consulted, % using govt facilities (2=govt hospital, 3=BHU/RHC)
-            consulted_grp = ill_grp[ill_grp["sdaq02"] == 1]
-            w_consulted = consulted_grp["w"].sum()
+            consulted_mask = ill_mask & (grp["sdaq02"] == 1)
+            w_consulted = wt[consulted_mask].sum()
             if w_consulted > 0:
-                govt = consulted_grp[consulted_grp["sdaq03"].isin([2, 3])]["w"].sum()
-                private = consulted_grp[consulted_grp["sdaq03"] == 1]["w"].sum()
+                govt = wt[consulted_mask & grp["sdaq03"].isin([2, 3])].sum()
+                private = wt[consulted_mask & (grp["sdaq03"] == 1)].sum()
                 d[f"{prefix}pct_govt_facility"] = round(govt / w_consulted * 100, 2)
                 d[f"{prefix}pct_private_facility"] = round(private / w_consulted * 100, 2)
 
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
         out[dk] = d
 
-    print(f"  PSLM Health: {len(out)} districts")
+    print(f"  PSLM Health: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
     return out
 
 
 # ── PSLM Digital Literacy ────────────────────────────────────────────────────
 
-def load_pslm_digital(pslm_dir):
+def load_pslm_digital(pslm_dir, census_pop=None):
     """Aggregate PSLM 2019-20 secc2 digital literacy to district-level.
 
     Individual-level (870K rows). Variables:
-      sc2q01: computer access (0=no, 1=desktop, 2=laptop, 3=tablet, 4=other)
-      sc2q05: mobile phone ownership (1=none, 2=mobile, 3=smartphone)
-      sc2q06: mobile phone use by HH (1=mobile, 2=none, 3=smartphone)
+      sc2q01: computer access (5=no, 1=desktop, 2=laptop, 3=tablet, 4=other)
+      sc2q05: mobile phone ownership (1=mobile, 2=smartphone, 3=none)
       sc2q08: internet use (1=yes, 2=no)
 
+    Post-stratifies to census population and applies n<30 suppression.
     Returns: { norm_district: { pslm_digital_*: value, … } }
     """
     import pandas as pd
@@ -2490,6 +2551,22 @@ def load_pslm_digital(pslm_dir):
         else:
             dist_code_to_key[code] = apply_crosswalk(norm(label_lower))
 
+    # Post-stratification calibration
+    pslm_cal = {}
+    if census_pop:
+        r = pd.read_stata(str(pslm_dir / "roster.dta"), convert_categoricals=False,
+                          columns=["hhcode", "psu", "district"])
+        r["psu_int"] = r["psu"].astype(int)
+        r["w"] = r["psu_int"].map(weights)
+        r["dk"] = r["district"].map(dist_code_to_key)
+        for dk_val in r["dk"].dropna().unique():
+            if not dk_val or dk_val not in census_pop:
+                continue
+            w_pop = r[r["dk"] == dk_val]["w"].sum()
+            if w_pop > 0:
+                pslm_cal[dk_val] = census_pop[dk_val]["pop_total"] / w_pop
+        print(f"  PSLM Digital post-stratification: {len(pslm_cal)} districts")
+
     # Load digital data (district column is NaN in secc2, get it from roster)
     print("  Loading PSLM digital literacy (secc2)...")
     digi = pd.read_stata(str(pslm_dir / "secc2.dta"), convert_categoricals=False,
@@ -2503,47 +2580,54 @@ def load_pslm_digital(pslm_dir):
     digi = digi.merge(roster[["hhcode", "idc", "district", "age", "sb1q4"]], on=["hhcode", "idc"], how="left")
     digi["dk"] = digi["district"].map(dist_code_to_key)
 
+    n_suppressed = 0
     for dk, grp in digi.groupby("dk"):
         if not dk:
             continue
         # Focus on 10+ population for digital literacy
         g10 = grp[grp["age"] >= 10]
-        wtot = g10["w"].sum()
+        n_obs = len(g10)
+        cal = pslm_cal.get(dk, 1.0)
+        wt = g10["w"].fillna(1) * cal
+        wtot = wt.sum()
         if wtot <= 0:
             continue
 
         d = {}
-        # Computer access: sc2q01 in (1=desktop, 2=laptop, 3=tablet, 4=other) — anything not 0/"no"
-        has_computer = g10[g10["sc2q01"].isin([1, 2, 3, 4])]["w"].sum()
+        # Computer access: sc2q01 in (1=desktop, 2=laptop, 3=tablet, 4=other) — not 5=no
+        has_computer = wt[g10["sc2q01"].isin([1, 2, 3, 4])].sum()
         d[f"{prefix}pct_computer_access"] = round(has_computer / wtot * 100, 2)
 
         # Smartphone ownership: sc2q05: 1=mobile, 2=smartphone, 3=none
-        smartphone = g10[g10["sc2q05"] == 2]["w"].sum()
+        smartphone = wt[g10["sc2q05"] == 2].sum()
         d[f"{prefix}pct_smartphone"] = round(smartphone / wtot * 100, 2)
 
         # Any mobile: sc2q05 in (1=mobile, 2=smartphone)
-        any_mobile = g10[g10["sc2q05"].isin([1, 2])]["w"].sum()
+        any_mobile = wt[g10["sc2q05"].isin([1, 2])].sum()
         d[f"{prefix}pct_any_mobile"] = round(any_mobile / wtot * 100, 2)
 
         # Internet use: sc2q08 == 1
-        internet = g10[g10["sc2q08"] == 1]["w"].sum()
+        internet = wt[g10["sc2q08"] == 1].sum()
         d[f"{prefix}pct_internet_user"] = round(internet / wtot * 100, 2)
 
         # Gender gap: male vs female internet
         g10m = g10[g10["sb1q4"] == 1]
         g10f = g10[g10["sb1q4"] == 2]
-        w10m = g10m["w"].sum()
-        w10f = g10f["w"].sum()
+        w10m = wt[g10["sb1q4"] == 1].sum()
+        w10f = wt[g10["sb1q4"] == 2].sum()
         if w10m > 0:
             d[f"{prefix}pct_internet_male"] = round(
-                g10m[g10m["sc2q08"] == 1]["w"].sum() / w10m * 100, 2)
+                wt[(g10["sc2q08"] == 1) & (g10["sb1q4"] == 1)].sum() / w10m * 100, 2)
         if w10f > 0:
             d[f"{prefix}pct_internet_female"] = round(
-                g10f[g10f["sc2q08"] == 1]["w"].sum() / w10f * 100, 2)
+                wt[(g10["sc2q08"] == 1) & (g10["sb1q4"] == 2)].sum() / w10f * 100, 2)
 
+        _suppress_low_n(d, prefix, n_obs)
+        if d.get(f"{prefix}low_n"):
+            n_suppressed += 1
         out[dk] = d
 
-    print(f"  PSLM Digital: {len(out)} districts")
+    print(f"  PSLM Digital: {len(out)} districts, {n_suppressed} suppressed (n<{MIN_SAMPLE_SIZE})")
     return out
 
 
@@ -2642,13 +2726,8 @@ def main():
     elif t14_2023.exists():
         tables.append(("Employment 2023 (combined)", load_employment_table_clean(t14_2023, "2023")))
 
-    # PSLM 2019-20 microdata
+    # PSLM 2019-20 microdata — loaded later with census_pop for post-stratification
     pslm_dir = PBS / "Microdata" / "PSLM 2019-20" / "stata data"
-    if pslm_dir.exists():
-        try:
-            tables.append(("PSLM 2019-20", load_pslm(pslm_dir)))
-        except Exception as e:
-            print(f"  WARNING: PSLM failed: {e}")
 
     # Economic Census
     ec_dir = PBS / "Economic Census"
@@ -2665,6 +2744,13 @@ def main():
         merge_into(_census_data, tbl)
     census_pop = _load_census_pop(_census_data)
     print(f"  Census pop for post-stratification: {len(census_pop)} districts")
+
+    # PSLM 2019-20 microdata (needs census_pop for post-stratification)
+    if pslm_dir.exists():
+        try:
+            tables.append(("PSLM 2019-20", load_pslm(pslm_dir, census_pop=census_pop)))
+        except Exception as e:
+            print(f"  WARNING: PSLM failed: {e}")
 
     # LFS 2020-21
     lfs_dir = PBS / "Microdata" / "LFS"
@@ -2720,14 +2806,14 @@ def main():
     # PSLM Health Access
     if pslm_dir.exists():
         try:
-            tables.append(("PSLM Health Access", load_pslm_health(pslm_dir)))
+            tables.append(("PSLM Health Access", load_pslm_health(pslm_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: PSLM Health failed: {e}")
 
     # PSLM Digital Literacy
     if pslm_dir.exists():
         try:
-            tables.append(("PSLM Digital Literacy", load_pslm_digital(pslm_dir)))
+            tables.append(("PSLM Digital Literacy", load_pslm_digital(pslm_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: PSLM Digital failed: {e}")
 

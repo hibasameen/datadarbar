@@ -5,9 +5,24 @@
 const GEOJSON_PATH = 'data/pakistan_districts_province_boundries.geojson';
 const DATA_PATH    = 'data/districts.json';
 
+// Topic → ordered list of dataset group keys
+const TOPICS = {
+  demographics:   { label: 'Demographics',              groups: ['demographics', 'urbanRural'] },
+  education:      { label: 'Education',                 groups: ['literacy', 'education', 'pslmEducation'] },
+  employment:     { label: 'Employment',                groups: ['employment', 'pslmEmployment', 'lfs', 'lfs25'] },
+  economic:       { label: 'Economic Activity',         groups: ['econCensus'] },
+  welfare:        { label: 'Household Welfare',         groups: ['hies'] },
+  housing:        { label: 'Housing & Infrastructure',  groups: ['hiesHousing', 'pslmWash', 'hiesWaste'] },
+  ict:            { label: 'ICT & Digital',             groups: ['hiesIct', 'pslmDigital'] },
+  health:         { label: 'Health',                    groups: ['pslmHealth'] },
+  women:          { label: "Women's Empowerment",       groups: ['hiesDecisions'] },
+};
+
 const INDICATOR_GROUPS = {
+  // ── DEMOGRAPHICS ─────────────────────────────────────────────────────
   demographics: {
-    label: 'Demographics (Census)',
+    label: 'Census 2017/23',
+    dataset: 'Census 2017/23',
     indicators: {
       pop_total:          'Total Population',
       pop_male:           'Male Population',
@@ -22,7 +37,8 @@ const INDICATOR_GROUPS = {
     prefix: 't1', hasYears: true,
   },
   urbanRural: {
-    label: 'Urban / Rural (Census)',
+    label: 'Urban / Rural — Census 2017/23',
+    dataset: 'Census 2017/23',
     indicators: {
       total_all: 'Total Population', total_male: 'Total Male', total_female: 'Total Female',
       rural_all: 'Rural Population', rural_male: 'Rural Male', rural_female: 'Rural Female',
@@ -30,8 +46,10 @@ const INDICATOR_GROUPS = {
     },
     prefix: 't5', hasYears: true,
   },
+  // ── EDUCATION ────────────────────────────────────────────────────────
   literacy: {
-    label: 'Literacy (Census)',
+    label: 'Literacy — Census 2017/23',
+    dataset: 'Census 2017/23',
     indicators: {
       literacy_ratio_all:    'Literacy Rate (Total %)',
       literacy_ratio_male:   'Literacy Rate (Male %)',
@@ -42,7 +60,8 @@ const INDICATOR_GROUPS = {
     prefix: 't12', hasYears: true,
   },
   education: {
-    label: 'Education (Census)',
+    label: 'Education Attainment — Census 2017/23',
+    dataset: 'Census 2017/23',
     indicators: {
       pct_never_attended: '% Never Attended School',
       pct_below_primary: '% Below Primary', pct_primary: '% Primary',
@@ -56,8 +75,23 @@ const INDICATOR_GROUPS = {
     },
     prefix: 't_edu', hasYears: true,
   },
+  pslmEducation: {
+    label: 'Education — PSLM 2019-20',
+    dataset: 'PSLM 2019-20',
+    indicators: {
+      literacy_rate: 'Literacy Rate (%)',
+      numeracy_rate: 'Numeracy Rate (%)',
+      net_enrolment_rate: 'Net Enrolment Rate 5-16 (%)',
+      pct_never_attended: '% Never Attended School',
+      pct_govt_school: '% in Govt. School',
+      pct_private_school: '% in Private School',
+    },
+    prefix: 'pslm', hasYears: false, noYear: true,
+  },
+  // ── EMPLOYMENT ───────────────────────────────────────────────────────
   employment: {
-    label: 'Employment (Census)',
+    label: 'Employment — Census 2017/23',
+    dataset: 'Census 2017/23',
     indicators: {
       total:                    'Total Pop. (10+)',
       worked:                   'Employed',
@@ -81,43 +115,20 @@ const INDICATOR_GROUPS = {
     },
     prefix: 't_emp', hasYears: true,
   },
-  pslm: {
-    label: 'PSLM 2019-20 (Survey)',
+  pslmEmployment: {
+    label: 'Employment — PSLM 2019-20',
+    dataset: 'PSLM 2019-20',
     indicators: {
-      literacy_rate: 'Literacy Rate (%)',
-      numeracy_rate: 'Numeracy Rate (%)',
-      net_enrolment_rate: 'Net Enrolment Rate 5-16 (%)',
-      pct_never_attended: '% Never Attended School',
-      pct_govt_school: '% in Govt. School',
-      pct_private_school: '% in Private School',
       work_participation_rate: 'Work Participation Rate (%)',
       work_participation_male: 'Work Participation Male (%)',
       work_participation_female: 'Work Participation Female (%)',
-      pct_piped_water: '% HH Piped Water',
-      pct_flush_toilet: '% HH Flush Toilet',
-      pct_no_toilet: '% HH No Toilet',
-      pct_internet: '% HH Internet Access',
-      pct_mobile: '% HH Mobile Phone',
       avg_hh_size: 'Avg. Household Size',
     },
     prefix: 'pslm', hasYears: false, noYear: true,
   },
-  econCensus: {
-    label: 'Economic Census 2023',
-    indicators: {
-      total_establishments: 'Total Establishments',
-      total_workforce:      'Total Workforce',
-      avg_workers_per_est:  'Avg. Workers per Establishment',
-      pct_manufacturing:    '% Manufacturing',
-      pct_trade:            '% Wholesale & Retail Trade',
-      pct_services:         '% Services',
-      pct_agriculture:      '% Agriculture',
-      pct_construction:     '% Construction',
-    },
-    prefix: 'ec', hasYears: false, noYear: true,
-  },
   lfs: {
-    label: 'LFS 2020-21 (Survey)',
+    label: 'Employment — LFS 2020-21',
+    dataset: 'LFS 2020-21',
     indicators: {
       employment_ratio:         'Employment Ratio (%)',
       employment_ratio_male:    'Employment Ratio Male (%)',
@@ -133,23 +144,9 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'lfs21', hasYears: false, noYear: true,
   },
-  hies: {
-    label: 'HIES 2024-25 (Survey)',
-    indicators: {
-      median_monthly_percapita: 'Median Monthly Per-Capita Exp. (PKR)',
-      mean_monthly_percapita:   'Mean Monthly Per-Capita Exp. (PKR)',
-      food_share:               'Food Expenditure Share (%)',
-      food_insecurity_pct:      'Food Insecure HH (%)',
-      avg_fies_score:           'Avg. FIES Score (0-8)',
-      pct_piped_water:          '% HH Piped Water',
-      pct_electricity:          '% HH Electricity',
-      pct_owner_occupied:       '% HH Owner-Occupied',
-      avg_hh_size:              'Avg. Household Size',
-    },
-    prefix: 'hies', hasYears: false, noYear: true,
-  },
   lfs25: {
-    label: 'LFS 2024-25 (Survey)',
+    label: 'Employment — LFS 2024-25',
+    dataset: 'LFS 2024-25',
     indicators: {
       employment_ratio:         'Employment Ratio (%)',
       employment_ratio_male:    'Employment Ratio Male (%)',
@@ -165,8 +162,91 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'lfs25', hasYears: false, noYear: true,
   },
+  // ── ECONOMIC ACTIVITY ────────────────────────────────────────────────
+  econCensus: {
+    label: 'Economic Activity — Economic Census 2023',
+    dataset: 'Economic Census 2023',
+    indicators: {
+      total_establishments: 'Total Establishments',
+      total_workforce:      'Total Workforce',
+      avg_workers_per_est:  'Avg. Workers per Establishment',
+      pct_manufacturing:    '% Manufacturing',
+      pct_trade:            '% Wholesale & Retail Trade',
+      pct_services:         '% Services',
+      pct_agriculture:      '% Agriculture',
+      pct_construction:     '% Construction',
+    },
+    prefix: 'ec', hasYears: false, noYear: true,
+  },
+  // ── HOUSEHOLD WELFARE ────────────────────────────────────────────────
+  hies: {
+    label: 'Consumption & Food Security — HIES 2024-25',
+    dataset: 'HIES 2024-25',
+    indicators: {
+      median_monthly_percapita: 'Median Monthly Per-Capita Exp. (PKR)',
+      mean_monthly_percapita:   'Mean Monthly Per-Capita Exp. (PKR)',
+      food_share:               'Food Expenditure Share (%)',
+      food_insecurity_pct:      'Food Insecure HH (%)',
+      avg_fies_score:           'Avg. FIES Score (0-8)',
+      avg_hh_size:              'Avg. Household Size',
+    },
+    prefix: 'hies', hasYears: false, noYear: true,
+  },
+  // ── HOUSING & INFRASTRUCTURE ─────────────────────────────────────────
+  hiesHousing: {
+    label: 'Housing & Utilities — HIES 2024-25',
+    dataset: 'HIES 2024-25',
+    indicators: {
+      pct_electricity:    '% HH Electricity',
+      pct_owner_occupied: '% HH Owner-Occupied',
+      pct_piped_water:    '% HH Piped Water',
+      avg_rooms:          'Avg. Rooms per HH',
+      pct_pucca_floor:    '% Pucca Floor (Cement/Tiles)',
+      pct_rcc_roof:       '% RCC/RBC Roof',
+      pct_brick_walls:    '% Burnt Brick Walls',
+      pct_pucca_house:    '% Fully Pucca House',
+      pct_katcha_house:   '% Katcha House',
+    },
+    prefix: 'hies', hasYears: false, noYear: true,
+    // Note: electricity/owner/water use hies_ prefix, housing quality uses hies_hq_
+    // Override dataKey for mixed-prefix group
+    mixedKeys: {
+      pct_electricity: 'hies_pct_electricity',
+      pct_owner_occupied: 'hies_pct_owner_occupied',
+      pct_piped_water: 'hies_pct_piped_water',
+      avg_rooms: 'hies_hq_avg_rooms',
+      pct_pucca_floor: 'hies_hq_pct_pucca_floor',
+      pct_rcc_roof: 'hies_hq_pct_rcc_roof',
+      pct_brick_walls: 'hies_hq_pct_brick_walls',
+      pct_pucca_house: 'hies_hq_pct_pucca_house',
+      pct_katcha_house: 'hies_hq_pct_katcha_house',
+    },
+  },
+  pslmWash: {
+    label: 'Water & Sanitation — PSLM 2019-20',
+    dataset: 'PSLM 2019-20',
+    indicators: {
+      pct_piped_water:  '% HH Piped Water',
+      pct_flush_toilet: '% HH Flush Toilet',
+      pct_no_toilet:    '% HH No Toilet',
+    },
+    prefix: 'pslm', hasYears: false, noYear: true,
+  },
+  hiesWaste: {
+    label: 'Waste Management — HIES 2024-25',
+    dataset: 'HIES 2024-25',
+    indicators: {
+      pct_open_dumping:          '% Open Dumping',
+      pct_municipal_collection:  '% Municipal Collection',
+      pct_formal_collection:     '% Any Formal Collection',
+      pct_no_bin_access:         '% No Bin Access',
+    },
+    prefix: 'hies_waste', hasYears: false, noYear: true,
+  },
+  // ── ICT & DIGITAL ───────────────────────────────────────────────────
   hiesIct: {
-    label: 'ICT & Digital Access (HIES 2024-25)',
+    label: 'ICT & Digital Access — HIES 2024-25',
+    dataset: 'HIES 2024-25',
     indicators: {
       pct_smartphone:       '% Smartphone Ownership',
       pct_any_mobile:       '% Any Mobile Phone',
@@ -177,30 +257,48 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'hies_ict', hasYears: false, noYear: true,
   },
-  hiesHousing: {
-    label: 'Housing Quality (HIES 2024-25)',
+  pslmDigital: {
+    label: 'ICT & Digital Access — PSLM 2019-20',
+    dataset: 'PSLM 2019-20',
     indicators: {
-      avg_rooms:          'Avg. Rooms per HH',
-      pct_pucca_floor:    '% Pucca Floor (Cement/Tiles)',
-      pct_rcc_roof:       '% RCC/RBC Roof',
-      pct_brick_walls:    '% Burnt Brick Walls',
-      pct_pucca_house:    '% Fully Pucca House',
-      pct_katcha_house:   '% Katcha House',
+      pct_computer_access:  '% Computer Access (10+)',
+      pct_smartphone:       '% Smartphone (10+)',
+      pct_any_mobile:       '% Any Mobile (10+)',
+      pct_internet_user:    '% Internet User (10+)',
+      pct_internet_male:    '% Internet Male (10+)',
+      pct_internet_female:  '% Internet Female (10+)',
+      pct_internet:         '% HH Internet Access',
+      pct_mobile:           '% HH Mobile Phone',
     },
-    prefix: 'hies_hq', hasYears: false, noYear: true,
+    prefix: 'pslm', hasYears: false, noYear: true,
+    // Note: pct_internet/pct_mobile use pslm_ prefix, rest use pslm_digital_
+    mixedKeys: {
+      pct_computer_access: 'pslm_digital_pct_computer_access',
+      pct_smartphone: 'pslm_digital_pct_smartphone',
+      pct_any_mobile: 'pslm_digital_pct_any_mobile',
+      pct_internet_user: 'pslm_digital_pct_internet_user',
+      pct_internet_male: 'pslm_digital_pct_internet_male',
+      pct_internet_female: 'pslm_digital_pct_internet_female',
+      pct_internet: 'pslm_pct_internet',
+      pct_mobile: 'pslm_pct_mobile',
+    },
   },
-  hiesWaste: {
-    label: 'Waste Management (HIES 2024-25)',
+  // ── HEALTH ──────────────────────────────────────────────────────────
+  pslmHealth: {
+    label: 'Health Access — PSLM 2019-20',
+    dataset: 'PSLM 2019-20',
     indicators: {
-      pct_open_dumping:          '% Open Dumping',
-      pct_municipal_collection:  '% Municipal Collection',
-      pct_formal_collection:     '% Any Formal Collection',
-      pct_no_bin_access:         '% No Bin Access',
+      morbidity_rate:        'Morbidity Rate (% ill in 2 weeks)',
+      pct_sought_treatment:  '% Sought Treatment (if ill)',
+      pct_govt_facility:     '% Used Govt. Facility',
+      pct_private_facility:  '% Used Private Facility',
     },
-    prefix: 'hies_waste', hasYears: false, noYear: true,
+    prefix: 'pslm_health', hasYears: false, noYear: true,
   },
+  // ── WOMEN'S EMPOWERMENT ─────────────────────────────────────────────
   hiesDecisions: {
-    label: "Women's Decision-Making (HIES 2024-25)",
+    label: "Women's Empowerment — HIES 2024-25",
+    dataset: 'HIES 2024-25',
     indicators: {
       pct_edu_self:              '% Women Decide Own Education',
       pct_edu_consulted:         '% Women Consulted on Education',
@@ -213,49 +311,37 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'hies_wdm', hasYears: false, noYear: true,
   },
-  pslmHealth: {
-    label: 'Health Access (PSLM 2019-20)',
-    indicators: {
-      morbidity_rate:        'Morbidity Rate (% ill in 2 weeks)',
-      pct_sought_treatment:  '% Sought Treatment (if ill)',
-      pct_govt_facility:     '% Used Govt. Facility',
-      pct_private_facility:  '% Used Private Facility',
-    },
-    prefix: 'pslm_health', hasYears: false, noYear: true,
-  },
-  pslmDigital: {
-    label: 'Digital Literacy (PSLM 2019-20)',
-    indicators: {
-      pct_computer_access:  '% Computer Access (10+)',
-      pct_smartphone:       '% Smartphone (10+)',
-      pct_any_mobile:       '% Any Mobile (10+)',
-      pct_internet_user:    '% Internet User (10+)',
-      pct_internet_male:    '% Internet Male (10+)',
-      pct_internet_female:  '% Internet Female (10+)',
-    },
-    prefix: 'pslm_digital', hasYears: false, noYear: true,
-  },
 };
 
-// Colour ramps per group — now using greens/teals for better harmony
+// Colour ramps per group — topic-consistent colours
 const COLOR_RAMPS = {
-  demographics:   ['#e6f4ec', '#145228'],
-  urbanRural:     ['#fef6dc', '#1a5632'],
-  literacy:       ['#e6f4ec', '#0c3a1e'],
-  education:      ['#fef6dc', '#b8941a'],
-  employment:     ['#e6f4ec', '#1e6b3e'],
-  eduAttainment:  ['#fef6dc', '#d4a017'],
-  pslm:           ['#e6f4ec', '#22804a'],
-  econCensus:     ['#fef6dc', '#1a5632'],
-  lfs:            ['#e6f4ec', '#0c3a1e'],
-  hies:           ['#fef6dc', '#b8941a'],
-  lfs25:          ['#e6f4ec', '#1e6b3e'],
-  hiesIct:        ['#e8eaf6', '#1a237e'],   // indigo — tech/digital
-  hiesHousing:    ['#fbe9e7', '#bf360c'],   // deep orange — construction
-  hiesWaste:      ['#e0f2f1', '#004d40'],   // teal — environment
-  hiesDecisions:  ['#fce4ec', '#880e4f'],   // pink — gender/empowerment
-  pslmHealth:     ['#e8f5e9', '#1b5e20'],   // green — health
-  pslmDigital:    ['#e3f2fd', '#0d47a1'],   // blue — digital
+  // Demographics
+  demographics:     ['#e6f4ec', '#145228'],
+  urbanRural:       ['#e6f4ec', '#1a5632'],
+  // Education
+  literacy:         ['#fef6dc', '#b8941a'],
+  education:        ['#fef6dc', '#d4a017'],
+  pslmEducation:    ['#fef6dc', '#8d6e0f'],
+  // Employment
+  employment:       ['#e6f4ec', '#1e6b3e'],
+  pslmEmployment:   ['#e6f4ec', '#22804a'],
+  lfs:              ['#e6f4ec', '#0c3a1e'],
+  lfs25:            ['#e6f4ec', '#1e6b3e'],
+  // Economic Activity
+  econCensus:       ['#fef6dc', '#1a5632'],
+  // Household Welfare
+  hies:             ['#fef6dc', '#b8941a'],
+  // Housing & Infrastructure
+  hiesHousing:      ['#fbe9e7', '#bf360c'],
+  pslmWash:         ['#e0f2f1', '#004d40'],
+  hiesWaste:        ['#e0f2f1', '#00695c'],
+  // ICT & Digital
+  hiesIct:          ['#e8eaf6', '#1a237e'],
+  pslmDigital:      ['#e3f2fd', '#0d47a1'],
+  // Health
+  pslmHealth:       ['#e8f5e9', '#1b5e20'],
+  // Women's Empowerment
+  hiesDecisions:    ['#fce4ec', '#880e4f'],
 };
 
 // Indicators where an INCREASE is bad (red) and a DECREASE is good (green).
@@ -295,6 +381,7 @@ const HIGHER_IS_WORSE = new Set([
 // ── State ───────────────────────────────────────────────────────────────────
 
 let map, districtLayer, rawData = {}, geoData;
+let currentTopic = 'demographics';
 let currentGroup = 'demographics';
 let currentIndicator = 'pop_total';
 let currentYear = '2023';
@@ -307,6 +394,7 @@ const layerFills = new WeakMap();
 
 // ── DOM refs ────────────────────────────────────────────────────────────────
 
+const topicSelect     = document.getElementById('topicSelect');
 const groupSelect     = document.getElementById('groupSelect');
 const indicatorSelect = document.getElementById('indicatorSelect');
 const provinceSelect  = document.getElementById('provinceSelect');
@@ -357,29 +445,69 @@ function isPctLabel(label) {
          (/\brate\b/i.test(label) && !/literate|illiterate/i.test(label));
 }
 
-// Survey groups that carry sample-size metadata from ETL
-const SURVEY_PREFIXES = new Set(['lfs21', 'lfs25', 'hies']);
+// Survey groups that carry sample-size metadata (n_obs + low_n) from ETL.
+// Maps group prefix → the prefix used for n_obs/low_n keys in the data.
+// Groups sharing a prefix (e.g. pslmEducation and pslmEmployment both use 'pslm')
+// but without their own n_obs will fall through gracefully (return null).
+const SURVEY_META_PREFIX = {
+  lfs21:        'lfs21',
+  lfs25:        'lfs25',
+  hies:         'hies',
+  hies_ict:     'hies_ict',
+  hies_hq:      'hies_hq',
+  hies_waste:   'hies_waste',
+  hies_wdm:     'hies_wdm',
+  pslm:         'pslm',
+  pslm_health:  'pslm_health',
+  pslm_digital: 'pslm_digital',
+};
+
+function _surveyMetaPrefixes() {
+  // Returns array of prefixes to check for n_obs/low_n metadata.
+  // Mixed-prefix groups check all unique prefixes from their mixedKeys.
+  const g = INDICATOR_GROUPS[currentGroup];
+  if (!g) return [];
+  if (g.mixedKeys) {
+    const prefixes = new Set();
+    for (const fullKey of Object.values(g.mixedKeys)) {
+      // Extract prefix: everything before the last _indicator part
+      const parts = fullKey.split('_');
+      // Find the prefix by matching against known survey prefixes
+      for (const sp of Object.keys(SURVEY_META_PREFIX)) {
+        if (fullKey.startsWith(sp + '_')) { prefixes.add(sp); break; }
+      }
+    }
+    return [...prefixes];
+  }
+  if (SURVEY_META_PREFIX[g.prefix]) return [SURVEY_META_PREFIX[g.prefix]];
+  return [];
+}
 
 function isLowN(props) {
-  const g = INDICATOR_GROUPS[currentGroup];
-  if (!g || !SURVEY_PREFIXES.has(g.prefix)) return false;
+  const mps = _surveyMetaPrefixes();
+  if (!mps.length) return false;
   const dist = props.districts || props.district_agency || '';
   const row = rawData[normName(dist)];
   if (!row) return false;
-  return !!row[`${g.prefix}_low_n`];
+  // Flag if ANY contributing source is low_n
+  return mps.some(mp => !!row[`${mp}_low_n`]);
 }
 
 function getNObs(props) {
-  const g = INDICATOR_GROUPS[currentGroup];
-  if (!g || !SURVEY_PREFIXES.has(g.prefix)) return null;
+  const mps = _surveyMetaPrefixes();
+  if (!mps.length) return null;
   const dist = props.districts || props.district_agency || '';
   const row = rawData[normName(dist)];
   if (!row) return null;
-  return row[`${g.prefix}_n_obs`] ?? null;
+  // Return minimum n_obs across sources (most conservative)
+  const obs = mps.map(mp => row[`${mp}_n_obs`]).filter(v => v != null);
+  return obs.length ? Math.min(...obs) : null;
 }
 
 function dataKey(group, year, indicator) {
   const g = INDICATOR_GROUPS[group];
+  // Mixed-prefix groups: explicit key mapping overrides the prefix convention
+  if (g.mixedKeys && g.mixedKeys[indicator]) return g.mixedKeys[indicator];
   if (g.noYear) return `${g.prefix}_${indicator}`;
   return `${g.prefix}_${year}_${indicator}`;
 }
@@ -426,13 +554,32 @@ async function loadData() {
 
 // ── Build UI ────────────────────────────────────────────────────────────────
 
-function populateGroupSelect() {
-  groupSelect.innerHTML = '';
-  for (const [key, g] of Object.entries(INDICATOR_GROUPS)) {
+function populateTopicSelect() {
+  topicSelect.innerHTML = '';
+  for (const [key, t] of Object.entries(TOPICS)) {
     const opt = document.createElement('option');
     opt.value = key;
+    opt.textContent = t.label;
+    topicSelect.appendChild(opt);
+  }
+  topicSelect.value = currentTopic;
+}
+
+function populateGroupSelect() {
+  groupSelect.innerHTML = '';
+  const topic = TOPICS[currentTopic];
+  if (!topic) return;
+  for (const gKey of topic.groups) {
+    const g = INDICATOR_GROUPS[gKey];
+    if (!g) continue;
+    const opt = document.createElement('option');
+    opt.value = gKey;
     opt.textContent = g.label;
     groupSelect.appendChild(opt);
+  }
+  // If current group isn't in this topic, default to first
+  if (!topic.groups.includes(currentGroup)) {
+    currentGroup = topic.groups[0];
   }
   groupSelect.value = currentGroup;
 }
@@ -768,7 +915,7 @@ function renderLegend(breaks, scale, isDiff) {
   html += '</div>';
   html += `<div class="legend-labels"><span>${fmt(breaks[0], pct)}</span><span>${fmt(breaks[breaks.length - 1], pct)}</span></div>`;
   // Add low-n legend entry for survey groups
-  if (SURVEY_PREFIXES.has(g.prefix)) {
+  if (_surveyMetaPrefixes().length) {
     html += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — estimate suppressed</div>';
   }
   legendDiv.innerHTML = html;
@@ -793,7 +940,9 @@ function showDistrictDetail(props) {
     let val;
 
     if (g.noYear) {
-      const v = row[`${g.prefix}_${ind}`];
+      // Use mixedKeys if available, otherwise default prefix
+      const k = (g.mixedKeys && g.mixedKeys[ind]) || `${g.prefix}_${ind}`;
+      const v = row[k];
       val = fmt(v, pct);
     } else {
       const v17 = row[`${g.prefix}_2017_${ind}`];
@@ -888,6 +1037,13 @@ function handleSearch() {
 // ── Event wiring ────────────────────────────────────────────────────────────
 
 function wireEvents() {
+  topicSelect.addEventListener('change', () => {
+    currentTopic = topicSelect.value;
+    populateGroupSelect();        // re-fill datasets for this topic
+    populateIndicatorSelect();    // re-fill indicators for the new dataset
+    updateYearButtons();
+    colorize();
+  });
   groupSelect.addEventListener('change', () => {
     currentGroup = groupSelect.value;
     populateIndicatorSelect();
@@ -910,13 +1066,15 @@ function wireEvents() {
 
   // Reset
   if (resetBtn) resetBtn.addEventListener('click', () => {
+    currentTopic = 'demographics';
     currentGroup = 'demographics';
     currentIndicator = 'pop_total';
     currentYear = '2023';
     selectedDistrict = null;
     isZoomedIn = false;
     zoomBar.classList.add('hidden');
-    groupSelect.value = currentGroup;
+    topicSelect.value = currentTopic;
+    populateGroupSelect();
     populateIndicatorSelect();
     provinceSelect.value = 'ALL';
     searchInput.value = '';
@@ -1137,6 +1295,7 @@ async function init() {
   initMap();
   await loadData();
   buildLayer();
+  populateTopicSelect();
   populateGroupSelect();
   populateIndicatorSelect();
   updateYearButtons();
