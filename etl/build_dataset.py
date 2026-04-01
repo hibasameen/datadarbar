@@ -275,22 +275,40 @@ def load_table1(path, year):
     prefix = f"t1_{year}_"
     rows = read_csv(path)
     out = {}
+    # Track sub-district data for merged districts so we can recompute averages
+    # _hh_wtd[key] = sum(pop_i * hh_size_i),  _prev_pop[key] = sum(prev_census_pop_i)
+    _hh_wtd = {}
+    _prev_pop = {}
     for r in rows:
         key = apply_crosswalk(norm(r.get("district", "")))
         if not key:
             continue
+        pop = to_num(r.get("population_all") or r.get("population_2023") or r.get("population_2017"))
+        hh = to_num(r.get("avg_household_size"))
+        prev = to_num(r.get("population_1998") or r.get("population_2017"))
+
+        # Accumulate weighted HH size numerator for merged districts
+        if pop and hh:
+            _hh_wtd[key] = _hh_wtd.get(key, 0) + pop * hh
+        if prev:
+            _prev_pop[key] = _prev_pop.get(key, 0) + prev
+
         vals = {
             f"{prefix}area_sq_km":           to_num(r.get("area_sq_km")),
-            f"{prefix}pop_total":            to_num(r.get("population_all") or r.get("population_2023") or r.get("population_2017")),
+            f"{prefix}pop_total":            pop,
             f"{prefix}pop_male":             to_num(r.get("population_male")),
             f"{prefix}pop_female":           to_num(r.get("population_female")),
             f"{prefix}pop_transgender":      to_num(r.get("population_transgender")),
             # Rate fields — stored per-row, will be recomputed for merged districts
-            f"{prefix}avg_household_size":   round(v, 2) if (v := to_num(r.get("avg_household_size"))) is not None else None,
+            f"{prefix}avg_household_size":   round(hh, 2) if hh is not None else None,
             f"{prefix}annual_growth_rate":   round(v, 2) if (v := to_num(r.get("annual_growth_rate"))) is not None else None,
             f"{prefix}urban_proportion":     round(v, 2) if (v := to_num(r.get("urban_proportion"))) is not None else None,
         }
         accumulate(out, key, vals)
+
+    # Determine intercensal period for growth rate
+    # 2023 data: 6 years from 2017; 2017 data: 19 years from 1998
+    intercensal_years = 6 if year == "2023" else 19
 
     # Recompute derived fields from summed counts
     for key, d in out.items():
@@ -300,14 +318,18 @@ def load_table1(path, year):
         area = d.get(f"{prefix}area_sq_km")
         d[f"{prefix}sex_ratio"] = round(male / female * 100, 2) if female and male else None
         d[f"{prefix}density_per_sq_km"] = round(pop / area, 2) if area and pop else None
-        # For merged districts (Karachi, Kohistan, etc.), rate fields from accumulate
-        # are sums of rates which is wrong.  Null them out; urban_proportion is
-        # recomputed from Table 5 later.  Household size and growth rate stay as-is
-        # for non-merged districts (the first row's value is kept by accumulate).
         if key in _MERGED_DISTRICTS:
             d[f"{prefix}urban_proportion"] = None  # recomputed from T5
-            d[f"{prefix}avg_household_size"] = None  # not recomputable
-            d[f"{prefix}annual_growth_rate"] = None  # not recomputable
+            # Recompute avg HH size as pop-weighted average across sub-districts
+            wtd = _hh_wtd.get(key)
+            d[f"{prefix}avg_household_size"] = round(wtd / pop, 2) if wtd and pop else None
+            # Recompute compound annual growth rate from merged totals
+            prev = _prev_pop.get(key)
+            if prev and pop and prev > 0 and intercensal_years > 0:
+                d[f"{prefix}annual_growth_rate"] = round(
+                    ((pop / prev) ** (1 / intercensal_years) - 1) * 100, 2)
+            else:
+                d[f"{prefix}annual_growth_rate"] = None
     return out
 
 def load_table5(path, year):
