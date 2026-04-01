@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 58" fill="none">
   <defs>
+    <linearGradient id="greenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#145228"/>
+      <stop offset="100%" stop-color="#0c3a1e"/>
+    </linearGradient>
     <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#f0cc5a"/>
       <stop offset="50%" stop-color="#d4a017"/>
@@ -14,6 +18,10 @@
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
+
+  <!-- Green background fill inside the arch -->
+  <path d="M6 54 V24 C6 16 12 12 28 4 C44 12 50 16 50 24 V54 Z"
+        fill="url(#greenBg)"/>
 
   <!-- Pointed Mughal/ogee arch: straight sides, curves inward to a point -->
   <path d="M6 54 V24 C6 16 12 12 28 4 C44 12 50 16 50 24 V54 Z"
