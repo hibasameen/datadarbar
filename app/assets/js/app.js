@@ -348,10 +348,13 @@ function fmt(v, pct) {
 }
 
 function isPct(indicator) {
-  return /ratio|proportion|rate|%/i.test(INDICATOR_GROUPS[currentGroup]?.indicators?.[indicator] || '');
+  const label = INDICATOR_GROUPS[currentGroup]?.indicators?.[indicator] || '';
+  return isPctLabel(label);
 }
 function isPctLabel(label) {
-  return /\(.*%\)|rate|ratio|proportion/i.test(label);
+  // Match "rate", "ratio", "proportion", or "(%)" — but not "literate"/"illiterate"
+  return /\(.*%\)|\bratio\b|\bproportion\b/i.test(label) ||
+         (/\brate\b/i.test(label) && !/literate|illiterate/i.test(label));
 }
 
 // Survey groups that carry sample-size metadata from ETL
@@ -1037,7 +1040,10 @@ function updateSummaryBar() {
   if (summDistricts) summDistricts.textContent = count;
   if (summIndLabel)  summIndLabel.textContent = g.indicators[currentIndicator] || 'Indicator';
   if (summIndValue) {
-    // Show national/filtered aggregate (simple mean for rates, sum for counts)
+    // Show national/filtered aggregate:
+    //   - rates/percentages → simple mean
+    //   - means, medians, averages, scores → simple mean (not summable)
+    //   - counts (population, establishments) → sum
     const values = [];
     districtLayer.eachLayer(l => {
       const p = l.feature.properties || {};
@@ -1048,9 +1054,14 @@ function updateSummaryBar() {
     });
     if (values.length) {
       const pct = isPct(currentIndicator);
-      if (pct) {
+      const indLabel = g.indicators[currentIndicator] || '';
+      const isAvgType = /\b(avg|average|mean|median|score|per\b)/i.test(indLabel) ||
+                        /\b(avg|mean|median)/.test(currentIndicator);
+      if (pct || isAvgType) {
         const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        summIndValue.textContent = avg.toFixed(1) + '%';
+        summIndValue.textContent = pct
+          ? avg.toFixed(1) + '%'
+          : avg.toLocaleString('en-US', { maximumFractionDigits: 1 });
       } else {
         const sum = values.reduce((a, b) => a + b, 0);
         summIndValue.textContent = sum >= 1e6
