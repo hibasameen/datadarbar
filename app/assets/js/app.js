@@ -871,7 +871,7 @@ function colorize() {
     let style;
     if (!matchesProvince(provFilter, prov)) {
       // Hide non-matching provinces entirely
-      style = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0 };
+      style = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0, dashArray: null };
     } else {
       provBoundsGroup.addLayer(l);
       const v = getVal(p);
@@ -882,9 +882,9 @@ function colorize() {
         // Low sample size — distinct striped appearance
         style = { fillOpacity: 0.25, fillColor: '#f5e6b8', weight: 1.5, color: '#c49515', opacity: 0.8, dashArray: '4 3' };
       } else if (v === null || isNaN(v)) {
-        style = { fillOpacity: 0.35, fillColor: '#e2e5ea', weight: 1, color: '#8a9480', opacity: 1 };
+        style = { fillOpacity: 0.35, fillColor: '#e2e5ea', weight: 1, color: '#8a9480', opacity: 1, dashArray: null };
       } else {
-        style = { fillColor: scale(v).hex(), fillOpacity: 0.92, weight: 1, color: '#8a9480', opacity: 1 };
+        style = { fillColor: scale(v).hex(), fillOpacity: 0.92, weight: 1, color: '#8a9480', opacity: 1, dashArray: null };
       }
     }
     l.setStyle(style);
