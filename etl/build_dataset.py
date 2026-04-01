@@ -866,35 +866,9 @@ def load_table15_2017(path):
     return out
 
 
-def load_table16_2017(path):
-    """Table 16 (2017): economic activity (population 10+ by usual activity)."""
-    prefix = "t16_2017_"
-    rows = read_csv(path)
-    out = {}
-    for r in rows:
-        key = apply_crosswalk(norm(r.get("district", "")))
-        if not key:
-            continue
-        vals = {
-            f"{prefix}total":              to_num(r.get("total_population")),
-            f"{prefix}worked":             to_num(r.get("worked")),
-            f"{prefix}seeking_work":       to_num(r.get("seeking_work")),
-            f"{prefix}student":            to_num(r.get("student")),
-            f"{prefix}house_keeping":      to_num(r.get("house_keeping")),
-            f"{prefix}others":             to_num(r.get("others")),
-        }
-        accumulate(out, key, vals)
 
-    # Recompute derived rates from summed counts
-    for key, d in out.items():
-        total = d.get(f"{prefix}total")
-        worked = d.get(f"{prefix}worked")
-        seeking = d.get(f"{prefix}seeking_work")
-        labour_force = (worked or 0) + (seeking or 0) if (worked is not None or seeking is not None) else None
-        d[f"{prefix}lfpr"] = round(labour_force / total * 100, 2) if total and labour_force is not None else None
-        d[f"{prefix}unemployment_rate"] = round(seeking / labour_force * 100, 2) if labour_force and seeking is not None else None
-        d[f"{prefix}employment_ratio"] = round(worked / total * 100, 2) if total and worked is not None else None
-    return out
+# load_table16_2017() removed — redundant with load_employment_table_clean() + load_table16_2017_pdfs()
+# which together produce the same data under the unified t_emp_2017_ prefix with gender breakdowns.
 
 
 # ── Table 16 PDF parser (gender-disaggregated 2017 employment) ──────────────
@@ -2086,11 +2060,6 @@ def main():
     t16_2017 = PBS / "Census 2017" / "final tables" / "table16_combined_2017csv.csv"
     if t16_2017.exists():
         tables.append(("Employment (2017)", load_employment_table_clean(t16_2017, "2017")))
-
-    # Table 16: Economic activity (2017)
-    t16_2017 = PBS / "Census 2017" / "final tables" / "table16_combined_2017csv.csv"
-    if t16_2017.exists():
-        tables.append(("Table 16 - Econ Activity (2017)", load_table16_2017(t16_2017)))
 
     # Table 16 PDFs: gender-disaggregated employment (2017)
     t16_pdf_dir = PBS / "Census 2017" / "pbs_2017_table16"

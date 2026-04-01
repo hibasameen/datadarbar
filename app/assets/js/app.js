@@ -81,20 +81,6 @@ const INDICATOR_GROUPS = {
     },
     prefix: 't_emp', hasYears: true,
   },
-  econActivity: {
-    label: 'Economic Activity (Census 2017)',
-    indicators: {
-      total: 'Total Pop. (10+)',
-      worked: 'Worked',
-      seeking_work: 'Seeking Work',
-      student: 'Students',
-      house_keeping: 'House Keeping',
-      lfpr: 'Labour Force Participation Rate (%)',
-      unemployment_rate: 'Unemployment Rate (%)',
-      employment_ratio: 'Employment-to-Pop Ratio (%)',
-    },
-    prefix: 't16', hasYears: false,
-  },
   pslm: {
     label: 'PSLM 2019-20 (Survey)',
     indicators: {
@@ -189,7 +175,6 @@ const COLOR_RAMPS = {
   education:      ['#fef6dc', '#b8941a'],
   employment:     ['#e6f4ec', '#1e6b3e'],
   eduAttainment:  ['#fef6dc', '#d4a017'],
-  econActivity:   ['#e6f4ec', '#145228'],
   pslm:           ['#e6f4ec', '#22804a'],
   econCensus:     ['#fef6dc', '#1a5632'],
   lfs:            ['#e6f4ec', '#0c3a1e'],
