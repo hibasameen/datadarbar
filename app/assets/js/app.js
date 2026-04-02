@@ -577,7 +577,11 @@ function initMap() {
   map.getContainer().style.background = '#faf6e9';
 
   // Click on empty map area deselects any district
-  map.on('click', () => deselectDistrict());
+  // Use a flag to avoid deselecting when a district layer was clicked
+  map.on('click', () => {
+    if (map._districtClicked) { map._districtClicked = false; return; }
+    deselectDistrict();
+  });
 }
 
 // ── Data loading ────────────────────────────────────────────────────────────
@@ -771,7 +775,7 @@ function onEachDistrict(feature, layer) {
       }
     },
     click: e => {
-      L.DomEvent.stopPropagation(e.originalEvent);  // prevent map click from deselecting
+      map._districtClicked = true;  // prevent map click from deselecting
       const stored = layerFills.get(e.target);
       // Don't select hidden districts
       if (stored && stored.fillOpacity === 0) return;
