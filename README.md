@@ -85,4 +85,4 @@ These adjustments improve the plausibility of district-level estimates but do no
 
 ## License
 
-Data is from the Pakistan Bureau of Statistics (public domain). Code is MIT.
+Data is from the Pakistan Bureau of Statistics (public domain). This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
