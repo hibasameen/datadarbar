@@ -247,13 +247,12 @@ main {
   grid-row: 2;
   display: flex; flex-direction: column;
   background: var(--gold-100);
-  overflow: hidden;
   border-left: 1px solid var(--slate-200);
 }
 
 /* District stats: scrollable */
 #stats {
-  flex: 1 1 auto; overflow-y: auto;
+  overflow-y: auto; max-height: 45vh;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-300) transparent;
 }
@@ -309,7 +308,7 @@ main {
 .panel-district {
   border-left: 3px solid var(--gold-500);
   background: var(--white);
-  flex: 1 1 auto; display: flex; flex-direction: column;
+  flex: 0 1 auto; display: flex; flex-direction: column;
   overflow: hidden; min-height: 0;
 }
 

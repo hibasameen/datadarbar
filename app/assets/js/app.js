@@ -402,6 +402,16 @@ function highlightLayer(layer) {
   layer.bringToFront();
 }
 
+function deselectDistrict() {
+  if (!selectedDistrict) return;
+  const prev = layerFills.get(selectedDistrict);
+  if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity, dashArray: prev.dashArray || null });
+  selectedDistrict = null;
+  districtNameEl.textContent = 'Select a district';
+  districtProvEl.textContent = '';
+  statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+}
+
 // ── DOM refs ────────────────────────────────────────────────────────────────
 
 const topicSelect     = document.getElementById('topicSelect');
@@ -565,6 +575,9 @@ function initMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(map);
   map.getContainer().style.background = '#faf6e9';
+
+  // Click on empty map area deselects any district
+  map.on('click', () => deselectDistrict());
 }
 
 // ── Data loading ────────────────────────────────────────────────────────────
@@ -758,6 +771,7 @@ function onEachDistrict(feature, layer) {
       }
     },
     click: e => {
+      L.DomEvent.stopPropagation(e.originalEvent);  // prevent map click from deselecting
       const stored = layerFills.get(e.target);
       // Don't select hidden districts
       if (stored && stored.fillOpacity === 0) return;
