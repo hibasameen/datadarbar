@@ -392,6 +392,16 @@ let originalBounds = null;
 // Store per-layer fill so hover can restore it
 const layerFills = new WeakMap();
 
+function highlightLayer(layer) {
+  if (selectedDistrict && selectedDistrict !== layer) {
+    const prev = layerFills.get(selectedDistrict);
+    if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity, dashArray: prev.dashArray || null });
+  }
+  selectedDistrict = layer;
+  layer.setStyle({ weight: 2.5, color: '#0c3a1e' });
+  layer.bringToFront();
+}
+
 // ── DOM refs ────────────────────────────────────────────────────────────────
 
 const topicSelect     = document.getElementById('topicSelect');
@@ -758,14 +768,7 @@ function onEachDistrict(feature, layer) {
         return;
       }
 
-      // Deselect previous
-      if (selectedDistrict) {
-        const prev = layerFills.get(selectedDistrict);
-        if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity });
-      }
-      selectedDistrict = e.target;
-      e.target.setStyle({ weight: 2.5, color: '#0c3a1e' });
-      e.target.bringToFront();
+      highlightLayer(e.target);
       showDistrictDetail(e.target.feature.properties);
     }
   });
@@ -839,6 +842,7 @@ function colorize() {
     }
     legendDiv.innerHTML = '<p class="legend-empty">No data for this selection</p>';
     updateSummary([]);
+    buildRankings();
     return;
   }
 
@@ -910,6 +914,7 @@ function colorize() {
   renderLegend(breaks, scale, isDiff);
   updateDiagnostics(values.length);
   updateSummaryBar();
+  buildRankings();
   prepareDownload();
 
   // Refresh sidebar detail if a district is currently selected
@@ -1271,6 +1276,85 @@ function updateSummaryBar() {
   }
 }
 
+// ── Rankings (Top 10 / Bottom 10) ─────────────────────────────────────────
+
+function buildRankings() {
+  const provFilter = provinceSelect.value;
+  const g = INDICATOR_GROUPS[currentGroup];
+  const pct = isPct(currentIndicator);
+  const indLabel = g.indicators[currentIndicator] || 'Value';
+  const entries = [];
+
+  districtLayer.eachLayer(l => {
+    const p = l.feature.properties || {};
+    const prov = p.province_territory || 'Unknown';
+    if (!matchesProvince(provFilter, prov)) return;
+    const dist = p.districts || p.district_agency || '';
+    const v = getVal(p);
+    if (v !== null && !isNaN(v)) entries.push({ dist, prov, v, layer: l });
+  });
+
+  entries.sort((a, b) => b.v - a.v);
+
+  const top10 = entries.slice(0, 10);
+  // Avoid overlap: if ≤20 entries, bottom starts after top10
+  const bottomStart = Math.max(10, entries.length - 10);
+  const bottom10 = entries.slice(bottomStart).reverse();
+
+  const top10Body = document.getElementById('rankingTop10Body');
+  const bottom10Body = document.getElementById('rankingBottom10Body');
+  if (!top10Body || !bottom10Body) return;
+
+  const totalEntries = entries.length;
+
+  function renderList(items, container, startRank, descending) {
+    if (!items.length) {
+      container.innerHTML = '<p class="ranking-empty">No data available</p>';
+      return;
+    }
+    let html = '';
+    items.forEach((e, i) => {
+      const rank = descending ? totalEntries - i : startRank + i;
+      const valStr = currentYear === 'diff' ? fmtDiff(e.v, pct) : fmt(e.v, pct);
+      html += `<div class="ranking-row" data-dist-key="${normName(e.dist)}">` +
+        `<span class="ranking-rank">${rank}</span>` +
+        `<span class="ranking-name">${e.dist}</span>` +
+        `<strong class="ranking-val">${valStr}</strong></div>`;
+    });
+    container.innerHTML = html;
+
+    // Click to highlight on map and show detail
+    container.querySelectorAll('.ranking-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const key = row.dataset.distKey;
+        const match = entries.find(e => normName(e.dist) === key);
+        if (match && match.layer) {
+          showDistrictDetail(match.layer.feature.properties);
+          match.layer.openTooltip();
+          highlightLayer(match.layer);
+        }
+      });
+    });
+  }
+
+  renderList(top10, top10Body, 1, false);
+  renderList(bottom10, bottom10Body, 0, true);
+}
+
+function wireRankingToggles() {
+  document.querySelectorAll('.ranking-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.target;
+      const body = document.getElementById(targetId);
+      if (!body) return;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', !expanded);
+      body.classList.toggle('expanded', !expanded);
+      btn.querySelector('.ranking-toggle-icon').textContent = expanded ? '\u25B6' : '\u25BC';
+    });
+  });
+}
+
 // ── Mobile nav & controls ──────────────────────────────────────────────────
 
 function wireMobile() {
@@ -1330,6 +1414,7 @@ async function init() {
   updateYearButtons();
   wireEvents();
   wireMobile();
+  wireRankingToggles();
   colorize();
 }
 

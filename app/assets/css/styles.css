@@ -439,6 +439,81 @@ select:focus, input:focus {
   line-height: 1.4;
 }
 
+/* ── District stats scroll ─────────────────────────────────────── */
+.stats-scroll {
+  max-height: 45vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+.stats-scroll::-webkit-scrollbar { width: 4px; }
+.stats-scroll::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+
+/* ── Rankings (Top 10 / Bottom 10) ─────────────────────────────── */
+.panel-rankings {
+  background: var(--white);
+  border-top: 1px solid var(--slate-100);
+  padding: 0;
+}
+.ranking-section {
+  border-bottom: 1px solid var(--slate-100);
+}
+.ranking-section:last-child { border-bottom: none; }
+
+.ranking-toggle {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; padding: 10px 16px;
+  background: none; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 700; color: var(--green-700);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  transition: background 0.15s;
+}
+.ranking-toggle:hover { background: var(--green-50); }
+.ranking-toggle-icon {
+  font-size: 8px; display: inline-block;
+  transition: transform 0.2s;
+}
+
+.ranking-body {
+  display: none;
+  padding: 0 16px 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+.ranking-body::-webkit-scrollbar { width: 4px; }
+.ranking-body::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+.ranking-body.expanded { display: block; }
+
+.ranking-row {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 5px 4px; font-size: 12px;
+  border-bottom: 1px solid var(--slate-50);
+  cursor: pointer; transition: background 0.1s;
+  border-radius: 3px;
+}
+.ranking-row:last-child { border-bottom: none; }
+.ranking-row:hover { background: var(--green-50); }
+
+.ranking-rank {
+  flex: 0 0 22px; text-align: right;
+  font-weight: 700; font-size: 11px; color: var(--slate-400);
+  font-variant-numeric: tabular-nums;
+}
+.ranking-name {
+  flex: 1; color: var(--slate-700);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ranking-val {
+  flex: 0 0 auto; font-weight: 700; color: var(--green-900);
+  font-variant-numeric: tabular-nums; font-size: 12px;
+}
+.ranking-empty {
+  font-size: 12px; color: var(--slate-400); font-style: italic;
+  padding: 4px 0;
+}
+
 /* ── Legend ──────────────────────────────────────────────────────── */
 .legend-title {
   font-size: 12px; font-weight: 600; color: var(--slate-700);
@@ -808,6 +883,11 @@ select:focus, input:focus {
   .district-name { font-size: 18px; }
   .stat { padding: 8px 0; font-size: 13px; }
   .stat:hover { margin: 0; padding: 8px 0; }
+
+  /* Rankings: mobile */
+  .stats-scroll { max-height: 35vh; }
+  .ranking-toggle { padding: 12px 14px; min-height: 44px; }
+  .ranking-body { max-height: 200px; }
 
   /* Legend: readable */
   .legend-scale { height: 12px; }

@@ -216,8 +216,22 @@
       <div class="panel panel-district">
         <div id="districtName" class="district-name">Select a district</div>
         <div id="districtProvince" class="district-province"></div>
-        <div id="stats">
+        <div id="stats" class="stats-scroll">
           <p class="stats-placeholder">Click any district on the map to explore its data.</p>
+        </div>
+      </div>
+      <div class="panel panel-rankings">
+        <div class="ranking-section" id="rankingTop10">
+          <button class="ranking-toggle" aria-expanded="false" data-target="rankingTop10Body">
+            <span class="ranking-toggle-icon">&#9654;</span> Top 10 Districts
+          </button>
+          <div class="ranking-body" id="rankingTop10Body"></div>
+        </div>
+        <div class="ranking-section" id="rankingBottom10">
+          <button class="ranking-toggle" aria-expanded="false" data-target="rankingBottom10Body">
+            <span class="ranking-toggle-icon">&#9654;</span> Bottom 10 Districts
+          </button>
+          <div class="ranking-body" id="rankingBottom10Body"></div>
         </div>
       </div>
     </aside>
