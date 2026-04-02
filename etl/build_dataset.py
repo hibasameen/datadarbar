@@ -795,6 +795,8 @@ def load_employment_2023_raw(raw_dir):
                 # This is the last indicator per district block
                 accumulate(out, current_key, pending[current_raw])
                 got_raw.add(current_raw)
+                current_raw = None
+                current_key = None
 
         # Flush any remaining
         if current_raw and current_raw in pending and current_raw not in got_raw:
