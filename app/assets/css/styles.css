@@ -249,7 +249,20 @@ main {
   background: var(--gold-100);
   overflow-y: auto;
   border-left: 1px solid var(--slate-200);
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
 }
+.right-sidebar::-webkit-scrollbar { width: 4px; }
+.right-sidebar::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+
+/* District stats: scroll when content is long */
+#stats {
+  max-height: 50vh; overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--slate-300) transparent;
+}
+#stats::-webkit-scrollbar { width: 4px; }
+#stats::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 
 /* ── Mobile control toggle (hidden on desktop) ─────────────────── */
 .mobile-control-toggle {
@@ -439,66 +452,53 @@ select:focus, input:focus {
   line-height: 1.4;
 }
 
-/* ── District stats scroll ─────────────────────────────────────── */
-.stats-scroll {
-  max-height: 45vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--slate-300) transparent;
-}
-.stats-scroll::-webkit-scrollbar { width: 4px; }
-.stats-scroll::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
-
 /* ── Rankings (Top 10 / Bottom 10) ─────────────────────────────── */
 .panel-rankings {
   background: var(--white);
-  border-top: 1px solid var(--slate-100);
   padding: 0;
+  border-left: 3px solid var(--green-700);
 }
-.ranking-section {
+.ranking-details {
   border-bottom: 1px solid var(--slate-100);
 }
-.ranking-section:last-child { border-bottom: none; }
-
-.ranking-toggle {
-  display: flex; align-items: center; gap: 6px;
-  width: 100%; padding: 10px 16px;
-  background: none; border: none; cursor: pointer;
-  font-size: 11px; font-weight: 700; color: var(--green-700);
-  text-transform: uppercase; letter-spacing: 0.06em;
+.ranking-details:last-child { border-bottom: none; }
+.ranking-summary {
+  display: block; padding: 10px 16px;
+  font-size: 10px; font-weight: 700; color: var(--green-700);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  cursor: pointer; user-select: none;
+  list-style: none;
   transition: background 0.15s;
 }
-.ranking-toggle:hover { background: var(--green-50); }
-.ranking-toggle-icon {
-  font-size: 8px; display: inline-block;
-  transition: transform 0.2s;
+.ranking-summary::-webkit-details-marker { display: none; }
+.ranking-summary::before {
+  content: '\25B8'; display: inline-block; width: 14px;
+  font-size: 10px; transition: transform 0.15s;
 }
-
-.ranking-body {
-  display: none;
+.ranking-details[open] > .ranking-summary::before {
+  transform: rotate(90deg);
+}
+.ranking-summary:hover { background: var(--green-50); }
+.ranking-list {
   padding: 0 16px 10px;
-  max-height: 260px;
-  overflow-y: auto;
+  max-height: 280px; overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-300) transparent;
 }
-.ranking-body::-webkit-scrollbar { width: 4px; }
-.ranking-body::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
-.ranking-body.expanded { display: block; }
-
+.ranking-list::-webkit-scrollbar { width: 4px; }
+.ranking-list::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 .ranking-row {
-  display: flex; align-items: baseline; gap: 8px;
-  padding: 5px 4px; font-size: 12px;
+  display: flex; align-items: baseline; gap: 6px;
+  padding: 5px 2px; font-size: 12px;
   border-bottom: 1px solid var(--slate-50);
   cursor: pointer; transition: background 0.1s;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 .ranking-row:last-child { border-bottom: none; }
 .ranking-row:hover { background: var(--green-50); }
-
 .ranking-rank {
-  flex: 0 0 22px; text-align: right;
-  font-weight: 700; font-size: 11px; color: var(--slate-400);
+  flex: 0 0 20px; text-align: right;
+  font-weight: 700; font-size: 10px; color: var(--slate-400);
   font-variant-numeric: tabular-nums;
 }
 .ranking-name {
@@ -884,10 +884,10 @@ select:focus, input:focus {
   .stat { padding: 8px 0; font-size: 13px; }
   .stat:hover { margin: 0; padding: 8px 0; }
 
-  /* Rankings: mobile */
-  .stats-scroll { max-height: 35vh; }
-  .ranking-toggle { padding: 12px 14px; min-height: 44px; }
-  .ranking-body { max-height: 200px; }
+  /* Rankings & stats: mobile */
+  #stats { max-height: 40vh; }
+  .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
+  .ranking-list { max-height: 200px; }
 
   /* Legend: readable */
   .legend-scale { height: 12px; }

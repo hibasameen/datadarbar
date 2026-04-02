@@ -1341,20 +1341,6 @@ function buildRankings() {
   renderList(bottom10, bottom10Body, 0, true);
 }
 
-function wireRankingToggles() {
-  document.querySelectorAll('.ranking-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.dataset.target;
-      const body = document.getElementById(targetId);
-      if (!body) return;
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', !expanded);
-      body.classList.toggle('expanded', !expanded);
-      btn.querySelector('.ranking-toggle-icon').textContent = expanded ? '\u25B6' : '\u25BC';
-    });
-  });
-}
-
 // ── Mobile nav & controls ──────────────────────────────────────────────────
 
 function wireMobile() {
@@ -1414,7 +1400,6 @@ async function init() {
   updateYearButtons();
   wireEvents();
   wireMobile();
-  wireRankingToggles();
   colorize();
 }
 
