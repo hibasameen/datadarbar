@@ -248,6 +248,7 @@ main {
   display: flex; flex-direction: column;
   background: var(--gold-100);
   border-left: 1px solid var(--slate-200);
+  overflow: hidden;
 }
 
 /* District stats: scrollable only when a district is selected */
