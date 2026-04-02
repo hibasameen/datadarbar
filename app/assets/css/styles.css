@@ -251,13 +251,13 @@ main {
 }
 
 /* District stats: scrollable only when a district is selected */
-#stats.has-district {
+.right-sidebar.has-district #stats {
   overflow-y: auto; max-height: 45vh;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-300) transparent;
 }
-#stats.has-district::-webkit-scrollbar { width: 4px; }
-#stats.has-district::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+.right-sidebar.has-district #stats::-webkit-scrollbar { width: 4px; }
+.right-sidebar.has-district #stats::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 
 /* ── Mobile control toggle (hidden on desktop) ─────────────────── */
 .mobile-control-toggle {
@@ -479,12 +479,14 @@ select:focus, input:focus {
 .ranking-summary:hover { background: var(--green-50); }
 .ranking-list {
   padding: 0 16px 10px;
+}
+.right-sidebar.has-district .ranking-list {
   max-height: 25vh; overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-300) transparent;
 }
-.ranking-list::-webkit-scrollbar { width: 4px; }
-.ranking-list::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+.right-sidebar.has-district .ranking-list::-webkit-scrollbar { width: 4px; }
+.right-sidebar.has-district .ranking-list::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 .ranking-row {
   display: flex; align-items: baseline; gap: 8px;
   padding: 6px 4px; font-size: 13px;
