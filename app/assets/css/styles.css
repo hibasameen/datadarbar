@@ -464,19 +464,19 @@ select:focus, input:focus {
 .ranking-details:last-child { border-bottom: none; }
 .ranking-summary {
   display: block; padding: 10px 16px;
-  font-size: 10px; font-weight: 700; color: var(--green-700);
-  text-transform: uppercase; letter-spacing: 0.08em;
+  font-size: 12px; font-weight: 700; color: var(--green-700);
+  text-transform: uppercase; letter-spacing: 0.06em;
   cursor: pointer; user-select: none;
   list-style: none;
   transition: background 0.15s;
 }
 .ranking-summary::-webkit-details-marker { display: none; }
 .ranking-summary::before {
-  content: '\25B8'; display: inline-block; width: 14px;
-  font-size: 10px; transition: transform 0.15s;
+  content: '+'; display: inline-block; width: 16px;
+  font-size: 14px; font-weight: 700; line-height: 1;
 }
 .ranking-details[open] > .ranking-summary::before {
-  transform: rotate(90deg);
+  content: '\2212';
 }
 .ranking-summary:hover { background: var(--green-50); }
 .ranking-list {
@@ -488,17 +488,17 @@ select:focus, input:focus {
 .ranking-list::-webkit-scrollbar { width: 4px; }
 .ranking-list::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 .ranking-row {
-  display: flex; align-items: baseline; gap: 6px;
-  padding: 5px 2px; font-size: 12px;
-  border-bottom: 1px solid var(--slate-50);
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 6px 4px; font-size: 13px;
+  border-bottom: 1px solid var(--slate-100);
   cursor: pointer; transition: background 0.1s;
   border-radius: var(--radius-sm);
 }
 .ranking-row:last-child { border-bottom: none; }
 .ranking-row:hover { background: var(--green-50); }
 .ranking-rank {
-  flex: 0 0 20px; text-align: right;
-  font-weight: 700; font-size: 10px; color: var(--slate-400);
+  flex: 0 0 22px; text-align: right;
+  font-weight: 700; font-size: 11px; color: var(--slate-400);
   font-variant-numeric: tabular-nums;
 }
 .ranking-name {
@@ -507,7 +507,7 @@ select:focus, input:focus {
 }
 .ranking-val {
   flex: 0 0 auto; font-weight: 700; color: var(--green-900);
-  font-variant-numeric: tabular-nums; font-size: 12px;
+  font-variant-numeric: tabular-nums; font-size: 13px;
 }
 .ranking-empty {
   font-size: 12px; color: var(--slate-400); font-style: italic;
