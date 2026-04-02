@@ -250,14 +250,14 @@ main {
   border-left: 1px solid var(--slate-200);
 }
 
-/* District stats: scrollable */
-#stats {
+/* District stats: scrollable only when a district is selected */
+#stats.has-district {
   overflow-y: auto; max-height: 45vh;
   scrollbar-width: thin;
   scrollbar-color: var(--slate-300) transparent;
 }
-#stats::-webkit-scrollbar { width: 4px; }
-#stats::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
+#stats.has-district::-webkit-scrollbar { width: 4px; }
+#stats.has-district::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 2px; }
 
 /* ── Mobile control toggle (hidden on desktop) ─────────────────── */
 .mobile-control-toggle {

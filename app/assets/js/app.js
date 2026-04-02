@@ -410,6 +410,7 @@ function deselectDistrict() {
   districtNameEl.textContent = 'Select a district';
   districtProvEl.textContent = '';
   statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+  statsDiv.classList.remove('has-district');
 }
 
 // ── DOM refs ────────────────────────────────────────────────────────────────
@@ -1019,6 +1020,7 @@ function showDistrictDetail(props) {
   html += quickStatRaw(row, 'pslm_net_enrolment_rate', 'PSLM Enrolment', true);
 
   statsDiv.innerHTML = html;
+  statsDiv.classList.add('has-district');
 }
 
 function quickStat(row, prefix, ind, label, pct = false) {
@@ -1133,6 +1135,8 @@ function wireEvents() {
     districtNameEl.textContent = 'Select a district';
     districtProvEl.textContent = '';
     statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+    statsDiv.classList.remove('has-district');
+    selectedDistrict = null;
     updateYearButtons();
     colorize();
     map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
