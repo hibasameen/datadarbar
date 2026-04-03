@@ -2887,8 +2887,15 @@ def main():
         for year in ("2017", "2023"):
             total = vals.get(f"t5_{year}_total_all")
             urban = vals.get(f"t5_{year}_urban_all")
+            rural = vals.get(f"t5_{year}_rural_all")
             if total and urban is not None and vals.get(f"t1_{year}_urban_proportion") is None:
                 vals[f"t1_{year}_urban_proportion"] = round(urban / total * 100, 2)
+            # Urban/rural proportions for the T5 urbanRural group
+            if total and total > 0:
+                if urban is not None:
+                    vals[f"t5_{year}_pct_urban"] = round(urban / total * 100, 2)
+                if rural is not None:
+                    vals[f"t5_{year}_pct_rural"] = round(rural / total * 100, 2)
 
     # ── Compute diffs ────────────────────────────────────────────────────
     compute_diffs(data)

@@ -21,7 +21,7 @@
 
   <!-- Green background fill inside the arch -->
   <path d="M6 54 V24 C6 16 12 12 28 4 C44 12 50 16 50 24 V54 Z"
-        fill="url(#greenBg)"/>
+        fill="#0f4525"/>
 
   <!-- Pointed Mughal/ogee arch: straight sides, curves inward to a point -->
   <path d="M6 54 V24 C6 16 12 12 28 4 C44 12 50 16 50 24 V54 Z"

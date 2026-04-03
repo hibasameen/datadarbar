@@ -43,6 +43,7 @@ const INDICATOR_GROUPS = {
       total_all: 'Total Population', total_male: 'Total Male', total_female: 'Total Female',
       rural_all: 'Rural Population', rural_male: 'Rural Male', rural_female: 'Rural Female',
       urban_all: 'Urban Population', urban_male: 'Urban Male', urban_female: 'Urban Female',
+      pct_urban: 'Urban Proportion (%)', pct_rural: 'Rural Proportion (%)',
     },
     prefix: 't5', hasYears: true,
   },
