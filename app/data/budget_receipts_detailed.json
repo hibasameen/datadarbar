@@ -1,0 +1,1201 @@
+{
+ "meta": {
+  "source": "Explanatory Memorandum on Federal Receipts (Finance Division)",
+  "unit": "Rs billion",
+  "note": "Own-year budget estimates; hierarchy from NAM classification codes with remainder balancing so each node reconciles to printed control totals."
+ },
+ "receipts": {
+  "2009-10": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 2007.21,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 1493.56,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 565.6,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 544.53
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 21.07
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 927.96,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 162.2
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 499.4
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 152.8
+        },
+        {
+         "name": "Other indirect",
+         "bn": 113.56
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 513.65,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 118.72
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 281.01
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 113.91
+      }
+     ]
+    }
+   ]
+  },
+  "2010-11": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 2410.99,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 1778.71,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 657.7,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 633.0
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 24.7
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1121.02,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 180.8
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 674.9
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 153.6
+        },
+        {
+         "name": "Other indirect",
+         "bn": 111.72
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 632.28,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 169.99
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 332.25
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 130.04
+      }
+     ]
+    }
+   ]
+  },
+  "2011-12": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 2732.15,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 2074.18,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 743.6,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 718.6
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 25.0
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1330.58,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 206.4
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 836.7
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 165.6
+        },
+        {
+         "name": "Other indirect",
+         "bn": 121.88
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 657.97,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 195.33
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 321.38
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 141.25
+      }
+     ]
+    }
+   ]
+  },
+  "2012-13": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 3233.9,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 2503.57,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 932.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 914.0
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 18.0
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1571.58,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 247.5
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1076.5
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 125.0
+        },
+        {
+         "name": "Other indirect",
+         "bn": 122.58
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 730.33,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 178.77
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 354.17
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 197.38
+      }
+     ]
+    }
+   ]
+  },
+  "2013-14": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 3419.99,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 2598.07,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 975.7,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 948.7
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 27.0
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1622.38,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 279.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1053.5
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 166.8
+        },
+        {
+         "name": "Other indirect",
+         "bn": 123.08
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 821.92,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 239.91
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 316.78
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 265.23
+      }
+     ]
+    }
+   ]
+  },
+  "2014-15": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 3945.5,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 3129.21,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 1180.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 1163.82
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 16.18
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1630.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 281.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1171.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 178.0
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 319.21
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 816.29,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 191.99
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 417.45
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 206.85
+      }
+     ]
+    }
+   ]
+  },
+  "2015-16": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 4312.74,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 3418.22,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 1347.87,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 1326.84
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 21.03
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 1755.83,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 299.12
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1250.27
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 206.44
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 314.52
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 894.52,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 227.68
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 444.3
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 222.55
+      }
+     ]
+    }
+   ]
+  },
+  "2016-17": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 4915.57,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 3956.12,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 1558.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 1538.76
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 19.24
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 2063.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 413.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1437.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 213.0
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 335.12
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 959.45,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 261.22
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 459.81
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 238.42
+      }
+     ]
+    }
+   ]
+  },
+  "2017-18": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 5310.31,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 4330.46,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 1594.91,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 1577.56
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 17.35
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 2418.09,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 581.37
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1605.2
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 231.52
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 317.46
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 979.85,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 214.69
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 413.17
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 351.99
+      }
+     ]
+    }
+   ]
+  },
+  "2018-19": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 5667.17,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 4888.65,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 1735.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 1709.94
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 25.06
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 2700.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 735.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1700.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 265.0
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 453.65
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 778.52,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 236.87
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 305.84
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 229.15
+      },
+      {
+       "name": "Other non-tax receipts",
+       "bn": 6.66
+      }
+     ]
+    }
+   ]
+  },
+  "2019-20": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 6716.62,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 5822.16,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 2081.95,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 2073.0
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 8.95
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 3473.05,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 1000.5
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 2107.74
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 364.82
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 267.16
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 894.46,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 269.58
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 430.96
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 193.92
+      }
+     ]
+    }
+   ]
+  },
+  "2020-21": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 6573.23,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 5464.3,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 2043.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 2036.75
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 6.25
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 2920.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 640.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 1919.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 361.0
+        }
+       ]
+      },
+      {
+       "name": "Other Taxes & Levies (Petroleum Levy, GIDC, etc.)",
+       "bn": 501.3
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 1108.93,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 210.71
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 645.62
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 252.6
+      }
+     ]
+    }
+   ]
+  },
+  "2021-22": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 7908.97,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 5829.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 2182.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 2171.84
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 10.16
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 3647.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 785.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 2506.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 356.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 2079.97,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 265.84
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 684.11
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 1100.52
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 29.5
+      }
+     ]
+    }
+   ]
+  },
+  "2022-23": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 9404.9,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 7470.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 3039.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 3024.08
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 14.92
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 4431.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 953.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 3076.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 402.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 1934.9,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 279.65
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 354.04
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 1266.05
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 35.15
+      }
+     ]
+    }
+   ]
+  },
+  "2023-24": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 12378.16,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 9415.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 4255.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 4203.53
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 51.47
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 5160.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 1211.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 3411.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 538.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 2963.16,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 398.05
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 1168.49
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 1367.18
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 29.43
+      }
+     ]
+    }
+   ]
+  },
+  "2024-25": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 17815.41,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 12970.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 5512.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 5454.06
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 57.94
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 7458.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 1591.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 4919.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 948.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 4845.41,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 477.12
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 2555.74
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 1787.75
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 24.81
+      }
+     ]
+    }
+   ]
+  },
+  "2025-26": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 19278.09,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 14131.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 6902.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 6811.24
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 90.76
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 7229.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 1588.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 4753.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 888.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 5147.09,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 519.33
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 2450.39
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 2147.58
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 29.79
+      }
+     ]
+    }
+   ]
+  },
+  "2026-27": {
+   "name": "Federal Receipts (Revenue)",
+   "bn": 20599.6,
+   "children": [
+    {
+     "name": "Tax Revenue",
+     "bn": 15264.0,
+     "children": [
+      {
+       "name": "Direct Taxes",
+       "bn": 7613.0,
+       "children": [
+        {
+         "name": "Income Tax",
+         "bn": 7480.52
+        },
+        {
+         "name": "Other direct taxes",
+         "bn": 132.48
+        }
+       ]
+      },
+      {
+       "name": "Indirect Taxes",
+       "bn": 7651.0,
+       "children": [
+        {
+         "name": "Customs Duty",
+         "bn": 1651.0
+        },
+        {
+         "name": "Sales Tax",
+         "bn": 4927.0
+        },
+        {
+         "name": "Federal Excise Duty",
+         "bn": 1073.0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Non-Tax Revenue",
+     "bn": 5335.6,
+     "children": [
+      {
+       "name": "Income from Property & Enterprise",
+       "bn": 435.76
+      },
+      {
+       "name": "Receipts from Civil Administration",
+       "bn": 1480.18
+      },
+      {
+       "name": "Miscellaneous Receipts",
+       "bn": 3378.07
+      },
+      {
+       "name": "Levies & Fees",
+       "bn": 41.59
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

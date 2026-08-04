@@ -240,15 +240,22 @@
       time series.</p>
 
     <h4>Federal budget treemap</h4>
-    <p>Receipts and expenditure are extracted from the Finance Division's <strong>"Budget in Brief"</strong>
-      (2009–2027), principally its summary tables of federal receipts and current expenditure by function.
-      The PDF line items are parsed and organised into a hierarchy — top-level groups (e.g. debt servicing,
-      defence, running of civil government, subsidies &amp; grants; and on the receipts side FBR taxes,
-      non-tax receipts, external and bank borrowing) broken into their detailed sub-items — and rendered as a
-      treemap where area is proportional to the Rupee amount. A toggle switches between Expenditure and
-      Receipts, and a slider moves across budget years. Figures are budget estimates as published (nominal
-      Rupees); presentation of some line items changes across years, so cross-year comparison of a single
-      narrow item should be read with the source in mind.</p>
+    <p><strong>Receipts</strong> are built from the Finance Division's <strong>Explanatory Memorandum on
+      Federal Receipts</strong> — the most granular receipts source — for every year <strong>2009-10 to
+      2026-27</strong>. The memorandum classifies each receipt by Pakistan's NAM chart-of-accounts codes
+      (B = tax, C = non-tax), which give a clean hierarchy: Tax Revenue splits into Direct Taxes (Income Tax)
+      and Indirect Taxes (Customs, Sales Tax, Federal Excise), and Non-Tax Revenue into Income from Property,
+      Receipts from Civil Administration, Miscellaneous Receipts and Levies &amp; Fees. The own-year budget
+      estimate is the last numeric column. Because table numbering and which leaves carry codes vary across
+      the 18 years, each parent's captured leaves are reconciled to its printed control subtotal and any gap
+      is placed in an explicit "Other …" child — so every node sums exactly to the published Tax Revenue,
+      Non-Tax Revenue and total-revenue figures.</p>
+    <p><strong>Expenditure</strong> is the current expenditure by function from the <strong>"Budget in
+      Brief"</strong> (debt servicing, defence, running of civil government, subsidies &amp; grants, etc.),
+      broken into detailed sub-items. Both sides are rendered as a treemap where area is proportional to the
+      Rupee amount; a toggle switches between Expenditure and Receipts and a slider moves across budget years.
+      All figures are nominal budget estimates as published; presentation of some line items changes across
+      years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
 
     <h3>Limitations</h3>
     <ul>
