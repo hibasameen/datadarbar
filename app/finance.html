@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0c3a1e"/>
+<title>Data Darbar — Public Finance</title>
+<meta name="description" content="Where Pakistan's federal budget comes from and goes — an Atlas-style treemap of receipts and expenditure."/>
+<meta property="og:title" content="Data Darbar — Public Finance"/><meta property="og:description" content="Pakistan's federal budget receipts and spending, visualised as a treemap."/><meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="assets/js/d3.v7.min.js"></script>
+<style>
+:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--green-500:#22804a;--green-50:#f0f9f4;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--gold-100:#fef6dc;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-400:#9ca3af;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--radius:12px;--shadow:0 2px 10px rgba(12,58,30,.07);--shadow-lg:0 8px 28px rgba(12,58,30,.12);}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+.header{position:sticky;top:0;z-index:50;height:56px;background:var(--green-900);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold-400),#b8941a);display:grid;place-items:center;font-weight:800;color:var(--green-900);font-size:15px}
+.brand-title{font-weight:800;font-size:16px}.brand-tag{font-size:11px;color:var(--gold-300);font-weight:600}
+.nav{display:flex;gap:6px}.nav a{font-size:13px;font-weight:600;color:#dbe7e0;padding:7px 12px;border-radius:8px;text-decoration:none}.nav a:hover{background:rgba(255,255,255,.1);color:#fff}.nav a.active{background:var(--gold-500);color:var(--green-900)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.hero h1{font-size:clamp(23px,3.6vw,34px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}.hero p{color:var(--slate-600);font-size:15px;max-width:72ch;margin-top:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.kpi{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);padding:13px 16px;box-shadow:var(--shadow)}.kpi .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--slate-500)}.kpi .val{font-size:25px;font-weight:800;color:var(--green-900);margin-top:2px}.kpi .sub{font-size:12px;font-weight:600;color:var(--slate-500)}.kpi .sub.neg{color:#c0392b}
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
+.card h2{font-size:18px;font-weight:800;color:var(--green-900)}.card .desc{font-size:13px;color:var(--slate-600);margin:2px 0 6px}.unit{font-size:12px;font-weight:600;color:var(--slate-500)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.seg{display:inline-flex;background:var(--slate-100);border-radius:9px;padding:3px;gap:2px}.seg button{border:0;background:transparent;font-family:inherit;font-weight:700;font-size:13px;color:var(--slate-600);padding:7px 14px;border-radius:7px;cursor:pointer}.seg button.on{background:var(--green-600);color:#fff}
+select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;border:1px solid var(--slate-300);border-radius:9px;background:#fff;cursor:pointer}
+.cl{font-size:11px;font-weight:700;pointer-events:none}.cv{font-size:10px;font-weight:600;pointer-events:none}
+.axis text{font-size:11px;fill:var(--slate-500)}.axis line,.axis path{stroke:var(--slate-200)}.gl{stroke:var(--slate-100)}
+.src{font-size:11px;color:var(--slate-400);margin-top:8px;font-weight:500}
+.note{background:var(--gold-100);border:1px solid var(--gold-400);border-radius:9px;padding:9px 12px;font-size:12px;color:#6b5311;margin-top:10px}
+.yr-wrap{display:flex;align-items:center;gap:10px;flex:0 1 260px}.yr-wrap input{flex:1;accent-color:var(--green-600)}.yr-lbl{font-weight:800;font-size:15px;color:var(--green-800);min-width:64px;text-align:center;background:var(--green-50);border-radius:7px;padding:5px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}.legend .li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--slate-700)}.legend .sw{width:11px;height:11px;border-radius:3px}
+.gl{stroke:var(--slate-100)}
+.tip{position:fixed;pointer-events:none;z-index:100;background:#1a1d23;color:#fff;font-size:12px;padding:8px 11px;border-radius:8px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .1s;max-width:250px;line-height:1.45}.tip b{color:var(--gold-300)}
+.foot{margin-top:28px;font-size:12px;color:var(--slate-500);line-height:1.7}.foot a{color:var(--green-600);font-weight:600}
+
+/* ===== Unified site header ===== */
+.site-header{position:sticky;top:0;z-index:100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;line-height:1}
+.header-title{font-size:20px;font-weight:800;color:var(--gold-400,#e8b92e);letter-spacing:-.01em}
+.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
+.header-link:hover{color:var(--gold-300,#f0cc5a);border-color:var(--gold-500,#d4a017);background:rgba(255,255,255,.05)}
+.header-link.active{color:var(--green-900,#0c3a1e);background:var(--gold-500,#d4a017);border-color:var(--gold-500,#d4a017)}
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
+.mobile-nav{background:var(--green-800,#145228);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
+.mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
+@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
+
+</style></head><body>
+<header class="site-header">
+  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
+  <nav class="header-nav"><a href="index.html" class="header-link">Home</a><a href="map.html" class="header-link">District Map</a><a href="trade.html" class="header-link">Trade Atlas</a><a href="finance.html" class="header-link active">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="trade.html" class="mobile-nav-link">Trade Atlas</a><a href="finance.html" class="mobile-nav-link active">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<div class="wrap">
+ <div class="hero"><h1>Economy &amp; Budget — Pakistan's growth and public finances</h1>
+  <p>Pakistan's federal budget as a treemap: every block is a tax or a spending line, sized by rupees and grouped by type. Toggle between receipts and expenditure, and pick a year.</p></div>
+ <div class="kpis" id="kpis"></div>
+
+ <div class="card">
+  <h2>The federal budget <span class="unit">— Rs, grouped by category</span></h2>
+  <div class="desc">Each block is a budget line; area is its share. Hover for detail.</div>
+  <div class="controls">
+   <div class="seg" id="bSide"><button data-s="expenditure" class="on">Expenditure</button><button data-s="receipts">Receipts</button></div>
+   <span class="yr-wrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
+  </div>
+  <div id="budget"></div>
+  <div class="src" id="budgetMeta"></div>
+  <div class="note">Expenditure shown is <b>current</b> (function-wise) spending — debt servicing, defence, pensions and running the government. Development spending (the PSDP) is budgeted separately and not included in this view. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award). Figures are budget estimates extracted from the "Budget in Brief" PDFs.</div>
+ </div>
+
+ <div class="card"><h2>Real GDP growth <span class="unit">— %, year on year</span></h2>
+  <div class="desc">Growth of GDP at basic prices (2015-16 base) — the flood-hit near-zero of 2022-23 and the COVID dip of 2020-21 both show.</div>
+  <div id="growth"></div></div>
+
+ <div class="card"><h2>The economy by sector <span class="unit">— value added, constant Rs bn</span></h2>
+  <div class="desc">Agriculture, industry and services since 1999-2000, from the national accounts.</div>
+  <div id="sectors"></div><div class="legend" id="secLegend"></div></div>
+
+ <div class="card"><h2>How sectors feed each other <span class="unit">— input-output flows, 2015-16</span></h2>
+  <div class="desc">Each ribbon is one sector's output used as an input by another; the arrow points to the buyer. Hover to read a flow. Aggregated to 12 sectors, Rs billion, basic prices.</div>
+  <div id="io"></div>
+  <div class="note">A <b>2015-16 snapshot</b> — this is the only Supply-Use / Input-Output table the Pakistan Bureau of Statistics has published, so it can't be shown as a trend over time.</div></div>
+
+ <div class="card"><h2>FBR tax revenue target over time <span class="unit">— Rs billion</span></h2>
+  <div class="desc">The Federal Board of Revenue collection target set in each year's budget.</div><div id="fbr"></div></div>
+
+ <div class="foot"><b>Source.</b> Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Federal Budget "Budget in Brief"</a>, FY2020-21 to 2026-27. Values are own-year budget estimates in Rs, extracted from the budget PDFs; line-item wording varies year to year, so a few categories may shift between years. Full detail (23,000+ budget line-items) is in the project's DuckDB warehouse.</div>
+</div>
+<div class="tip" id="tip"></div>
+<script src="assets/js/econ_data.js"></script>
+<script src="assets/js/finance.js"></script>
+<script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
+<script src="assets/js/modals.js"></script>
+</body></html>

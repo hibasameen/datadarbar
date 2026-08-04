@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0c3a1e"/>
+<title>Data Darbar — Trade Atlas</title>
+<meta name="description" content="What Pakistan trades — an economic-complexity explorer of 8-digit imports and exports, 2015–2024."/>
+<meta property="og:title" content="Data Darbar — Trade Atlas"/><meta property="og:description" content="Drill into Pakistan's exports and imports by product and partner, 2015–2024."/><meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="assets/js/d3.v7.min.js"></script>
+<style>
+:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--green-500:#22804a;--green-50:#f0f9f4;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--gold-100:#fef6dc;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-400:#9ca3af;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--radius:12px;--shadow:0 2px 10px rgba(12,58,30,.07);--shadow-lg:0 8px 28px rgba(12,58,30,.12);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+.header{position:sticky;top:0;z-index:50;height:56px;background:var(--green-900);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold-400),#b8941a);display:grid;place-items:center;font-weight:800;color:var(--green-900);font-size:15px}
+.brand-title{font-weight:800;font-size:16px}.brand-tag{font-size:11px;color:var(--gold-300);font-weight:600}
+.nav{display:flex;gap:6px}.nav a{font-size:13px;font-weight:600;color:#dbe7e0;padding:7px 12px;border-radius:8px;text-decoration:none}.nav a:hover{background:rgba(255,255,255,.1);color:#fff}.nav a.active{background:var(--gold-500);color:var(--green-900)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.hero h1{font-size:clamp(23px,3.6vw,34px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
+.hero p{color:var(--slate-600);font-size:15px;max-width:72ch;margin-top:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.kpi{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);padding:13px 16px;box-shadow:var(--shadow)}
+.kpi .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--slate-500)}.kpi .val{font-size:25px;font-weight:800;color:var(--green-900);margin-top:2px}.kpi .sub{font-size:12px;font-weight:600;color:var(--slate-500)}.kpi .sub.neg{color:#c0392b}.kpi .sub.pos{color:var(--green-600)}
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
+.card h2{font-size:18px;font-weight:800;color:var(--green-900)}.card .desc{font-size:13px;color:var(--slate-600);margin:2px 0 6px}.unit{font-size:12px;font-weight:600;color:var(--slate-500)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.seg{display:inline-flex;background:var(--slate-100);border-radius:9px;padding:3px;gap:2px}.seg button{border:0;background:transparent;font-family:inherit;font-weight:700;font-size:13px;color:var(--slate-600);padding:7px 14px;border-radius:7px;cursor:pointer}.seg button.on{background:var(--green-600);color:#fff}
+select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;border:1px solid var(--slate-300);border-radius:9px;background:#fff;cursor:pointer}
+.yr-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:200px}.yr-wrap input{flex:1;accent-color:var(--green-600)}.yr-lbl{font-weight:800;font-size:15px;color:var(--green-800);min-width:64px;text-align:center;background:var(--green-50);border-radius:7px;padding:5px 8px}
+.crumb{font-size:13px;font-weight:600;margin:4px 0 8px;color:var(--slate-500)}.crumb .cr{color:var(--green-600)}.crumb .cr.on{color:var(--ink)}.crumb .cr:hover{text-decoration:underline}.crumb .sep{color:var(--slate-400)}
+.cl{font-size:11px;font-weight:700;fill:#fff;pointer-events:none}.cv{font-size:10px;font-weight:600;fill:rgba(255,255,255,.85);pointer-events:none}
+.axis text{font-size:11px;fill:var(--slate-500)}.axis line,.axis path{stroke:var(--slate-200)}.gl{stroke:var(--slate-100)}
+.src{font-size:11px;color:var(--slate-400);margin-top:8px;font-weight:500}.hint{font-size:12px;color:var(--slate-500);font-weight:600;background:var(--gold-100);border-radius:8px;padding:6px 10px;display:inline-block;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}.legend .li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--slate-700)}.legend .sw{width:11px;height:11px;border-radius:3px}
+.tip{position:fixed;pointer-events:none;z-index:100;background:#1a1d23;color:#fff;font-size:12px;padding:8px 11px;border-radius:8px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .1s;max-width:250px;line-height:1.45}.tip b{color:var(--gold-300)}
+/* scrolly */
+.scrolly{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-top:14px}
+.sticky-graphic{position:sticky;top:72px;height:78vh;align-self:start;background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column}
+#sticky{flex:1;position:relative}.sticky-cap{font-size:12px;font-weight:700;color:var(--slate-500);text-align:center;padding-top:6px}
+.steps{display:flex;flex-direction:column}
+.step{min-height:82vh;display:flex;align-items:center}
+.step .step-card{background:#fff;border:1px solid var(--slate-200);border-left:4px solid var(--slate-300);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;opacity:.5;transform:translateY(8px);transition:.4s}
+.step.active .step-card{opacity:1;transform:none;border-left-color:var(--gold-500)}
+.step h3{font-size:19px;font-weight:800;color:var(--green-900);margin-bottom:6px}.step p{font-size:14px;color:var(--slate-600)}
+@media(max-width:820px){.scrolly{grid-template-columns:1fr}.sticky-graphic{height:56vh;top:64px}.step{min-height:70vh}}
+.foot{margin-top:28px;font-size:12px;color:var(--slate-500);line-height:1.7}.foot a{color:var(--green-600);font-weight:600}
+
+/* ===== Unified site header ===== */
+.site-header{position:sticky;top:0;z-index:100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;line-height:1}
+.header-title{font-size:20px;font-weight:800;color:var(--gold-400,#e8b92e);letter-spacing:-.01em}
+.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
+.header-link:hover{color:var(--gold-300,#f0cc5a);border-color:var(--gold-500,#d4a017);background:rgba(255,255,255,.05)}
+.header-link.active{color:var(--green-900,#0c3a1e);background:var(--gold-500,#d4a017);border-color:var(--gold-500,#d4a017)}
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
+.mobile-nav{background:var(--green-800,#145228);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
+.mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
+@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
+
+</style></head><body>
+<header class="site-header">
+  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
+  <nav class="header-nav"><a href="index.html" class="header-link">Home</a><a href="map.html" class="header-link">District Map</a><a href="trade.html" class="header-link active">Trade Atlas</a><a href="finance.html" class="header-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="trade.html" class="mobile-nav-link active">Trade Atlas</a><a href="finance.html" class="mobile-nav-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<div class="wrap">
+ <div class="hero"><h1>Trade Atlas — what Pakistan buys and sells</h1>
+  <p>An economic-complexity explorer of Pakistan's 8-digit trade, 2015–2024. Scroll for the story, then drill down from broad product sections to individual commodities.</p></div>
+ <div class="kpis" id="kpis"></div>
+
+ <!-- Interactive drill-down -->
+ <div class="card">
+  <h2>What Pakistan trades <span class="unit">— every product, grouped by sector</span></h2>
+  <div class="desc">The whole export/import basket in one view. Click a sector to zoom into its products; use the breadcrumb to return.</div>
+  <div class="controls">
+   <div class="seg" id="dDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div>
+   <div class="yr-wrap"><input type="range" id="dYr"/><span class="yr-lbl" id="dYrLbl">—</span></div>
+  </div>
+  <div class="crumb" id="crumb"></div>
+  <div id="drill"></div>
+  <div class="src" id="drillMeta"></div>
+ </div>
+
+ <div class="card"><h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2015–2024.</div><div id="ttChart"></div></div>
+
+ <div class="grid2">
+  <div class="card" style="margin-top:0"><h2>Top partners</h2>
+   <div class="controls"><div class="seg" id="pDir"><button data-d="export" class="on">Export to</button><button data-d="import">Import from</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="pYr"/><span class="yr-lbl" id="pYrLbl">—</span></span></div><div id="partners"></div></div>
+  <div class="card" style="margin-top:0"><h2>Top products</h2>
+   <div class="controls"><div class="seg" id="prDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="prYr"/><span class="yr-lbl" id="prYrLbl">—</span></span></div><div id="products"></div></div>
+ </div>
+
+ <div class="foot"><b>Source.</b> Pakistan Bureau of Statistics — <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">External Trade Statistics</a> (8-digit "by commodities and countries"). Values as-published, aggregated to Rs billion. Coverage: exports 2015-16→2024-25 (2017-18 not published); imports 2015-16, 2016-17, 2017-18, 2020-21→2024-25. Fiscal years 2021-22→2023-24 were extracted from PBS PDF tables (import totals reconcile to 93–100% of the official grand total; long-tail items may be under-counted). Full data + a queryable DuckDB warehouse accompany this project.</div>
+</div>
+<div class="tip" id="tip"></div>
+<script src="assets/js/econ_data.js"></script>
+<script src="assets/js/trade.js"></script>
+<script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
+<script src="assets/js/modals.js"></script>
+</body></html>

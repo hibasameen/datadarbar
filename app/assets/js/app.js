@@ -497,14 +497,7 @@ const yearBtns        = document.querySelectorAll('.year-toggle button');
 const zoomBar         = document.getElementById('zoomBar');
 const zoomOutBtn      = document.getElementById('zoomOutBtn');
 const zoomDistName    = document.getElementById('zoomDistrictName');
-const aboutBtn        = document.getElementById('aboutBtn');
-const methodologyBtn  = document.getElementById('methodologyBtn');
-const contactBtn      = document.getElementById('contactBtn');
-const aboutModal      = document.getElementById('aboutModal');
-const methodologyModal = document.getElementById('methodologyModal');
-const contactModal    = document.getElementById('contactModal');
-const contactForm     = document.getElementById('contactForm');
-const contactStatus   = document.getElementById('contactStatus');
+// About / Methodology / Contact modals are provided by assets/js/modals.js
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -659,10 +652,14 @@ function initMap() {
 // ── Data loading ────────────────────────────────────────────────────────────
 
 async function loadData() {
-  const [geo, data] = await Promise.all([
-    fetch(GEOJSON_PATH).then(r => r.json()),
-    fetch(DATA_PATH).then(r => r.json()).catch(() => ({}))
-  ]);
+  // Prefer data inlined as window.DD_GEO / window.DD_DATA (works under file://);
+  // fall back to fetching the JSON files (works when served over http).
+  const geo = window.DD_GEO
+    ? window.DD_GEO
+    : await fetch(GEOJSON_PATH).then(r => r.json());
+  const data = window.DD_DATA
+    ? window.DD_DATA
+    : await fetch(DATA_PATH).then(r => r.json()).catch(() => ({}));
   geoData = geo;
   rawData = data;
 }
@@ -931,7 +928,7 @@ function colorize() {
       map.fitBounds(provBoundsGroup.getBounds(), { padding: [30, 30] });
     }
     legendDiv.innerHTML = '<p class="legend-empty">No data for this selection</p>';
-    updateSummary([]);
+    updateSummaryBar();
     buildRankings();
     return;
   }
@@ -1218,87 +1215,16 @@ function wireEvents() {
   // Zoom out on button click
   zoomOutBtn.addEventListener('click', zoomOut);
 
-  // Escape key: close modals first, then zoom out
+  // Escape key: zoom out. Modal Escape-to-close is handled by modals.js;
+  // window.__ddModalOpen guards so one Esc doesn't also zoom out.
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      const modals = [aboutModal, methodologyModal, contactModal];
-      for (const m of modals) {
-        if (!m.classList.contains('hidden')) { m.classList.add('hidden'); return; }
-      }
+      if (window.__ddModalOpen) return;
       if (isZoomedIn) zoomOut();
     }
   });
 
-  // Modal open buttons
-  aboutBtn.addEventListener('click', () => aboutModal.classList.remove('hidden'));
-  methodologyBtn.addEventListener('click', () => methodologyModal.classList.remove('hidden'));
-  contactBtn.addEventListener('click', () => contactModal.classList.remove('hidden'));
-
-  // Close modal buttons
-  document.querySelectorAll('.modal-close').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.close;
-      if (id) document.getElementById(id).classList.add('hidden');
-    });
-  });
-
-  // Close modal on overlay click
-  [aboutModal, methodologyModal, contactModal].forEach(modal => {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) modal.classList.add('hidden');
-    });
-  });
-
-  // Contact form — uses FormSubmit.co to forward to Gmail without exposing email
-  // The email is obfuscated in JS to avoid scraping
-  contactForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const submitBtn = document.getElementById('contactSubmit');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
-    contactStatus.textContent = '';
-    contactStatus.className = 'contact-status';
-
-    const name    = document.getElementById('contactName').value.trim();
-    const email   = document.getElementById('contactEmail').value.trim();
-    const subject = document.getElementById('contactSubject').value.trim() || 'Data Darbar Contact';
-    const message = document.getElementById('contactMessage').value.trim();
-
-    // Obfuscated recipient — assembled at runtime to prevent scraping
-    const r = ['hiba', 'sameen', '@', 'gmail', '.com'].join('');
-
-    // Use FormSubmit.co API (free, no signup, sends to email)
-    fetch(`https://formsubmit.co/ajax/${r}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        _subject: subject,
-        message: message,
-        _template: 'table',
-      }),
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success === 'true' || data.success === true) {
-        contactStatus.textContent = 'Message sent successfully!';
-        contactStatus.className = 'contact-status success';
-        contactForm.reset();
-      } else {
-        contactStatus.textContent = 'Something went wrong. Please try again.';
-        contactStatus.className = 'contact-status error';
-      }
-    })
-    .catch(() => {
-      contactStatus.textContent = 'Network error. Please try again later.';
-      contactStatus.className = 'contact-status error';
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Message';
-    });
-  });
+  // About / Methodology / Contact modals wired by assets/js/modals.js
 }
 
 // ── Summary bar ────────────────────────────────────────────────────────────
@@ -1451,26 +1377,11 @@ function wireMobile() {
 
   // Mobile nav links → same actions as header
   const mobileResetBtn = document.getElementById('mobileResetBtn');
-  const mobileAboutBtn = document.getElementById('mobileAboutBtn');
-  const mobileMethodologyBtn = document.getElementById('mobileMethodologyBtn');
-  const mobileContactBtn = document.getElementById('mobileContactBtn');
-
   if (mobileResetBtn) mobileResetBtn.addEventListener('click', () => {
     resetBtn.click();
     mobileNav.classList.add('hidden');
   });
-  if (mobileAboutBtn) mobileAboutBtn.addEventListener('click', () => {
-    aboutModal.classList.remove('hidden');
-    mobileNav.classList.add('hidden');
-  });
-  if (mobileMethodologyBtn) mobileMethodologyBtn.addEventListener('click', () => {
-    methodologyModal.classList.remove('hidden');
-    mobileNav.classList.add('hidden');
-  });
-  if (mobileContactBtn) mobileContactBtn.addEventListener('click', () => {
-    contactModal.classList.remove('hidden');
-    mobileNav.classList.add('hidden');
-  });
+  // Mobile About/Methodology/Contact open modals via data-modal (modals.js)
 
   // Control panel toggle on mobile
   if (mobileControlToggle && controlPanelInner) {

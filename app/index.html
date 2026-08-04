@@ -1,624 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0c3a1e" />
-  <title>Data Darbar — Pakistan in Numbers</title>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0c3a1e"/>
+<title>Data Darbar — Pakistan in Numbers</title>
+<meta name="description" content="An open explorer of Pakistan's official statistics — census, trade, national accounts and the federal budget, from the Bureau of Statistics and Finance Division."/>
+<meta property="og:title" content="Data Darbar — Pakistan in Numbers"/><meta property="og:description" content="Explore Pakistan's census, trade, budget and economy — interactive maps and Atlas-style treemaps."/>
+<meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--shadow:0 2px 10px rgba(12,58,30,.07);--shadow-lg:0 10px 30px rgba(12,58,30,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55}
 
-  <!-- Open Graph (link previews on WhatsApp, Facebook, LinkedIn, iMessage, etc.) -->
-  <meta property="og:title" content="Data Darbar — Pakistan in Numbers" />
-  <meta property="og:description" content="Explore Pakistan's district-level census, survey and labour force data on an interactive map." />
-  <meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="https://hibasameen.github.io/datadarbar/" />
-  <meta property="og:type" content="website" />
+/* ===== Unified site header ===== */
+.site-header{position:sticky;top:0;z-index:100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;line-height:1}
+.header-title{font-size:20px;font-weight:800;color:var(--gold-400,#e8b92e);letter-spacing:-.01em}
+.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
+.header-link:hover{color:var(--gold-300,#f0cc5a);border-color:var(--gold-500,#d4a017);background:rgba(255,255,255,.05)}
+.header-link.active{color:var(--green-900,#0c3a1e);background:var(--gold-500,#d4a017);border-color:var(--gold-500,#d4a017)}
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
+.mobile-nav{background:var(--green-800,#145228);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
+.mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
+@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
 
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Data Darbar — Pakistan in Numbers" />
-  <meta name="twitter:description" content="Explore Pakistan's district-level census, survey and labour force data on an interactive map." />
-  <meta name="twitter:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png" />
-
-  <meta name="description" content="Explore Pakistan's district-level census, survey and labour force data on an interactive map." />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
-  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Chroma.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
-
-  <!-- App -->
-  <link rel="stylesheet" href="assets/css/styles.css" />
-</head>
-<body>
-
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-left">
-      <img src="assets/img/logo.svg" alt="Data Darbar" class="header-logo" />
-      <div class="header-text">
-        <span class="header-title">Data Darbar</span>
-        <span class="header-tagline">Pakistan in Numbers</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <button id="aboutBtn" class="header-link">About</button>
-      <button id="methodologyBtn" class="header-link">Methodology</button>
-      <button id="contactBtn" class="header-link">Contact</button>
-      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">
-        PBS
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </a>
-    </div>
-    <!-- Mobile hamburger -->
-    <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-  </header>
-
-  <!-- Mobile nav drawer -->
-  <div id="mobileNav" class="mobile-nav hidden">
-    <button id="mobileAboutBtn" class="mobile-nav-link">About</button>
-    <button id="mobileMethodologyBtn" class="mobile-nav-link">Methodology</button>
-    <button id="mobileContactBtn" class="mobile-nav-link">Contact</button>
-    <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS</a>
+.hero{max-width:1120px;margin:0 auto;padding:52px 20px 12px;text-align:center}
+.hero .eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-500)}
+.hero h1{font-size:clamp(30px,5vw,50px);font-weight:800;letter-spacing:-1px;color:var(--green-900);margin-top:8px;line-height:1.05}
+.hero p{font-size:clamp(15px,2vw,18px);color:var(--slate-600);max-width:60ch;margin:14px auto 0}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 20px 60px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px}
+@media(max-width:720px){.cards{grid-template-columns:1fr}}
+.pcard{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--slate-200);border-left:5px solid var(--accent);border-radius:16px;padding:22px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s;position:relative}
+.pcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.pcard-ic{font-size:30px;line-height:1;flex-shrink:0;width:52px;height:52px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 14%,#fff);border-radius:12px}
+.pcard-title{font-size:21px;font-weight:800;color:var(--green-900);letter-spacing:-.3px}
+.pcard-tag{font-size:13px;font-weight:700;color:var(--accent);margin:1px 0 6px}
+.pcard-desc{font-size:14px;color:var(--slate-600)}
+.pcard-go{position:absolute;right:20px;bottom:18px;font-size:13px;font-weight:700;color:var(--accent);opacity:0;transition:.16s}
+.pcard:hover .pcard-go{opacity:1}
+.about{margin-top:40px;background:#fff;border:1px solid var(--slate-200);border-radius:16px;padding:26px;box-shadow:var(--shadow)}
+.about h2{font-size:20px;font-weight:800;color:var(--green-900)}
+.about p{font-size:14.5px;color:var(--slate-600);margin-top:8px;max-width:80ch}
+.srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:18px}
+.srcgrid div{font-size:13px}
+.srcgrid b{color:var(--green-800);display:block;margin-bottom:2px}
+.srcgrid a{color:var(--green-600);font-weight:600;text-decoration:none}
+.foot{max-width:1120px;margin:26px auto 0;padding:0 20px;font-size:12.5px;color:var(--slate-500);text-align:center;line-height:1.7}
+.foot a{color:var(--green-600);font-weight:600}
+</style></head><body>
+<header class="site-header">
+  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
+  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><a href="map.html" class="header-link">District Map</a><a href="trade.html" class="header-link">Trade Atlas</a><a href="finance.html" class="header-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="trade.html" class="mobile-nav-link">Trade Atlas</a><a href="finance.html" class="mobile-nav-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<div class="hero">
+  <div class="eyebrow">Pakistan in Numbers</div>
+  <h1>Explore Pakistan's census, survey,<br/>trade and macroeconomic data</h1>
+  <p>Data Darbar turns Pakistan's official statistics — the census, 8-digit trade, national accounts and the federal budget — into interactive maps and Atlas-style visualisations. Pick a view to begin.</p>
+</div>
+<div class="wrap">
+  <div class="cards">
+    <a class="pcard" href="map.html" style="--accent:#1e6b3e">
+      <div class="pcard-ic">🗺️</div>
+      <div class="pcard-body"><div class="pcard-title">District Map</div><div class="pcard-tag">Explore Pakistan district by district</div><div class="pcard-desc">Census, PSLM, labour force and household data mapped across all 141 districts — with a 2017 vs 2023 comparison.</div></div>
+      <div class="pcard-go">Open →</div>
+    </a>
+    <a class="pcard" href="trade.html" style="--accent:#d4a017">
+      <div class="pcard-ic">📦</div>
+      <div class="pcard-body"><div class="pcard-title">Trade Atlas</div><div class="pcard-tag">What Pakistan buys and sells</div><div class="pcard-desc">Every 8-digit product as a treemap, grouped by sector. Drill from textiles down to individual commodities, and see top partners — 2015–2024.</div></div>
+      <div class="pcard-go">Open →</div>
+    </a>
+    <a class="pcard" href="finance.html" style="--accent:#c0392b">
+      <div class="pcard-ic">🏛️</div>
+      <div class="pcard-body"><div class="pcard-title">Economy &amp; Budget</div><div class="pcard-tag">The economy and the federal budget</div><div class="pcard-desc">GDP growth and the economy by sector and its input-output flows, plus the federal budget — receipts and spending broken down as a treemap.</div></div>
+      <div class="pcard-go">Open →</div>
+    </a>
   </div>
-
-  <!-- Summary stats bar -->
-  <div class="summary-bar">
-    <div class="summary-item">
-      <span class="summary-label">Districts Showing</span>
-      <span class="summary-value" id="summaryDistricts">—</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label" id="summaryIndicatorLabel">Indicator</span>
-      <span class="summary-value" id="summaryIndicatorValue">—</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label">Year</span>
-      <span class="summary-value" id="summaryYear">2023</span>
-    </div>
-  </div>
-
-  <!-- Zoom-out bar (shown when zoomed into a district) -->
-  <div id="zoomBar" class="zoom-bar hidden">
-    <button id="zoomOutBtn" class="btn btn-zoom-out">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to all districts
-      <kbd>Esc</kbd>
-    </button>
-    <span id="zoomDistrictName" class="zoom-district-label"></span>
-  </div>
-
-  <!-- Main 3-column layout -->
-  <main>
-    <!-- Left sidebar: controls -->
-    <aside id="controlPanel" class="left-sidebar">
-
-      <!-- Mobile toggle for controls -->
-      <button id="mobileControlToggle" class="mobile-control-toggle">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        Filters &amp; Options
-      </button>
-
-      <div id="controlPanelInner" class="left-sidebar-inner">
-        <!-- Search -->
-        <div class="panel panel-search">
-          <div class="search-wrap">
-            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Search districts…" />
-          </div>
-        </div>
-
-        <!-- Topic -->
-        <div class="panel panel-control">
-          <label for="topicSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            Topic
-          </label>
-          <div class="select-wrap">
-            <select id="topicSelect"></select>
-            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-
-        <!-- Dataset -->
-        <div class="panel panel-control">
-          <label for="groupSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="M9 18l3-3-3-3"/></svg>
-            Dataset
-          </label>
-          <div class="select-wrap">
-            <select id="groupSelect"></select>
-            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-
-        <!-- Indicator -->
-        <div class="panel panel-control">
-          <label for="indicatorSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Indicator
-          </label>
-          <div class="select-wrap">
-            <select id="indicatorSelect"></select>
-            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-
-        <!-- Legend -->
-        <div class="panel panel-legend">
-          <div id="legend"></div>
-        </div>
-
-        <!-- Province -->
-        <div class="panel panel-control">
-          <label for="provinceSelect">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Province
-          </label>
-          <div class="select-wrap">
-            <select id="provinceSelect"><option value="ALL">All Provinces</option></select>
-            <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-
-        <!-- Year -->
-        <div class="panel panel-control">
-          <label>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Year
-          </label>
-          <div class="year-toggle">
-            <button data-year="2017">2017</button>
-            <button data-year="2023" class="active">2023</button>
-            <button data-year="diff">Change</button>
-          </div>
-        </div>
-
-        <!-- Download CSV -->
-        <div class="panel panel-control">
-          <label>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download CSV
-          </label>
-          <a id="downloadData" href="#" download="data_darbar.csv" class="btn-export">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download CSV
-          </a>
-        </div>
-
-        <!-- Diagnostics -->
-        <div class="panel panel-meta">
-          <div id="diagnostics" class="diagnostics"></div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Map -->
-    <div id="map"></div>
-
-    <!-- Right sidebar: district detail + rankings -->
-    <aside id="sidebar" class="right-sidebar">
-      <div class="panel panel-district">
-        <div id="districtName" class="district-name">Select a district</div>
-        <div id="districtProvince" class="district-province"></div>
-        <div id="stats">
-          <p class="stats-placeholder">Click any district on the map to explore its data.</p>
-        </div>
-      </div>
-      <div id="rankingsPanel" class="panel panel-rankings">
-        <details class="ranking-details" id="rankingTop10">
-          <summary class="ranking-summary">Top 10</summary>
-          <div class="ranking-list" id="rankingTop10Body"></div>
-        </details>
-        <details class="ranking-details" id="rankingBottom10">
-          <summary class="ranking-summary">Bottom 10</summary>
-          <div class="ranking-list" id="rankingBottom10Body"></div>
-        </details>
-      </div>
-    </aside>
-  </main>
-
-  <!-- About Modal -->
-  <div id="aboutModal" class="modal-overlay hidden" role="dialog" aria-labelledby="aboutTitle">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="aboutTitle">About Data Darbar</h2>
-        <button class="modal-close" data-close="aboutModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <h3>The Project</h3>
-        <p>
-          Data Darbar is an interactive data explorer for Pakistan, bringing together district-level
-          statistics from multiple official sources published by the
-          <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>.
-        </p>
-        <p>
-          The platform visualises demographic, economic, education, and social indicators across
-          all districts of Pakistan, enabling researchers, policymakers, journalists, and citizens
-          to explore spatial patterns and changes over time. The name "Data Darbar" is a nod to
-          the famous shrine in Lahore &mdash; reimagined here as a place of gathering for Pakistan's data.
-        </p>
-
-        <h3>Built By</h3>
-        <p>
-          Data Darbar was created by <strong>Hiba Sameen</strong>, an economist and data scientist
-          based in London, UK. Hiba has a PhD in Economics and her background spans working across
-          academia, government and think tanks on economic policy. She also has an interest in data
-          science and data engineering, focussing on making public data more accessible and useful
-          for evidence-based decision-making. This project was born out of a frustration with how
-          difficult it is to explore and compare district-level statistics from PBS publications,
-          which are often buried in PDF tables and scattered across multiple reports.
-        </p>
-        <p class="about-links">
-          <a href="https://github.com/hibasameen" target="_blank" rel="noopener" class="about-link-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
-            GitHub
-          </a>
-          <a href="https://www.linkedin.com/in/hiba-sameen-86750819/" target="_blank" rel="noopener" class="about-link-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            LinkedIn
-          </a>
-          <a href="https://x.com/hibasameen" target="_blank" rel="noopener" class="about-link-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            X / Twitter
-          </a>
-        </p>
-
-        <h3>Data Sources</h3>
-        <ul>
-          <li><strong>Population &amp; Housing Census 2017 and 2023</strong> &mdash; Tables 1, 5, 12, 15, 16 and education/employment breakdowns</li>
-          <li><strong>PSLM 2019-20</strong> &mdash; Pakistan Social and Living Standards Measurement Survey (district-level microdata aggregates)</li>
-          <li><strong>LFS 2020-21 &amp; 2024-25</strong> &mdash; Labour Force Survey (employment, LFPR, industry breakdown)</li>
-          <li><strong>HIES 2024-25</strong> &mdash; Household Integrated Economic Survey (expenditure, food security, housing)</li>
-          <li><strong>Economic Census 2023</strong> &mdash; Establishment counts, workforce size, industry composition</li>
-          <li><strong>PDHS 2017-18</strong> &mdash; Pakistan Demographic and Health Survey microdata, published by the <a href="https://www.nips.org.pk/viewpublicdata" target="_blank" rel="noopener">National Institute of Population Studies (NIPS)</a> (family planning, fertility, maternal &amp; child health, child nutrition)</li>
-        </ul>
-
-        <h3>Coverage</h3>
-        <p>
-          The map covers 141 districts across all provinces and territories: Punjab, Sindh,
-          Khyber Pakhtunkhwa, Balochistan, Islamabad Capital Territory,
-          Azad Jammu &amp; Kashmir, Gilgit-Baltistan, and the former Federally
-          Administered Tribal Areas (FATA). All 141 districts now carry at least some data:
-          the 17 districts in AJK and Gilgit-Baltistan &mdash; previously blank because the
-          PBS census tables do not cover them &mdash; are populated from the PDHS 2017-18,
-          which surveyed those regions as separate domains.
-        </p>
-      </div>
+  <div class="about" id="about" style="scroll-margin-top:70px">
+    <h2>About the data</h2>
+    <p>Data Darbar is an open explorer of Pakistan's official statistics, drawn from the <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" style="color:var(--green-600);font-weight:600">Pakistan Bureau of Statistics</a> and the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener" style="color:var(--green-600);font-weight:600">Finance Division</a>. Every figure is traceable to its published source, and the underlying cleaned data is available as a queryable database.</p>
+    <div class="srcgrid">
+      <div><b>Census &amp; surveys</b>2017 &amp; 2023 Population Census, PSLM, Labour Force Survey, HIES — district level.</div>
+      <div><b>External trade</b>8-digit HS imports &amp; exports by commodity and country, 2015–2024.</div>
+      <div><b>National accounts</b>GDP by sector, growth and expenditure, 1951–2026 (2015-16 base).</div>
+      <div><b>Federal budget</b>Receipts &amp; expenditure from the "Budget in Brief", 2009–2027.</div>
     </div>
   </div>
-
-  <!-- Methodology Modal -->
-  <div id="methodologyModal" class="modal-overlay hidden" role="dialog" aria-labelledby="methTitle">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="methTitle">Methodology</h2>
-        <button class="modal-close" data-close="methodologyModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <h3>Data Pipeline</h3>
-        <p>
-          Raw data is sourced from official PBS publications including PDF tables (parsed
-          programmatically), CSV releases, and survey microdata files. A Python ETL pipeline
-          (<code>build_dataset.py</code>, ~1,800 lines) parses, cleans, and normalises all
-          sources into a single unified JSON file (<code>districts.json</code>) keyed by
-          normalised district name.
-        </p>
-
-        <h3>District Name Matching &amp; Crosswalk</h3>
-        <p>
-          One of the core challenges in working with Pakistani administrative data is the
-          inconsistency in district naming across sources. The same district may appear as
-          "D.G. Khan", "Dera Ghazi Khan", "DG Khan", or "D. G. Khan" depending on the
-          publication. The pipeline addresses this through a two-step process:
-        </p>
-        <p>
-          <strong>1. Normalisation:</strong> All district names are lowercased, stripped of
-          punctuation, and collapsed to a canonical form (e.g. "d.g. khan" and "dera ghazi khan"
-          both become "dera ghazi khan").
-        </p>
-        <p>
-          <strong>2. Crosswalk table:</strong> A manually curated lookup of over 1,800 name
-          variants maps alternative spellings, abbreviations, and historical names to a single
-          canonical name that matches the GeoJSON boundary file. Examples include
-          "Abbotabad" &rarr; "Abbottabad", "Naushero Feroze" &rarr; "Naushahro Firoz",
-          and "Mianwali" variants.
-        </p>
-
-        <h3>Multi-District Aggregation</h3>
-        <p>
-          Several districts in the census are reported at sub-district level but appear as
-          a single polygon in the boundary data. The pipeline aggregates these automatically:
-        </p>
-        <ul>
-          <li><strong>Karachi</strong> &mdash; 7 sub-districts (Central, East, West, South, Malir, Korangi, Kemari) summed into one</li>
-          <li><strong>Kohistan</strong> &mdash; Upper and Lower Kohistan merged</li>
-          <li><strong>Chitral</strong> &mdash; Upper and Lower Chitral merged</li>
-        </ul>
-        <p>
-          For count-based indicators (population, literate count, establishments), sub-district
-          values are summed. For rate-based indicators (literacy ratio, unemployment rate),
-          the pipeline recomputes the rate from aggregated numerator and denominator counts
-          rather than averaging percentages, which would be statistically incorrect.
-        </p>
-
-        <h3>Mapping Data to GeoJSON</h3>
-        <p>
-          The GeoJSON boundary file contains 141 district polygons sourced from publicly
-          available shapefiles at the ADM2 administrative level. Each polygon has a
-          <code>districts</code> property containing the official district name. The
-          pipeline matches each data record to a GeoJSON feature by normalising both
-          the data district name and the GeoJSON property name through the same crosswalk,
-          then joining on the canonical key.
-        </p>
-        <p>
-          A match report is generated on each build showing how many data districts
-          successfully mapped to GeoJSON features, which data districts had no matching
-          boundary (CSV-only), and which GeoJSON features had no data (GeoJSON-only,
-          typically AJK and Gilgit-Baltistan districts not covered by PBS surveys).
-        </p>
-
-        <h3>Choropleth Colour Mapping</h3>
-        <p>
-          Indicator values are mapped to fill colours using quantile breaks (5 classes)
-          computed via <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>.
-          Quantile classification ensures each colour class contains roughly the same
-          number of districts, which is useful for revealing spatial patterns in
-          skewed distributions (e.g. population, where a few large cities dominate).
-        </p>
-        <p>
-          For year-on-year change views ("Change" toggle), a diverging colour scale
-          centred at zero is used: red shades indicate decline, green shades indicate
-          growth, and near-white indicates little change. The scale is symmetric,
-          anchored to the maximum absolute value in either direction.
-        </p>
-
-        <h3>Employment Classification (2017 vs 2023)</h3>
-        <p>
-          The 2017 census (Table 16) reported five mutually exclusive categories for
-          population aged 10+: Worked, Seeking Work, Students, House Keeping, and Others.
-          The 2023 census (Table 14) changed to a different classification: Employed
-          (with sub-categories: Paid Employee, Own Account Agriculture/Non-Agriculture,
-          Employer, Unpaid Family Helper), Unemployed, and &ldquo;Not in Labour Force &amp;
-          Students (15&ndash;24)&rdquo;. House Keeping is no longer reported as a separate
-          category.
-        </p>
-        <p>
-          To enable cross-census comparison, the pipeline computes derived rates (LFPR,
-          employment ratio, unemployment rate) from the raw counts for both years. These
-          rates are comparable across the classification change. Count-based indicators
-          that exist in only one year (e.g. House Keeping for 2017, employment composition
-          for 2023) show as &ldquo;&mdash;&rdquo; for the other year.
-        </p>
-
-        <h3>Change Computation</h3>
-        <p>
-          The "Change" view for census indicators computes a simple difference:
-          <code>value_2023 &minus; value_2017</code>. For percentage-point indicators
-          (literacy rate, urban proportion), the difference is expressed in percentage
-          points. This approach does not adjust for boundary changes or definitional
-          shifts between census rounds. Users should interpret large changes in smaller
-          districts with caution, as boundary revisions may explain some variation.
-        </p>
-
-        <h3>Survey Statistical Adjustments (LFS &amp; HIES)</h3>
-        <p>
-          The Labour Force Survey and HIES are designed to be representative at the
-          <em>provincial</em> level, not at the district level. To produce district-level
-          estimates, the pipeline applies two adjustments:
-        </p>
-        <p>
-          <strong>1. Minimum sample-size filter (n&lt;30):</strong> Districts with fewer than
-          30 survey observations have all derived indicators suppressed and are flagged on the
-          map with a distinct gold dashed border. This reflects the standard convention that
-          small samples produce unreliable ratio and proportion estimates. In the current data,
-          this affects 6 HIES districts in remote areas with limited survey coverage: Dera Bugti,
-          Khuzdar, Mastung, Orakzai Agency, Panjgur, and Ziarat. The sample size (<em>n</em>)
-          is shown in tooltips for all survey-based indicators.
-        </p>
-        <p>
-          <strong>2. Post-stratification to 2023 Census totals:</strong> Survey weights are
-          recalibrated so that weighted district-level totals align with known population counts
-          from Census 2023 (Table 1). For LFS (individual-level microdata), this takes the form
-          of a sex-ratio adjustment: male and female observations within each district are
-          reweighted so that the weighted sex composition matches the census male/female
-          population shares. For HIES (household-level data), a population calibration factor
-          scales household weights so the weighted population total per district matches
-          the census figure. This corrects for the fact that PBS survey sampling frames may
-          not reflect post-census population shifts across districts, and reduces bias from
-          differential non-response by sex.
-        </p>
-        <p>
-          These adjustments improve the plausibility of district-level estimates but do not
-          eliminate the fundamental limitation that provincial-level surveys have limited
-          statistical power at finer geographies. Users should interpret district-level survey
-          indicators as approximate and treat cross-district rankings with caution.
-        </p>
-
-        <h3>Health &amp; Demographic Indicators (PDHS 2017-18)</h3>
-        <p>
-          The Family Planning, Fertility, Maternal Health, Child Immunisation and Child
-          Nutrition layers are computed from the PDHS 2017-18 microdata using the survey's
-          sampling weights. Estimates are validated against the published national PDHS
-          figures &mdash; e.g. contraceptive prevalence 33.7% (published 34.2%), modern
-          method 24.7% (25.0%), unmet need 18.4% (17.3%), stunting 37.2% (37.6%), and full
-          immunisation 66.0% (66%).
-        </p>
-        <p>
-          <strong>An important caveat:</strong> the PDHS is designed to be representative at
-          the national, provincial and region level, <em>not</em> at the district level
-          (about 15,000 women across ~130 districts). District figures are therefore
-          <em>indicative</em>. Each layer carries its own denominator and unweighted sample
-          size, and the same n&lt;30 suppression rule applies &mdash; so reliable coverage
-          varies sharply by indicator: family planning and fertility are estimable in ~122 of
-          133 sampled districts, maternal health in ~98, child nutrition in ~47, and child
-          immunisation in only ~16 (the 12&ndash;23-month denominator is very small per
-          district). Suppressed districts are greyed out and their sample size is shown in
-          the tooltip. Gilgit-Baltistan and Azad Jammu &amp; Kashmir, which are excluded from
-          the national weight, are weighted with the survey's combined weight so their
-          within-district estimates are valid.
-        </p>
-
-        <h3>District Coverage Gaps</h3>
-        <p>
-          Not all districts appear in every PBS publication or survey. Where data is
-          missing for a particular source, the map shows a faded dashed outline and
-          tooltips and the sidebar indicate the reason. Coverage gaps fall into two
-          categories: survey sampling decisions and census publication gaps.
-        </p>
-
-        <h4>Survey Sampling Gaps</h4>
-        <p>
-          <strong>HIES 2024-25</strong> uses stratified sampling at the division level
-          and did not sample 4 districts: Kasur, Killa Saifullah, Lasbela, and Mansehra.
-        </p>
-        <p>
-          <strong>PSLM 2019-20</strong> did not cover 5 districts in Balochistan, likely
-          due to security and logistics constraints: Chaghi, Jhal Magsi, Musakhail,
-          Panjgur, and Zhob.
-        </p>
-        <p>
-          <strong>LFS 2024-25</strong> does not include North Waziristan Agency and
-          South Waziristan Agency, reflecting boundary changes after the 25th Amendment
-          merged tribal agencies into settled districts. Both agencies do appear in the
-          LFS 2020-21 data.
-        </p>
-
-        <h4>Gilgit-Baltistan &amp; Azad Jammu &amp; Kashmir</h4>
-        <p>
-          GB (10 districts) and AJK (10 districts) are included in the official
-          PSLM&nbsp;2019-20 sampling frame&mdash;the District Manual of Instructions
-          assigns them district codes 501&ndash;510 (AJK) and 601&ndash;610 (GB).
-          However, the publicly released microdata contains only province codes
-          1&ndash;4 (Punjab, KP, Sindh, Balochistan) and district codes 101&ndash;433.
-          No GB or AJK observations appear in the microdata files, and the published
-          Key Findings tables likewise cover only the four provinces.
-        </p>
-        <p>
-          The same pattern holds for HIES and LFS: the microdata releases do not
-          include GB or AJK records. PBS may collect data for these regions but
-          appears to release it through separate channels (e.g.&nbsp;regional
-          Planning &amp; Development departments) or not at all. Census data for
-          GB and AJK is similarly absent from the published district-level tables
-          used in this app, as they are administered separately from the four
-          provinces.
-        </p>
-
-        <h4>Census Publication Gaps</h4>
-        <p>
-          <strong>Economic Census 2023</strong> does not include Islamabad, which as a
-          federal territory was excluded from the provincial enumeration.
-        </p>
-        <p>
-          <strong>Census 2017 Employment (Table 16):</strong> Kohlu district in
-          Balochistan was not included in the published employment tables. The PBS
-          publication numbering skips Kohlu entirely (jumping from 125&nbsp;Harnai to
-          127&nbsp;Sibi), suggesting the data was not released, possibly due to
-          enumeration difficulties in one of Balochistan&rsquo;s smallest and most
-          remote districts during the 2017 Census. Kohlu&rsquo;s data is present in all
-          other 2017 census tables and in the 2023 employment table.
-        </p>
-        <p>
-          <strong>Census 2023 Tables 5, 12, 14:</strong> Malakand Protected Area was
-          initially missing from these tables because PBS published it under the heading
-          &ldquo;MALAKAND PROTECTED AREA&rdquo; rather than the standard
-          &ldquo;&hellip;&nbsp;DISTRICT&rdquo; format used for all other districts.
-          The pipeline now recognises both formats and Malakand data is fully included.
-        </p>
-        <p>
-          <strong>Census 2017 Table 1:</strong> Pakpattan was missing from the combined
-          CSV due to a PDF extraction error in the original data preparation. The
-          district-level figures have been manually verified against the source PDF
-          (063_pakpattan_table1.pdf) and corrected.
-        </p>
-
-        <h3>Limitations</h3>
-        <ul>
-          <li>Survey-based indicators (PSLM, LFS, HIES) are sample estimates and carry
-              sampling error, particularly for smaller districts with fewer primary
-              sampling units.</li>
-          <li>Not all indicators are available for every district. Missing data is
-              shown as a grey fill with a dash (&mdash;) in the tooltip and sidebar.
-              For survey-based indicators, two distinct visual cues indicate the
-              reason: a <strong>gold dashed border</strong> marks districts where the
-              sample size was too small (n&lt;30) and the estimate has been
-              suppressed, while a <strong>faded grey dashed border</strong> marks
-              districts that were not included in the survey&rsquo;s sample frame
-              at all. Census indicators use solid borders throughout, since every
-              district is enumerated.</li>
-          <li>Census 2023 results used are provisional and may differ from final
-              published figures.</li>
-          <li>District boundaries may not perfectly align with the administrative units
-              used in all data sources, especially for newly created districts.</li>
-          <li>Gender-disaggregated literacy rates for 2023 are available for all districts,
-              including merged districts (Karachi, Kohistan, Chitral), where they are
-              recomputed from aggregated gender-level counts across sub-districts.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact Modal -->
-  <div id="contactModal" class="modal-overlay hidden" role="dialog" aria-labelledby="contactTitle">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="contactTitle">Contact</h2>
-        <button class="modal-close" data-close="contactModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p>
-          Have a question, suggestion, or found a data issue? Send a message and
-          it will reach Hiba directly.
-        </p>
-        <form id="contactForm" class="contact-form">
-          <div class="form-group">
-            <label for="contactName">Your name</label>
-            <input type="text" id="contactName" name="name" required placeholder="Name" />
-          </div>
-          <div class="form-group">
-            <label for="contactEmail">Your email</label>
-            <input type="email" id="contactEmail" name="email" required placeholder="you@example.com" />
-          </div>
-          <div class="form-group">
-            <label for="contactSubject">Subject</label>
-            <input type="text" id="contactSubject" name="subject" placeholder="Optional" />
-          </div>
-          <div class="form-group">
-            <label for="contactMessage">Message</label>
-            <textarea id="contactMessage" name="message" rows="5" required placeholder="Your message…"></textarea>
-          </div>
-          <button type="submit" class="btn btn-send" id="contactSubmit">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send Message
-          </button>
-          <p id="contactStatus" class="contact-status"></p>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <span>&copy; 2025 Hiba Sameen. All rights reserved.</span>
-    <span class="footer-sep">&middot;</span>
-    <span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span>
-  </footer>
-
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+</div>
+<div class="foot">© 2026 Hiba Sameen · Data from the Pakistan Bureau of Statistics &amp; Finance Division (public domain). Built with the Data Darbar warehouse.</div>
+<script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
+<script src="assets/js/modals.js"></script>
+</body></html>

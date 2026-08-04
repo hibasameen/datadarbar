@@ -1,0 +1,359 @@
+/* ==========================================================================
+   Data Darbar — shared About / Methodology / Contact pop-outs
+   Self-contained: injects its own CSS + modal markup and wires all behaviour.
+   Works on every page (index, map, trade, finance) and under file:// —
+   no fetch(), no dependency on styles.css or app.js.
+   Open a modal with any element carrying  data-modal="about|methodology|contact".
+   ========================================================================== */
+(function () {
+  if (window.__ddModalsInit) return;
+  window.__ddModalsInit = true;
+  window.__ddModalOpen = false;
+
+  /* ---- styles (literal colours so it renders regardless of page CSS) ---- */
+  var CSS = `
+  .dd-modal-overlay{position:fixed;inset:0;background:rgba(12,58,30,.55);
+    backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;
+    z-index:2000;padding:24px;animation:ddFade .15s ease}
+  .dd-modal-overlay.dd-hidden{display:none}
+  .dd-modal{background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(12,58,30,.32);
+    max-width:640px;width:100%;max-height:84vh;display:flex;flex-direction:column;
+    overflow:hidden;animation:ddSlide .2s ease}
+  .dd-modal-header{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 24px 14px;border-bottom:1px solid #e2e5ea}
+  .dd-modal-header h2{font-size:19px;font-weight:800;color:#0c3a1e;letter-spacing:-.01em;margin:0}
+  .dd-modal-close{background:none;border:none;font-size:24px;color:#9aa2ad;cursor:pointer;
+    padding:2px 10px;border-radius:8px;transition:.15s;line-height:1}
+  .dd-modal-close:hover{color:#3d424d;background:#f1f2f5}
+  .dd-modal-body{padding:20px 24px 26px;overflow-y:auto;font-size:14px;line-height:1.7;color:#3d424d}
+  .dd-modal-body h3{font-size:12.5px;font-weight:700;color:#145228;text-transform:uppercase;
+    letter-spacing:.06em;margin:20px 0 8px}
+  .dd-modal-body h3:first-child{margin-top:0}
+  .dd-modal-body h4{font-size:13.5px;font-weight:700;color:#17301f;margin:14px 0 4px}
+  .dd-modal-body p{margin:0 0 10px}
+  .dd-modal-body ul{margin:0 0 12px 20px;padding:0}
+  .dd-modal-body li{margin-bottom:5px}
+  .dd-modal-body a{color:#1e6b3e;font-weight:600}
+  .dd-modal-body a:hover{color:#145228}
+  .dd-modal-body code{background:#f1f2f5;padding:1px 5px;border-radius:4px;font-size:12.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .dd-modal-body strong{color:#17301f}
+  .dd-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:2px}
+  .dd-about-links{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .dd-about-link{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;
+    background:#eef4ee;color:#145228;font-size:13px;font-weight:600;border:1px solid #d9e6db;
+    text-decoration:none;transition:.15s;cursor:pointer}
+  .dd-about-link:hover{background:#e2efe4;border-color:#1e6b3e}
+  .dd-form{display:flex;flex-direction:column;gap:13px;margin-top:12px}
+  .dd-fg{display:flex;flex-direction:column;gap:4px}
+  .dd-fg label{font-size:11px;font-weight:700;color:#145228;text-transform:uppercase;letter-spacing:.06em}
+  .dd-fg input,.dd-fg textarea{padding:10px 12px;border:1.5px solid #e2e5ea;border-radius:8px;
+    background:#faf9f5;font-size:14px;color:#17301f;font-family:inherit;transition:.15s;resize:vertical}
+  .dd-fg input:focus,.dd-fg textarea:focus{outline:none;border-color:#1e6b3e;
+    box-shadow:0 0 0 3px rgba(34,128,74,.12);background:#fff}
+  .dd-send{padding:10px 20px;border-radius:8px;border:none;background:#145228;color:#fff;
+    font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;
+    align-items:center;gap:8px;transition:.15s;align-self:flex-start}
+  .dd-send:hover{background:#0c3a1e}
+  .dd-send:disabled{opacity:.5;cursor:default}
+  .dd-status{font-size:13px;font-weight:600;margin-top:2px}
+  .dd-status.ok{color:#1e6b3e}.dd-status.err{color:#c0392b}
+  @keyframes ddFade{from{opacity:0}to{opacity:1}}
+  @keyframes ddSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @media(max-width:640px){.dd-modal{max-height:92vh;border-radius:12px}
+    .dd-modal-body{padding:16px 18px 20px}.dd-modal-header{padding:14px 18px 10px}
+    .dd-modal-header h2{font-size:16px}}
+  `;
+
+  /* ---- content ---- */
+  var ABOUT = `
+    <h3>The project</h3>
+    <p>Data Darbar is an open explorer of Pakistan's official statistics. It brings together the
+      population census, household and labour-force surveys, 8-digit external-trade data, the national
+      accounts and the federal budget — sources published by the
+      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>
+      and the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Finance Division</a> —
+      into a single set of interactive views. The name is a nod to the shrine in Lahore, reimagined here
+      as a place of gathering for Pakistan's data.</p>
+    <p>Every figure is traceable to its published source, and the cleaned data behind the site is held in
+      a queryable DuckDB + Parquet warehouse rather than locked inside PDFs.</p>
+
+    <h3>The four views</h3>
+    <ul>
+      <li><strong>District Map</strong> — census, PSLM, labour-force, household and DHS health indicators
+        across all 141 districts, with a 2017 vs 2023 comparison.</li>
+      <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
+        sector, with drill-down, top partners and change over time (2015–2024).</li>
+      <li><strong>Economy &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
+        flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
+    </ul>
+
+    <h3>Built by</h3>
+    <p><strong>Hiba Sameen</strong> is an economist and data scientist based in London. She holds a PhD in
+      Economics and has worked across academia, government and think tanks on economic policy, with an
+      interest in data science and engineering focused on making public data more accessible. Data Darbar
+      grew out of the frustration of comparing Pakistani statistics that are scattered across PDF tables
+      and separate reports.</p>
+    <p class="dd-about-links">
+      <a href="https://github.com/hibasameen" target="_blank" rel="noopener" class="dd-about-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+        GitHub</a>
+      <a href="https://www.linkedin.com/in/hiba-sameen-86750819/" target="_blank" rel="noopener" class="dd-about-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn</a>
+      <a class="dd-about-link" data-modal="contact">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" fill="none"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact</a>
+    </p>
+
+    <h3>Sources</h3>
+    <ul>
+      <li><strong>Population &amp; Housing Census 2017 and 2023</strong> — district demographic, education
+        and employment tables.</li>
+      <li><strong>PSLM, LFS &amp; HIES</strong> — social/living-standards, labour-force and household
+        income &amp; expenditure surveys.</li>
+      <li><strong>PDHS 2017-18</strong> — Pakistan Demographic and Health Survey microdata, published by the
+        <a href="https://www.nips.org.pk/" target="_blank" rel="noopener">National Institute of Population
+        Studies (NIPS)</a>: family planning, fertility, maternal &amp; child health, and child nutrition, at
+        district level. Also fills the AJK &amp; Gilgit-Baltistan districts the census tables omit.</li>
+      <li><strong>External Trade Statistics</strong> — 8-digit HS imports and exports by commodity and
+        partner country, 2015–2024.</li>
+      <li><strong>National Accounts (2015-16 base)</strong> — GDP by sector, real growth and the
+        supply-use / input-output table.</li>
+      <li><strong>Federal Budget "Budget in Brief"</strong> — receipts and expenditure line items,
+        2009–2027.</li>
+    </ul>
+    <p>All sources are public-domain publications of the Government of Pakistan.</p>
+  `;
+
+  var CONTACT = `
+    <p>Have a question, a suggestion, or spotted a data issue? Send a note and it reaches Hiba directly.</p>
+    <form id="ddContactForm" class="dd-form">
+      <div class="dd-fg"><label for="ddcName">Your name</label>
+        <input type="text" id="ddcName" required placeholder="Name"/></div>
+      <div class="dd-fg"><label for="ddcEmail">Your email</label>
+        <input type="email" id="ddcEmail" required placeholder="you@example.com"/></div>
+      <div class="dd-fg"><label for="ddcSubject">Subject</label>
+        <input type="text" id="ddcSubject" placeholder="Optional"/></div>
+      <div class="dd-fg"><label for="ddcMessage">Message</label>
+        <textarea id="ddcMessage" rows="5" required placeholder="Your message…"></textarea></div>
+      <button type="submit" class="dd-send" id="ddcSubmit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Send message</button>
+      <p id="ddcStatus" class="dd-status"></p>
+    </form>
+  `;
+
+  var METH = `
+    <p>Data Darbar is built from a reproducible pipeline: raw PBS and Finance Division publications
+      (PDF tables parsed programmatically, CSV releases and survey microdata) are cleaned and normalised
+      into a <strong>DuckDB + Parquet</strong> warehouse, then exported as the compact data files the site
+      loads. The notes below cover each view in turn.</p>
+
+    <h3><span class="dd-tag" style="background:#e4f0e8;color:#1e6b3e">District Map</span></h3>
+
+    <h4>District-name matching &amp; crosswalk</h4>
+    <p>A core challenge in Pakistani administrative data is inconsistent district naming — the same place
+      appears as "D.G. Khan", "Dera Ghazi Khan" or "DG Khan" across publications. Names are lowercased,
+      stripped of punctuation and mapped through a manually curated crosswalk of name variants to a single
+      canonical name that matches the GeoJSON boundary file (e.g. "Abbotabad" → "Abbottabad",
+      "Naushero Feroze" → "Naushahro Firoz").</p>
+
+    <h4>Multi-district aggregation</h4>
+    <p>Several districts are reported at sub-district level but appear as one polygon in the boundaries.
+      These are aggregated automatically: <strong>Karachi</strong> (7 sub-districts), <strong>Kohistan</strong>
+      (Upper + Lower) and <strong>Chitral</strong> (Upper + Lower). Count indicators are summed; rate
+      indicators (literacy, unemployment) are recomputed from aggregated numerator and denominator counts
+      rather than averaging percentages, which would be incorrect.</p>
+
+    <h4>Choropleth &amp; change</h4>
+    <p>Values are mapped to fill colours using quantile breaks (5 classes) via
+      <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>, so each class
+      holds roughly the same number of districts — useful for skewed distributions. The "Change" view uses
+      a diverging scale centred at zero (red = decline, green = growth) and computes a simple difference
+      <code>2023 − 2017</code>, expressed in percentage points for rate indicators.</p>
+
+    <h4>Survey adjustments (LFS &amp; HIES)</h4>
+    <p>The Labour Force Survey and HIES are designed to be representative at the <em>provincial</em>, not
+      district, level. Two adjustments are applied: a minimum sample-size filter (districts with
+      <em>n</em> &lt; 30 observations are suppressed and flagged), and post-stratification of survey weights
+      to Census 2023 population totals (a sex-ratio reweighting for LFS microdata; a population calibration
+      factor for HIES households). These improve plausibility but do not remove the limits of provincial
+      surveys at fine geographies — district survey estimates should be read as approximate.</p>
+
+    <h4>Health &amp; demographic indicators (PDHS 2017-18)</h4>
+    <p>The five health layers — Family Planning, Fertility &amp; Child Survival, Maternal Health, Child
+      Immunisation and Child Nutrition — are computed from the <strong>Pakistan Demographic and Health Survey
+      (PDHS) 2017-18</strong> microdata, published by the <a href="https://www.nips.org.pk/" target="_blank"
+      rel="noopener">National Institute of Population Studies (NIPS)</a>, using the survey's sampling weights.
+      District estimates are validated against the published national PDHS figures — e.g. contraceptive
+      prevalence 33.7% (published 34.2%), modern method 24.7% (25.0%), unmet need 18.4% (17.3%), stunting
+      37.2% (37.6%), full immunisation 66.0% (66%).</p>
+    <p><strong>Important caveat:</strong> the PDHS is designed to be representative at the national, provincial
+      and regional level, <em>not</em> the district level (about 15,000 women across ~130 districts), so
+      district figures are <em>indicative</em>. Each layer carries its own denominator and unweighted sample
+      size, and the same n&lt;30 suppression rule applies — so reliable coverage varies sharply by indicator:
+      family planning and fertility are estimable in ~122 of 133 sampled districts, maternal health in ~98,
+      child nutrition in ~47, and child immunisation in only ~16 (the 12–23-month denominator is very small
+      per district). Suppressed districts are greyed out with their sample size shown in the tooltip.
+      Gilgit-Baltistan and Azad Jammu &amp; Kashmir — excluded from the national weight — use the survey's
+      combined weight, so their within-district estimates are valid; the PDHS is what now fills the 17 AJK/GB
+      districts the PBS census tables don't cover, giving at least some data for all 141 districts.</p>
+
+    <h3><span class="dd-tag" style="background:#f6ecd0;color:#a67c0a">Trade Atlas</span></h3>
+
+    <h4>Source &amp; parsing</h4>
+    <p>Imports and exports come from PBS
+      <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">External Trade
+      Statistics</a> at the <strong>8-digit HS</strong> commodity level (roughly 1,050 distinct products per
+      direction). The published PDFs are converted with <code>pdftotext -layout</code> and parsed with a
+      stateful reader that pops trailing value columns, repairs HS codes whose leading zeros were dropped and
+      became glued to the commodity name, and re-joins long product names that wrapped onto a second line and
+      pushed their totals down. Each year is validated against the printed <code>GRAND TOTAL</code>:
+      reconstructed exports reconcile to 100% and imports to 93–100% of the published total.</p>
+
+    <h4>Sector grouping &amp; the treemap</h4>
+    <p>Every 8-digit line is assigned to its <strong>HS section</strong> (the 21 top-level groupings —
+      textiles, mineral fuels, vegetable products, machinery, and so on) and its 2-digit chapter. The Atlas
+      treemap follows the logic of Harvard's Atlas of Economic Complexity: area is proportional to trade
+      value and colour encodes the HS section, so the composition of what Pakistan buys and sells is legible
+      at a glance. Clicking a sector zooms to its chapters and products; a breadcrumb tracks the drill-down.
+      Values are the customs values as published (nominal Pakistan Rupees), not inflation- or exchange-rate
+      adjusted, and represent recorded formal trade only.</p>
+
+    <h3><span class="dd-tag" style="background:#f3dedb;color:#b23b2c">Economy &amp; Budget</span></h3>
+
+    <h4>National accounts (GDP by sector &amp; growth)</h4>
+    <p>GDP is taken from the national accounts on the <strong>2015-16 base year</strong>. The "economy by
+      sector" view shows value added by the standard sector split (agriculture, industry, services and their
+      sub-sectors); "real GDP growth" is the year-on-year change in constant-price GDP. Long historical
+      series are shown where PBS publishes a consistent constant-price series; a rebasing (e.g. from the older
+      2005-06 base) introduces a level break, so series are presented on the latest base rather than spliced.</p>
+
+    <h4>Input-output flows (2015-16)</h4>
+    <p>The chord view is built from the PBS <strong>2015-16 supply-use / input-output table</strong>. The
+      published matrix (68 industries) is aggregated to 12 broad sectors, and inter-industry flows are drawn
+      as directed ribbons from supplying to using sector. Table values are published in Rupees <em>million</em>
+      and are converted to billions (÷1,000) for display. The snapshot is structural — it shows how much of
+      each sector's output is used as intermediate input by every other sector in that year — and is not a
+      time series.</p>
+
+    <h4>Federal budget treemap</h4>
+    <p>Receipts and expenditure are extracted from the Finance Division's <strong>"Budget in Brief"</strong>
+      (2009–2027), principally its summary tables of federal receipts and current expenditure by function.
+      The PDF line items are parsed and organised into a hierarchy — top-level groups (e.g. debt servicing,
+      defence, running of civil government, subsidies &amp; grants; and on the receipts side FBR taxes,
+      non-tax receipts, external and bank borrowing) broken into their detailed sub-items — and rendered as a
+      treemap where area is proportional to the Rupee amount. A toggle switches between Expenditure and
+      Receipts, and a slider moves across budget years. Figures are budget estimates as published (nominal
+      Rupees); presentation of some line items changes across years, so cross-year comparison of a single
+      narrow item should be read with the source in mind.</p>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>Survey-based district indicators (PSLM, LFS, HIES) are sample estimates and carry sampling error,
+        especially in smaller districts.</li>
+      <li>Trade figures are nominal recorded customs values and exclude informal/unrecorded trade; leading-zero
+        and name-wrap repairs in PDF parsing are validated in aggregate but individual rare lines may vary.</li>
+      <li>National accounts and budget figures are nominal unless stated; base-year rebasing and changes in
+        budget presentation create breaks that are not spliced away.</li>
+      <li>The input-output snapshot is a single year (2015-16) and structural, not a trend.</li>
+      <li>Census 2023 results used are provisional and may differ from final published figures.</li>
+    </ul>
+  `;
+
+  /* ---- build ---- */
+  function modal(id, title, body) {
+    return '<div id="' + id + '" class="dd-modal-overlay dd-hidden" role="dialog" aria-modal="true" aria-label="' + title + '">' +
+      '<div class="dd-modal"><div class="dd-modal-header"><h2>' + title + '</h2>' +
+      '<button class="dd-modal-close" data-dd-close aria-label="Close">&times;</button></div>' +
+      '<div class="dd-modal-body">' + body + '</div></div></div>';
+  }
+
+  function boot() {
+    if (document.getElementById('ddAboutModal')) return;
+    var style = document.createElement('style');
+    style.textContent = CSS;
+    document.head.appendChild(style);
+
+    var host = document.createElement('div');
+    host.id = 'ddModalHost';
+    host.innerHTML =
+      modal('ddAboutModal', 'About Data Darbar', ABOUT) +
+      modal('ddMethodologyModal', 'Methodology', METH) +
+      modal('ddContactModal', 'Contact', CONTACT);
+    document.body.appendChild(host);
+
+    var MAP = { about: 'ddAboutModal', methodology: 'ddMethodologyModal', contact: 'ddContactModal' };
+
+    function open(id) {
+      var m = document.getElementById(id);
+      if (!m) return;
+      m.classList.remove('dd-hidden');
+      window.__ddModalOpen = true;
+      var mn = document.getElementById('mobileNav');
+      if (mn) mn.classList.add('hidden');
+    }
+    function closeAll() {
+      document.querySelectorAll('.dd-modal-overlay').forEach(function (m) { m.classList.add('dd-hidden'); });
+      window.__ddModalOpen = false;
+    }
+
+    // open triggers (works for header links + mobile-nav links + in-modal links)
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-modal]');
+      if (t) {
+        var key = t.getAttribute('data-modal');
+        if (MAP[key]) { e.preventDefault(); closeAll(); open(MAP[key]); }
+        return;
+      }
+      if (e.target.closest('[data-dd-close]')) { closeAll(); return; }
+      // click on the dark overlay itself (not the dialog) closes
+      if (e.target.classList && e.target.classList.contains('dd-modal-overlay')) closeAll();
+    });
+
+    // Escape closes the top modal (registered before app.js's zoom handler runs it)
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && window.__ddModalOpen) { closeAll(); }
+    });
+
+    // Contact form → FormSubmit.co (email assembled at runtime to avoid scraping)
+    var form = document.getElementById('ddContactForm');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('ddcSubmit');
+        var status = document.getElementById('ddcStatus');
+        btn.disabled = true; btn.textContent = 'Sending…';
+        status.textContent = ''; status.className = 'dd-status';
+        var r = ['hiba', 'sameen', '@', 'gmail', '.com'].join('');
+        fetch('https://formsubmit.co/ajax/' + r, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('ddcName').value.trim(),
+            email: document.getElementById('ddcEmail').value.trim(),
+            _subject: document.getElementById('ddcSubject').value.trim() || 'Data Darbar Contact',
+            message: document.getElementById('ddcMessage').value.trim(),
+            _template: 'table'
+          })
+        }).then(function (res) { return res.json(); })
+          .then(function (d) {
+            if (d.success === 'true' || d.success === true) {
+              status.textContent = 'Message sent successfully.'; status.className = 'dd-status ok';
+              form.reset();
+            } else { status.textContent = 'Something went wrong. Please try again.'; status.className = 'dd-status err'; }
+          })
+          .catch(function () { status.textContent = 'Network error. Please try again later.'; status.className = 'dd-status err'; })
+          .finally(function () {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message';
+          });
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
