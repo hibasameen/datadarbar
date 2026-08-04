@@ -1,6 +1,6 @@
 # Data Darbar — Pakistan Census Explorer
 
-Interactive district-level map of Pakistan, visualising indicators from the 2017 and 2023 Population & Housing Censuses, the PSLM 2019-20, the Economic Census 2023, the Labour Force Survey, and the HIES 2024-25 — all published by the [Pakistan Bureau of Statistics](https://www.pbs.gov.pk/).
+Interactive district-level map of Pakistan, visualising indicators from the 2017 and 2023 Population & Housing Censuses, the PSLM 2019-20, the Economic Census 2023, the Labour Force Survey, and the HIES 2024-25 (all published by the [Pakistan Bureau of Statistics](https://www.pbs.gov.pk/)), plus health & demographic indicators from the Pakistan Demographic and Health Survey (PDHS) 2017-18, published by the [National Institute of Population Studies (NIPS)](https://www.nips.org.pk/viewpublicdata).
 
 ## Live demo
 
@@ -8,8 +8,9 @@ Interactive district-level map of Pakistan, visualising indicators from the 2017
 
 ## Features
 
-- **12 indicator groups** covering demographics, urban/rural splits, literacy, education attainment, employment status, school attendance, PSLM welfare indicators, Economic Census, Labour Force Survey, and HIES household income/expenditure
+- **17 indicator groups** covering demographics, urban/rural splits, literacy, education attainment, employment status, school attendance, PSLM welfare indicators, Economic Census, Labour Force Survey, HIES household income/expenditure, and — new — PDHS family planning, fertility, maternal health, child immunisation, and child nutrition
 - **2017 vs 2023 comparison** with a "Change" toggle showing inter-censal differences
+- **Sample-size aware** — survey-based estimates (including DHS) carry per-district sample sizes and suppress/flag small-n districts on the map
 - Province filter, district search, and CSV export
 - Responsive layout (desktop + mobile)
 
@@ -29,7 +30,9 @@ datadarbar/
 │       ├── districts.json
 │       └── pakistan_districts_province_boundries.geojson
 ├── etl/                  ← Python data pipeline
-│   └── build_dataset.py
+│   ├── build_dataset.py
+│   ├── dhs_district.py   ← PDHS 2017-18 district indicators (NIPS microdata)
+│   └── dhs_district_indicators.json  ← generated DHS output (provenance)
 ├── .gitignore
 └── README.md
 ```
@@ -72,6 +75,12 @@ The Labour Force Survey (LFS) and Household Integrated Economic Survey (HIES) ar
 
 These adjustments improve the plausibility of district-level estimates but do not eliminate the fundamental limitation that provincial-level surveys have limited statistical power at finer geographies. Users should interpret district-level survey indicators as approximate and treat cross-district rankings with appropriate caution. The sample size (n) is shown in tooltips for all survey-based indicator groups.
 
+### PDHS 2017-18 (health & demographics)
+
+The PDHS 2017-18 layers are computed from NIPS microdata by `etl/dhs_district.py` using the survey's sampling weights, then merged into `districts.json`. Like LFS/HIES, the PDHS is representative at the national/provincial/region level, **not** the district level (~15,000 women across ~130 districts), so district figures are indicative and the same n<30 suppression applies. Each of the five DHS groups has its own denominator (currently married women; all women; women with a recent birth; children 12–23 months; children under 5), so reliable coverage varies: family planning/fertility ~122 districts, maternal health ~98, nutrition ~47, immunisation ~16. National weighted estimates reproduce published PDHS figures (e.g. contraceptive prevalence 33.7% vs 34.2%, stunting 37.2% vs 37.6%). Gilgit-Baltistan and AJK — excluded from the national weight `v005` — are weighted with the combined weight `sv005`, which also populates 17 GB/AJK districts that the PBS census tables leave blank.
+
+To regenerate the DHS layer, download the PDHS 2017-18 STATA microdata from [NIPS](https://www.nips.org.pk/viewpublicdata), extract the recode folders, and run `python etl/dhs_district.py /path/to/DHS_DIR`.
+
 ## Data sources
 
 | Source | Years | Coverage |
@@ -81,6 +90,7 @@ These adjustments improve the plausibility of district-level estimates but do no
 | [Economic Census](https://www.pbs.gov.pk/) | 2023 | Establishments, workforce by sector |
 | [Labour Force Survey](https://www.pbs.gov.pk/) | 2020-21, 2024-25 | LFPR, unemployment, industry |
 | [HIES](https://www.pbs.gov.pk/) | 2024-25 | Household income & expenditure |
+| [PDHS](https://www.nips.org.pk/viewpublicdata) (NIPS) | 2017-18 | Family planning, fertility, maternal & child health, child nutrition |
 | District boundaries | — | GeoJSON from PBS / geoBoundaries |
 
 ## License

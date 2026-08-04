@@ -157,6 +157,19 @@ CROSSWALK = {
     "tando muhammad khan":     "tando muhammad khan",
     "south baziristan":        "south waziristan agency",
     "kemari":                  "karachi",
+    # PDHS 2017-18 district-label variants (GB/AJK + spellings)
+    "astore":                  "astor",
+    "diamer":                  "diamir",
+    "ghanche":                 "ghanchi",
+    "hattian bala":            "hattian",
+    "hunza":                   "hunza nagar",
+    "nagar":                   "hunza nagar",
+    "jafarabad":               "jaffarabad",
+    "karachi malir":           "karachi",
+    "kharmang":                "skardu",
+    "shigar":                  "skardu",
+    "naushahro firoze":        "naushehro feroze",
+    "sudhonti":                "sudhnutti",
 }
 
 # GeoJSON keys that receive multiple CSV rows (need aggregation, not overwrite)
@@ -2840,6 +2853,16 @@ def main():
             tables.append(("PSLM Digital Literacy", load_pslm_digital(pslm_dir, census_pop=census_pop)))
         except Exception as e:
             print(f"  WARNING: PSLM Digital failed: {e}")
+
+    # PDHS 2017-18 (NIPS microdata) — health & demographic indicators.
+    # Standalone module; see etl/dhs_district.py for methodology + source.
+    dhs_dir = PBS / "Microdata" / "DHS 2017-18"
+    if dhs_dir.exists():
+        try:
+            from dhs_district import compute as compute_dhs
+            tables.append(("PDHS 2017-18", compute_dhs(dhs_dir)))
+        except Exception as e:
+            print(f"  WARNING: DHS 2017-18 failed: {e}")
 
     # ── Merge ────────────────────────────────────────────────────────────
     print(f"Loaded {len(tables)} table-year combinations:")

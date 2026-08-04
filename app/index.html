@@ -286,6 +286,7 @@
           <li><strong>LFS 2020-21 &amp; 2024-25</strong> &mdash; Labour Force Survey (employment, LFPR, industry breakdown)</li>
           <li><strong>HIES 2024-25</strong> &mdash; Household Integrated Economic Survey (expenditure, food security, housing)</li>
           <li><strong>Economic Census 2023</strong> &mdash; Establishment counts, workforce size, industry composition</li>
+          <li><strong>PDHS 2017-18</strong> &mdash; Pakistan Demographic and Health Survey microdata, published by the <a href="https://www.nips.org.pk/viewpublicdata" target="_blank" rel="noopener">National Institute of Population Studies (NIPS)</a> (family planning, fertility, maternal &amp; child health, child nutrition)</li>
         </ul>
 
         <h3>Coverage</h3>
@@ -293,9 +294,10 @@
           The map covers 141 districts across all provinces and territories: Punjab, Sindh,
           Khyber Pakhtunkhwa, Balochistan, Islamabad Capital Territory,
           Azad Jammu &amp; Kashmir, Gilgit-Baltistan, and the former Federally
-          Administered Tribal Areas (FATA). 124 districts currently have matched data; the
-          remaining 17 (primarily in AJK and Gilgit-Baltistan) appear on the map but lack
-          PBS coverage in the datasets used.
+          Administered Tribal Areas (FATA). All 141 districts now carry at least some data:
+          the 17 districts in AJK and Gilgit-Baltistan &mdash; previously blank because the
+          PBS census tables do not cover them &mdash; are populated from the PDHS 2017-18,
+          which surveyed those regions as separate domains.
         </p>
       </div>
     </div>
@@ -446,6 +448,30 @@
           eliminate the fundamental limitation that provincial-level surveys have limited
           statistical power at finer geographies. Users should interpret district-level survey
           indicators as approximate and treat cross-district rankings with caution.
+        </p>
+
+        <h3>Health &amp; Demographic Indicators (PDHS 2017-18)</h3>
+        <p>
+          The Family Planning, Fertility, Maternal Health, Child Immunisation and Child
+          Nutrition layers are computed from the PDHS 2017-18 microdata using the survey's
+          sampling weights. Estimates are validated against the published national PDHS
+          figures &mdash; e.g. contraceptive prevalence 33.7% (published 34.2%), modern
+          method 24.7% (25.0%), unmet need 18.4% (17.3%), stunting 37.2% (37.6%), and full
+          immunisation 66.0% (66%).
+        </p>
+        <p>
+          <strong>An important caveat:</strong> the PDHS is designed to be representative at
+          the national, provincial and region level, <em>not</em> at the district level
+          (about 15,000 women across ~130 districts). District figures are therefore
+          <em>indicative</em>. Each layer carries its own denominator and unweighted sample
+          size, and the same n&lt;30 suppression rule applies &mdash; so reliable coverage
+          varies sharply by indicator: family planning and fertility are estimable in ~122 of
+          133 sampled districts, maternal health in ~98, child nutrition in ~47, and child
+          immunisation in only ~16 (the 12&ndash;23-month denominator is very small per
+          district). Suppressed districts are greyed out and their sample size is shown in
+          the tooltip. Gilgit-Baltistan and Azad Jammu &amp; Kashmir, which are excluded from
+          the national weight, are weighted with the survey's combined weight so their
+          within-district estimates are valid.
         </p>
 
         <h3>District Coverage Gaps</h3>

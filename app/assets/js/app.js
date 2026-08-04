@@ -16,6 +16,8 @@ const TOPICS = {
   ict:            { label: 'ICT & Digital',             groups: ['hiesIct', 'pslmDigital'] },
   health:         { label: 'Health',                    groups: ['pslmHealth'] },
   women:          { label: "Women's Empowerment",       groups: ['hiesDecisions'] },
+  fertility:      { label: 'Fertility & Family Planning', groups: ['dhsFamilyPlanning', 'dhsFertility'] },
+  maternalChild:  { label: 'Maternal & Child Health',    groups: ['dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
 };
 
 const INDICATOR_GROUPS = {
@@ -312,6 +314,57 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'hies_wdm', hasYears: false, noYear: true,
   },
+  // ── FERTILITY & FAMILY PLANNING — DHS 2017-18 ────────────────────────
+  dhsFamilyPlanning: {
+    label: 'Family Planning — DHS 2017-18',
+    dataset: 'DHS 2017-18',
+    indicators: {
+      cpr_any:    'Contraceptive Prevalence — Any Method (%)',
+      cpr_modern: 'Contraceptive Prevalence — Modern (%)',
+      unmet_need: 'Unmet Need for Family Planning (%)',
+    },
+    prefix: 'dhs_fp', hasYears: false, noYear: true,
+  },
+  dhsFertility: {
+    label: 'Fertility & Child Survival — DHS 2017-18',
+    dataset: 'DHS 2017-18',
+    indicators: {
+      ceb_mean:   'Mean Children Ever Born (women 15-49)',
+      child_loss: 'Children Who Died — Share of Births Ever Had (%)',
+    },
+    prefix: 'dhs_fert', hasYears: false, noYear: true,
+  },
+  // ── MATERNAL & CHILD HEALTH — DHS 2017-18 ────────────────────────────
+  dhsMaternal: {
+    label: 'Maternal Health — DHS 2017-18',
+    dataset: 'DHS 2017-18',
+    indicators: {
+      anc4:     '4+ Antenatal Care Visits (%)',
+      sba:      'Skilled Birth Attendance (%)',
+      facility: 'Institutional Delivery (%)',
+    },
+    prefix: 'dhs_mat', hasYears: false, noYear: true,
+  },
+  dhsImmunisation: {
+    label: 'Child Immunisation — DHS 2017-18',
+    dataset: 'DHS 2017-18',
+    indicators: {
+      full_immun: 'Fully Immunised, age 12-23 mo (%)',
+      dpt3:       'DPT / Pentavalent 3 Coverage (%)',
+      measles:    'Measles Vaccination (%)',
+    },
+    prefix: 'dhs_imm', hasYears: false, noYear: true,
+  },
+  dhsNutrition: {
+    label: 'Child Nutrition — DHS 2017-18',
+    dataset: 'DHS 2017-18',
+    indicators: {
+      stunting:    'Stunting, under-5 (%)',
+      wasting:     'Wasting, under-5 (%)',
+      underweight: 'Underweight, under-5 (%)',
+    },
+    prefix: 'dhs_nut', hasYears: false, noYear: true,
+  },
 };
 
 // Colour ramps per group — topic-consistent colours
@@ -343,6 +396,13 @@ const COLOR_RAMPS = {
   pslmHealth:       ['#e8f5e9', '#1b5e20'],
   // Women's Empowerment
   hiesDecisions:    ['#fce4ec', '#880e4f'],
+  // Fertility & Family Planning — DHS 2017-18
+  dhsFamilyPlanning:['#ede7f6', '#4527a0'],
+  dhsFertility:     ['#ede7f6', '#5e35b1'],
+  // Maternal & Child Health — DHS 2017-18
+  dhsMaternal:      ['#e8f5e9', '#1b5e20'],
+  dhsImmunisation:  ['#e8f5e9', '#2e7d32'],
+  dhsNutrition:     ['#fff3e0', '#e65100'],
 };
 
 // Indicators where an INCREASE is bad (red) and a DECREASE is good (green).
@@ -377,6 +437,13 @@ const HIGHER_IS_WORSE = new Set([
   'pct_domestic_burden',      // domestic burden = constraint
   // Health
   'morbidity_rate',           // higher illness = worse
+  // DHS 2017-18 — family planning / fertility
+  'unmet_need',               // higher unmet need = worse
+  'child_loss',               // higher child mortality burden = worse
+  // DHS 2017-18 — child nutrition (all deficits: higher = worse)
+  'stunting',
+  'wasting',
+  'underweight',
 ]);
 
 // ── State ───────────────────────────────────────────────────────────────────
@@ -484,6 +551,11 @@ const SURVEY_META_PREFIX = {
   pslm:         'pslm',
   pslm_health:  'pslm_health',
   pslm_digital: 'pslm_digital',
+  dhs_fp:       'dhs_fp',
+  dhs_fert:     'dhs_fert',
+  dhs_mat:      'dhs_mat',
+  dhs_imm:      'dhs_imm',
+  dhs_nut:      'dhs_nut',
 };
 
 function _surveyMetaPrefixes() {
