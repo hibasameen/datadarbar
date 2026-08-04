@@ -14,10 +14,8 @@ const TOPICS = {
   welfare:        { label: 'Household Welfare',         groups: ['hies'] },
   housing:        { label: 'Housing & Infrastructure',  groups: ['hiesHousing', 'pslmWash', 'hiesWaste'] },
   ict:            { label: 'ICT & Digital',             groups: ['hiesIct', 'pslmDigital'] },
-  health:         { label: 'Health',                    groups: ['pslmHealth'] },
+  health:         { label: 'Health',                    groups: ['pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
   women:          { label: "Women's Empowerment",       groups: ['hiesDecisions'] },
-  fertility:      { label: 'Fertility & Family Planning', groups: ['dhsFamilyPlanning', 'dhsFertility'] },
-  maternalChild:  { label: 'Maternal & Child Health',    groups: ['dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
 };
 
 const INDICATOR_GROUPS = {
