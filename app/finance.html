@@ -21,6 +21,9 @@
 .card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
 .card h2{font-size:18px;font-weight:800;color:var(--green-900)}.card .desc{font-size:13px;color:var(--slate-600);margin:2px 0 6px}.unit{font-size:12px;font-weight:600;color:var(--slate-500)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
+.trend-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.tl-item{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--slate-600);font-weight:600}
+.tl-item i{width:11px;height:11px;border-radius:3px;display:inline-block}
 .seg{display:inline-flex;background:var(--slate-100);border-radius:9px;padding:3px;gap:2px}.seg button{border:0;background:transparent;font-family:inherit;font-weight:700;font-size:13px;color:var(--slate-600);padding:7px 14px;border-radius:7px;cursor:pointer}.seg button.on{background:var(--green-600);color:#fff}
 select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;border:1px solid var(--slate-300);border-radius:9px;background:#fff;cursor:pointer}
 .cl{font-size:11px;font-weight:700;pointer-events:none}.cv{font-size:10px;font-weight:600;pointer-events:none}
@@ -69,11 +72,13 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
   <div class="desc">Each block is a budget line; area is its share. Hover for detail.</div>
   <div class="controls">
    <div class="seg" id="bSide"><button data-s="expenditure" class="on">Expenditure</button><button data-s="receipts">Receipts</button></div>
-   <span class="yr-wrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
+   <div class="seg" id="bView"><button data-v="tree" class="on">Treemap</button><button data-v="trend">Trend</button></div>
+   <span class="yr-wrap" id="bYrWrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
   </div>
   <div id="budget"></div>
+  <div id="budgetTrend" style="display:none"></div>
   <div class="src" id="budgetMeta"></div>
-  <div class="note">Expenditure shown is <b>current</b> (function-wise) spending — debt servicing, defence, pensions and running the government. Development spending (the PSDP) is budgeted separately and not included in this view. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award). Figures are budget estimates extracted from the "Budget in Brief" PDFs.</div>
+  <div class="note"><b>Treemap</b> shows one budget year (use the slider); <b>Trend</b> stacks the top-level categories over every available year. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award), from the <b>Explanatory Memorandum on Federal Receipts</b>, 2009-10 to 2026-27. Expenditure shown is <b>current</b> spending — debt servicing, defence, pensions, running the government — from the "Budget in Brief"; development (PSDP) is budgeted separately and not included here. All figures are nominal budget estimates.</div>
  </div>
 
  <div class="card"><h2>Real GDP growth <span class="unit">— %, year on year</span></h2>
@@ -92,7 +97,7 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
  <div class="card"><h2>FBR tax revenue target over time <span class="unit">— Rs billion</span></h2>
   <div class="desc">The Federal Board of Revenue collection target set in each year's budget.</div><div id="fbr"></div></div>
 
- <div class="foot"><b>Source.</b> Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Federal Budget "Budget in Brief"</a>, FY2020-21 to 2026-27. Values are own-year budget estimates in Rs, extracted from the budget PDFs; line-item wording varies year to year, so a few categories may shift between years. Full detail (23,000+ budget line-items) is in the project's DuckDB warehouse.</div>
+ <div class="foot"><b>Source.</b> Finance Division — receipts from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Explanatory Memorandum on Federal Receipts</a> (FY2009-10 to 2026-27), expenditure from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">"Budget in Brief"</a> (FY2021-22 to 2026-27). Values are own-year budget estimates in Rs; receipts follow Pakistan's NAM chart-of-accounts hierarchy and reconcile to published control totals. Full detail is in the project's DuckDB warehouse and <code>budget_receipts_detailed.json</code>.</div>
 </div>
 <div class="tip" id="tip"></div>
 <script src="assets/js/econ_data.js"></script>
