@@ -2,6 +2,7 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#0c3a1e"/>
 <title>Data Darbar — Public Finance</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta name="description" content="Where Pakistan's federal budget comes from and goes — an Atlas-style treemap of receipts and expenditure."/>
 <meta property="og:title" content="Data Darbar — Public Finance"/><meta property="og:description" content="Pakistan's federal budget receipts and spending, visualised as a treemap."/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -73,12 +74,13 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
   <div class="controls">
    <div class="seg" id="bSide"><button data-s="expenditure" class="on">Expenditure</button><button data-s="receipts">Receipts</button></div>
    <div class="seg" id="bView"><button data-v="tree" class="on">Treemap</button><button data-v="trend">Trend</button></div>
+   <div class="seg" id="bPrice" style="display:none"><button data-p="nom" class="on">Nominal</button><button data-p="real">Real 2015-16</button></div>
    <span class="yr-wrap" id="bYrWrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
   </div>
   <div id="budget"></div>
   <div id="budgetTrend" style="display:none"></div>
   <div class="src" id="budgetMeta"></div>
-  <div class="note"><b>Treemap</b> shows one budget year (use the slider); <b>Trend</b> stacks the top-level categories over every available year. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award), from the <b>Explanatory Memorandum on Federal Receipts</b>, 2009-10 to 2026-27. Expenditure shown is <b>current</b> spending — debt servicing, defence, pensions, running the government — from the "Budget in Brief"; development (PSDP) is budgeted separately and not included here. All figures are nominal budget estimates.</div>
+  <div class="note"><b>Treemap</b> shows one budget year (use the slider); <b>Trend</b> stacks the top-level categories over every available year. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award), from the <b>Explanatory Memorandum on Federal Receipts</b>, 2009-10 to 2026-27. Expenditure shown is <b>current</b> spending — debt servicing, defence, pensions, running the government — from the "Budget in Brief"; development (PSDP) is budgeted separately and not included here. Budget figures are nominal estimates; in <b>Trend</b> view the <b>Real 2015-16</b> toggle deflates them by Pakistan's GDP deflator (PBS national accounts, 2015-16 = 100) so categories are comparable in constant prices over time.</div>
  </div>
 
  <div class="card"><h2>Real GDP growth <span class="unit">— %, year on year</span></h2>
@@ -97,7 +99,7 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
  <div class="card"><h2>FBR tax revenue target over time <span class="unit">— Rs billion</span></h2>
   <div class="desc">The Federal Board of Revenue collection target set in each year's budget.</div><div id="fbr"></div></div>
 
- <div class="foot"><b>Source.</b> Finance Division — receipts from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Explanatory Memorandum on Federal Receipts</a> (FY2009-10 to 2026-27), expenditure from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">"Budget in Brief"</a> (FY2021-22 to 2026-27). Values are own-year budget estimates in Rs; receipts follow Pakistan's NAM chart-of-accounts hierarchy and reconcile to published control totals. Full detail is in the project's DuckDB warehouse and <code>budget_receipts_detailed.json</code>.</div>
+ <div class="foot"><b>Source.</b> Finance Division — receipts from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Explanatory Memorandum on Federal Receipts</a> (FY2009-10 to 2026-27), current expenditure from the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">"Budget in Brief"</a> (FY2009-10 to 2026-27, COFOG function-wise). Values are own-year budget estimates in Rs; receipts follow Pakistan's NAM chart-of-accounts hierarchy and expenditure the functional classification, each reconciled to published control totals. Full detail is in the project's DuckDB warehouse and the <code>budget_receipts_detailed.json</code> / <code>budget_expenditure_detailed.json</code> files.</div>
 </div>
 <div class="tip" id="tip"></div>
 <script src="assets/js/econ_data.js"></script>

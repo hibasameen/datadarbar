@@ -1,0 +1,2125 @@
+{
+ "meta": {
+  "source": "Federal Budget in Brief \u2014 Current Expenditure (function-wise)",
+  "unit": "Rs billion",
+  "note": "Own-year budget estimates; COFOG functional classification reconciled to printed current-expenditure totals; General Public Services split into debt servicing, pensions and other."
+ },
+ "current_expenditure": {
+  "2009-10": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 647.1
+     },
+     {
+      "name": "Pensions",
+      "bn": 69.76
+     },
+     {
+      "name": "Other general public services",
+      "bn": 472.22
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 342.91
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 34.64
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 84.93
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.41
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 1.52
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 6.48
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 31.57
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 3.94
+     }
+    ]
+   }
+  ],
+  "2010-11": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 698.56
+     },
+     {
+      "name": "Pensions",
+      "bn": 90.68
+     },
+     {
+      "name": "Other general public services",
+      "bn": 598.42
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 442.17
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 51.26
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 66.9
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.45
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 1.84
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 7.28
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 34.5
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.46
+     }
+    ]
+   }
+  ],
+  "2011-12": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 790.98
+     },
+     {
+      "name": "Pensions",
+      "bn": 96.14
+     },
+     {
+      "name": "Other general public services",
+      "bn": 772.86
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 495.21
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 59.61
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 50.31
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.58
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 1.6
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 2.65
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 39.51
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.16
+     }
+    ]
+   }
+  ],
+  "2012-13": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 925.77
+     },
+     {
+      "name": "Pensions",
+      "bn": 129.07
+     },
+     {
+      "name": "Other general public services",
+      "bn": 822.0
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 545.39
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 70.16
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 53.64
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.74
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 1.85
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 7.84
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 47.87
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.34
+     }
+    ]
+   }
+  ],
+  "2013-14": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1153.54
+     },
+     {
+      "name": "Pensions",
+      "bn": 171.26
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1032.6
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 627.23
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 78.46
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 52.26
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.92
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 1.91
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 9.86
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 6.95
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 59.28
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.81
+     }
+    ]
+   }
+  ],
+  "2014-15": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1325.23
+     },
+     {
+      "name": "Pensions",
+      "bn": 215.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1003.1
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 700.15
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 86.45
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 47.59
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.94
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.01
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 10.02
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 7.06
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 64.01
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.69
+     }
+    ]
+   }
+  ],
+  "2015-16": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1279.89
+     },
+     {
+      "name": "Pensions",
+      "bn": 231.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 935.71
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 781.16
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 94.9
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 60.2
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 1.05
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.26
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 11.01
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 7.64
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 75.58
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.84
+     }
+    ]
+   }
+  ],
+  "2016-17": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1360.0
+     },
+     {
+      "name": "Pensions",
+      "bn": 245.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1102.21
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 860.17
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 103.46
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 63.54
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 1.07
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.26
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 12.11
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 8.0
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 84.19
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 1.98
+     }
+    ]
+   }
+  ],
+  "2017-18": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1363.02
+     },
+     {
+      "name": "Pensions",
+      "bn": 248.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 942.61
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 920.17
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 109.6
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 62.94
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 1.14
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.33
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 12.85
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 8.43
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 90.52
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 2.1
+     }
+    ]
+   }
+  ],
+  "2018-19": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 1620.23
+     },
+     {
+      "name": "Pensions",
+      "bn": 342.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1378.2
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1100.33
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 132.29
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 80.75
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 1.26
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.34
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 13.9
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 9.24
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 97.42
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 2.4
+     }
+    ]
+   }
+  ],
+  "2019-20": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 2891.45
+     },
+     {
+      "name": "Pensions",
+      "bn": 421.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 2294.59
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1152.54
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 152.92
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 84.17
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.47
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 2.29
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 11.06
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 9.84
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 77.26
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 190.59
+     }
+    ]
+   }
+  ],
+  "2020-21": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 2946.14
+     },
+     {
+      "name": "Pensions",
+      "bn": 470.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1012.82
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1289.13
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 169.96
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 71.75
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.43
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 35.68
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 25.49
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 9.82
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 83.36
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 230.91
+     }
+    ]
+   }
+  ],
+  "2021-22": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 3059.68
+     },
+     {
+      "name": "Pensions",
+      "bn": 480.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1895.52
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1373.28
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 178.51
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 115.24
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.44
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 34.6
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 28.35
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 10.37
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 91.97
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 255.29
+     }
+    ]
+   }
+  ],
+  "2022-23": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 3950.06
+     },
+     {
+      "name": "Pensions",
+      "bn": 609.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 1686.42
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1566.7
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 209.16
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 182.37
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 0.75
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 7.85
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 19.58
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 15.42
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 90.56
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 370.1
+     }
+    ]
+   }
+  ],
+  "2023-24": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 7302.52
+     },
+     {
+      "name": "Pensions",
+      "bn": 801.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 2340.75
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 1809.47
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 237.22
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 210.84
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 1.23
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 22.99
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 24.21
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 16.78
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 97.1
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 480.31
+     }
+    ]
+   }
+  ],
+  "2024-25": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 9775.0
+     },
+     {
+      "name": "Pensions",
+      "bn": 1014.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 2851.24
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 2128.78
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 283.05
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 357.74
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 7.25
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 27.92
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 28.17
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 18.47
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 103.78
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 608.0
+     }
+    ]
+   }
+  ],
+  "2025-26": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 8206.66
+     },
+     {
+      "name": "Pensions",
+      "bn": 1055.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 2949.19
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 2557.95
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 351.68
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 242.14
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 3.17
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 19.25
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 31.98
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 22.16
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 112.68
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 734.19
+     }
+    ]
+   }
+  ],
+  "2026-27": [
+   {
+    "label": "General Public Services",
+    "key": "General Public Services",
+    "color": "#c0392b",
+    "children": [
+     {
+      "name": "Debt servicing (mark-up)",
+      "bn": 8054.0
+     },
+     {
+      "name": "Pensions",
+      "bn": 1169.0
+     },
+     {
+      "name": "Other general public services",
+      "bn": 3576.65
+     }
+    ]
+   },
+   {
+    "label": "Defence Affairs & Services",
+    "key": "Defence Affairs & Services",
+    "color": "#1e6b3e",
+    "children": [
+     {
+      "name": "Defence Affairs & Services",
+      "bn": 3010.9
+     }
+    ]
+   },
+   {
+    "label": "Public Order & Safety",
+    "key": "Public Order & Safety",
+    "color": "#5d6d7e",
+    "children": [
+     {
+      "name": "Public Order & Safety",
+      "bn": 389.47
+     }
+    ]
+   },
+   {
+    "label": "Economic Affairs",
+    "key": "Economic Affairs",
+    "color": "#d4a017",
+    "children": [
+     {
+      "name": "Economic Affairs",
+      "bn": 238.44
+     }
+    ]
+   },
+   {
+    "label": "Environment Protection",
+    "key": "Environment Protection",
+    "color": "#16a085",
+    "children": [
+     {
+      "name": "Environment Protection",
+      "bn": 2.41
+     }
+    ]
+   },
+   {
+    "label": "Housing & Community Amenities",
+    "key": "Housing & Community Amenities",
+    "color": "#8e7cc3",
+    "children": [
+     {
+      "name": "Housing & Community Amenities",
+      "bn": 18.57
+     }
+    ]
+   },
+   {
+    "label": "Health Affairs & Services",
+    "key": "Health Affairs & Services",
+    "color": "#e07b39",
+    "children": [
+     {
+      "name": "Health Affairs & Services",
+      "bn": 37.44
+     }
+    ]
+   },
+   {
+    "label": "Recreation, Culture & Religion",
+    "key": "Recreation, Culture & Religion",
+    "color": "#a0522d",
+    "children": [
+     {
+      "name": "Recreation, Culture & Religion",
+      "bn": 23.8
+     }
+    ]
+   },
+   {
+    "label": "Education Affairs & Services",
+    "key": "Education Affairs & Services",
+    "color": "#3d6db5",
+    "children": [
+     {
+      "name": "Education Affairs & Services",
+      "bn": 117.75
+     }
+    ]
+   },
+   {
+    "label": "Social Protection",
+    "key": "Social Protection",
+    "color": "#9b59b6",
+    "children": [
+     {
+      "name": "Social Protection",
+      "bn": 857.01
+     }
+    ]
+   }
+  ]
+ }
+}

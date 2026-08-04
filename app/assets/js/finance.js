@@ -8,18 +8,43 @@ const hideTip=()=>tip.style('opacity',0);
 let E;
 function start(){if(!window.ECON){return setTimeout(start,30);}E=window.ECON;initBudget();buildKpis();drawGrowth();drawSectors();drawIO();window.addEventListener('resize',()=>{redraw();drawFbr();drawGrowth();drawSectors();drawIO();});}
 
-let bSide='expenditure',bView='tree',bYears=[],bYi=0;
+let bSide='expenditure',bView='tree',bPrice='nom',bYears=[],bYi=0;
 function redraw(){bView==='trend'?drawBudgetTrend():drawBudget();}
 function applyView(){
  const trend=bView==='trend';
  d3.select('#budget').style('display',trend?'none':null);
  d3.select('#budgetTrend').style('display',trend?null:'none');
  d3.select('#bYrWrap').style('display',trend?'none':null);
+ d3.select('#bPrice').style('display',trend?null:'none');
  redraw();
+}
+// GDP deflator (2015-16 = 100) from national accounts; extrapolated forward for any budget year
+// beyond the published GDP series (e.g. 2026-27) using the latest year-on-year change.
+let _defl=null;
+function deflator(){
+ if(_defl)return _defl;
+ const cur=E.indicators.series.find(s=>s.key==='gdp_mp_curr'),con=E.indicators.series.find(s=>s.key==='gdp_mp_const');
+ const cm={},km={};(cur?cur.points:[]).forEach(p=>cm[p.year]=p.value);(con?con.points:[]).forEach(p=>km[p.year]=p.value);
+ const d={};Object.keys(cm).forEach(y=>{if(km[y])d[y]=cm[y]/km[y]*100;});
+ _defl=d;return d;
+}
+function deflForYears(years){
+ const d=deflator();const out={};let last=null,prevRatio=1.06;
+ const known=Object.keys(d).sort();
+ years.forEach(y=>{
+  if(d[y]!=null){out[y]=d[y];last=d[y];}
+  else{ // extrapolate forward from last known using recent avg growth
+   const k=known.filter(x=>x<y);
+   if(k.length>=2){const a=d[k[k.length-2]],b=d[k[k.length-1]];prevRatio=b/a;last=(last||b);}
+   out[y]=last=Math.round((last||100)*prevRatio*10)/10;
+  }
+ });
+ return out;
 }
 function initBudget(){
  d3.selectAll('#bSide button').on('click',function(){d3.selectAll('#bSide button').classed('on',false);d3.select(this).classed('on',true);bSide=this.dataset.s;setBYears();applyView();buildKpis();});
  d3.selectAll('#bView button').on('click',function(){d3.selectAll('#bView button').classed('on',false);d3.select(this).classed('on',true);bView=this.dataset.v;applyView();});
+ d3.selectAll('#bPrice button').on('click',function(){d3.selectAll('#bPrice button').classed('on',false);d3.select(this).classed('on',true);bPrice=this.dataset.p;drawBudgetTrend();});
  setBYears();drawBudget();drawFbr();
 }
 function setBYears(){
@@ -36,7 +61,9 @@ function drawBudgetTrend(){
  const colOf={};const totOf={};
  years.forEach(y=>E.budget[bSide][y].forEach(g=>{colOf[g.label]=g.color;totOf[g.label]=(totOf[g.label]||0)+d3.sum(g.children,c=>c.bn);}));
  const keys=Object.keys(totOf).sort((a,b)=>totOf[b]-totOf[a]);
- const rows=years.map(y=>{const o={year:y};const m={};E.budget[bSide][y].forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));keys.forEach(k=>o[k]=m[k]||0);return o;});
+ const real=bPrice==='real';const defl=deflForYears(years);
+ const adj=(v,y)=>real?v/(defl[y]/100):v;
+ const rows=years.map(y=>{const o={year:y};const m={};E.budget[bSide][y].forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));keys.forEach(k=>o[k]=adj(m[k]||0,y));return o;});
  const W=el.node().clientWidth||900,H=Math.max(360,Math.min(520,W*0.5)),M={t:14,r:14,b:34,l:52};
  const x=d3.scalePoint().domain(years).range([M.l,W-M.r]);
  const ymax=d3.max(rows,r=>d3.sum(keys,k=>r[k]));
@@ -55,7 +82,7 @@ function drawBudgetTrend(){
  // legend
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
 }
 function total(side,year){return d3.sum(E.budget[side][year],g=>d3.sum(g.children,c=>c.bn));}
 function buildKpis(){
@@ -63,9 +90,8 @@ function buildKpis(){
  const ry=Object.keys(E.budget.receipts).sort().slice(-1)[0];
  const rec=E.budget.receipts[ry]?total('receipts',ry):null;
  const exp=E.budget.expenditure[bYears[bYi]]?total('expenditure',bYears[bYi]):null;
- // debt servicing
- let debt=0;const gps=(E.budget.expenditure[yr]||[]).find(g=>/mark-up|debt/i.test(g.label));
- if(gps)debt=d3.sum(gps.children,c=>c.bn);
+ // debt servicing (now a sub-item under General Public Services)
+ let debt=0;(E.budget.expenditure[yr]||[]).forEach(g=>g.children.forEach(c=>{if(/debt serv|mark-up/i.test(c.name))debt+=c.bn;}));
  const fbrS=E.indicators.series.find(s=>s.key==='fbr_tax');const fbr=fbrS&&fbrS.points.length?fbrS.points[fbrS.points.length-1]:null;
  const gs=E.indicators.series.find(x=>x.key==='gdp_growth');const g=gs&&gs.points.length?gs.points[gs.points.length-1]:null;
  const cards=[
