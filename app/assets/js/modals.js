@@ -221,6 +221,11 @@
       at a glance. Clicking a sector zooms to its chapters and products; a breadcrumb tracks the drill-down.
       Values are the customs values as published (nominal Pakistan Rupees), not inflation- or exchange-rate
       adjusted, and represent recorded formal trade only.</p>
+    <p><strong>Gap years.</strong> PBS did not publish 8-digit data for exports 2017-18 or imports 2018-19 and
+      2019-20. Exports 2017-18 are filled from UN Comtrade (Pakistan's calendar-2018 exports, shown at
+      HS-section level only, valued in Rs at the fiscal-year average rate); the two import gaps are filled at
+      the total level only from the Pakistan Economic Survey (Pakistan stopped reporting to UN Comtrade after
+      2018, so no commodity breakdown is available). These years are flagged in the source note.</p>
 
     <h3><span class="dd-tag" style="background:#f3dedb;color:#b23b2c">Economy &amp; Budget</span></h3>
 
