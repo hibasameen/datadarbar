@@ -14,7 +14,7 @@
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55}
 
 /* ===== Unified site header ===== */
-.site-header{position:sticky;top:0;z-index:100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
+.site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
 .header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
 .header-logo{height:32px;width:auto}
 .header-text{display:flex;flex-direction:column;line-height:1}
@@ -67,10 +67,10 @@ body{padding-bottom:34px}
 </style></head><body>
 <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
-  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><a href="map.html" class="header-link">District Map</a><a href="poverty.html" class="header-link">Poverty Metrics</a><a href="trade.html" class="header-link">Trade Atlas</a><a href="finance.html" class="header-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><div data-dd-nav></div><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
-<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="poverty.html" class="mobile-nav-link">Poverty Metrics</a><a href="trade.html" class="mobile-nav-link">Trade Atlas</a><a href="finance.html" class="mobile-nav-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
 <div class="hero">
   <div class="eyebrow">Pakistan in Numbers</div>
   <h1>Explore Pakistan's census, survey,<br/>trade and macroeconomic data</h1>
@@ -112,6 +112,7 @@ body{padding-bottom:34px}
   </div>
 </div>
 <script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
+<script src="assets/js/nav.js"></script>
 <script src="assets/js/modals.js"></script>
 <footer class="site-footer"><span>&copy; 2026 Hiba Sameen. All rights reserved.</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span></footer>
 </body></html>
