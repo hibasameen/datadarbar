@@ -56,6 +56,14 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
 .mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
 @media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
 
+
+/* ===== Fixed site footer bar (matches the District Map / Poverty Metrics pages) ===== */
+.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:var(--green-900);color:rgba(255,255,255,.45);font-size:11px;font-weight:400;line-height:1.2;border-top:1px solid rgba(255,255,255,.08)}
+.site-footer a{color:rgba(255,255,255,.55);text-decoration:none}
+.site-footer a:hover{color:var(--gold-300);text-decoration:none}
+.footer-sep{color:rgba(255,255,255,.2)}
+body{padding-bottom:34px}
+@media(max-width:640px){.site-footer{font-size:10px;padding:8px 12px}body{padding-bottom:38px}}
 </style></head><body>
 <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
@@ -106,4 +114,5 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
 <script src="assets/js/finance.js"></script>
 <script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
 <script src="assets/js/modals.js"></script>
+<footer class="site-footer"><span>&copy; 2026 Hiba Sameen. All rights reserved.</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span></footer>
 </body></html>
