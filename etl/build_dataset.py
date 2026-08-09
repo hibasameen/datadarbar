@@ -105,14 +105,9 @@ CROSSWALK = {
     "torghar":                 "tor ghar",
     "umer kot":                "umerkot",
     "bhakhar":                 "bhakkar",
-    # Karachi sub-districts → single Karachi polygon in GeoJSON
-    "karachi central":         "karachi",
-    "karachi east":            "karachi",
-    "karachi south":           "karachi",
-    "karachi west":            "karachi",
-    "korangi":                 "karachi",
-    "malir":                   "karachi",
-    "keamari":                 "karachi",
+    # Karachi's 7 districts are now separate GeoJSON polygons (split Aug 2026).
+    # Sub-district census/EC rows pass through to their own keys; only spelling
+    # variants are normalised below (see "kemari", "karachi malir").
     # Additional name variants
     "tando ahyar":             "tando allah yar",
     "washuk district washuk":  "washuk",
@@ -156,7 +151,7 @@ CROSSWALK = {
     "kech turbat":             "kech",
     "tando muhammad khan":     "tando muhammad khan",
     "south baziristan":        "south waziristan agency",
-    "kemari":                  "karachi",
+    "kemari":                  "keamari",
     # PDHS 2017-18 district-label variants (GB/AJK + spellings)
     "astore":                  "astor",
     "diamer":                  "diamir",
@@ -165,7 +160,7 @@ CROSSWALK = {
     "hunza":                   "hunza nagar",
     "nagar":                   "hunza nagar",
     "jafarabad":               "jaffarabad",
-    "karachi malir":           "karachi",
+    "karachi malir":           "malir",
     "kharmang":                "skardu",
     "shigar":                  "skardu",
     "naushahro firoze":        "naushehro feroze",
@@ -173,7 +168,7 @@ CROSSWALK = {
 }
 
 # GeoJSON keys that receive multiple CSV rows (need aggregation, not overwrite)
-_MERGED_DISTRICTS = {"karachi", "kohistan", "chitral", "killa abdullah", "kalat", "loralai",
+_MERGED_DISTRICTS = {"kohistan", "chitral", "killa abdullah", "kalat", "loralai",
                       "peshawar", "kohat", "bannu", "lakki marwat", "dera ismail khan", "tank", "sibi",
                       "chaghi", "nushki"}  # chaghi/nushki may appear under both div 41 & 47 (Rakhshan)
 
@@ -1068,13 +1063,13 @@ PSLM_DISTRICT_CROSSWALK = {
     "shaheed sikandar abad": "sherani",
     "sibbi": "sibi",
     "bhakhar": "bhakkar",
-    # Karachi sub-districts → single Karachi polygon
-    "karachi central": "karachi",
-    "karachi east": "karachi",
-    "karachi malir": "karachi",
-    "karachi south": "karachi",
-    "karachi west": "karachi",
-    "korangi": "karachi",
+    # Karachi's 7 districts are now separate polygons; map PSLM labels to keys.
+    "karachi central": "karachi central",
+    "karachi east": "karachi east",
+    "karachi malir": "malir",
+    "karachi south": "karachi south",
+    "karachi west": "karachi west",
+    "korangi": "korangi",
 }
 
 
