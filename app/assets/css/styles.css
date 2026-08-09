@@ -932,12 +932,9 @@ select:focus, input:focus {
   background: #b0b8c1; border: 1.5px dashed #8a9480; border-radius: 2px;
   opacity: 0.5; flex-shrink: 0;
 }
-/* Rankings & stats: mobile */
-  .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
-.ranking-list { max-height: 180px; }
 
 @media (max-width: 768px) {
   /* Rankings & stats: mobile */
   .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
-  .ranking-list { max-height: 180px; }
+  .ranking-list { max-height: 180px; overflow-y: auto; }
 }
