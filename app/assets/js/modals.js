@@ -87,6 +87,9 @@
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>Economy &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
         flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
+      <li><strong>Poverty Metrics</strong> — a multidimensional poverty index built from household
+        microdata, alongside satellite measures of relative wealth, population and night-time lights,
+        mapped down to all 554 tehsils.</li>
     </ul>
 
     <h3>Built by</h3>
@@ -262,10 +265,39 @@
       All figures are nominal budget estimates as published; presentation of some line items changes across
       years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
 
+    <h2>Poverty Metrics</h2>
+    <h4>Multidimensional Poverty Index (district)</h4>
+    <p>An <strong>Alkire–Foster adjusted headcount</strong>, M<sub>0</sub> = H &times; A, computed directly
+      from <strong>PSLM 2019-20 household microdata</strong> — from the joint distribution of deprivations
+      across households, not from district averages. Two equally weighted dimensions: <em>education</em>
+      (years of schooling; child school attendance, ¼ each) and <em>living standards</em> (electricity,
+      cooking fuel, sanitation, drinking water, housing materials, 1/10 each). The poverty cutoff is
+      k = 1/3, the global-MPI standard, and estimates are person-weighted using PSLM survey weights.
+      The health dimension is deliberately omitted: MPI health indicators require DHS microdata that
+      cannot be linked to PSLM households, so this is best read as a <em>living-conditions</em> MPI.
+      It covers 119 of 141 districts — the rest were not sampled by PSLM. The national aggregate
+      (M<sub>0</sub> = 0.222, headcount 39.2%) sits on top of the official Pakistan MPI headcount.</p>
+
+    <h4>Satellite layers (tehsil)</h4>
+    <p><strong>Relative Wealth Index</strong> is Meta's machine-learning estimate on a ~2.4 km grid,
+      aggregated to tehsils as a population-weighted mean. <strong>Population</strong> is WorldPop 2020
+      (UN-adjusted, 1 km), zonal-summed; it totals 220.7 million, matching the UN estimate.
+      <strong>Night-time lights</strong> are VIIRS DNB June composites for 2020–2026. Two corrections
+      matter and are applied: a <strong>1 nW background floor</strong> (over half the raw radiance total
+      is diffuse haze from airglow and moonlit snow or sand), and a persistent-<strong>gas-flare</strong>
+      mask. Tehsils below one person per km² are flagged and withheld, because over empty terrain the
+      signal measures surface albedo rather than activity. Note that night-lights are themselves an
+      <em>input</em> to the Relative Wealth Index, so those two layers are not independent of each other;
+      the survey-based MPI is the one independent benchmark.</p>
+
     <h3>Limitations</h3>
     <ul>
       <li>Survey-based district indicators (PSLM, LFS, HIES) are sample estimates and carry sampling error,
         especially in smaller districts.</li>
+      <li>The MPI omits the health dimension and reflects 2019-20 conditions; the Relative Wealth Index is
+        modelled rather than measured, and is benchmarked against a pooled India–Pakistan baseline.</li>
+      <li>Night-time lights proxy activity and electrification, not GDP; June-only monthly composites carry
+        more year-to-year noise than annual products and a seasonal signature.</li>
       <li>Trade figures are nominal recorded customs values and exclude informal/unrecorded trade; leading-zero
         and name-wrap repairs in PDF parsing are validated in aggregate but individual rare lines may vary.</li>
       <li>National accounts and budget figures are nominal unless stated; base-year rebasing and changes in

@@ -59,14 +59,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
 </style></head><body>
 <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
-  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><a href="map.html" class="header-link">District Map</a><a href="trade.html" class="header-link">Trade Atlas</a><a href="finance.html" class="header-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><a href="map.html" class="header-link">District Map</a><a href="poverty.html" class="header-link">Poverty Metrics</a><a href="trade.html" class="header-link">Trade Atlas</a><a href="finance.html" class="header-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
-<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="trade.html" class="mobile-nav-link">Trade Atlas</a><a href="finance.html" class="mobile-nav-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><a href="map.html" class="mobile-nav-link">District Map</a><a href="poverty.html" class="mobile-nav-link">Poverty Metrics</a><a href="trade.html" class="mobile-nav-link">Trade Atlas</a><a href="finance.html" class="mobile-nav-link">Economy &amp; Budget</a><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
 <div class="hero">
   <div class="eyebrow">Pakistan in Numbers</div>
   <h1>Explore Pakistan's census, survey,<br/>trade and macroeconomic data</h1>
-  <p>Data Darbar turns Pakistan's official statistics — the census, 8-digit trade, national accounts and the federal budget — into interactive maps and Atlas-style visualisations. Pick a view to begin.</p>
+  <p>Data Darbar turns Pakistan's official statistics — the census, 8-digit trade, national accounts and the federal budget — into interactive maps and Atlas-style visualisations, now with poverty and satellite measures down to the tehsil. Pick a view to begin.</p>
 </div>
 <div class="wrap">
   <div class="cards">
@@ -85,6 +85,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
       <div class="pcard-body"><div class="pcard-title">Economy &amp; Budget</div><div class="pcard-tag">The economy and the federal budget</div><div class="pcard-desc">GDP growth and the economy by sector and its input-output flows, plus the federal budget — receipts and spending broken down as a treemap.</div></div>
       <div class="pcard-go">Open →</div>
     </a>
+    <a class="pcard" href="poverty.html" style="--accent:#0f6e78">
+      <div class="pcard-ic">📉</div>
+      <div class="pcard-body"><div class="pcard-title">Poverty Metrics</div><div class="pcard-tag">Deprivation, wealth and activity from space</div><div class="pcard-desc">A multidimensional poverty index built from household microdata, plus satellite measures of relative wealth, population and night-time lights — down to all 554 tehsils.</div></div>
+      <div class="pcard-go">Open →</div>
+    </a>
   </div>
   <div class="about" id="about" style="scroll-margin-top:70px">
     <h2>About the data</h2>
@@ -94,6 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
       <div><b>External trade</b>8-digit HS imports &amp; exports by commodity and country, 2015–2024.</div>
       <div><b>National accounts</b>GDP by sector, growth and expenditure, 1951–2026 (2015-16 base).</div>
       <div><b>Federal budget</b>Receipts &amp; expenditure from the "Budget in Brief", 2009–2027.</div>
+      <div><b>Poverty &amp; satellite</b>Alkire–Foster MPI from PSLM microdata; Meta Relative Wealth Index, WorldPop and VIIRS night-lights at tehsil level.</div>
     </div>
   </div>
 </div>
