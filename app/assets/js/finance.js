@@ -102,7 +102,7 @@ function writeHash(push){
  else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
  else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
  else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
- else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
+ else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bView==='trend'&&bTrendMode!=='stack')p.set('tm',bTrendMode);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
  const hv='#'+p.toString();_lastNavHash=hv;
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
 }
@@ -122,7 +122,7 @@ function applyStateFromHash(){
  if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
  if(k==='censuses'&&o.m)setCmiMode(o.m);
  if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
- if(k==='budget'){if(o.bs)setBSide(o.bs);if(o.bv)setBView(o.bv);if(o.bp)setBPrice(o.bp);if(o.by)setBYear(o.by);}
+ if(k==='budget'){if(o.bs)setBSide(o.bs);if(o.bv)setBView(o.bv);if(o.tm)setBTrendMode(o.tm);if(o.bp)setBPrice(o.bp);if(o.by)setBYear(o.by);}
  applyingHash=false;
  writeHash(false);
  if(o.at){const el=document.getElementById(o.at);if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),140);}
@@ -954,7 +954,7 @@ function drawIOGrid(){
 }
 
 /* ================= budget (treemap + trend, unchanged mechanics) ================= */
-let bSide='expenditure',bView='tree',bPrice='nom',bYears=[],bYi=0;
+let bSide='expenditure',bView='tree',bPrice='nom',bTrendMode='stack',bYears=[],bYi=0;
 function redraw(){bView==='trend'?drawBudgetTrend():drawBudget();}
 function applyView(){
  const trend=bView==='trend';
@@ -962,6 +962,7 @@ function applyView(){
  d3.select('#budgetTrend').style('display',trend?null:'none');
  d3.select('#bYrWrap').style('display',trend?'none':null);
  d3.select('#bPrice').style('display',trend?null:'none');
+ d3.select('#bTrendMode').style('display',trend?null:'none');
  d3.select('#budgetChipsWrap').style('display',trend?null:'none');
  redraw();
 }
@@ -1005,6 +1006,7 @@ function initBudget(){
  d3.selectAll('#bSide button').on('click',function(){setBSide(this.dataset.s);});
  d3.selectAll('#bView button').on('click',function(){setBView(this.dataset.v);});
  d3.selectAll('#bPrice button').on('click',function(){setBPrice(this.dataset.p);});
+ d3.selectAll('#bTrendMode button').on('click',function(){setBTrendMode(this.dataset.tm);});
  buildBudgetChips();setBYears();drawBudget();
 }
 function setBYears(){
@@ -1016,8 +1018,10 @@ function setBYears(){
 function setBSide(v){bSide=v;d3.selectAll('#bSide button').classed('on',function(){return this.dataset.s===v;});setBYears();buildBudgetChips();applyView();writeHash();}
 function setBView(v){bView=v;d3.selectAll('#bView button').classed('on',function(){return this.dataset.v===v;});applyView();writeHash();}
 function setBPrice(p){bPrice=p;d3.selectAll('#bPrice button').classed('on',function(){return this.dataset.p===p;});drawBudgetTrend();writeHash();}
+function setBTrendMode(m){bTrendMode=m;d3.selectAll('#bTrendMode button').classed('on',function(){return this.dataset.tm===m;});drawBudgetTrend();writeHash();}
 function setBYear(y){const i=bYears.indexOf(y);if(i>=0){bYi=i;d3.select('#bYr').property('value',i);d3.select('#bYrLbl').text(y);drawBudget();writeHash();}}
-function drawBudgetTrend(){
+function drawBudgetTrend(){bTrendMode==='lines'?drawBudgetTrendLines():drawBudgetTrendStack();}
+function drawBudgetTrendStack(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
  const years=Object.keys(E.budget[bSide]).sort();
  const colOf={};const totOf={};
@@ -1040,6 +1044,47 @@ function drawBudgetTrend(){
  const area=d3.area().x((d,i)=>x(years[i])).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
  svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','#fff').attr('stroke-width',.4)
   .on('mousemove',function(e,s){const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));const yr=years[Math.max(0,Math.min(years.length-1,xi))];const v=rows.find(r=>r.year===yr)[s.key];showTip(`<b>${s.key}</b><br>${yr}: ${fmtRs(v)}`,e);}).on('mouseleave',hideTip);
+ const lg=el.append('div').attr('class','trend-legend');
+ keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
+ d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+}
+function drawBudgetTrendLines(){
+ const el=d3.select('#budgetTrend');el.selectAll('*').remove();
+ const years=Object.keys(E.budget[bSide]).sort();
+ const colOf={},totOf={};
+ years.forEach(y=>E.budget[bSide][y].forEach(g=>{colOf[g.label]=g.color;totOf[g.label]=(totOf[g.label]||0)+d3.sum(g.children,c=>c.bn);}));
+ ensureBudgetSel(bSide);const bsel=budgetSel[bSide];
+ const keys=Object.keys(totOf).sort((a,b)=>totOf[b]-totOf[a]).filter(k=>bsel.has(k));
+ const real=bPrice==='real';const defl=deflForYears(years);
+ const adj=(v,y)=>real?v/(defl[y]/100):v;
+ const rows=years.map(y=>{const o={year:y};const m={};E.budget[bSide][y].forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));keys.forEach(k=>o[k]=adj(m[k]||0,y));return o;});
+ const W=el.node().clientWidth||900,H=Math.max(360,Math.min(520,W*0.5)),M={t:14,r:112,b:34,l:52};
+ const x=d3.scalePoint().domain(years).range([M.l,W-M.r]);
+ const ymax=d3.max(rows,r=>d3.max(keys,k=>r[k]))||1;
+ const y=d3.scaleLinear().domain([0,ymax*1.05]).range([H-M.b,M.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ const yt=y.ticks(5);
+ svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eceae2');
+ svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','#8a8f98').text(d=>fmtBn(d));
+ svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','#8a8f98').text((d,i)=>years.length>10&&i%2?'':d);
+ const line=d3.line().x((d,i)=>x(years[i])).y(d=>y(d.v)).curve(d3.curveMonotoneX);
+ keys.forEach(k=>{
+  const pts=rows.map(r=>({year:r.year,v:r[k]}));
+  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('opacity',.92);
+  const lp=pts[pts.length-1];
+  svg.append('circle').attr('cx',x(lp.year)).attr('cy',y(lp.v)).attr('r',3.2).attr('fill',colOf[k]);
+  svg.append('text').attr('x',x(lp.year)+7).attr('y',y(lp.v)+3.5).attr('font-size',10.5).attr('font-weight',700).attr('fill',colOf[k]).text(k.length>16?k.slice(0,15)+'…':k);
+ });
+ // hover guideline
+ const focus=svg.append('line').attr('y1',M.t).attr('y2',H-M.b).attr('stroke','#c8ccd2').attr('stroke-width',1).style('opacity',0);
+ svg.append('rect').attr('x',M.l).attr('y',M.t).attr('width',W-M.r-M.l).attr('height',H-M.b-M.t).attr('fill','transparent')
+  .on('mousemove',function(e){
+   const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));
+   const yr=years[Math.max(0,Math.min(years.length-1,xi))];const r=rows.find(rr=>rr.year===yr);
+   focus.attr('x1',x(yr)).attr('x2',x(yr)).style('opacity',1);
+   const items=keys.map(k=>`<span style="color:${colOf[k]}">●</span> ${k}: ${fmtRs(r[k])}`).join('<br>');
+   showTip(`<b>${yr}</b>${real?' · real 2015-16':''}<br>${items}`,e);
+  }).on('mouseleave',function(){focus.style('opacity',0);hideTip();});
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
  d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
