@@ -12,6 +12,7 @@ const fyEnd=y=>+y.slice(0,4)+1;          // '1951-52' -> 1952
 const fyLbl=n=>`${n-1}-${String(n).padStart(4,'0').slice(2)}`; // 1952 -> '1951-52'
 
 const MACRO={agri:{label:'Agriculture',c:'#5b8c5a'},ind:{label:'Industry',c:'#e07b39'},serv:{label:'Services',c:'#3d6db5'}};
+const MFG_C='#c9862b';let arcView='stack';
 const ERAS=[[1952,1958,'Early years'],[1958,1969,'Ayub industrialisation'],[1969,1977,'War & nationalisation'],[1977,1988,'Zia decade'],[1988,1999,'Adjustment years'],[1999,2008,'Musharraf boom'],[2008,2013,'Energy crisis'],[2013,2020,'CPEC era'],[2020,2022,'COVID'],[2022,2026,'Squeeze & stabilisation']];
 
 const LSM_SHORT={'QIM':'QIM (overall)','Manufacturing of Food':'Food','Manufacturing of Beverages':'Beverages','Manufacturing of Tobacco':'Tobacco','Manufacturing of Textile':'Textiles','Manufacture of wearing apparel':'Wearing apparel','Manufacturing of Leather Products':'Leather','Manufacturing of Wood Products':'Wood','Manufacturing of Paper & Board':'Paper & board','Manufacturing of Coke & Petroleum Products':'Petroleum products','Manufacturing of Chemicals':'Chemicals','Manufacturing of Pharmaceuticals Products':'Pharmaceuticals','Manufacturing of Rubber Products':'Rubber','Manufacturing of Non Metalic Mineral Products':'Cement & minerals','Manufacturing of Iron & Steel Products':'Iron & steel','Manufacture of Fabricated Metal':'Fabricated metal','Manufacture of Computer, electronics and Optical products':'Electronics & optics','Manufacture of Electrical Equipment':'Electrical equipment','Manufacture of Machinery and  Equipment n.e.c':'Machinery','Manufacturing of Automobiles':'Automobiles','Manufacture of other transport  Equipment':'Other transport','Manufacture of furniture':'Furniture','Other manufacturing':'Other (footballs)'};
@@ -97,7 +98,7 @@ function initTopics(){
 function writeHash(push){
  if(applyingHash)return;
  const p=new URLSearchParams();p.set('t',topic);
- if(topic==='structure'){if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
+ if(topic==='structure'){if(arcView!=='stack')p.set('av',arcView);if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
  else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
  else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
  else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
@@ -117,7 +118,7 @@ function applyStateFromHash(){
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
- if(k==='structure'&&o.y)setYear(o.y);
+ if(k==='structure'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
  if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
  if(k==='censuses'&&o.m)setCmiMode(o.m);
  if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
@@ -169,12 +170,12 @@ function prepData(){
  shareYears=ST.shares.agri.map(p=>p.year);
  const sh=k=>{const m={};(ST.shares[k]||[]).forEach(p=>m[p.year]=p.value);return m;};
  const bc=k=>{const m={};(ST.backcast[k]||[]).forEach(p=>m[p.year]=p.value);return m;};
- const A=sh('agri'),I=sh('ind'),S=sh('serv'),bA=bc('agri'),bS=bc('serv');
+ const A=sh('agri'),I=sh('ind'),S=sh('serv'),M=sh('mfg'),bA=bc('agri'),bS=bc('serv'),bM=bc('mfg');
  const backYears=ST.backcast.agri.map(p=>p.year);
  arcYears=backYears.concat(shareYears);
  arcData=arcYears.map(y=>{
-  if(A[y]!=null)return {year:y,n:fyEnd(y),agri:A[y],ind:I[y],serv:S[y],back:false};
-  const a=bA[y],s=bS[y];return {year:y,n:fyEnd(y),agri:a,ind:Math.max(0,100-a-s),serv:s,back:true};
+  if(A[y]!=null)return {year:y,n:fyEnd(y),agri:A[y],ind:I[y],serv:S[y],mfg:M[y],back:false};
+  const a=bA[y],s=bS[y];return {year:y,n:fyEnd(y),agri:a,ind:Math.max(0,100-a-s),serv:s,mfg:bM[y],back:true};
  });
  selYear=shareYears[shareYears.length-1];
  // ---- LSM spliced series ----
@@ -204,12 +205,30 @@ function lastPt(arr){return arr[arr.length-1];}
 
 /* ================= 1. arc: stacked shares 1952-2026 ================= */
 function initArc(){
- const lg=d3.select('#arcLegend');
+ buildArcLegend();
+ d3.selectAll('#arcView button').on('click',function(){setArcView(this.dataset.av);});
+ drawArc();
+}
+function buildArcLegend(){
+ const lg=d3.select('#arcLegend');lg.selectAll('*').remove();
+ if(arcView==='lines'){
+  const items=[['agri','Agriculture',MACRO.agri.c],['serv','Services',MACRO.serv.c],['mfg','Manufacturing',MFG_C]];
+  lg.selectAll('.li').data(items).join('div').attr('class','li')
+   .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`);
+  return;
+ }
  const items=[['all','Whole economy','#17301f']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
  lg.selectAll('.li').data(items).join('div').attr('class','li')
   .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`)
   .on('click',(e,d)=>setSector(d[0]));
- drawArc();
+}
+function setArcView(v){
+ arcView=v;d3.selectAll('#arcView button').classed('on',function(){return this.dataset.av===v;});
+ buildArcLegend();
+ d3.select('#arcDesc').html(v==='lines'
+  ?'Agriculture, services and manufacturing since 1951-52 — services overtook agriculture in the mid-1960s; manufacturing has only gone from 4% to 14%. <b>Dashed</b> = backcast. <b>Click or drag</b> to move the year cursor.'
+  :'Share of value added from agriculture, industry and services since 1951-52. <b>Click a band</b> to focus a sector, <b>click or drag anywhere</b> to move the year cursor.');
+ drawArc();writeHash();
 }
 function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k);drawArc();drawMix();drawComposition();drawCYear();writeHash();}
 /* sector focus can be 'all', a macro key, or a sub-sector key */
@@ -238,7 +257,8 @@ function buildSectorSelect(){
  sel.property('value',selSector);
 }
 function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();writeHash();}
-function drawArc(){
+function drawArc(){arcView==='lines'?drawArcLines():drawArcStack();}
+function drawArcStack(){
  const el=d3.select('#arc');el.selectAll('*').remove();
  const W=el.node().clientWidth||1100,H=Math.max(250,Math.min(320,W*0.28)),m={t:26,r:14,b:26,l:40};
  const x=d3.scaleLinear().domain([arcData[0].n,lastPt(arcData).n]).range([m.l,W-m.r]);
@@ -285,6 +305,54 @@ function drawArc(){
  const cx=x(fyEnd(selYear));
  svg.append('line').attr('class','cursor-line').attr('x1',cx).attr('x2',cx).attr('y1',m.t-4).attr('y2',H-m.b).attr('pointer-events','none');
  svg.append('text').attr('x',cx).attr('y',H-6).attr('text-anchor','middle').attr('font-size',10.5).attr('font-weight',800).attr('fill','var(--green-900)').text(selYear).attr('pointer-events','none');
+ const pick=e=>{const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
+  const row=arcData.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);setYear(row.year);};
+ svg.call(d3.drag().on('start drag',pick));
+ svg.on('click',pick);
+}
+
+function drawArcLines(){
+ const el=d3.select('#arc');el.selectAll('*').remove();
+ const W=el.node().clientWidth||1100,H=Math.max(250,Math.min(320,W*0.28)),m={t:26,r:48,b:26,l:40};
+ const x=d3.scaleLinear().domain([arcData[0].n,lastPt(arcData).n]).range([m.l,W-m.r]);
+ const y=d3.scaleLinear().domain([0,68]).range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ ERAS.forEach((e,i)=>{
+  const x0=x(Math.max(e[0],arcData[0].n)),x1=x(Math.min(e[1],lastPt(arcData).n));
+  if(x1<=x0)return;
+  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);
+  if(x1-x0>55)svg.append('text').attr('class','era-lbl').attr('x',(x0+x1)/2).attr('y',m.t-8).attr('text-anchor','middle').text(e[2]);
+ });
+ const firstPub=arcData.findIndex(d=>!d.back);
+ const back=arcData.slice(0,firstPub+1),pub=arcData.slice(firstPub);
+ const L=[['agri','Agriculture',MACRO.agri.c,'agri'],['serv','Services',MACRO.serv.c,'serv'],['mfg','Manufacturing',MFG_C,'ind']];
+ const lr=lastPt(arcData);
+ L.forEach(([k,lbl,c,macro])=>{
+  const dim=selSector!=='all'&&parentOf(selSector)!==macro;
+  const op=dim?.22:1;
+  const line=d3.line().x(d=>x(d.n)).y(d=>y(d[k])).defined(d=>d[k]!=null).curve(d3.curveMonotoneX);
+  svg.append('path').attr('d',line(back)).attr('fill','none').attr('stroke',c).attr('stroke-width',2).attr('stroke-dasharray','5 3').attr('opacity',.75*op);
+  svg.append('path').attr('d',line(pub)).attr('fill','none').attr('stroke',c).attr('stroke-width',2.6).attr('opacity',op);
+  if(lr[k]!=null){
+   svg.append('circle').attr('cx',x(lr.n)).attr('cy',y(lr[k])).attr('r',3.4).attr('fill',c).attr('opacity',op);
+   svg.append('text').attr('x',x(lr.n)+7).attr('y',y(lr[k])+4).attr('font-size',11.5).attr('font-weight',800).attr('fill',c).attr('opacity',op).text(lr[k].toFixed(0)+'%');
+  }
+  const fr=arcData[0];
+  if(fr[k]!=null)svg.append('text').attr('x',x(fr.n)+6).attr('y',y(fr[k])+(k==='serv'?14:-7)).attr('font-size',11).attr('font-weight',800).attr('fill',c).attr('opacity',op).text(`${lbl} ${fr[k].toFixed(0)}%`);
+ });
+ const cn=fyEnd('1965-66');
+ svg.append('line').attr('x1',x(cn)).attr('x2',x(cn)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','#7d8b96').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.7).attr('pointer-events','none');
+ svg.append('text').attr('x',x(cn)+5).attr('y',H-m.b-8).attr('font-size',10).attr('font-style','italic').attr('fill','#7d8b96').attr('pointer-events','none').text('services overtake agriculture');
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(15,Math.floor(W/85))).tickFormat(n=>fyLbl(n)));
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'%'));
+ const cx=x(fyEnd(selYear));
+ svg.append('line').attr('class','cursor-line').attr('x1',cx).attr('x2',cx).attr('y1',m.t-4).attr('y2',H-m.b).attr('pointer-events','none');
+ svg.append('text').attr('x',cx).attr('y',H-6).attr('text-anchor','middle').attr('font-size',10.5).attr('font-weight',800).attr('fill','var(--green-900)').text(selYear).attr('pointer-events','none');
+ svg.on('mousemove',function(e){
+  const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
+  const row=arcData.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);
+  showTip(`<b>${row.year}</b>${row.back?' (backcast)':''}<br>Agriculture ${row.agri.toFixed(1)}% · Services ${row.serv.toFixed(1)}%${row.mfg!=null?` · Manufacturing ${row.mfg.toFixed(1)}%`:''}`,e);
+ }).on('mouseleave',hideTip);
  const pick=e=>{const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
   const row=arcData.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);setYear(row.year);};
  svg.call(d3.drag().on('start drag',pick));
@@ -1015,7 +1083,7 @@ function downloadCSV(name,rows){
 }
 const CSV={
  arc:()=>['Pakistan_sector_shares_1952-2026.csv',
-   arcData.map(d=>({fiscal_year:d.year,agriculture_pct:round2(d.agri),industry_pct:round2(d.ind),services_pct:round2(d.serv),source:d.back?'backcast':'published'}))],
+   arcData.map(d=>({fiscal_year:d.year,agriculture_pct:round2(d.agri),industry_pct:round2(d.ind),services_pct:round2(d.serv),manufacturing_pct:round2(d.mfg),source:d.back?'backcast':'published'}))],
  mix:()=>[`Pakistan_sector_mix_${selYear}.csv`,
    mixRows(selYear).map(r=>({fiscal_year:selYear,sector:r.lbl,broad_sector:MACRO[r.parent].label,share_of_gdp_pct:round2(r.v)}))],
  composition:()=>{

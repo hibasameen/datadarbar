@@ -150,10 +150,11 @@ body{padding-bottom:34px}
  <div class="card" data-topic="structure" id="sec-arc">
   <h2>Seven decades of structural change <span class="unit">— sector shares of GDP, %</span></h2>
   <button class="csvbtn" data-csv="arc" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-  <div class="desc">Share of value added from agriculture, industry and services since 1951-52. <b>Click a band</b> to focus a sector, <b>click or drag anywhere</b> to move the year cursor.</div>
+  <div class="seg" id="arcView"><button data-av="stack" class="on">Stacked</button><button data-av="lines">Lines</button></div>
+  <div class="desc" id="arcDesc">Share of value added from agriculture, industry and services since 1951-52. <b>Click a band</b> to focus a sector, <b>click or drag anywhere</b> to move the year cursor.</div>
   <div id="arc"></div>
   <div class="legend" id="arcLegend"></div>
-  <div class="note"><b>Before 1999-2000</b> (hatched region) shares are backcast from PBS's official real sectoral growth rates, anchored at 1999-2000 — indicative only, since rebasings and relative-price shifts are ignored. From 1999-2000 onward shares are as published in the national accounts (2015-16 base). Industry pre-1999 is the residual after agriculture and services.</div>
+  <div class="note"><b>Before 1999-2000</b> (hatched or dashed) shares are backcast from PBS's official real sectoral growth rates, anchored at 1999-2000 — indicative only, since rebasings and relative-price shifts are ignored. From 1999-2000 onward shares are as published in the national accounts (2015-16 base). Industry pre-1999 is the residual after agriculture and services.</div>
  </div>
 
  <div class="card" data-topic="structure" id="sec-mix">
