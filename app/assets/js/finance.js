@@ -61,7 +61,7 @@ const TOPIC_GROUPS=[
  {label:'Manufacturing',keys:['industry','censuses']},
  {label:'Linkages & the state',keys:['linkages','budget']}];
 const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
-let topic='structure';
+let topic='structure',applyingHash=false,_lastNavHash='';
 
 let E,ST,IND;
 let selYear,selSector='all',arcYears=[],arcData=[],shareYears=[],lsmSeries={},lsmColors={},lsmSel;
@@ -89,12 +89,64 @@ function initTopics(){
   });
  });
  d3.select('#sectorSelect').on('change',function(){setSector(this.value);});
- window.addEventListener('hashchange',()=>{
-  const k=location.hash.replace('#','');
-  if(k!==topic&&TOPICS.some(t=>t.k===k))applyTopic(k,false);
+ window.addEventListener('hashchange',()=>{if(!applyingHash)applyStateFromHash();});
+ window.addEventListener('popstate',()=>{if(!applyingHash)applyStateFromHash();});
+ initShare();
+ applyStateFromHash();
+}
+function writeHash(push){
+ if(applyingHash)return;
+ const p=new URLSearchParams();p.set('t',topic);
+ if(topic==='structure'){if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
+ else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
+ else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
+ else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
+ else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
+ const hv='#'+p.toString();_lastNavHash=hv;
+ try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
+}
+function readHash(){
+ let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}
+ if(!h)return {t:'structure'};
+ if(!h.includes('='))return {t:h};
+ const o={};new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t='structure';return o;
+}
+function applyStateFromHash(){
+ if('#'+new URLSearchParams(readHashRaw()).toString()===_lastNavHash&&_lastNavHash)return;
+ const o=readHash();const k=TOPICS.some(t=>t.k===o.t)?o.t:'structure';
+ applyingHash=true;
+ applyTopic(k,false);
+ if(o.s)setSector(o.s);
+ if(k==='structure'&&o.y)setYear(o.y);
+ if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
+ if(k==='censuses'&&o.m)setCmiMode(o.m);
+ if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
+ if(k==='budget'){if(o.bs)setBSide(o.bs);if(o.bv)setBView(o.bv);if(o.bp)setBPrice(o.bp);if(o.by)setBYear(o.by);}
+ applyingHash=false;
+ writeHash(false);
+ if(o.at){const el=document.getElementById(o.at);if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),140);}
+}
+function readHashRaw(){let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}return h.includes('=')?h:'t='+h;}
+const SHARE_ICON='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.7" x2="15.4" y2="6.3"/><line x1="8.6" y1="13.3" x2="15.4" y2="17.7"/></svg>';
+const CHECK_ICON='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg>';
+function initShare(){
+ document.querySelectorAll('.card[id]').forEach(card=>{
+  if(card.querySelector('.sharebtn'))return;
+  const hasCsv=!!card.querySelector('.csvbtn');
+  const btn=document.createElement('button');btn.className='sharebtn';btn.type='button';
+  btn.title='Copy a link to this exact view';btn.innerHTML=SHARE_ICON+'Share';
+  btn.style.right=hasCsv?'76px':'14px';
+  btn.addEventListener('click',e=>{e.stopPropagation();shareCard(card.id,btn);});
+  card.appendChild(btn);
  });
- const h=location.hash.replace('#','');
- applyTopic(TOPICS.some(t=>t.k===h)?h:'structure',false);
+}
+function shareCard(cardId,btn){
+ writeHash(false);
+ const p=new URLSearchParams(location.hash.replace(/^#/,''));if(cardId)p.set('at',cardId);
+ const url=location.origin+location.pathname+location.search+'#'+p.toString();
+ const done=()=>{const o=btn.innerHTML;btn.classList.add('ok');btn.innerHTML=CHECK_ICON+'Copied';setTimeout(()=>{btn.classList.remove('ok');btn.innerHTML=o;},1400);};
+ const fb=()=>{try{const t=document.createElement('textarea');t.value=url;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();done();}catch(e){window.prompt('Copy this link:',url);}};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,fb);else fb();
 }
 function applyTopic(k,push){
  topic=k;
@@ -107,7 +159,7 @@ function applyTopic(k,push){
  setupYearSlider();
  d3.select('#sideSector').style('display',(k==='structure'||k==='growth'||all)?null:'none');
  d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
- if(push){if(history.pushState)history.pushState(null,'','#'+k);else location.hash=k;}
+ if(!applyingHash)writeHash(push);
  if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  if(push)window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -159,7 +211,7 @@ function initArc(){
   .on('click',(e,d)=>setSector(d[0]));
  drawArc();
 }
-function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k);drawArc();drawMix();drawComposition();drawCYear();}
+function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k);drawArc();drawMix();drawComposition();drawCYear();writeHash();}
 /* sector focus can be 'all', a macro key, or a sub-sector key */
 function parentOf(sel){return (sel==='all'||MACRO[sel])?sel:(ST.growth_sub_parent[sel]||'all');}
 function growthSeries(sel){
@@ -185,7 +237,7 @@ function buildSectorSelect(){
  });
  sel.property('value',selSector);
 }
-function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();}
+function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();writeHash();}
 function drawArc(){
  const el=d3.select('#arc');el.selectAll('*').remove();
  const W=el.node().clientWidth||1100,H=Math.max(250,Math.min(320,W*0.28)),m={t:26,r:14,b:26,l:40};
@@ -378,16 +430,14 @@ function contribYears(){return (ST.contrib_gdp||[]).map(p=>p.year);}
 function initContrib(){
  contribKeys().forEach((k,i)=>detailColor[k]=DETAIL_PALETTE[i%DETAIL_PALETTE.length]);
  cYear=lastPt(ST.contrib_gdp).year;
- d3.selectAll('#cView button').on('click',function(){
-  d3.selectAll('#cView button').classed('on',false);d3.select(this).classed('on',true);
-  cView=this.dataset.cv;drawComposition();});
- d3.selectAll('#cGroup button').on('click',function(){
-  d3.selectAll('#cGroup button').classed('on',false);d3.select(this).classed('on',true);
-  cGroup=this.dataset.g;drawContrib();drawCYear();drawCEras();});
+ d3.selectAll('#cView button').on('click',function(){setCView(this.dataset.cv);});
+ d3.selectAll('#cGroup button').on('click',function(){setCGroup(this.dataset.g);});
  drawComposition();drawCYear();drawCEras();
 }
 function contribColor(r){return cGroup==='broad'?CONTRIB_COLORS[r.parent]:detailColor[r.key];}
-function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}drawComposition();drawCYear();}
+function setCView(v){cView=v;d3.selectAll('#cView button').classed('on',function(){return this.dataset.cv===v;});drawComposition();writeHash();}
+function setCGroup(g){cGroup=g;d3.selectAll('#cGroup button').classed('on',function(){return this.dataset.g===g;});drawComposition();drawCYear();drawCEras();writeHash();}
+function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}drawComposition();drawCYear();writeHash();}
 function drawComposition(){
  const growth=cView==='growth';
  d3.select('#cGroup').style('display',growth?'none':null);
@@ -645,7 +695,9 @@ function drawWeights(){
 /* ================= 4. CMI dumbbells ================= */
 let cmiM='emp';
 function initCmi(){
- d3.selectAll('#cmiMode button').on('click',function(){d3.selectAll('#cmiMode button').classed('on',false);d3.select(this).classed('on',true);cmiM=this.dataset.m;drawCmi();});
+ d3.selectAll('#cmiMode button').on('click',function(){setCmiMode(this.dataset.m);});
+}
+function setCmiMode(m){cmiM=m;d3.selectAll('#cmiMode button').classed('on',function(){return this.dataset.m===m;});drawCmi();writeHash();
  drawCmi();
 }
 function drawCmi(){
@@ -693,12 +745,11 @@ function initIO(){
  d3.select('#ioSector').selectAll('option').data(sectors.map((s,i)=>({s,i}))).join('option')
   .attr('value',d=>d.i).text(d=>d.s);
  d3.select('#ioSector').property('value',ioSec).on('change',function(){ioSec=+this.value;drawIO();});
- d3.selectAll('#ioView button').on('click',function(){
-  d3.selectAll('#ioView button').classed('on',false);d3.select(this).classed('on',true);
-  ioView=this.dataset.v;drawIO();});
+ d3.selectAll('#ioView button').on('click',function(){setIOView(this.dataset.v);});
  drawIO();
 }
-function setIOSector(i){ioSec=i;d3.select('#ioSector').property('value',i);if(ioView!=='focus'){ioView='focus';d3.selectAll('#ioView button').classed('on',function(){return this.dataset.v==='focus';});}drawIO();}
+function setIOView(v){ioView=v;d3.selectAll('#ioView button').classed('on',function(){return this.dataset.v===v;});drawIO();writeHash();}
+function setIOSector(i){ioSec=i;d3.select('#ioSector').property('value',i);if(ioView!=='focus'){ioView='focus';d3.selectAll('#ioView button').classed('on',function(){return this.dataset.v==='focus';});}drawIO();writeHash();}
 function drawIO(){
  const el=d3.select('#io');if(!el.node()||!E.io)return;el.selectAll('*').remove();
  d3.select('#ioSecWrap').style('display',ioView==='focus'?null:'none');
@@ -883,17 +934,21 @@ function buildBudgetChips(){
   .on('click',(e,d)=>{sel.has(d)?sel.delete(d):sel.add(d);if(!sel.size)sel.add(d);buildBudgetChips();drawBudgetTrend();});
 }
 function initBudget(){
- d3.selectAll('#bSide button').on('click',function(){d3.selectAll('#bSide button').classed('on',false);d3.select(this).classed('on',true);bSide=this.dataset.s;setBYears();buildBudgetChips();applyView();});
- d3.selectAll('#bView button').on('click',function(){d3.selectAll('#bView button').classed('on',false);d3.select(this).classed('on',true);bView=this.dataset.v;applyView();});
- d3.selectAll('#bPrice button').on('click',function(){d3.selectAll('#bPrice button').classed('on',false);d3.select(this).classed('on',true);bPrice=this.dataset.p;drawBudgetTrend();});
+ d3.selectAll('#bSide button').on('click',function(){setBSide(this.dataset.s);});
+ d3.selectAll('#bView button').on('click',function(){setBView(this.dataset.v);});
+ d3.selectAll('#bPrice button').on('click',function(){setBPrice(this.dataset.p);});
  buildBudgetChips();setBYears();drawBudget();
 }
 function setBYears(){
  bYears=Object.keys(E.budget[bSide]).sort();bYi=bYears.length-1;
  const s=d3.select('#bYr');s.attr('min',0).attr('max',bYears.length-1).property('value',bYi);
  d3.select('#bYrLbl').text(bYears[bYi]);
- s.on('input',function(){bYi=+this.value;d3.select('#bYrLbl').text(bYears[bYi]);drawBudget();});
+ s.on('input',function(){bYi=+this.value;d3.select('#bYrLbl').text(bYears[bYi]);drawBudget();writeHash();});
 }
+function setBSide(v){bSide=v;d3.selectAll('#bSide button').classed('on',function(){return this.dataset.s===v;});setBYears();buildBudgetChips();applyView();writeHash();}
+function setBView(v){bView=v;d3.selectAll('#bView button').classed('on',function(){return this.dataset.v===v;});applyView();writeHash();}
+function setBPrice(p){bPrice=p;d3.selectAll('#bPrice button').classed('on',function(){return this.dataset.p===p;});drawBudgetTrend();writeHash();}
+function setBYear(y){const i=bYears.indexOf(y);if(i>=0){bYi=i;d3.select('#bYr').property('value',i);d3.select('#bYrLbl').text(y);drawBudget();writeHash();}}
 function drawBudgetTrend(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
  const years=Object.keys(E.budget[bSide]).sort();
