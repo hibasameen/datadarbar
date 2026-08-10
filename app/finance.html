@@ -123,12 +123,14 @@ body{padding-bottom:34px}
   <div class="topic-list" id="topicList"></div>
   <div class="topic-desc" id="topicDesc"></div>
  </div>
- <div class="eco-panel" id="sideStructCtl">
-  <label for="yrSlider"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Year cursor</label>
+ <div class="eco-panel" id="sideYear">
+  <label for="yrSlider"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Year</label>
   <span class="yr-wrap"><input type="range" id="yrSlider"/><span class="yr-lbl" id="yrSliderLbl">—</span></span>
-  <label for="sectorSelect" style="margin-top:12px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Sector focus</label>
+ </div>
+ <div class="eco-panel" id="sideSector">
+  <label for="sectorSelect"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Sector / sub-sector focus</label>
   <div class="select-wrap">
-   <select id="sectorSelect"><option value="all">Whole economy</option><option value="agri">Agriculture</option><option value="ind">Industry</option><option value="serv">Services</option></select>
+   <select id="sectorSelect"></select>
    <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
   </div>
  </div>
@@ -138,7 +140,7 @@ body{padding-bottom:34px}
 <div class="wrap">
  <div class="navhelp">
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-  <span><b>Getting around:</b> switch topics in the sidebar on the left. Each topic has a few charts stacked below — <b>scroll down for more</b>. Hover any chart for detail, click bars or sectors to filter, and drag the year cursor. <b>↓&nbsp;CSV</b> on any chart downloads its data.</span>
+  <span><b>Getting around:</b> switch topics in the sidebar on the left. Each topic has a few charts stacked below — <b>scroll down for more</b>. Hover any chart for detail, click bars or sectors to filter, and use the sidebar to <b>focus a sector or sub-sector</b>, drag the year cursor, or pick which budget lines to trend. <b>↓&nbsp;CSV</b> on any chart downloads its data.</span>
  </div>
 
  <!-- ===== structure ===== -->
@@ -151,42 +153,35 @@ body{padding-bottom:34px}
   <div class="note"><b>Before 1999-2000</b> (hatched region) shares are backcast from PBS's official real sectoral growth rates, anchored at 1999-2000 — indicative only, since rebasings and relative-price shifts are ignored. From 1999-2000 onward shares are as published in the national accounts (2015-16 base). Industry pre-1999 is the residual after agriculture and services.</div>
  </div>
 
- <div class="grid2" data-topic="structure" id="sec-mix">
-  <div class="card">
+ <div class="card" data-topic="structure" id="sec-mix">
    <h2>The economy in <span class="sel-year" id="selYearLbl">—</span> <span class="unit">— % of GDP (GVA)</span></h2>
   <button class="csvbtn" data-csv="mix" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-   <div class="desc">What produced value that year. Detail is available from 1999-2000; earlier years show the three-sector split. <b>Click a bar</b> to focus that sector; move the year cursor in the sidebar.</div>
+   <div class="desc">What produced value that year. Detail is available from 1999-2000; earlier years show the three-sector split. <b>Click a bar</b> to focus that sector; move the year cursor in the sidebar. (A sector's <b>growth over time</b> lives under <b>Composition of growth</b>.)</div>
    <div id="mix"></div>
    <div class="src" id="mixSrc"></div>
-  </div>
-  <div class="card">
-   <h2>Real growth: <span id="growthSecLbl">whole economy</span> <span class="unit">— % per year</span></h2>
-  <button class="csvbtn" data-csv="sgrowth" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-   <div class="desc">Annual real growth since 1951-52, with the decade average drawn through it. The grey bands mark eras; click a bar to move the year cursor.</div>
-   <div id="sgrowth"></div>
-   <div class="src">PBS national accounts, Macro Economic Indicators (Table-1). Sector focus follows your selection — industry is proxied by manufacturing in this long series.</div>
-  </div>
  </div>
 
  <!-- ===== growth drivers ===== -->
  <div class="card" data-topic="growth" id="sec-contrib">
-  <h2>Composition of growth <span class="unit">— contributions to real GDP growth, percentage points</span></h2>
-  <button class="csvbtn" data-csv="contrib" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-  <div class="desc">Each year's growth split into the parts each sector supplied: last year's share of the economy multiplied by this year's real growth. Bars above zero added to growth, below zero subtracted; the black line is headline GDP growth. <b>Click a year</b> to break it down below.</div>
+  <button class="csvbtn" data-csv="composition" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2 id="compTitle">Composition of growth <span class="unit">— contributions to real GDP growth, percentage points</span></h2>
+  <div class="desc" id="compDesc">Each year's growth split into the parts each sector supplied: last year's share of the economy multiplied by this year's real growth. Bars above zero added to growth, below zero subtracted; the black line is headline GDP growth. <b>Click a year</b> to break it down below.</div>
   <div class="controls">
+   <div class="seg" id="cView"><button data-cv="contrib" class="on">Contributions</button><button data-cv="growth">Growth rate</button></div>
    <div class="seg" id="cGroup"><button data-g="broad" class="on">3 sectors</button><button data-g="detail">18 sub-sectors</button></div>
   </div>
   <div class="legend-inline" id="contribLegend"></div>
   <div id="contrib"></div>
-  <div class="note">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Contributions sum to headline GDP growth up to a small residual (mean 0.2pp) from rounding and the taxes-less-subsidies bridge between GVA and GDP. Available from 2000-01, when PBS's detailed sector growth series begins.</div>
+  <div id="cgrowth" style="display:none"></div>
+  <span id="cgrowthLbl" style="display:none"></span>
+  <div class="note" id="compNote">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Contributions sum to headline GDP growth up to a small residual (mean 0.2pp) from rounding and the taxes-less-subsidies bridge between GVA and GDP. Available from 2000-01, when PBS's detailed sector growth series begins. <b>Growth rate</b> shows the "growth" factor behind these contributions for the sector focused in the sidebar.</div>
  </div>
 
  <div class="grid2" data-topic="growth" id="sec-cyear">
   <div class="card">
    <h2>Breakdown for <span class="sel-year" id="cYearLbl">—</span> <span class="unit">— percentage points of GDP growth</span></h2>
   <button class="csvbtn" data-csv="cyear" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-   <div class="desc">Who added and who subtracted in the selected year, ranked. Pick a year, or click a bar on the "Contributions by year" tab.</div>
-   <div class="controls"><label for="cYearSelect" style="font-size:11px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.05em">Year</label><div class="select-wrap" style="width:140px"><select id="cYearSelect"></select><svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+   <div class="desc">Who added and who subtracted in the selected year, ranked. Move the <b>year</b> in the sidebar, or click a bar in the contributions chart above.</div>
    <div id="cYear"></div>
   </div>
   <div class="card">
@@ -242,7 +237,7 @@ body{padding-bottom:34px}
   <button class="csvbtn" data-csv="io" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <div class="desc"><b>Focus</b> puts one sector in the middle and shows who supplies it and who buys from it; <b>Circle</b> shows every flow at once; <b>Grid</b> is the full matrix. Click any sector to focus it.</div>
   <div class="controls">
-   <div class="seg" id="ioView"><button data-v="focus" class="on">Focus</button><button data-v="chord">Circle</button><button data-v="grid">Grid</button></div>
+   <div class="seg" id="ioView"><button data-v="grid" class="on">Grid</button><button data-v="focus">Focus</button><button data-v="chord">Circle</button></div>
    <div class="select-wrap" style="width:230px" id="ioSecWrap">
     <select id="ioSector"></select>
     <svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
@@ -264,6 +259,7 @@ body{padding-bottom:34px}
    <div class="seg" id="bPrice" style="display:none"><button data-p="nom" class="on">Nominal</button><button data-p="real">Real 2015-16</button></div>
    <span class="yr-wrap" id="bYrWrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
   </div>
+  <div id="budgetChipsWrap" style="display:none"><div style="font-size:11px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.05em;margin:4px 0 2px">Show categories</div><div class="chips" id="budgetChips" style="margin:2px 0 4px"></div></div>
   <div id="budget"></div>
   <div id="budgetTrend" style="display:none"></div>
   <div class="src" id="budgetMeta"></div>

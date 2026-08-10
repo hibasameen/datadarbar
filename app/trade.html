@@ -9,20 +9,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="assets/js/d3.v7.min.js"></script>
 <style>
-:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--green-500:#22804a;--green-50:#f0f9f4;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--gold-100:#fef6dc;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-400:#9ca3af;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--radius:12px;--shadow:0 2px 10px rgba(12,58,30,.07);--shadow-lg:0 8px 28px rgba(12,58,30,.12);}
+:root{--green-900:#0c3a1e;--green-800:#145228;--green-700:#186636;--green-600:#1e6b3e;--green-500:#22804a;--green-50:#f0f9f4;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--gold-100:#fef6dc;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-400:#9ca3af;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--slate-50:#f8f9fb;--ink:#17301f;--bg:#faf7ef;--radius:12px;--radius-sm:8px;--shadow:0 2px 10px rgba(12,58,30,.07);--shadow-lg:0 8px 28px rgba(12,58,30,.12);--sidebar-w:250px;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
 .header{position:sticky;top:0;z-index:50;height:56px;background:var(--green-900);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:var(--shadow)}
 .brand{display:flex;align-items:center;gap:11px}.brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold-400),#b8941a);display:grid;place-items:center;font-weight:800;color:var(--green-900);font-size:15px}
 .brand-title{font-weight:800;font-size:16px}.brand-tag{font-size:11px;color:var(--gold-300);font-weight:600}
 .nav{display:flex;gap:6px}.nav a{font-size:13px;font-weight:600;color:#dbe7e0;padding:7px 12px;border-radius:8px;text-decoration:none}.nav a:hover{background:rgba(255,255,255,.1);color:#fff}.nav a.active{background:var(--gold-500);color:var(--green-900)}
-.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.wrap{margin-left:var(--sidebar-w);max-width:1240px;padding:22px 26px 40px}
 .hero h1{font-size:clamp(23px,3.6vw,34px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
 .hero p{color:var(--slate-600);font-size:15px;max-width:72ch;margin-top:6px}
+/* ===== Sidebar in the left margin (matches the District Map / Economy pages) ===== */
+.eco-side{position:fixed;top:56px;bottom:34px;left:0;width:var(--sidebar-w);z-index:60;background:#fff;border-right:1px solid var(--slate-200);box-shadow:2px 0 10px rgba(12,58,30,.05);overflow-y:auto;display:flex;flex-direction:column}
+.eco-side::-webkit-scrollbar{width:5px}.eco-side::-webkit-scrollbar-thumb{background:var(--slate-300);border-radius:3px}
+.eco-panel{padding:13px 15px;border-bottom:1px solid var(--slate-100)}
+.eco-panel:last-child{border-bottom:0}
+.eco-panel label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--green-700);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.topic-list{display:flex;flex-direction:column;gap:1px}
+.topic-group{font-size:9.5px;font-weight:800;color:var(--slate-400);text-transform:uppercase;letter-spacing:.07em;padding:9px 9px 3px;border-top:1px solid var(--slate-100);margin-top:3px}
+.topic-group.first{border-top:0;margin-top:0}
+.topic-item{display:flex;align-items:center;gap:8px;border:0;background:none;font-family:inherit;text-align:left;font-size:12.5px;font-weight:600;color:var(--slate-600);padding:7px 9px;border-radius:7px;cursor:pointer;transition:.12s;width:100%}
+.topic-item:hover{background:var(--slate-100)}
+.topic-item.on{background:var(--green-600);color:#fff}
+.topic-item.all{font-weight:800}
+.topic-item .t-dot{width:7px;height:7px;border-radius:50%;background:var(--slate-300);flex-shrink:0}
+.topic-item.on .t-dot{background:var(--gold-400)}
+.topic-desc{font-size:11.5px;color:var(--slate-500);line-height:1.5;margin-top:8px}
+.select-wrap{position:relative}
+.select-wrap select{appearance:none;-webkit-appearance:none;width:100%;padding-right:30px;background:var(--slate-50)}
+.select-wrap select:focus{outline:none;border-color:var(--green-500);box-shadow:0 0 0 3px rgba(34,128,74,.12);background:#fff}
+.select-chevron{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--slate-400);pointer-events:none}
+.card h3{font-size:13px;font-weight:800;color:var(--green-800);margin-bottom:2px}
+.sel-year{color:var(--green-800);background:var(--green-50);border-radius:6px;padding:1px 8px}
+.legend-inline{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 10px;font-size:11.5px;font-weight:600;color:var(--slate-600);align-items:center}
+.legend-inline i{display:inline-block;vertical-align:middle;margin-right:5px}
+.eco-meta{background:var(--gold-100);font-size:11px;color:#6b5311;line-height:1.55;margin-top:auto}
+.navhelp{display:flex;align-items:flex-start;gap:9px;margin:2px 0;padding:10px 14px;background:var(--green-50);border:1px solid #d6e8dc;border-radius:10px;font-size:12.5px;color:var(--slate-600);line-height:1.5}
+.navhelp svg{flex-shrink:0;color:var(--green-600);margin-top:1px}
+.navhelp b{color:var(--green-800);font-weight:700}
+.csvbtn{position:absolute;top:14px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:11px;font-weight:700;color:var(--slate-500);background:var(--slate-50);border:1px solid var(--slate-200);border-radius:7px;padding:5px 9px;cursor:pointer;transition:.12s}
+.csvbtn:hover{color:var(--green-700);border-color:var(--green-500);background:#fff}
+[data-topic]{scroll-margin-top:70px}
+[data-topic].topic-hidden{display:none}
+@media(max-width:1000px){
+  .eco-side{position:static;width:auto;height:auto;bottom:auto;border-right:0;border-bottom:1px solid var(--slate-200);box-shadow:none}
+  .wrap{margin-left:0;padding:18px 16px 40px}
+  .eco-meta{margin-top:0}
+}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
 .kpi{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);padding:13px 16px;box-shadow:var(--shadow)}
 .kpi .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--slate-500)}.kpi .val{font-size:25px;font-weight:800;color:var(--green-900);margin-top:2px}.kpi .sub{font-size:12px;font-weight:600;color:var(--slate-500)}.kpi .sub.neg{color:#c0392b}.kpi .sub.pos{color:var(--green-600)}
-.card{background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
+.card{position:relative;background:#fff;border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
 .card h2{font-size:18px;font-weight:800;color:var(--green-900)}.card .desc{font-size:13px;color:var(--slate-600);margin:2px 0 6px}.unit{font-size:12px;font-weight:600;color:var(--slate-500)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
 .seg{display:inline-flex;background:var(--slate-100);border-radius:9px;padding:3px;gap:2px}.seg button{border:0;background:transparent;font-family:inherit;font-weight:700;font-size:13px;color:var(--slate-600);padding:7px 14px;border-radius:7px;cursor:pointer}.seg button.on{background:var(--green-600);color:#fff}
@@ -81,13 +118,32 @@ body{padding-bottom:34px}
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
 <nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
-<div class="wrap">
- <div class="hero"><h1>Trade Atlas — what Pakistan buys and sells</h1>
-  <p>An economic-complexity explorer of Pakistan's 8-digit trade, 2015–2024. Scroll for the story, then drill down from broad product sections to individual commodities.</p></div>
- <div class="kpis" id="kpis"></div>
+<aside class="eco-side">
+ <div class="eco-panel">
+  <label><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Topic</label>
+  <div class="topic-list" id="topicList"></div>
+  <div class="topic-desc" id="topicDesc"></div>
+ </div>
+ <div class="eco-panel" id="sideCountry">
+  <label for="tCountry"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Country</label>
+  <div class="select-wrap"><select id="tCountry"></select><svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></div>
+ </div>
+ <div class="eco-panel" id="sideLevel">
+  <label for="tLevel"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Detail level</label>
+  <div class="select-wrap"><select id="tLevel"><option value="section">HS section (21 broad groups)</option><option value="chapter">HS chapter</option><option value="product">8-digit product</option></select><svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></div>
+ </div>
+ <div class="eco-panel eco-meta" id="topicMeta"></div>
+</aside>
 
- <!-- Interactive drill-down -->
- <div class="card">
+<div class="wrap">
+ <div class="navhelp">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  <span><b>Getting around:</b> switch topics in the sidebar on the left. Toggle <b>exports/imports</b> and drag the year slider on any chart; in the treemap, <b>click a sector to zoom in</b>. Under <b>Trading partners</b> pick a <b>country</b>, and for <b>What's growing</b> set the <b>detail level</b> (section, chapter or product) — both in the sidebar. <b>↓&nbsp;CSV</b> on any chart downloads its data.</span>
+ </div>
+
+ <!-- basket: treemap + top products -->
+ <div class="card" data-topic="basket" id="sec-drill">
+  <button class="csvbtn" data-csv="drill" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <h2>What Pakistan trades <span class="unit">— every product, grouped by sector</span></h2>
   <div class="desc">The whole export/import basket in one view. Click a sector to zoom into its products; use the breadcrumb to return.</div>
   <div class="controls">
@@ -99,13 +155,49 @@ body{padding-bottom:34px}
   <div class="src" id="drillMeta"></div>
  </div>
 
- <div class="card"><h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2015–2024.</div><div id="ttChart"></div></div>
+ <div class="card" data-topic="basket" id="sec-products">
+  <button class="csvbtn" data-csv="products" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2>Top products <span class="unit">— largest single commodities</span></h2>
+  <div class="controls"><div class="seg" id="prDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="prYr"/><span class="yr-lbl" id="prYrLbl">—</span></span></div><div id="products"></div></div>
 
- <div class="grid2">
-  <div class="card" style="margin-top:0"><h2>Top partners</h2>
-   <div class="controls"><div class="seg" id="pDir"><button data-d="export" class="on">Export to</button><button data-d="import">Import from</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="pYr"/><span class="yr-lbl" id="pYrLbl">—</span></span></div><div id="partners"></div></div>
-  <div class="card" style="margin-top:0"><h2>Top products</h2>
-   <div class="controls"><div class="seg" id="prDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="prYr"/><span class="yr-lbl" id="prYrLbl">—</span></span></div><div id="products"></div></div>
+ <!-- movers -->
+ <div class="card" data-topic="movers" id="sec-movers">
+  <button class="csvbtn" data-csv="movers" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2>What's growing and shrinking <span class="unit">— change over 2015-16 → 2024-25</span></h2>
+  <div class="desc">The biggest risers and fallers in the trade basket over the decade. Toggle exports/imports and whether to rank by rupee change or percentage growth; set the <b>detail level</b> in the sidebar.</div>
+  <div class="controls">
+   <div class="seg" id="mDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div>
+   <div class="seg" id="mMeasure"><button data-m="abs" class="on">Rs change</button><button data-m="pct">% growth</button></div>
+   <div class="seg" id="mMode"><button data-w="span" class="on">Full span</button><button data-w="yoy">Year on year</button></div>
+   <span class="yr-wrap" id="mWinWrap" style="display:none;flex:0 1 320px"><input type="range" id="mWin"/><span class="yr-lbl" id="mWinLbl" style="min-width:118px">—</span></span>
+  </div>
+  <div id="movers"></div>
+  <div class="src" id="moversMeta"></div>
+  <div class="note">Full-span change between the first and last years PBS published 8-digit data for each direction (exports 2015-16→2024-25; imports the same endpoints). <b>% growth</b> is only ranked for items worth at least Rs 1&nbsp;bn in one of the two years, to avoid tiny-base blow-ups; <b>Rs change</b> ranks everything.</div>
+ </div>
+
+ <!-- overtime -->
+ <div class="card" data-topic="overtime" id="sec-totals">
+  <button class="csvbtn" data-csv="totals" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2015–2024.</div><div id="ttChart"></div></div>
+
+ <!-- partners -->
+ <div class="card" data-topic="partners" id="sec-partners">
+  <button class="csvbtn" data-csv="partners" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2>Top partners <span class="unit">— largest trading countries</span></h2>
+   <div class="controls"><div class="seg" id="pDir"><button data-d="export" class="on">Export to</button><button data-d="import">Import from</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="pYr"/><span class="yr-lbl" id="pYrLbl">—</span></span></div><div id="partners"></div>
+   <div class="src">Pick a <b>country</b> in the sidebar for its own trade profile below.</div></div>
+
+ <div class="card" data-topic="partners" id="sec-country" style="display:none">
+  <button class="csvbtn" data-csv="country" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
+  <h2>Trade with <span id="cName" class="sel-year">—</span> <span class="unit">— Rs billion</span></h2>
+  <div class="desc">Pakistan's exports to and imports from this country over time, and the top items traded — at the <b>detail level</b> chosen in the sidebar.</div>
+  <div id="cSeries"></div>
+  <div class="grid2" style="margin-top:6px">
+   <div><h3>Pakistan's top exports to it</h3><div id="cExp"></div></div>
+   <div><h3>Pakistan's top imports from it</h3><div id="cImp"></div></div>
+  </div>
+  <div class="src" id="cMeta"></div>
  </div>
 
  <div class="foot"><b>Source.</b> Pakistan Bureau of Statistics — <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">External Trade Statistics</a> (8-digit "by commodities and countries"). Values as-published, aggregated to Rs billion. PBS did not publish 8-digit data for a few years, so those gaps are filled from other sources and flagged: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, shown at HS-section level only, converted to Rs at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, converted at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so a commodity breakdown isn't available for those two years. All other years are PBS 8-digit; FY2021-22→2023-24 were parsed from PBS PDFs (import totals reconcile to 93–100% of the official grand total). Full data + a queryable DuckDB warehouse accompany this project.</div>

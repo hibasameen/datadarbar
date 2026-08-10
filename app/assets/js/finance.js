@@ -53,7 +53,7 @@ const TOPICS=[
   lede:'Where the federal government’s money comes from and where current spending goes, budget year by budget year.',
   desc:'The federal budget as a treemap: receipts and current expenditure.',
   meta:'Finance Division: Budget in Brief & Explanatory Memorandum on Federal Receipts, FY2009-10→2026-27.'}];
-const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();drawSGrowth();},growth:()=>{drawContrib();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
+const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
 // meaningful groupings for the sidebar (plus an "Everything" shortcut at the top)
 const TOPIC_GROUPS=[
  {label:null,keys:['all']},
@@ -69,7 +69,8 @@ function start(){
  if(!window.ECON){return setTimeout(start,30);}
  E=window.ECON;ST=E.structure;IND=E.industry;
  prepData();
- initArc();initMix();drawSGrowth();initContrib();
+ buildSectorSelect();
+ initArc();initMix();initContrib();
  initLsm();drawQim();drawWeights();initCmi();
  initIO();initBudget();initCsv();
  initTopics();
@@ -101,8 +102,10 @@ function applyTopic(k,push){
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
  d3.select('#topicMeta').html('<b>Sources.</b> '+t.meta);
- d3.select('#sideStructCtl').style('display',(k==='structure'||k==='all')?null:'none');
  const all=k==='all';
+ d3.select('#sideYear').style('display',(k==='structure'||k==='growth'||all)?null:'none');
+ setupYearSlider();
+ d3.select('#sideSector').style('display',(k==='structure'||k==='growth'||all)?null:'none');
  d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
  if(push){if(history.pushState)history.pushState(null,'','#'+k);else location.hash=k;}
  if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
@@ -156,8 +159,33 @@ function initArc(){
   .on('click',(e,d)=>setSector(d[0]));
  drawArc();
 }
-function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k);drawArc();drawMix();drawSGrowth();}
-function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();drawSGrowth();}
+function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k);drawArc();drawMix();drawComposition();drawCYear();}
+/* sector focus can be 'all', a macro key, or a sub-sector key */
+function parentOf(sel){return (sel==='all'||MACRO[sel])?sel:(ST.growth_sub_parent[sel]||'all');}
+function growthSeries(sel){
+ if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'#17301f'};
+ if(MACRO[sel])return {pts:ST.growth[sel]||ST.growth.mfg,lbl:MACRO[sel].label.toLowerCase(),color:MACRO[sel].c};
+ return {pts:ST.growth_sub[sel]||[],lbl:(ST.growth_sub_labels[sel]||sel).toLowerCase(),color:MACRO[parentOf(sel)].c};
+}
+function focusOK(r){ // is this contrib/breakdown row in the current sector focus?
+ if(selSector==='all')return true;
+ const p=parentOf(selSector);
+ if(cGroup==='broad')return r.key===p;
+ if(MACRO[selSector])return r.parent===selSector;
+ return r.key===selSector;
+}
+function buildSectorSelect(){
+ const sel=d3.select('#sectorSelect');sel.selectAll('*').remove();
+ sel.append('option').attr('value','all').text('Whole economy');
+ ['agri','ind','serv'].forEach(p=>{
+  const og=sel.append('optgroup').attr('label',MACRO[p].label);
+  og.append('option').attr('value',p).text('All '+MACRO[p].label.toLowerCase());
+  Object.keys(ST.growth_sub).filter(k=>ST.growth_sub_parent[k]===p).forEach(k=>{
+   og.append('option').attr('value',k).text('· '+ST.growth_sub_labels[k]);});
+ });
+ sel.property('value',selSector);
+}
+function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();}
 function drawArc(){
  const el=d3.select('#arc');el.selectAll('*').remove();
  const W=el.node().clientWidth||1100,H=Math.max(250,Math.min(320,W*0.28)),m={t:26,r:14,b:26,l:40};
@@ -176,7 +204,7 @@ function drawArc(){
  const area=d3.area().x(d=>x(d.data.n)).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
  svg.selectAll('path.band').data(stack).join('path').attr('class','band').attr('d',area)
   .attr('fill',(d,i)=>MACRO[keys[i]].c)
-  .attr('opacity',(d,i)=>selSector==='all'||selSector===keys[i]?.92:.25)
+  .attr('opacity',(d,i)=>selSector==='all'||parentOf(selSector)===keys[i]?.92:.25)
   .style('cursor','pointer')
   .on('click',(e,d)=>{const k=keys[stack.indexOf(d)];setSector(selSector===k?'all':k);e.stopPropagation();})
   .on('mousemove',function(e,d){
@@ -223,7 +251,15 @@ function initMix(){
  s.on('input',function(){setYear(arcYears[+this.value]);});
  d3.select('#selYearLbl').text(selYear);syncSlider();drawMix();
 }
-function syncSlider(){d3.select('#yrSlider').property('value',arcYears.indexOf(selYear));d3.select('#yrSliderLbl').text(selYear);}
+function yearsForTopic(){return topic==='growth'?contribYears():arcYears;}
+function curYearForTopic(){return topic==='growth'?cYear:selYear;}
+function setupYearSlider(){
+ const ys=yearsForTopic(),cur=curYearForTopic();
+ const s=d3.select('#yrSlider');s.attr('min',0).attr('max',ys.length-1).property('value',Math.max(0,ys.indexOf(cur)));
+ d3.select('#yrSliderLbl').text(cur);
+ s.on('input',function(){const y=ys[+this.value];if(topic==='growth')setCYear(y);else setYear(y);});
+}
+function syncSlider(){if(topic==='growth')return;d3.select('#yrSlider').property('value',arcYears.indexOf(selYear));d3.select('#yrSliderLbl').text(selYear);}
 function mixRows(year){
  const val=k=>{const p=(ST.shares[k]||[]).find(q=>q.year===year);return p?p.value:null;};
  if(val('agri')==null){ // backcast years: 3-way split only
@@ -258,31 +294,35 @@ function drawMix(){
  gE.append('text').attr('class','rv').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-600)');
  const gm=gE.merge(g);
  gm.transition().duration(450).attr('transform',(d,i)=>`translate(0,${i*rh+4})`);
+ const fp=parentOf(selSector);
+ const dim=d=>selSector==='all'||fp===d.parent;
+ const exact=d=>selSector!=='all'&&!MACRO[selSector]&&d.k===selSector;
  gm.select('text.rl').attr('x',lblW).attr('y',rh/2-1).attr('dy','.3em')
-  .attr('opacity',d=>selSector==='all'||selSector===d.parent?1:.35)
+  .attr('opacity',d=>dim(d)?1:.35).attr('font-weight',d=>exact(d)?800:600)
   .text(d=>{const max=Math.floor(lblW/6.4);return d.lbl.length>max?d.lbl.slice(0,max-1)+'…':d.lbl;});
  gm.select('rect').attr('x',x.range()[0]).attr('y',2)
-  .attr('fill',shade)
-  .attr('opacity',d=>selSector==='all'||selSector===d.parent?1:.3)
-  .on('click',(e,d)=>setSector(selSector===d.parent?'all':d.parent))
+  .attr('fill',shade).attr('stroke',d=>exact(d)?'var(--green-900)':'none').attr('stroke-width',1.4)
+  .attr('opacity',d=>dim(d)?1:.3)
+  .on('click',(e,d)=>setSector(exact(d)?'all':(selSector===d.parent?'all':d.parent)))
   .on('mousemove',(e,d)=>showTip(`<b>${d.lbl}</b> · ${selYear}<br>${d.v.toFixed(1)}% of GDP · ${MACRO[d.parent].label}`,e)).on('mouseleave',hideTip)
   .transition().duration(450).attr('width',d=>Math.max(1.5,x(d.v)-x.range()[0]));
  gm.select('text.rv').attr('y',rh/2-1).attr('dy','.3em')
-  .attr('opacity',d=>selSector==='all'||selSector===d.parent?1:.35)
+  .attr('opacity',d=>dim(d)?1:.35)
   .transition().duration(450).attr('x',d=>x(d.v)+5).tween('text',function(d){const self=d3.select(this);return()=>self.text(d.v.toFixed(1)+'%');});
  g.exit().remove();
  const row=arcData.find(d=>d.year===selYear);
  d3.select('#mixSrc').text(row&&row.back?`${selYear}: three-sector split, backcast from real growth rates (indicative)`:`${selYear}: PBS national accounts, sectoral shares of GVA (2015-16 base)`);
 }
 
-/* ================= 2b. sector growth ================= */
-function drawSGrowth(){
- const el=d3.select('#sgrowth');el.selectAll('*').remove();
- const map={all:['gdp','whole economy','#17301f'],agri:['agri','agriculture','#5b8c5a'],ind:['mfg','manufacturing (industry proxy)','#e07b39'],serv:['serv','services','#3d6db5']};
- const [key,lbl,color]=map[selSector]||map.all;
- d3.select('#growthSecLbl').text(lbl);
- const pts=ST.growth[key].map(p=>({...p,n:fyEnd(p.year)}));
- const W=el.node().clientWidth||520,H=300,m={t:16,r:12,b:26,l:40};
+/* ================= sector growth over time (Composition of growth) ================= */
+function drawCGrowth(){drawGrowthLine('#cgrowth','#cgrowthLbl',true);}
+function drawGrowthLine(elSel,lblSel,tall){
+ const el=d3.select(elSel);if(!el.node())return;el.selectAll('*').remove();
+ const gs=growthSeries(selSector);const lbl=gs.lbl,color=gs.color;
+ d3.select(lblSel).text(selSector==='all'?'the whole economy':lbl);
+ if(!gs.pts||!gs.pts.length){el.append('div').style('padding','20px').style('color','var(--slate-500)').text('No growth series for this sector.');return;}
+ const pts=gs.pts.map(p=>({...p,n:fyEnd(p.year)}));
+ const W=el.node().clientWidth||520,H=tall?320:300,m={t:16,r:12,b:26,l:40};
  const x=d3.scaleLinear().domain([pts[0].n-0.5,lastPt(pts).n+0.5]).range([m.l,W-m.r]);
  const ext=d3.extent(pts,p=>p.value);
  const y=d3.scaleLinear().domain([Math.min(-3,ext[0]),Math.max(8,ext[1])]).nice().range([H-m.b,m.t]);
@@ -311,7 +351,7 @@ function drawSGrowth(){
 }
 
 /* ================= growth contributions ================= */
-let cGroup='broad',cYear=null;
+let cGroup='broad',cYear=null,cView='contrib';
 const CONTRIB_COLORS={agri:'#5b8c5a',ind:'#e07b39',serv:'#3d6db5'};
 const DETAIL_PALETTE=['#2f6b3a','#5b8c5a','#8ab27f','#b7cf9f','#c0392b','#e07b39','#e8a05a','#f0c489','#a0522d',
  '#1f4e79','#3d6db5','#6a95d0','#9dbbe4','#2c3e8f','#7b68a6','#9b59b6','#c39bd3','#0e8a8a','#16a085','#5dbfae'];
@@ -338,16 +378,32 @@ function contribYears(){return (ST.contrib_gdp||[]).map(p=>p.year);}
 function initContrib(){
  contribKeys().forEach((k,i)=>detailColor[k]=DETAIL_PALETTE[i%DETAIL_PALETTE.length]);
  cYear=lastPt(ST.contrib_gdp).year;
+ d3.selectAll('#cView button').on('click',function(){
+  d3.selectAll('#cView button').classed('on',false);d3.select(this).classed('on',true);
+  cView=this.dataset.cv;drawComposition();});
  d3.selectAll('#cGroup button').on('click',function(){
   d3.selectAll('#cGroup button').classed('on',false);d3.select(this).classed('on',true);
   cGroup=this.dataset.g;drawContrib();drawCYear();drawCEras();});
- d3.select('#cYearSelect').selectAll('option').data(contribYears().slice().reverse()).join('option')
-  .attr('value',y=>y).text(y=>y);
- d3.select('#cYearSelect').property('value',cYear).on('change',function(){setCYear(this.value);});
- drawContrib();drawCYear();drawCEras();
+ drawComposition();drawCYear();drawCEras();
 }
 function contribColor(r){return cGroup==='broad'?CONTRIB_COLORS[r.parent]:detailColor[r.key];}
-function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);d3.select('#cYearSelect').property('value',y);drawContrib();drawCYear();}
+function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}drawComposition();drawCYear();}
+function drawComposition(){
+ const growth=cView==='growth';
+ d3.select('#cGroup').style('display',growth?'none':null);
+ d3.select('#contribLegend').style('display',growth?'none':null);
+ d3.select('#contrib').style('display',growth?'none':null);
+ d3.select('#cgrowth').style('display',growth?null:'none');
+ if(growth){
+  d3.select('#compTitle').html('Real growth of <span class="sel-year" id="cgrowthLbl">the whole economy</span> over time <span class="unit">— %, year on year</span>');
+  d3.select('#compDesc').html('The <b>growth rate</b> of the sector focused in the sidebar, each year — its contribution is this growth times the sector\'s share of GDP. Switch to <b>Contributions</b> to see every sector stacked.');
+  drawCGrowth();
+ }else{
+  d3.select('#compTitle').html('Composition of growth <span class="unit">— contributions to real GDP growth, percentage points</span>');
+  d3.select('#compDesc').html('Each year\'s growth split into the parts each sector supplied: last year\'s share of the economy times this year\'s real growth. Bars above zero added to growth, below zero subtracted; the black line is headline GDP growth. <b>Click a year</b> to break it down below, or switch to <b>Growth rate</b> for the focused sector\'s growth.');
+  drawContrib();
+ }
+}
 function drawContrib(){
  const el=d3.select('#contrib');el.selectAll('*').remove();
  const years=contribYears();
@@ -375,7 +431,7 @@ function drawContrib(){
    if(r.v>=0)up=y1;else dn=y1;
    g.append('rect').attr('x',x(yr)).attr('width',x.bandwidth())
     .attr('y',Math.min(y(y0),y(y1))).attr('height',Math.abs(y(y1)-y(y0)))
-    .attr('fill',contribColor(r)).attr('opacity',yr===cYear?1:.82)
+    .attr('fill',contribColor(r)).attr('opacity',(yr===cYear?1:.82)*(focusOK(r)?1:.28))
     .on('mousemove',e=>showTip(`<b>${r.label}</b> · ${yr}<br>${(r.v>=0?'+':'')+r.v.toFixed(2)} pp of GDP growth`,e))
     .on('mouseleave',hideTip);
   });
@@ -417,6 +473,7 @@ function drawCYear(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-20).attr('stroke','var(--slate-400)');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+4})`)
+  .attr('opacity',d=>focusOK(d)?1:.32)
   .on('mousemove',(e,d)=>showTip(`<b>${d.label}</b> · ${cYear}<br>${(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2)} pp — ${d.v>=0?'added to':'subtracted from'} growth`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2-2).attr('dy','.32em').attr('text-anchor','end')
   .attr('font-size',cGroup==='broad'?12.5:11).attr('font-weight',600).attr('fill',d=>d.v<0?RED:'var(--slate-700)')
@@ -626,7 +683,7 @@ function drawCmi(){
 }
 
 /* ================= IO: focus / chord / grid ================= */
-let ioView='focus',ioSec=0;
+let ioView='grid',ioSec=0;
 function initIO(){
  if(!E.io)return;
  const {sectors,matrix_nodiag:M}=E.io;
@@ -786,6 +843,7 @@ function applyView(){
  d3.select('#budgetTrend').style('display',trend?null:'none');
  d3.select('#bYrWrap').style('display',trend?'none':null);
  d3.select('#bPrice').style('display',trend?null:'none');
+ d3.select('#budgetChipsWrap').style('display',trend?null:'none');
  redraw();
 }
 let _defl=null;
@@ -807,11 +865,28 @@ function deflForYears(years){
  });
  return out;
 }
+let budgetSel={expenditure:new Set(),receipts:new Set()};
+function budgetCats(side){
+ const colOf={},totOf={};
+ Object.keys(E.budget[side]).forEach(y=>E.budget[side][y].forEach(g=>{colOf[g.label]=g.color;totOf[g.label]=(totOf[g.label]||0)+d3.sum(g.children,c=>c.bn);}));
+ return {keys:Object.keys(totOf).sort((a,b)=>totOf[b]-totOf[a]),colOf};
+}
+function ensureBudgetSel(side){if(!budgetSel[side].size)budgetCats(side).keys.forEach(k=>budgetSel[side].add(k));}
+function buildBudgetChips(){
+ ensureBudgetSel(bSide);
+ const {keys,colOf}=budgetCats(bSide),sel=budgetSel[bSide];
+ d3.select('#budgetChips').selectAll('button').data(keys,d=>d).join('button')
+  .attr('class','chip').style('font-size','11px').style('padding','4px 9px')
+  .classed('on',d=>sel.has(d))
+  .style('border-color',d=>sel.has(d)?colOf[d]:null).style('background',d=>sel.has(d)?colOf[d]:null).style('color',d=>sel.has(d)?'#fff':null)
+  .text(d=>d)
+  .on('click',(e,d)=>{sel.has(d)?sel.delete(d):sel.add(d);if(!sel.size)sel.add(d);buildBudgetChips();drawBudgetTrend();});
+}
 function initBudget(){
- d3.selectAll('#bSide button').on('click',function(){d3.selectAll('#bSide button').classed('on',false);d3.select(this).classed('on',true);bSide=this.dataset.s;setBYears();applyView();});
+ d3.selectAll('#bSide button').on('click',function(){d3.selectAll('#bSide button').classed('on',false);d3.select(this).classed('on',true);bSide=this.dataset.s;setBYears();buildBudgetChips();applyView();});
  d3.selectAll('#bView button').on('click',function(){d3.selectAll('#bView button').classed('on',false);d3.select(this).classed('on',true);bView=this.dataset.v;applyView();});
  d3.selectAll('#bPrice button').on('click',function(){d3.selectAll('#bPrice button').classed('on',false);d3.select(this).classed('on',true);bPrice=this.dataset.p;drawBudgetTrend();});
- setBYears();drawBudget();
+ buildBudgetChips();setBYears();drawBudget();
 }
 function setBYears(){
  bYears=Object.keys(E.budget[bSide]).sort();bYi=bYears.length-1;
@@ -824,7 +899,8 @@ function drawBudgetTrend(){
  const years=Object.keys(E.budget[bSide]).sort();
  const colOf={};const totOf={};
  years.forEach(y=>E.budget[bSide][y].forEach(g=>{colOf[g.label]=g.color;totOf[g.label]=(totOf[g.label]||0)+d3.sum(g.children,c=>c.bn);}));
- const keys=Object.keys(totOf).sort((a,b)=>totOf[b]-totOf[a]);
+ ensureBudgetSel(bSide);const bsel=budgetSel[bSide];
+ const keys=Object.keys(totOf).sort((a,b)=>totOf[b]-totOf[a]).filter(k=>bsel.has(k));
  const real=bPrice==='real';const defl=deflForYears(years);
  const adj=(v,y)=>real?v/(defl[y]/100):v;
  const rows=years.map(y=>{const o={year:y};const m={};E.budget[bSide][y].forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));keys.forEach(k=>o[k]=adj(m[k]||0,y));return o;});
@@ -887,9 +963,10 @@ const CSV={
    arcData.map(d=>({fiscal_year:d.year,agriculture_pct:round2(d.agri),industry_pct:round2(d.ind),services_pct:round2(d.serv),source:d.back?'backcast':'published'}))],
  mix:()=>[`Pakistan_sector_mix_${selYear}.csv`,
    mixRows(selYear).map(r=>({fiscal_year:selYear,sector:r.lbl,broad_sector:MACRO[r.parent].label,share_of_gdp_pct:round2(r.v)}))],
- sgrowth:()=>{const map={all:'gdp',agri:'agri',ind:'mfg',serv:'serv'},lbl={all:'whole economy',agri:'agriculture',ind:'manufacturing',serv:'services'};
-   return [`Pakistan_real_growth_${map[selSector]}.csv`,ST.growth[map[selSector]].map(p=>({fiscal_year:p.year,series:lbl[selSector],real_growth_pct:p.value}))];},
- contrib:()=>{const out=[];contribYears().forEach(y=>contribRows(y,cGroup).forEach(r=>out.push({fiscal_year:y,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)})));
+ composition:()=>{
+   if(cView==='growth'){const gs=growthSeries(selSector);
+     return [`Pakistan_real_growth_${selSector}.csv`,(gs.pts||[]).map(p=>({fiscal_year:p.year,series:gs.lbl,real_growth_pct:p.value}))];}
+   const out=[];contribYears().forEach(y=>contribRows(y,cGroup).forEach(r=>out.push({fiscal_year:y,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)})));
    (ST.contrib_gdp||[]).forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (published GDP growth)',broad_sector:'',contribution_pp:round2(p.value)}));
    return [`Pakistan_growth_contributions_${cGroup}.csv`,out];},
  cyear:()=>[`Pakistan_growth_breakdown_${cYear}.csv`,
