@@ -47,13 +47,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
 .pcard-desc{font-size:14px;color:var(--slate-600)}
 .pcard-go{position:absolute;right:20px;bottom:18px;font-size:13px;font-weight:700;color:var(--accent);opacity:0;transition:.16s}
 .pcard:hover .pcard-go{opacity:1}
-.about{margin-top:40px;background:#fff;border:1px solid var(--slate-200);border-radius:16px;padding:26px;box-shadow:var(--shadow)}
-.about h2{font-size:20px;font-weight:800;color:var(--green-900)}
-.about p{font-size:14.5px;color:var(--slate-600);margin-top:8px;max-width:80ch}
-.srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:18px}
-.srcgrid div{font-size:13px}
-.srcgrid b{color:var(--green-800);display:block;margin-bottom:2px}
-.srcgrid a{color:var(--green-600);font-weight:600;text-decoration:none}
 .foot{max-width:1120px;margin:26px auto 0;padding:0 20px;font-size:12.5px;color:var(--slate-500);text-align:center;line-height:1.7}
 .foot a{color:var(--green-600);font-weight:600}
 
@@ -98,17 +91,6 @@ body{padding-bottom:34px}
       <div class="pcard-body"><div class="pcard-title">Poverty Metrics</div><div class="pcard-tag">Deprivation, wealth and activity from space</div><div class="pcard-desc">A multidimensional poverty index built from household microdata, plus satellite measures of relative wealth, population and night-time lights — down to all 554 tehsils.</div></div>
       <div class="pcard-go">Open →</div>
     </a>
-  </div>
-  <div class="about" id="about" style="scroll-margin-top:70px">
-    <h2>About the data</h2>
-    <p>Data Darbar is an open explorer of Pakistan's official statistics, drawn from the <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" style="color:var(--green-600);font-weight:600">Pakistan Bureau of Statistics</a> and the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener" style="color:var(--green-600);font-weight:600">Finance Division</a>. Every figure is traceable to its published source, and the underlying cleaned data is available as a queryable database.</p>
-    <div class="srcgrid">
-      <div><b>Census &amp; surveys</b>2017 &amp; 2023 Population Census, PSLM, Labour Force Survey, HIES — district level.</div>
-      <div><b>External trade</b>8-digit HS imports &amp; exports by commodity and country, 2015–2024.</div>
-      <div><b>National accounts</b>GDP by sector, growth and expenditure, 1951–2026 (2015-16 base).</div>
-      <div><b>Federal budget</b>Receipts &amp; expenditure from the "Budget in Brief", 2009–2027.</div>
-      <div><b>Poverty &amp; satellite</b>Alkire–Foster MPI from PSLM microdata; Meta Relative Wealth Index, WorldPop and VIIRS night-lights at tehsil level.</div>
-    </div>
   </div>
 </div>
 <script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>

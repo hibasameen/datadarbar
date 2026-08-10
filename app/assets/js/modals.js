@@ -126,8 +126,13 @@
         supply-use / input-output table.</li>
       <li><strong>Federal Budget "Budget in Brief"</strong> — receipts and expenditure line items,
         2009–2027.</li>
+      <li><strong>Industry Statistics (QIM &amp; CMI)</strong> — Quantum Index of large-scale Manufacturing
+        (monthly and annual, 2005-06 and 2015-16 bases) and the Census of Manufacturing Industries.</li>
+      <li><strong>Poverty &amp; satellite</strong> — Alkire–Foster Multidimensional Poverty Index from PSLM
+        microdata, plus Meta's Relative Wealth Index, WorldPop population and VIIRS night-lights at tehsil level.</li>
     </ul>
-    <p>All sources are public-domain publications of the Government of Pakistan.</p>
+    <p>All sources are public-domain publications of the Government of Pakistan, except the Relative Wealth Index
+       (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
   `;
 
   var CONTACT = `
