@@ -102,6 +102,7 @@ function writeHash(push){
  else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
  else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
  else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
+ else if(topic==='all'){if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
  else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bView==='trend'&&bTrendMode!=='stack')p.set('tm',bTrendMode);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
  const hv='#'+p.toString();_lastNavHash=hv;
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
@@ -118,7 +119,7 @@ function applyStateFromHash(){
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
- if(k==='structure'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
+ if(k==='structure'||k==='all'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
  if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
  if(k==='censuses'&&o.m)setCmiMode(o.m);
  if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
@@ -256,7 +257,15 @@ function buildSectorSelect(){
  });
  sel.property('value',selSector);
 }
-function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();writeHash();}
+function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();if(topic==='all')syncCYearToYear(y);writeHash();}
+// On the 'Everything' topic there is ONE year slider (arcYears, 1951-52→) but the growth panels
+// live on a shorter series (contribYears, 2000-01→). Keep them in step; outside the contrib span
+// cYear is null and the breakdown renders an explicit 'no data' note rather than a stale chart.
+function syncCYearToYear(y){
+ const ys=contribYears();cYear=ys.indexOf(y)>=0?y:null;
+ d3.select('#cYearLbl').text(cYear||y);
+ drawComposition();drawCYear();
+}
 function drawArc(){arcView==='lines'?drawArcLines():drawArcStack();}
 function drawArcStack(){
  const el=d3.select('#arc');el.selectAll('*').remove();
@@ -505,7 +514,10 @@ function initContrib(){
 function contribColor(r){return cGroup==='broad'?CONTRIB_COLORS[r.parent]:detailColor[r.key];}
 function setCView(v){cView=v;d3.selectAll('#cView button').classed('on',function(){return this.dataset.cv===v;});drawComposition();writeHash();}
 function setCGroup(g){cGroup=g;d3.selectAll('#cGroup button').classed('on',function(){return this.dataset.g===g;});drawComposition();drawCYear();drawCEras();writeHash();}
-function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}drawComposition();drawCYear();writeHash();}
+function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);
+ if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}
+ else if(topic==='all'&&arcYears.indexOf(y)>=0){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();}
+ drawComposition();drawCYear();writeHash();}
 function drawComposition(){
  const growth=cView==='growth';
  d3.select('#cGroup').style('display',growth?'none':null);
@@ -563,7 +575,7 @@ function drawContrib(){
   .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','#17301f')
   .on('mousemove',(e,p)=>showTip(`<b>GDP growth ${p.year}</b><br>${fmtPct(p.value)}`,e)).on('mouseleave',hideTip);
  // selected-year marker
- svg.append('rect').attr('x',x(cYear)-2).attr('y',m.t).attr('width',x.bandwidth()+4).attr('height',H-m.t-m.b)
+ if(cYear!=null&&x(cYear)!=null)svg.append('rect').attr('x',x(cYear)-2).attr('y',m.t).attr('width',x.bandwidth()+4).attr('height',H-m.t-m.b)
   .attr('fill','none').attr('stroke','var(--green-900)').attr('stroke-width',1.3).attr('rx',3).attr('pointer-events','none');
  // legend
  const lg=d3.select('#contribLegend');
@@ -576,7 +588,13 @@ function drawContrib(){
 }
 function drawCYear(){
  const el=d3.select('#cYear');el.selectAll('*').remove();
- d3.select('#cYearLbl').text(cYear);
+ d3.select('#cYearLbl').text(cYear||selYear);
+ if(!cYear){
+  const ys=contribYears();
+  el.append('div').attr('class','nodata')
+    .html(`No sector-contribution data for <b>${selYear}</b>. PBS's detailed sector growth series begins in <b>${ys[0]||'2000-01'}</b> \u2014 move the year cursor to ${ys[0]||'2000-01'} or later.`);
+  return;
+ }
  // ranked diverging bars: positives point right, negatives point left of the zero axis.
  // negative VALUE LABELS are placed to the right of the axis (in red) so they never
  // crowd the sector names on the left.
@@ -1137,7 +1155,7 @@ const CSV={
    const out=[];contribYears().forEach(y=>contribRows(y,cGroup).forEach(r=>out.push({fiscal_year:y,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)})));
    (ST.contrib_gdp||[]).forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (published GDP growth)',broad_sector:'',contribution_pp:round2(p.value)}));
    return [`Pakistan_growth_contributions_${cGroup}.csv`,out];},
- cyear:()=>[`Pakistan_growth_breakdown_${cYear}.csv`,
+ cyear:()=>[`Pakistan_growth_breakdown_${cYear||selYear}.csv`,
    contribRows(cYear,cGroup).sort((a,b)=>b.v-a.v).map(r=>({fiscal_year:cYear,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)}))],
  ceras:()=>{const keys=cGroup==='broad'?['agri','ind','serv']:contribKeys();const out=[];
    CERAS.forEach(([label,y0,y1])=>{const yrs=contribYears().filter(y=>y>=y0&&y<=y1);
