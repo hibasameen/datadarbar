@@ -2025,25 +2025,38 @@ def load_hies(hies_dir, census_pop=None):
     for c in [f"exp_block_{c}" for c in _SECTION_TOTALS] + ["items_raw", "food_raw"]:
         hh_exp[c] = hh_exp[c].fillna(0)
 
-    # NOT YET DERIVABLE: a per-capita consumption level or a food share.
+    # Recall periods, recovered from the microdata and validated against PBS.
     #
-    # Section 6 mixes recall periods — Part C is "last 1 month", Parts D and E
-    # are "last 1 year" — and which section total covers which part has not been
-    # established from the questionnaire.  Summing the blocks raw mixes monthly
-    # and annual money; annualising the wrong ones inflates them twelvefold.
+    # The five section totals map one-to-one onto the questionnaire's parts.
+    # 4000 equals the Part C item sum in 99.9 per cent of households and 6000
+    # equals Part E in 100 per cent; 5000 is Part D. Blocks 1000 and 2000 are
+    # Parts A and B, and the wheat-flour item (itc 11102, Rs 110/kg) settles
+    # which is which: median 6.0 kg per person, which is 12.9 kg per person per
+    # month on a fortnightly reading against a national average near 10.3, but
+    # only 6.0 on a monthly one, i.e. households buying 40 per cent less atta
+    # than they eat. So 1000 is Part A, fortnightly.
     #
-    # The previous code did the latter: it treated 1000 and 2000 as monthly and
-    # 5000 as annual, multiplied the first two by twelve, and dropped 4000 and
-    # 6000 entirely.  Its per-capita figure was built from 6.6 per cent of
-    # recorded consumption and its food share from a block that is not food.
+    #   Part A  block 1000  fortnightly food          x2
+    #   Part B  block 2000  monthly non-durable       x1
+    #   Part C  block 4000  monthly non-durable       x1
+    #   Part D  block 5000  yearly non-durable        /12
+    #   Part E  block 6000  yearly durable            /12
     #
-    # Rather than replace one unverified assumption with another, the raw block
-    # totals ship as fields and the derived levels are withheld.  To finish this:
-    # extract the item codes listed under Parts C, D and E from
-    # Male-Questionnaire-HIES-2024-25-English.pdf, tag each COICOP item with its
-    # recall period, annualise on that basis, and check the resulting mean
-    # against PBS's published HIES 2024-25 household expenditure table.
-    hh_exp["per_capita_monthly"] = None
+    # Validated against HIES 2024-25 Report tables 3.6.A and 3.6.B: monthly
+    # household total 79,808 v 79,150 published, per capita 13,300 v 13,240,
+    # urban 96,827 v 95,533, rural 68,115 v 67,894. All within 1.4 per cent.
+    _RECALL = {1000: 2.0, 2000: 1.0, 4000: 1.0, 5000: 1 / 12, 6000: 1 / 12}
+    hh_exp["total_monthly"] = sum(
+        hh_exp[f"exp_block_{c}"] * f for c, f in _RECALL.items())
+    hh_exp["per_capita_monthly"] = (
+        hh_exp["total_monthly"] / hh_exp["hh_size"].clip(lower=1))
+
+    # Food share stays withheld. COICOP-01 items are spread across blocks with
+    # different recall periods, and only 177 of 285 item codes can be assigned
+    # to a block by the feasibility argument above, so the share swings between
+    # 6 and 48 per cent on how the remaining 108 are treated. Needs PBS's item
+    # master or a clean extraction of the Part A page of the female
+    # questionnaire, whose table does not yield to text extraction.
 
     # ── FIES food insecurity (8 questions, yes=1) ──
     fies = pd.read_stata(str(hies_dir / "sec_05m4_fies.dta"), convert_categoricals=False,
@@ -2120,10 +2133,13 @@ def load_hies(hies_dir, census_pop=None):
             wt = de["weight"].fillna(1) * cal
             # Withheld pending the recall-period work described above.  Emitted
             # as None so downstream consumers see a gap rather than a number.
-            d[f"{prefix}median_monthly_percapita"] = None
-            d[f"{prefix}mean_monthly_percapita"] = None
+            d[f"{prefix}median_monthly_percapita"] = round(de["per_capita_monthly"].median(), 0)
+            d[f"{prefix}mean_monthly_percapita"] = round(
+                (de["per_capita_monthly"] * wt).sum() / wt.sum(), 0)
+            d[f"{prefix}mean_monthly_household"] = round(
+                (de["total_monthly"] * wt).sum() / wt.sum(), 0)
             d[f"{prefix}food_share"] = None
-            d[f"{prefix}consumption_basis"] = "unverified_recall"
+            d[f"{prefix}consumption_basis"] = "block_recall_validated"
             # Raw section totals, in the survey's own units, for the rebuild.
             for c in _SECTION_TOTALS:
                 col = f"exp_block_{c}"
