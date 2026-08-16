@@ -1,8 +1,8 @@
 /*
    Data Darbar — shared "Data" nav dropdown
    ----------------------------------------
-   Collapses the four product links (District Map, Poverty Metrics, Trade Atlas,
-   Economy & Budget) into a single "Data" tab that opens a menu.
+   Collapses the product links (District Map, Poverty Metrics, Trade Atlas,
+   Economy & Budget, Query the Data) into a single "Data" tab that opens a menu.
 
    Included on every page. Self-contained like modals.js: injects its own <style>
    with literal hex colours so it works regardless of which stylesheet the page
@@ -22,7 +22,8 @@
     { href: 'map.html',     title: 'District Map',     desc: 'Census, PSLM, labour force and household indicators across 141 districts' },
     { href: 'poverty.html', title: 'Poverty Metrics',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
     { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },
-    { href: 'finance.html', title: 'Economy & Budget', desc: 'GDP by sector, input-output flows and the federal budget' }
+    { href: 'finance.html', title: 'Economy & Budget', desc: 'GDP by sector, input-output flows and the federal budget' },
+    { href: 'query.html',   title: 'Query the Data',   desc: 'Run SQL against every table, in your browser — no signup' }
   ];
 
   var CSS = ''

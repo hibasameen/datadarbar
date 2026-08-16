@@ -1,0 +1,636 @@
+{
+ "name": "Data Darbar",
+ "version": 1,
+ "generated": "2026-08-16",
+ "license": "Derived data CC BY 4.0 \u00b7 code MIT",
+ "tables": [
+  {
+   "name": "budget_lines",
+   "file": "budget_lines.parquet",
+   "bytes": 118845,
+   "rows": 23271,
+   "description": "Federal budget line items from the Budget in Brief documents, FY2009-10 \u2192 FY2026-27.",
+   "notes": "Rs million. Each printed row carried 1\u20134 numeric columns; is_own_year_be = TRUE marks the document's own-year Budget Estimate, which is the only column safe to string into a time series. The low-numbered 'Budget at a Glance' tables extract noisily and item wording drifts between years \u2014 match with ILIKE and sanity-check.",
+   "unit": "Rs million",
+   "source": "Finance Division, Budget in Brief (PDF)",
+   "columns": [
+    {
+     "name": "doc_fy",
+     "type": "VARCHAR",
+     "description": "fiscal year of the source document"
+    },
+    {
+     "name": "table_no",
+     "type": "BIGINT",
+     "description": "table number in the PDF"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "table title"
+    },
+    {
+     "name": "item",
+     "type": "VARCHAR",
+     "description": "line item as printed"
+    },
+    {
+     "name": "col_index",
+     "type": "BIGINT",
+     "description": "0-based column position in the printed row"
+    },
+    {
+     "name": "n_cols",
+     "type": "BIGINT",
+     "description": "how many numeric columns that row had"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "inferred column meaning"
+    },
+    {
+     "name": "value_rs_mn",
+     "type": "DOUBLE",
+     "description": "value, Rs million"
+    },
+    {
+     "name": "is_own_year_be",
+     "type": "BOOLEAN",
+     "description": "TRUE = own-year Budget Estimate (the reliable column)"
+    }
+   ]
+  },
+  {
+   "name": "district_indicators",
+   "file": "district_indicators.parquet",
+   "bytes": 152603,
+   "rows": 40993,
+   "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
+   "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'.",
+   "unit": null,
+   "source": "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
+   "columns": [
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "normalised join key used across Data Darbar"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "display name"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province / territory"
+    },
+    {
+     "name": "dataset",
+     "type": "VARCHAR",
+     "description": "source dataset (Census 2017/23, PSLM 2019-20, LFS, HIES, PDHS\u2026)"
+    },
+    {
+     "name": "group_key",
+     "type": "VARCHAR",
+     "description": "indicator group key in app.js"
+    },
+    {
+     "name": "group_label",
+     "type": "VARCHAR",
+     "description": "human label for the group"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "indicator key within the group"
+    },
+    {
+     "name": "label",
+     "type": "VARCHAR",
+     "description": "human label for the indicator"
+    },
+    {
+     "name": "year",
+     "type": "VARCHAR",
+     "description": "census year for two-year census groups, else NULL"
+    },
+    {
+     "name": "kind",
+     "type": "VARCHAR",
+     "description": "'indicator' | 'quality' (n_obs, low_n) | 'provenance'"
+    },
+    {
+     "name": "field",
+     "type": "VARCHAR",
+     "description": "raw field name in districts.json"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "numeric value (units implied by the label)"
+    },
+    {
+     "name": "value_text",
+     "type": "VARCHAR",
+     "description": "non-numeric value, if any"
+    }
+   ]
+  },
+  {
+   "name": "file_catalog",
+   "file": "file_catalog.parquet",
+   "bytes": 10443,
+   "rows": 263,
+   "description": "Index of every source file collected for the warehouse, with its upstream URL.",
+   "notes": "parsed_into_db = FALSE means the file is catalogued but its contents are not in any table here (mostly scanned PDFs). Use this to check coverage before concluding data is missing.",
+   "unit": null,
+   "source": "PBS, Finance Division",
+   "columns": [
+    {
+     "name": "dataset",
+     "type": "VARCHAR",
+     "description": "collection it belongs to"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "sub-category"
+    },
+    {
+     "name": "period",
+     "type": "VARCHAR",
+     "description": "period covered"
+    },
+    {
+     "name": "item",
+     "type": "VARCHAR",
+     "description": "what the file contains"
+    },
+    {
+     "name": "filename",
+     "type": "VARCHAR",
+     "description": "file name"
+    },
+    {
+     "name": "format",
+     "type": "VARCHAR",
+     "description": "PDF/TXT/xlsx"
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": "upstream URL at PBS / Finance Division"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "download status"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "free text"
+    },
+    {
+     "name": "parsed_into_db",
+     "type": "BOOLEAN",
+     "description": "TRUE if its contents are in a table here"
+    }
+   ]
+  },
+  {
+   "name": "lsm_qim",
+   "file": "lsm_qim.parquet",
+   "bytes": 3354,
+   "rows": 119,
+   "description": "Monthly Quantum Index of Manufacturing (large-scale manufacturing).",
+   "notes": "Index; mom/yoy/cum_chg are percentages.",
+   "unit": null,
+   "source": "PBS Quantum Index of Manufacturing",
+   "columns": [
+    {
+     "name": "month",
+     "type": "VARCHAR",
+     "description": "YYYY-MM"
+    },
+    {
+     "name": "qim",
+     "type": "DOUBLE",
+     "description": "index level"
+    },
+    {
+     "name": "mom",
+     "type": "DOUBLE",
+     "description": "% change on previous month"
+    },
+    {
+     "name": "yoy",
+     "type": "DOUBLE",
+     "description": "% change on same month a year earlier"
+    },
+    {
+     "name": "cum_qim",
+     "type": "DOUBLE",
+     "description": "fiscal-year-to-date index"
+    },
+    {
+     "name": "cum_chg",
+     "type": "DOUBLE",
+     "description": "% change in the FYTD index"
+    }
+   ]
+  },
+  {
+   "name": "lsm_sector_indices",
+   "file": "lsm_sector_indices.parquet",
+   "bytes": 24087,
+   "rows": 6685,
+   "description": "LSM indices by manufacturing sector, annual and monthly, with CMI weights.",
+   "notes": "weight is the sector's share in the index (per the stated base year).",
+   "unit": null,
+   "source": "PBS LSM / Census of Manufacturing Industries",
+   "columns": [
+    {
+     "name": "base",
+     "type": "VARCHAR",
+     "description": "index base year"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "manufacturing sector"
+    },
+    {
+     "name": "weight",
+     "type": "DOUBLE",
+     "description": "weight in the overall index"
+    },
+    {
+     "name": "annual_index",
+     "type": "DOUBLE",
+     "description": "annual index level"
+    },
+    {
+     "name": "month",
+     "type": "VARCHAR",
+     "description": "YYYY-MM (monthly rows)"
+    },
+    {
+     "name": "monthly_index",
+     "type": "DOUBLE",
+     "description": "monthly index level"
+    }
+   ]
+  },
+  {
+   "name": "mpi_districts",
+   "file": "mpi_districts.parquet",
+   "bytes": 9876,
+   "rows": 141,
+   "description": "Alkire-Foster multidimensional poverty index by district, from PSLM 2019-20 microdata.",
+   "notes": "M0 = H \u00d7 A. Censored headcounts c_* are the share of people who are both poor and deprived in that indicator (%). low_n=1 marks districts whose sample is too small to be reliable \u2014 filter them out for rankings.",
+   "unit": null,
+   "source": "PSLM/HIES 2019-20 microdata (PBS), Alkire-Foster method",
+   "columns": [
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "join key to district_indicators.district_key"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "district name"
+    },
+    {
+     "name": "prov",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "mpi",
+     "type": "DOUBLE",
+     "description": "M0, adjusted headcount ratio (0-1)"
+    },
+    {
+     "name": "H",
+     "type": "DOUBLE",
+     "description": "headcount ratio \u2014 % of people who are MPI-poor"
+    },
+    {
+     "name": "A",
+     "type": "DOUBLE",
+     "description": "intensity \u2014 average share of weighted deprivations among the poor (%)"
+    },
+    {
+     "name": "rank",
+     "type": "BIGINT",
+     "description": "1 = poorest"
+    },
+    {
+     "name": "n_obs",
+     "type": "BIGINT",
+     "description": "households in the PSLM sample"
+    },
+    {
+     "name": "low_n",
+     "type": "BIGINT",
+     "description": "1 if sample below the reliability threshold"
+    },
+    {
+     "name": "c_schooling",
+     "type": "DOUBLE",
+     "description": "censored headcount: years of schooling (%)"
+    },
+    {
+     "name": "c_attendance",
+     "type": "DOUBLE",
+     "description": "censored headcount: school attendance (%)"
+    },
+    {
+     "name": "c_electricity",
+     "type": "DOUBLE",
+     "description": "censored headcount: electricity (%)"
+    },
+    {
+     "name": "c_cooking_fuel",
+     "type": "DOUBLE",
+     "description": "censored headcount: cooking fuel (%)"
+    },
+    {
+     "name": "c_sanitation",
+     "type": "DOUBLE",
+     "description": "censored headcount: sanitation (%)"
+    },
+    {
+     "name": "c_water",
+     "type": "DOUBLE",
+     "description": "censored headcount: drinking water (%)"
+    },
+    {
+     "name": "c_housing",
+     "type": "DOUBLE",
+     "description": "censored headcount: housing (%)"
+    }
+   ]
+  },
+  {
+   "name": "national_accounts",
+   "file": "national_accounts.parquet",
+   "bytes": 61883,
+   "rows": 10526,
+   "description": "National accounts / GDP series, 1951-52 \u2192 2025-26 (PBS 2015-16 base).",
+   "notes": "Units vary BY TABLE: levels are Rs million (tables 2\u20135, 8\u201311), growth rates and shares are percentages (tables 6, 7a/b). Always read table_name before aggregating. Item labels on the Macro/Main-Aggregate sheets are best-effort.",
+   "unit": null,
+   "source": "PBS National Accounts annual tables (2015-16 base)",
+   "columns": [
+    {
+     "name": "table_sheet",
+     "type": "VARCHAR",
+     "description": "sheet name in the PBS workbook"
+    },
+    {
+     "name": "table_name",
+     "type": "VARCHAR",
+     "description": "published table title"
+    },
+    {
+     "name": "price_basis",
+     "type": "VARCHAR",
+     "description": "constant or current prices"
+    },
+    {
+     "name": "base_year",
+     "type": "VARCHAR",
+     "description": "price base"
+    },
+    {
+     "name": "item",
+     "type": "VARCHAR",
+     "description": "sector / indicator label as published"
+    },
+    {
+     "name": "year",
+     "type": "VARCHAR",
+     "description": "fiscal year, e.g. '2019-20'"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "value \u2014 unit depends on the table"
+    }
+   ]
+  },
+  {
+   "name": "tehsil_nightlights",
+   "file": "tehsil_nightlights.parquet",
+   "bytes": 16840,
+   "rows": 3864,
+   "description": "Night-time light radiance by tehsil and year (June VIIRS composites).",
+   "notes": "One row per tehsil \u00d7 year. Population-weighted mean radiance. Tehsils flagged nl_lowc in tehsil_satellite sit near the sensor's noise floor \u2014 their year-on-year movements are mostly noise.",
+   "unit": null,
+   "source": "NOAA VIIRS DNB monthly composites",
+   "columns": [
+    {
+     "name": "tehsil_id",
+     "type": "VARCHAR",
+     "description": "joins to tehsil_satellite.tehsil_id"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year (June composite)"
+    },
+    {
+     "name": "radiance",
+     "type": "DOUBLE",
+     "description": "nW/cm\u00b2/sr, population-weighted mean"
+    }
+   ]
+  },
+  {
+   "name": "tehsil_satellite",
+   "file": "tehsil_satellite.parquet",
+   "bytes": 23023,
+   "rows": 553,
+   "description": "Tehsil-level (ADM3) satellite measures: relative wealth, population, night-lights.",
+   "notes": "RWI is Meta's Relative Wealth Index \u2014 note it USES night-time lights as one of its own inputs, so rwi and the light columns are NOT independent measurements; a correlation between them is partly mechanical. Lights are June VIIRS radiance, population-weighted. The full year-by-year series is in tehsil_nightlights.",
+   "unit": null,
+   "source": "Meta/Data for Good RWI, WorldPop 2020, NOAA VIIRS DNB monthly composites",
+   "columns": [
+    {
+     "name": "tehsil_id",
+     "type": "VARCHAR",
+     "description": "GADM/ADM3 identifier \u2014 joins to tehsil_nightlights.tehsil_id"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "tehsil name"
+    },
+    {
+     "name": "dk",
+     "type": "VARCHAR",
+     "description": "district_key of the parent district (joins to district_indicators)"
+    },
+    {
+     "name": "prov",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "area",
+     "type": "DOUBLE",
+     "description": "area, km\u00b2"
+    },
+    {
+     "name": "rwi",
+     "type": "DOUBLE",
+     "description": "Meta Relative Wealth Index (mean, population-weighted)"
+    },
+    {
+     "name": "rwi_pct",
+     "type": "DOUBLE",
+     "description": "percentile of rwi within Pakistan"
+    },
+    {
+     "name": "pop",
+     "type": "BIGINT",
+     "description": "population (WorldPop 2020, UN-adjusted)"
+    },
+    {
+     "name": "popdens",
+     "type": "DOUBLE",
+     "description": "people per km\u00b2"
+    },
+    {
+     "name": "nl_growth",
+     "type": "DOUBLE",
+     "description": "% change in radiance, first to last available year"
+    },
+    {
+     "name": "nl_lowc",
+     "type": "BIGINT",
+     "description": "1 if radiance is near the noise floor (treat growth as unreliable)"
+    },
+    {
+     "name": "nl_latest",
+     "type": "DOUBLE",
+     "description": "radiance in the most recent June (VIIRS, nW/cm\u00b2/sr)"
+    },
+    {
+     "name": "nl_year",
+     "type": "BIGINT",
+     "description": "the year nl_latest refers to"
+    }
+   ]
+  },
+  {
+   "name": "trade_hs8",
+   "file": "trade_hs8.parquet",
+   "bytes": 10206418,
+   "rows": 1134442,
+   "description": "8-digit HS imports and exports, by commodity and partner country, FY2015-16 \u2192 FY2024-25.",
+   "notes": "Values are THOUSAND rupees. fy_* are full fiscal-year (Jul\u2013Jun) cumulative figures; month_* are June alone. country IS NULL marks the commodity total row \u2014 country rows sum to it, so filter one or the other or you will double-count. Years missing here exist only as PDFs upstream (see file_catalog).",
+   "unit": "thousand Rs",
+   "source": "PBS External Trade Statistics (annual fixed-width TXT + D-10 workbooks)",
+   "columns": [
+    {
+     "name": "direction",
+     "type": "VARCHAR",
+     "description": "'import' or 'export'"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "e.g. '2020-21' (Jul\u2013Jun)"
+    },
+    {
+     "name": "hs8",
+     "type": "VARCHAR",
+     "description": "8-digit HS code"
+    },
+    {
+     "name": "commodity",
+     "type": "VARCHAR",
+     "description": "commodity description as published"
+    },
+    {
+     "name": "country",
+     "type": "VARCHAR",
+     "description": "partner country; NULL = all-countries total for that HS8"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "quantity unit"
+    },
+    {
+     "name": "month_qty",
+     "type": "DOUBLE",
+     "description": "June quantity"
+    },
+    {
+     "name": "month_value_kpkr",
+     "type": "DOUBLE",
+     "description": "June value, thousand Rs"
+    },
+    {
+     "name": "fy_qty",
+     "type": "DOUBLE",
+     "description": "fiscal-year cumulative quantity"
+    },
+    {
+     "name": "fy_value_kpkr",
+     "type": "DOUBLE",
+     "description": "fiscal-year cumulative value, thousand Rs"
+    }
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "title": "Ten poorest districts",
+   "sql": "SELECT rank, name, prov, mpi, H, A\nFROM mpi_districts\nWHERE low_n = 0\nORDER BY rank\nLIMIT 10;"
+  },
+  {
+   "title": "Female literacy, 2017 vs 2023",
+   "sql": "SELECT district, province,\n       max(value) FILTER (year = '2017') AS lit_2017,\n       max(value) FILTER (year = '2023') AS lit_2023,\n       round(max(value) FILTER (year = '2023')\n           - max(value) FILTER (year = '2017'), 1) AS change\nFROM district_indicators\nWHERE indicator = 'literacy_ratio_female'\nGROUP BY 1, 2\nORDER BY change DESC;"
+  },
+  {
+   "title": "Top import partners, FY2024-25 (Rs bn)",
+   "sql": "SELECT country, round(sum(fy_value_kpkr) / 1e6, 1) AS rs_bn\nFROM trade_hs8\nWHERE direction = 'import' AND fiscal_year = '2024-25'\n  AND country IS NOT NULL\nGROUP BY 1\nORDER BY rs_bn DESC\nLIMIT 15;"
+  },
+  {
+   "title": "What Pakistan exports most (FY2024-25)",
+   "sql": "SELECT hs8, any_value(commodity) AS commodity,\n       round(sum(fy_value_kpkr) / 1e6, 1) AS rs_bn\nFROM trade_hs8\nWHERE direction = 'export' AND fiscal_year = '2024-25'\n  AND country IS NULL\nGROUP BY 1\nORDER BY rs_bn DESC\nLIMIT 20;"
+  },
+  {
+   "title": "Real GDP growth by year",
+   "sql": "SELECT year, round(value, 2) AS growth_pct\nFROM national_accounts\nWHERE table_sheet = 'Table 6' AND item LIKE 'D GDP%'\nORDER BY year;"
+  },
+  {
+   "title": "Federal defence budget over time",
+   "sql": "SELECT doc_fy, item, value_rs_mn\nFROM budget_lines\nWHERE is_own_year_be AND item ILIKE '%defence%'\nORDER BY doc_fy;"
+  },
+  {
+   "title": "Do lights track wealth? (tehsils, by province)",
+   "sql": "-- Note: Meta's RWI uses night-lights as an input, so this correlation\n-- is partly mechanical. Read it as consistency, not as validation.\nSELECT prov,\n       count(*) AS tehsils,\n       round(corr(rwi, ln(nl_latest + 0.01)), 3) AS corr_rwi_lognl\nFROM tehsil_satellite\nWHERE nl_lowc = 0\nGROUP BY 1\nORDER BY 3 DESC;"
+  },
+  {
+   "title": "Night-lights, tehsil trajectories since 2020",
+   "sql": "SELECT s.name AS tehsil, s.prov,\n       max(l.radiance) FILTER (l.year = 2020) AS y2020,\n       max(l.radiance) FILTER (l.year = 2026) AS y2026,\n       s.pop\nFROM tehsil_nightlights l\nJOIN tehsil_satellite s USING (tehsil_id)\nWHERE s.nl_lowc = 0 AND s.pop > 200000\nGROUP BY 1, 2, 5\nORDER BY y2026 / nullif(y2020, 0) DESC\nLIMIT 20;"
+  },
+  {
+   "title": "Urbanisation vs multidimensional poverty",
+   "sql": "SELECT d.district, d.province, d.value AS pct_urban_2023, m.mpi\nFROM district_indicators d\nJOIN mpi_districts m USING (district_key)\nWHERE d.indicator = 'urban_proportion' AND d.year = '2023'\n  AND m.low_n = 0\nORDER BY m.mpi DESC;"
+  }
+ ]
+}
