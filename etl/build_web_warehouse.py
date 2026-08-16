@@ -152,6 +152,7 @@ _QUALITY_SUFFIX = {
     "_low_n": ("Small-sample flag (1 = unreliable)", "quality"),
     "_coverage": ("Districts covered by this source", "quality"),
     "_inherited_from": ("District whose estimate was borrowed", "provenance"),
+    "_boundary_change": ("District this one shares its pre-split 2017 figures with", "provenance"),
     "_year": ("Reference year of the source", "provenance"),
     "_basis": ("Definition / basis used", "provenance"),
 }
@@ -308,7 +309,11 @@ def build(src: Path) -> None:
         "for the measures themselves; kind='quality' rows carry the sample size and small-n "
         "flag for the same prefix, and kind='provenance' rows record borrowed estimates. "
         "Survey groups suppress cells with n<30 upstream, so an absent row can mean "
-        "'suppressed' as well as 'not collected'.",
+        "'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district "
+        "was split after Census 2017 (see the *_boundary_change provenance rows) both "
+        "halves carry the SAME 2017 figure for the combined pre-split area, so summing a "
+        "2017 count across all districts overstates the total. Filter those rows out, or "
+        "sum the 2023 year instead.",
         {
             "district_key": "normalised join key used across Data Darbar",
             "district": "display name",

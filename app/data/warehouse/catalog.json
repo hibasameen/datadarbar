@@ -64,10 +64,10 @@
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 152603,
-   "rows": 40993,
+   "bytes": 152881,
+   "rows": 41120,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
-   "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'.",
+   "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead.",
    "unit": null,
    "source": "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
    "columns": [
@@ -622,7 +622,7 @@
   },
   {
    "title": "Do lights track wealth? (tehsils, by province)",
-   "sql": "-- Note: Meta's RWI uses night-lights as an input, so this correlation\n-- is partly mechanical. Read it as consistency, not as validation.\nSELECT prov,\n       count(*) AS tehsils,\n       round(corr(rwi, ln(nl_latest + 0.01)), 3) AS corr_rwi_lognl\nFROM tehsil_satellite\nWHERE nl_lowc = 0\nGROUP BY 1\nORDER BY 3 DESC;"
+   "sql": "-- Note: Meta's RWI uses night-lights as an input, so this correlation\n-- is partly mechanical. Read it as consistency, not as validation.\nSELECT prov,\n       count(*) AS tehsils,\n       round(corr(rwi, ln(nl_latest + 0.01)), 3) AS corr_rwi_lognl\nFROM tehsil_satellite\nWHERE nl_lowc = 0\nGROUP BY 1\nHAVING count(*) >= 5\nORDER BY 3 DESC;"
   },
   {
    "title": "Night-lights, tehsil trajectories since 2020",
