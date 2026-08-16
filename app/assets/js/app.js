@@ -11,9 +11,12 @@ const TOPICS = {
   education:      { label: 'Education',                 groups: ['literacy', 'education', 'pslmEducation'] },
   employment:     { label: 'Employment',                groups: ['employment', 'pslmEmployment', 'lfs', 'lfs25'] },
   economic:       { label: 'Economic Activity',         groups: ['econCensus'] },
-  welfare:        { label: 'Household Welfare',         groups: ['hies'] },
-  housing:        { label: 'Housing & Infrastructure',  groups: ['hiesHousing', 'pslmWash', 'hiesWaste'] },
-  ict:            { label: 'ICT & Digital',             groups: ['hiesIct', 'pslmDigital'] },
+  // Within each topic, whole-district (PSLM) series are listed before
+  // rural-only (HIES) ones, so the default view of a district is not a rural
+  // figure. See HIES_DISTRICT_COVERAGE.md.
+  welfare:        { label: 'Household Welfare',         groups: ['pslmFies', 'hies'] },
+  housing:        { label: 'Housing & Infrastructure',  groups: ['pslmWash', 'hiesHousing', 'hiesWaste'] },
+  ict:            { label: 'ICT & Digital',             groups: ['pslmDigital', 'hiesIct'] },
   health:         { label: 'Health',                    groups: ['pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
   women:          { label: "Women's Empowerment",       groups: ['hiesDecisions'] },
 };
@@ -180,23 +183,53 @@ const INDICATOR_GROUPS = {
     prefix: 'ec', hasYears: false, noYear: true,
   },
   // ── HOUSEHOLD WELFARE ────────────────────────────────────────────────
-  // HIES 2024-25 records no district identifier for urban households, so every
-  // district figure below covers rural households only and wholly urban
-  // districts are absent. See HIES_CROSSWALK_BUG.md.
+  // Ordering here is deliberate. PSLM 2019-20 is a district-representative
+  // round: it codes urban households by district, so its figures cover the
+  // whole district. HIES 2024-25 is a provincial round whose urban stratum is
+  // the administrative *division*, so every HIES district figure is rural-only
+  // and wholly urban districts are absent entirely. Where the two overlap,
+  // PSLM leads and HIES is offered as the more recent rural-only supplement.
+  // See HIES_DISTRICT_COVERAGE.md.
+  pslmFies: {
+    label: 'Food Security — PSLM 2019-20 (whole district)',
+    dataset: 'PSLM 2019-20, urban and rural (PBS published)',
+    indicators: {
+      food_insecurity_pct: 'Food Insecure HH (%, moderate or severe)',
+    },
+    prefix: 'pslm_fies', hasYears: false, noYear: true,
+  },
   hies: {
     label: 'Consumption & Food Security — HIES 2024-25 (rural only)',
     dataset: 'HIES 2024-25, rural households only',
     ruralOnly: true,
     // Per-capita expenditure and food share are withheld: HIES section 6 mixes
     // monthly and yearly recall and the block-to-part mapping is unverified.
+    // Food insecurity is kept for its recency, but PSLM's whole-district FIES
+    // above is the series to quote for a district. Note the two are not the
+    // same statistic: PBS follows FAO's Rasch model, this is a raw-score
+    // cutoff, and the levels differ by roughly a third even where they agree
+    // on the ranking.
     indicators: {
-      food_insecurity_pct:      'Food Insecure HH (%)',
-      avg_fies_score:           'Avg. FIES Score (0-8)',
-      avg_hh_size:              'Avg. Household Size',
+      food_insecurity_pct:      'Food Insecure HH (%, rural, raw score)',
+      avg_fies_score:           'Avg. FIES Score (0-8, rural)',
+      avg_hh_size:              'Avg. Household Size (rural)',
     },
     prefix: 'hies', hasYears: false, noYear: true,
   },
   // ── HOUSING & INFRASTRUCTURE ─────────────────────────────────────────
+  // PSLM first: whole-district. Piped water lives here and has been removed
+  // from the HIES group below, where it was the same indicator measured on
+  // rural households only — the two disagreed sharply in urban districts.
+  pslmWash: {
+    label: 'Water & Sanitation — PSLM 2019-20 (whole district)',
+    dataset: 'PSLM 2019-20, urban and rural',
+    indicators: {
+      pct_piped_water:  '% HH Piped Water',
+      pct_flush_toilet: '% HH Flush Toilet',
+      pct_no_toilet:    '% HH No Toilet',
+    },
+    prefix: 'pslm', hasYears: false, noYear: true,
+  },
   hiesHousing: {
     label: 'Housing & Utilities — HIES 2024-25 (rural only)',
     dataset: 'HIES 2024-25, rural households only',
@@ -204,7 +237,6 @@ const INDICATOR_GROUPS = {
     indicators: {
       pct_electricity:    '% HH Electricity',
       pct_owner_occupied: '% HH Owner-Occupied',
-      pct_piped_water:    '% HH Piped Water',
       avg_rooms:          'Avg. Rooms per HH',
       pct_pucca_floor:    '% Pucca Floor (Cement/Tiles)',
       pct_rcc_roof:       '% RCC/RBC Roof',
@@ -218,7 +250,6 @@ const INDICATOR_GROUPS = {
     mixedKeys: {
       pct_electricity: 'hies_pct_electricity',
       pct_owner_occupied: 'hies_pct_owner_occupied',
-      pct_piped_water: 'hies_pct_piped_water',
       avg_rooms: 'hies_hq_avg_rooms',
       pct_pucca_floor: 'hies_hq_pct_pucca_floor',
       pct_rcc_roof: 'hies_hq_pct_rcc_roof',
@@ -226,16 +257,6 @@ const INDICATOR_GROUPS = {
       pct_pucca_house: 'hies_hq_pct_pucca_house',
       pct_katcha_house: 'hies_hq_pct_katcha_house',
     },
-  },
-  pslmWash: {
-    label: 'Water & Sanitation — PSLM 2019-20',
-    dataset: 'PSLM 2019-20',
-    indicators: {
-      pct_piped_water:  '% HH Piped Water',
-      pct_flush_toilet: '% HH Flush Toilet',
-      pct_no_toilet:    '% HH No Toilet',
-    },
-    prefix: 'pslm', hasYears: false, noYear: true,
   },
   hiesWaste: {
     label: 'Waste Management — HIES 2024-25 (rural only)',
@@ -250,23 +271,11 @@ const INDICATOR_GROUPS = {
     prefix: 'hies_waste', hasYears: false, noYear: true,
   },
   // ── ICT & DIGITAL ───────────────────────────────────────────────────
-  hiesIct: {
-    label: 'ICT & Digital Access — HIES 2024-25 (rural only)',
-    dataset: 'HIES 2024-25, rural households only',
-    ruralOnly: true,
-    indicators: {
-      pct_smartphone:       '% Smartphone Ownership',
-      pct_any_mobile:       '% Any Mobile Phone',
-      pct_computer:         '% Computer Access',
-      pct_internet_user:    '% Internet Users',
-      pct_daily_internet:   '% Daily Internet Users',
-      pct_digital_finance:  '% Digital Finance (Mobile Money/Bank)',
-    },
-    prefix: 'hies_ict', hasYears: false, noYear: true,
-  },
+  // PSLM first again: whole-district. The HIES group below measures similar
+  // things on rural households only and is kept for recency, not comparison.
   pslmDigital: {
-    label: 'ICT & Digital Access — PSLM 2019-20',
-    dataset: 'PSLM 2019-20',
+    label: 'ICT & Digital Access — PSLM 2019-20 (whole district)',
+    dataset: 'PSLM 2019-20, urban and rural',
     indicators: {
       pct_computer_access:  '% Computer Access (10+)',
       pct_smartphone:       '% Smartphone (10+)',
@@ -289,6 +298,23 @@ const INDICATOR_GROUPS = {
       pct_internet: 'pslm_pct_internet',
       pct_mobile: 'pslm_pct_mobile',
     },
+  },
+  hiesIct: {
+    label: 'ICT & Digital Access — HIES 2024-25 (rural only)',
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
+    // Kept because daily internet use and digital finance have no PSLM
+    // equivalent, and because it is five years more recent. Not comparable
+    // with the PSLM group above: different year, different universe.
+    indicators: {
+      pct_daily_internet:   '% Daily Internet Users (rural)',
+      pct_digital_finance:  '% Digital Finance (rural)',
+      pct_smartphone:       '% Smartphone Ownership (rural)',
+      pct_any_mobile:       '% Any Mobile Phone (rural)',
+      pct_computer:         '% Computer Access (rural)',
+      pct_internet_user:    '% Internet Users (rural)',
+    },
+    prefix: 'hies_ict', hasYears: false, noYear: true,
   },
   // ── HEALTH ──────────────────────────────────────────────────────────
   pslmHealth: {
@@ -389,6 +415,7 @@ const COLOR_RAMPS = {
   // Economic Activity
   econCensus:       ['#fef6dc', '#1a5632'],
   // Household Welfare
+  pslmFies:         ['#fef6dc', '#8a6d0f'],
   hies:             ['#fef6dc', '#b8941a'],
   // Housing & Infrastructure
   hiesHousing:      ['#fbe9e7', '#bf360c'],

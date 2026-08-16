@@ -115,7 +115,12 @@
       <li><strong>Population &amp; Housing Census 2017 and 2023</strong> — district demographic, education
         and employment tables.</li>
       <li><strong>PSLM, LFS &amp; HIES</strong> — social/living-standards, labour-force and household
-        income &amp; expenditure surveys.</li>
+        income &amp; expenditure surveys. PSLM 2019-20 is a district-level round and carries urban and
+        rural households alike; HIES 2024-25 is a provincial round whose urban stratum is the division,
+        so its district figures are rural-only (see Methodology).</li>
+      <li><strong>PSLM district FIES</strong> — district-level food insecurity (moderate or severe) as
+        published by PBS on the <a href="https://pslm-sdgs.data.gov.pk/districtlevel" target="_blank"
+        rel="noopener">PSLM district dashboard</a>, computed on FAO's FIES methodology.</li>
       <li><strong>PDHS 2017-18</strong> — Pakistan Demographic and Health Survey microdata, published by the
         <a href="https://www.nips.org.pk/" target="_blank" rel="noopener">National Institute of Population
         Studies (NIPS)</a>: family planning, fertility, maternal &amp; child health, and child nutrition, at
@@ -170,10 +175,15 @@
 
     <h4>Multi-district aggregation</h4>
     <p>Several districts are reported at sub-district level but appear as one polygon in the boundaries.
-      These are aggregated automatically: <strong>Karachi</strong> (7 sub-districts), <strong>Kohistan</strong>
-      (Upper + Lower) and <strong>Chitral</strong> (Upper + Lower). Count indicators are summed; rate
-      indicators (literacy, unemployment) are recomputed from aggregated numerator and denominator counts
-      rather than averaging percentages, which would be incorrect.</p>
+      These are aggregated automatically: <strong>Kohistan</strong> (Upper + Lower) and
+      <strong>Chitral</strong> (Upper + Lower). Count indicators are summed; rate indicators (literacy,
+      unemployment) are recomputed from aggregated numerator and denominator counts rather than averaging
+      percentages, which would be incorrect.</p>
+    <p><strong>Karachi</strong> was previously aggregated this way but is now shown as its seven separate
+      districts — Karachi Central, East, South, West, Korangi, Malir and Keamari. Any source that reports
+      only a single "Karachi" row is therefore no longer mapped, rather than being attributed to one of the
+      seven arbitrarily. The pipeline reports such rows explicitly at build time instead of dropping them
+      quietly.</p>
 
     <h4>Choropleth &amp; change</h4>
     <p>Values are mapped to fill colours using quantile breaks (5 classes) via
@@ -189,6 +199,48 @@
       to Census 2023 population totals (a sex-ratio reweighting for LFS microdata; a population calibration
       factor for HIES households). These improve plausibility but do not remove the limits of provincial
       surveys at fine geographies — district survey estimates should be read as approximate.</p>
+
+    <h4>Why HIES 2024-25 figures are labelled "rural only"</h4>
+    <p>This is the single most important caveat on the household panels, so it is worth stating plainly.
+      HIES 2024-25 <strong>does not record which district an urban household lives in</strong>. In PBS's
+      own words, "for urban domain, each administrative <em>division</em> for all four provinces has been
+      considered as an independent stratum", while the rural domain uses "each administrative
+      <em>district</em> in Punjab, Sindh and Khyber Pakhtunkhwa and each administrative <em>division</em>
+      in Balochistan". We verified this directly in the microdata: all 941 urban sampling units carry a
+      district code of zero, against 1,212 rural units that carry a real one. There are 127 rural district
+      strata and 31 urban <em>division</em> strata.</p>
+    <p>The consequence is that <strong>every HIES district figure on this site covers rural households
+      only</strong> — 19,163 of the 30,123 sampled households. The 10,960 urban households, 39% of the
+      weighted population, cannot be assigned to a district by any method, and no crosswalk can recover
+      what was never recorded. Districts with no rural sample at all — Lahore, most of Karachi, urban
+      Islamabad — therefore carry no HIES figures rather than a guessed one.</p>
+    <p>This matters most where it is least obvious. Because urban households are better off almost
+      everywhere, a rural-only figure understates district welfare systematically, and by more in more
+      urban districts. Reconstructing whole-district values using Census 2023 urban shares suggests
+      rural-only per-capita consumption is understated by around 8% in the median district but by
+      roughly 100% in Hyderabad and Karachi West. On a 89-district consumption ranking, the typical
+      district moves about 9 places once urban households are restored, and Hyderabad moves 60.
+      <strong>HIES district figures are a sound description of rural conditions and should not be read as
+      district totals.</strong></p>
+
+    <h4>Food insecurity: two different series</h4>
+    <p>Two food-insecurity measures appear on the site and they are not interchangeable.</p>
+    <ul>
+      <li><strong>Food Security — PSLM 2019-20 (whole district)</strong> is the series to quote for a
+        district. PSLM is a <em>district-level</em> survey round: it codes urban households by district, so
+        the figure covers urban and rural together. These are PBS's own published estimates, which follow
+        FAO's FIES methodology (a Rasch item-response model), covering 111 districts including all of
+        Karachi, which HIES cannot reach at all.</li>
+      <li><strong>Consumption &amp; Food Security — HIES 2024-25 (rural only)</strong> is five years more
+        recent but rural-only, and is computed here as a raw FIES score of 4 or more out of 8 rather than
+        by the Rasch model. Recomputing the PSLM series the same way reproduces PBS's district ranking
+        closely (Spearman 0.91 across 112 districts) but sits about a third lower in level. So the two
+        numbers should be compared for <em>pattern</em>, never for <em>level</em>.</li>
+    </ul>
+    <p>The same principle orders the other panels: where a whole-district PSLM series and a rural-only HIES
+      series measure the same thing — piped water, sanitation, mobile and internet access — PSLM is listed
+      first and HIES is offered as the more recent rural supplement. Piped water is a good illustration of
+      why: in Hyderabad the whole-district PSLM figure is 68%, while the rural-only HIES figure is 23%.</p>
 
     <h4>Health &amp; demographic indicators (PDHS 2017-18)</h4>
     <p>The five health layers — Family Planning, Fertility &amp; Child Survival, Maternal Health, Child

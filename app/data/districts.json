@@ -322,7 +322,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 15,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 16.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "attock": {
     "t1_2017_area_sq_km": 6857.0,
@@ -647,7 +650,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 26,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 7.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "awaran": {
     "t1_2017_area_sq_km": 29510.0,
@@ -964,7 +970,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 10,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 36.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "badin": {
     "t1_2017_area_sq_km": 6858.0,
@@ -1289,7 +1298,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 28,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 29.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "bahawalnagar": {
     "t1_2017_area_sq_km": 8878.0,
@@ -1614,7 +1626,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 26,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 23.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "bahawalpur": {
     "t1_2017_area_sq_km": 24830.0,
@@ -1939,7 +1954,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 28,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 21.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "bajaur agency": {
     "t1_2017_area_sq_km": 1290.0,
@@ -2257,7 +2275,10 @@
     "dhs_nut_underweight": 18.1,
     "dhs_nut_wasting": 5.5,
     "dhs_nut_n_obs": 32,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "bannu": {
     "t1_2017_area_sq_km": 1227.0,
@@ -2582,7 +2603,10 @@
     "dhs_nut_underweight": 23.2,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 65,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "barkhan": {
     "t1_2017_area_sq_km": 3514.0,
@@ -2883,7 +2907,10 @@
     "t5_diff_pct_urban": -0.27,
     "t5_diff_pct_rural": 0.27,
     "_display_name": "Barkhan",
-    "_province": "Balochistan"
+    "_province": "Balochistan",
+    "pslm_fies_food_insecurity_pct": 49.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "batagram": {
     "t1_2017_area_sq_km": 1301.0,
@@ -3201,7 +3228,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 10,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 29.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "bhakkar": {
     "t1_2017_area_sq_km": 8153.0,
@@ -3526,7 +3556,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 15.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "buner": {
     "t1_2017_area_sq_km": 1865.0,
@@ -4439,7 +4472,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 18,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "charsadda": {
     "t1_2017_area_sq_km": 996.0,
@@ -5089,7 +5125,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 13,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "chitral": {
     "t1_2017_area_sq_km": 14850.0,
@@ -5414,7 +5453,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 12,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "dadu": {
     "t1_2017_area_sq_km": 7866.0,
@@ -5739,7 +5781,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 19,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "dera bugti": {
     "t1_2017_area_sq_km": 10160.0,
@@ -6064,7 +6109,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 18,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 34.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "dera ghazi khan": {
     "t1_2017_area_sq_km": 11922.0,
@@ -7039,7 +7087,10 @@
     "dhs_nut_underweight": 14.0,
     "dhs_nut_wasting": 4.0,
     "dhs_nut_n_obs": 51,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "ghotki": {
     "t1_2017_area_sq_km": 6083.0,
@@ -7355,7 +7406,10 @@
     "dhs_nut_underweight": 45.7,
     "dhs_nut_wasting": 9.5,
     "dhs_nut_n_obs": 35,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 14.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "gujranwala": {
     "t1_2017_area_sq_km": 3622.0,
@@ -7680,7 +7734,10 @@
     "dhs_nut_underweight": 17.8,
     "dhs_nut_wasting": 3.0,
     "dhs_nut_n_obs": 36,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 11.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "gujrat": {
     "t1_2017_area_sq_km": 3192.0,
@@ -8005,7 +8062,10 @@
     "dhs_nut_underweight": 5.7,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 35,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 4.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "gwadar": {
     "t1_2017_area_sq_km": 12637.0,
@@ -8330,7 +8390,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 29,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 5.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "hafizabad": {
     "t1_2017_area_sq_km": 2367.0,
@@ -8655,7 +8718,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 26,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "hangu": {
     "t1_2017_area_sq_km": 1097.0,
@@ -8980,7 +9046,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 15,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "haripur": {
     "t1_2017_area_sq_km": 1725.0,
@@ -9305,7 +9374,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "harnai": {
     "t1_2017_area_sq_km": 2492.0,
@@ -9606,7 +9678,10 @@
     "t5_diff_pct_urban": 0.9,
     "t5_diff_pct_rural": -0.9,
     "_display_name": "Harnai",
-    "_province": "Balochistan"
+    "_province": "Balochistan",
+    "pslm_fies_food_insecurity_pct": 5.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "hyderabad": {
     "t1_2017_area_sq_km": 993.0,
@@ -9922,7 +9997,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 25,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "islamabad": {
     "t1_2017_area_sq_km": 906.0,
@@ -10239,7 +10317,10 @@
     "dhs_nut_underweight": 9.1,
     "dhs_nut_wasting": 2.8,
     "dhs_nut_n_obs": 233,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 8.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "jacobabad": {
     "t1_2017_area_sq_km": 2698.0,
@@ -10564,7 +10645,10 @@
     "dhs_nut_underweight": 67.4,
     "dhs_nut_wasting": 23.8,
     "dhs_nut_n_obs": 34,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 21.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "jaffarabad": {
     "t1_2017_area_sq_km": 1643.0,
@@ -10889,7 +10973,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 9,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 40.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "jamshoro": {
     "t1_2017_area_sq_km": 11204.0,
@@ -11214,7 +11301,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 16,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 35.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "jhal magsi": {
     "t1_2017_area_sq_km": 3615.0,
@@ -11833,7 +11923,10 @@
     "dhs_nut_underweight": 7.2,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 34,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 26.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "jhelum": {
     "t1_2017_area_sq_km": 3587.0,
@@ -12483,7 +12576,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 11,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kalat": {
     "t1_2017_area_sq_km": 8416.0,
@@ -12808,7 +12904,10 @@
     "dhs_nut_underweight": 44.4,
     "dhs_nut_wasting": 8.5,
     "dhs_nut_n_obs": 37,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 19.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kambar shahdadkot": {
     "t1_2017_area_sq_km": 5475.0,
@@ -13133,7 +13232,10 @@
     "dhs_nut_underweight": 47.4,
     "dhs_nut_wasting": 11.7,
     "dhs_nut_n_obs": 35,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 22.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "karak": {
     "t1_2017_area_sq_km": 3371.0,
@@ -13458,7 +13560,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 10,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 8.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kashmore": {
     "t1_2017_area_sq_km": 2580.0,
@@ -13783,7 +13888,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 8,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 27.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kasur": {
     "t1_2017_area_sq_km": 3995.0,
@@ -14065,7 +14173,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 29.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kech": {
     "t1_2017_area_sq_km": 22539.0,
@@ -14390,7 +14501,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 26,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "khairpur": {
     "t1_2017_area_sq_km": 15910.0,
@@ -14712,7 +14826,10 @@
     "dhs_nut_underweight": 36.8,
     "dhs_nut_wasting": 9.7,
     "dhs_nut_n_obs": 53,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 34.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "khanewal": {
     "t1_2017_area_sq_km": 4349.0,
@@ -15037,7 +15154,10 @@
     "dhs_nut_underweight": 24.4,
     "dhs_nut_wasting": 2.8,
     "dhs_nut_n_obs": 30,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kharan": {
     "t1_2017_area_sq_km": 14958.0,
@@ -15361,7 +15481,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 11,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "khushab": {
     "t1_2017_area_sq_km": 6511.0,
@@ -15686,7 +15809,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 17,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "khuzdar": {
     "t1_2017_area_sq_km": 35380.0,
@@ -16011,7 +16137,10 @@
     "dhs_nut_underweight": 41.6,
     "dhs_nut_wasting": 7.4,
     "dhs_nut_n_obs": 71,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 30.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "khyber agency": {
     "t1_2017_area_sq_km": 2576.0,
@@ -16336,7 +16465,10 @@
     "dhs_nut_underweight": 12.1,
     "dhs_nut_wasting": 0.2,
     "dhs_nut_n_obs": 101,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 6.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "killa abdullah": {
     "t1_2017_area_sq_km": 4894.0,
@@ -16661,7 +16793,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 14,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 27.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "killa saifullah": {
     "t1_2017_area_sq_km": 6831.0,
@@ -16943,7 +17078,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 14,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 23.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kohat": {
     "t1_2017_area_sq_km": 2545.0,
@@ -17268,7 +17406,10 @@
     "dhs_nut_underweight": 18.5,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 41,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kohistan": {
     "t1_2017_area_sq_km": 7492.0,
@@ -17562,7 +17703,10 @@
     "t_edu_diff_pct_masters_above": 0.1,
     "t5_diff_pct_rural": 0.0,
     "_display_name": "Kohistan",
-    "_province": "Khyber Pakhtunkhwa"
+    "_province": "Khyber Pakhtunkhwa",
+    "pslm_fies_food_insecurity_pct": 24.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kohlu": {
     "t1_2017_area_sq_km": 7610.0,
@@ -17850,7 +17994,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 17,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "kurram agency": {
     "t1_2017_area_sq_km": 3380.0,
@@ -18175,7 +18322,10 @@
     "dhs_nut_underweight": 63.2,
     "dhs_nut_wasting": 28.5,
     "dhs_nut_n_obs": 47,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "lahore": {
     "t1_2017_area_sq_km": 1772.0,
@@ -18494,7 +18644,10 @@
     "dhs_nut_underweight": 7.9,
     "dhs_nut_wasting": 3.2,
     "dhs_nut_n_obs": 61,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "lakki marwat": {
     "t1_2017_area_sq_km": 3164.0,
@@ -18819,7 +18972,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 21,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "larkana": {
     "t1_2017_area_sq_km": 1948.0,
@@ -19144,7 +19300,10 @@
     "dhs_nut_underweight": 49.9,
     "dhs_nut_wasting": 19.6,
     "dhs_nut_n_obs": 31,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "lasbela": {
     "t1_2017_area_sq_km": 15153.0,
@@ -19426,7 +19585,10 @@
     "dhs_nut_underweight": 47.3,
     "dhs_nut_wasting": 10.4,
     "dhs_nut_n_obs": 37,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "layyah": {
     "t1_2017_area_sq_km": 6289.0,
@@ -19751,7 +19913,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 23,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 26.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "lodhran": {
     "t1_2017_area_sq_km": 2778.0,
@@ -20076,7 +20241,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 20,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 23.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "loralai": {
     "t1_2017_area_sq_km": 8018.0,
@@ -20401,7 +20569,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 16,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "lower dir": {
     "t1_2017_area_sq_km": 1583.0,
@@ -20726,7 +20897,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 24,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 20.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "malakand": {
     "t1_2017_area_sq_km": 952.0,
@@ -21051,7 +21225,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 19,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 8.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mandi bahauddin": {
     "t1_2017_area_sq_km": 2673.0,
@@ -21658,7 +21835,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 23,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mardan": {
     "t1_2017_area_sq_km": 1632.0,
@@ -21983,7 +22163,10 @@
     "dhs_nut_underweight": 13.6,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 31,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mastung": {
     "t1_2017_area_sq_km": 3308.0,
@@ -22308,7 +22491,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 21,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "matiari": {
     "t1_2017_area_sq_km": 1417.0,
@@ -22628,7 +22814,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 8,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 21.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mianwali": {
     "t1_2017_area_sq_km": 5840.0,
@@ -22953,7 +23142,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 10,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mirpurkhas": {
     "t1_2017_area_sq_km": 2925.0,
@@ -23272,7 +23464,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "mohmand agency": {
     "t1_2017_area_sq_km": 2296.0,
@@ -23590,7 +23785,10 @@
     "dhs_nut_underweight": 15.5,
     "dhs_nut_wasting": 4.5,
     "dhs_nut_n_obs": 31,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 20.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "multan": {
     "t1_2017_area_sq_km": 3720.0,
@@ -23915,7 +24113,10 @@
     "dhs_nut_underweight": 14.9,
     "dhs_nut_wasting": 3.3,
     "dhs_nut_n_obs": 32,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "musakhail": {
     "t1_2017_area_sq_km": 5728.0,
@@ -24510,7 +24711,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "nankana sahib": {
     "t1_2017_area_sq_km": 2216.0,
@@ -24835,7 +25039,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 6,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "narowal": {
     "t1_2017_area_sq_km": 2337.0,
@@ -25160,7 +25367,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 10,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "nasirabad": {
     "t1_2017_area_sq_km": 3387.0,
@@ -26115,7 +26325,10 @@
     "dhs_nut_underweight": 30.9,
     "dhs_nut_wasting": 5.5,
     "dhs_nut_n_obs": 54,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "nowshera": {
     "t1_2017_area_sq_km": 1748.0,
@@ -26440,7 +26653,10 @@
     "dhs_nut_underweight": 12.3,
     "dhs_nut_wasting": 5.4,
     "dhs_nut_n_obs": 34,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 11.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "nushki": {
     "t1_2017_area_sq_km": 5797.0,
@@ -26741,7 +26957,10 @@
     "t5_diff_pct_urban": -2.71,
     "t5_diff_pct_rural": 2.71,
     "_display_name": "Nushki",
-    "_province": "Balochistan"
+    "_province": "Balochistan",
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "okara": {
     "t1_2017_area_sq_km": 4377.0,
@@ -27066,7 +27285,10 @@
     "dhs_nut_underweight": 11.8,
     "dhs_nut_wasting": 7.7,
     "dhs_nut_n_obs": 32,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 4.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "orakzai agency": {
     "t1_2017_area_sq_km": 1538.0,
@@ -27384,7 +27606,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 9,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "panjgur": {
     "t1_2017_area_sq_km": 16891.0,
@@ -27979,7 +28204,10 @@
     "dhs_nut_underweight": 16.7,
     "dhs_nut_wasting": 7.8,
     "dhs_nut_n_obs": 164,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 11.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "pishin": {
     "t1_2017_area_sq_km": 6218.0,
@@ -28304,7 +28532,10 @@
     "dhs_nut_underweight": 22.6,
     "dhs_nut_wasting": 13.2,
     "dhs_nut_n_obs": 32,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 21.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "quetta": {
     "t1_2017_area_sq_km": 3447.0,
@@ -28629,7 +28860,10 @@
     "dhs_nut_underweight": 36.4,
     "dhs_nut_wasting": 22.1,
     "dhs_nut_n_obs": 59,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 24.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "rahim yar khan": {
     "t1_2017_area_sq_km": 11880.0,
@@ -28954,7 +29188,10 @@
     "dhs_nut_underweight": 22.6,
     "dhs_nut_wasting": 4.4,
     "dhs_nut_n_obs": 49,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 21.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "rajanpur": {
     "t1_2017_area_sq_km": 12318.0,
@@ -29279,7 +29516,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 6,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "rawalpindi": {
     "t1_2017_area_sq_km": 5285.0,
@@ -29604,7 +29844,10 @@
     "dhs_nut_underweight": 7.2,
     "dhs_nut_wasting": 1.7,
     "dhs_nut_n_obs": 37,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sahiwal": {
     "t1_2017_area_sq_km": 3201.0,
@@ -29929,7 +30172,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 16,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 8.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sanghar": {
     "t1_2017_area_sq_km": 10728.0,
@@ -30254,7 +30500,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 21,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 23.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sargodha": {
     "t1_2017_area_sq_km": 5856.0,
@@ -30579,7 +30828,10 @@
     "dhs_nut_underweight": 9.9,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 39,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 16.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "shaheed benazirabad": {
     "t1_2017_area_sq_km": 4502.0,
@@ -30904,7 +31156,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 25,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 22.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "shangla": {
     "t1_2017_area_sq_km": 1586.0,
@@ -31223,7 +31478,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 7,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 4.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sheikhupura": {
     "t1_2017_area_sq_km": 3744.0,
@@ -31548,7 +31806,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 16,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sherani": {
     "t1_2017_area_sq_km": 4310.0,
@@ -32191,7 +32452,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 7,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 23.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sialkot": {
     "t1_2017_area_sq_km": 3016.0,
@@ -32516,7 +32780,10 @@
     "dhs_nut_underweight": 6.5,
     "dhs_nut_wasting": 3.6,
     "dhs_nut_n_obs": 37,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sibi": {
     "t1_2017_area_sq_km": 7121.0,
@@ -33161,7 +33428,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 7,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 41.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "south waziristan agency": {
     "t1_2017_area_sq_km": 6620.0,
@@ -33457,7 +33727,10 @@
     "dhs_nut_underweight": 17.0,
     "dhs_nut_wasting": 2.1,
     "dhs_nut_n_obs": 34,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 26.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "sajawal": {
     "t1_2017_area_sq_km": 8785.0,
@@ -34107,7 +34380,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 16,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 16.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "swabi": {
     "t1_2017_area_sq_km": 1543.0,
@@ -34432,7 +34708,10 @@
     "dhs_nut_underweight": 19.6,
     "dhs_nut_wasting": 0.0,
     "dhs_nut_n_obs": 31,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "swat": {
     "t1_2017_area_sq_km": 5337.0,
@@ -34757,7 +35036,10 @@
     "dhs_nut_underweight": 17.6,
     "dhs_nut_wasting": 6.3,
     "dhs_nut_n_obs": 54,
-    "dhs_nut_low_n": false
+    "dhs_nut_low_n": false,
+    "pslm_fies_food_insecurity_pct": 17.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "pakpattan": {
     "t1_2017_area_sq_km": 2724.0,
@@ -35082,7 +35364,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 12,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "tando allah yar": {
     "t1_2017_area_sq_km": 1554.0,
@@ -35407,7 +35692,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 15,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 33.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "tando muhammad khan": {
     "t1_2017_area_sq_km": 1423.0,
@@ -35732,7 +36020,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 15,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 26.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "tank": {
     "t1_2017_area_sq_km": 1679.0,
@@ -36057,7 +36348,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 29,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 32.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "tharparkar": {
     "t1_2017_area_sq_km": 19637.0,
@@ -36382,7 +36676,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 21,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 18.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "thatta": {
     "t1_2017_area_sq_km": 8570.0,
@@ -36701,7 +36998,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 22,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 27.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "toba tek singh": {
     "t1_2017_area_sq_km": 3252.0,
@@ -37344,7 +37644,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 13,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 14.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "umerkot": {
     "t1_2017_area_sq_km": 5608.0,
@@ -37663,7 +37966,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 6,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 25.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "upper dir": {
     "t1_2017_area_sq_km": 3699.0,
@@ -37988,7 +38294,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 18,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 19.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "vehari": {
     "t1_2017_area_sq_km": 4364.0,
@@ -38313,7 +38622,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 19,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 13.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "washuk": {
     "t1_2017_area_sq_km": 33093.0,
@@ -38638,7 +38950,10 @@
     "dhs_nut_underweight": null,
     "dhs_nut_wasting": null,
     "dhs_nut_n_obs": 14,
-    "dhs_nut_low_n": true
+    "dhs_nut_low_n": true,
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "zhob": {
     "t1_2017_area_sq_km": 15987.0,
@@ -39961,7 +40276,10 @@
     "t_edu_diff_pct_masters_above": -0.43,
     "t5_diff_pct_urban": 0.0,
     "_display_name": "Karachi Central",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "karachi east": {
     "t1_2017_area_sq_km": 139.0,
@@ -40213,7 +40531,10 @@
     "t_edu_diff_pct_masters_above": -0.55,
     "t5_diff_pct_urban": 0.0,
     "_display_name": "Karachi East",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "karachi south": {
     "t1_2017_area_sq_km": 122.0,
@@ -40465,7 +40786,10 @@
     "t_edu_diff_pct_masters_above": -1.13,
     "t5_diff_pct_urban": 0.0,
     "_display_name": "Karachi South",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 9.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "karachi west": {
     "t1_2017_area_sq_km": 929.0,
@@ -40723,7 +41047,10 @@
     "t5_diff_pct_urban": -2.05,
     "t5_diff_pct_rural": 2.05,
     "_display_name": "Karachi West",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 12.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "keamari": {
     "t1_2023_area_sq_km": 559.0,
@@ -41048,7 +41375,10 @@
     "t_edu_diff_pct_masters_above": -0.35,
     "t5_diff_pct_urban": 0.0,
     "_display_name": "Korangi",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 8.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   },
   "malir": {
     "t1_2017_area_sq_km": 2160.0,
@@ -41306,6 +41636,9 @@
     "t5_diff_pct_urban": -7.7,
     "t5_diff_pct_rural": 7.7,
     "_display_name": "Malir",
-    "_province": "Sindh"
+    "_province": "Sindh",
+    "pslm_fies_food_insecurity_pct": 10.0,
+    "pslm_fies_coverage": "whole_district",
+    "pslm_fies_year": "2019-20"
   }
 }
