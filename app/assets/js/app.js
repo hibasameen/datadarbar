@@ -180,13 +180,16 @@ const INDICATOR_GROUPS = {
     prefix: 'ec', hasYears: false, noYear: true,
   },
   // ── HOUSEHOLD WELFARE ────────────────────────────────────────────────
+  // HIES 2024-25 records no district identifier for urban households, so every
+  // district figure below covers rural households only and wholly urban
+  // districts are absent. See HIES_CROSSWALK_BUG.md.
   hies: {
-    label: 'Consumption & Food Security — HIES 2024-25',
-    dataset: 'HIES 2024-25',
+    label: 'Consumption & Food Security — HIES 2024-25 (rural only)',
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
+    // Per-capita expenditure and food share are withheld: HIES section 6 mixes
+    // monthly and yearly recall and the block-to-part mapping is unverified.
     indicators: {
-      median_monthly_percapita: 'Median Monthly Per-Capita Exp. (PKR)',
-      mean_monthly_percapita:   'Mean Monthly Per-Capita Exp. (PKR)',
-      food_share:               'Food Expenditure Share (%)',
       food_insecurity_pct:      'Food Insecure HH (%)',
       avg_fies_score:           'Avg. FIES Score (0-8)',
       avg_hh_size:              'Avg. Household Size',
@@ -195,8 +198,9 @@ const INDICATOR_GROUPS = {
   },
   // ── HOUSING & INFRASTRUCTURE ─────────────────────────────────────────
   hiesHousing: {
-    label: 'Housing & Utilities — HIES 2024-25',
-    dataset: 'HIES 2024-25',
+    label: 'Housing & Utilities — HIES 2024-25 (rural only)',
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
     indicators: {
       pct_electricity:    '% HH Electricity',
       pct_owner_occupied: '% HH Owner-Occupied',
@@ -234,8 +238,9 @@ const INDICATOR_GROUPS = {
     prefix: 'pslm', hasYears: false, noYear: true,
   },
   hiesWaste: {
-    label: 'Waste Management — HIES 2024-25',
-    dataset: 'HIES 2024-25',
+    label: 'Waste Management — HIES 2024-25 (rural only)',
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
     indicators: {
       pct_open_dumping:          '% Open Dumping',
       pct_municipal_collection:  '% Municipal Collection',
@@ -246,8 +251,9 @@ const INDICATOR_GROUPS = {
   },
   // ── ICT & DIGITAL ───────────────────────────────────────────────────
   hiesIct: {
-    label: 'ICT & Digital Access — HIES 2024-25',
-    dataset: 'HIES 2024-25',
+    label: 'ICT & Digital Access — HIES 2024-25 (rural only)',
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
     indicators: {
       pct_smartphone:       '% Smartphone Ownership',
       pct_any_mobile:       '% Any Mobile Phone',
@@ -298,8 +304,9 @@ const INDICATOR_GROUPS = {
   },
   // ── WOMEN'S EMPOWERMENT ─────────────────────────────────────────────
   hiesDecisions: {
-    label: "Women's Empowerment — HIES 2024-25",
-    dataset: 'HIES 2024-25',
+    label: "Women's Empowerment — HIES 2024-25 (rural only)",
+    dataset: 'HIES 2024-25, rural households only',
+    ruralOnly: true,
     indicators: {
       pct_edu_self:              '% Women Decide Own Education',
       pct_edu_consulted:         '% Women Consulted on Education',
@@ -791,7 +798,9 @@ function getTooltipContent(props) {
 
   let lowNNote = '';
   if (isNotSurveyed(props)) {
-    lowNNote = `<span class="tooltip-lown">District not sampled in this survey</span>`;
+    lowNNote = INDICATOR_GROUPS[currentGroup]?.ruralOnly
+      ? `<span class="tooltip-lown">No rural sample — HIES has no urban district code</span>`
+      : `<span class="tooltip-lown">District not sampled in this survey</span>`;
     valStr = '—';
   } else if (isLowN(props)) {
     const nObs = getNObs(props);
@@ -1053,7 +1062,11 @@ function showDistrictDetail(props) {
   // Check if district was not surveyed for this group
   const notSurveyed = isNotSurveyed(props);
   if (notSurveyed) {
-    html += `<div class="stat stat-notice">This district was not sampled in the ${g.dataset || 'survey'} sample frame.</div>`;
+    html += g.ruralOnly
+      ? `<div class="stat stat-notice">No figures for this district. HIES 2024-25 identifies districts for rural households only, so wholly urban districts are absent.</div>`
+      : `<div class="stat stat-notice">This district was not sampled in the ${g.dataset || 'survey'} sample frame.</div>`;
+  } else if (g.ruralOnly) {
+    html += `<div class="stat stat-notice">Rural households only. HIES 2024-25 records no district identifier for urban households.</div>`;
   }
 
   for (const [ind, label] of Object.entries(g.indicators)) {

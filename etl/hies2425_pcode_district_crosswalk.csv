@@ -1,0 +1,146 @@
+pcode4,stratum,n_districts,districts,division,assignable_to_district
+1102,urban,8,Bajaur; Bonair; Chitral; Lower Dir; Malakand; Shangla; Swat; Upper Dir,MALAKAND,False
+1111,rural,1,Chitral,Chitral,True
+1121,rural,1,Upper Dir,Upper Dir,True
+1131,rural,1,Lower Dir,Lower Dir,True
+1141,rural,1,Swat,Swat,True
+1151,rural,1,Shangla,Shangla,True
+1161,rural,1,Bonair,Bonair,True
+1171,rural,1,Malakand,Malakand,True
+1181,rural,1,Bajaur,Bajaur,True
+1202,urban,6,Abbottabad; Batagram; Haripur; Kohistan; Manshera; Tor Garh,HAZARA,False
+1211,rural,1,Kohistan,Kohistan,True
+1221,rural,1,Manshera,Manshera,True
+1231,rural,1,Batagram,Batagram,True
+1241,rural,1,Abbottabad,Abbottabad,True
+1251,rural,1,Haripur,Haripur,True
+1261,rural,1,Tor Garh,Tor Garh,True
+1302,urban,2,Mardan; Swabi,MARDAN,False
+1311,rural,1,Mardan,Mardan,True
+1321,rural,1,Swabi,Swabi,True
+1402,urban,5,Charsada; Khyber; Mohmand; Nowsehra; Peshawar,PESHAWAR,False
+1411,rural,1,Charsada,Charsada,True
+1421,rural,1,Peshawar,Peshawar,True
+1431,rural,1,Nowsehra,Nowsehra,True
+1441,rural,1,Khyber,Khyber,True
+1451,rural,1,Mohmand,Mohmand,True
+1502,urban,5,Hangu; Karak; Kohat; Kurram; Orakzai,KOHAT,False
+1511,rural,1,Kohat,Kohat,True
+1521,rural,1,Hangu,Hangu,True
+1531,rural,1,Karak,Karak,True
+1541,rural,1,Kurram,Kurram,True
+1551,rural,1,Orakzai,Orakzai,True
+1602,urban,3,Bannu; Lakki Marwat; North Waziristan,BANNU,False
+1611,rural,1,Bannu,Bannu,True
+1621,rural,1,Lakki Marwat,Lakki Marwat,True
+1631,rural,1,North Waziristan,North Waziristan,True
+1702,urban,3,D. I. Khan; South Waziristan; Tank,D.I.KHAN,False
+1711,rural,1,D. I. Khan,D. I. Khan,True
+1721,rural,1,Tank,Tank,True
+1731,rural,1,South Waziristan,South Waziristan,True
+2102,urban,4,Attock; Chakwal; Jehlum; Rawalpindi,RAWALPINDI,False
+2111,rural,1,Attock,Attock,True
+2121,rural,1,Rawalpindi,Rawalpindi,True
+2131,rural,1,Jehlum,Jehlum,True
+2141,rural,1,Chakwal,Chakwal,True
+2202,urban,4,Bhakhar; Khushab; Mianwali; Sargodha,SARGODHA,False
+2211,rural,1,Sargodha,Sargodha,True
+2221,rural,1,Bhakhar,Bhakhar,True
+2231,rural,1,Khushab,Khushab,True
+2241,rural,1,Mianwali,Mianwali,True
+2302,urban,4,Chiniot; Faisalabad; Jhang; T.T. Singh,FAISALABAD,False
+2311,rural,1,Faisalabad,Faisalabad,True
+2321,rural,1,Chiniot,Chiniot,True
+2331,rural,1,Jhang,Jhang,True
+2341,rural,1,T.T. Singh,T.T. Singh,True
+2402,urban,6,Gujranwala; Gujrat; Hafizabad; Mandi Bahuddin; Narowal; Sialkot,GUJRANWALA,False
+2411,rural,1,Gujranwala,Gujranwala,True
+2421,rural,1,Hafizabad,Hafizabad,True
+2431,rural,1,Gujrat,Gujrat,True
+2441,rural,1,Mandi Bahuddin,Mandi Bahuddin,True
+2451,rural,1,Sialkot,Sialkot,True
+2461,rural,1,Narowal,Narowal,True
+2502,urban,4,Kasur; Lahore; Nankana Sahib; Sheikhupura,LAHORE,False
+2511,rural,1,Lahore,Lahore,True
+2521,rural,1,Kasur,Kasur,True
+2531,rural,1,Sheikhupura,Sheikhupura,True
+2541,rural,1,Nankana Sahib,Nankana Sahib,True
+2602,urban,3,Okara; Pakpatten; Sahiwal,SAHIWAL,False
+2611,rural,1,Okara,Okara,True
+2621,rural,1,Sahiwal,Sahiwal,True
+2631,rural,1,Pakpatten,Pakpatten,True
+2702,urban,4,Khanewal; Lodhran; Multan; Vehari,MULTAN,False
+2711,rural,1,Vehari,Vehari,True
+2721,rural,1,Multan,Multan,True
+2731,rural,1,Lodhran,Lodhran,True
+2741,rural,1,Khanewal,Khanewal,True
+2802,urban,4,D. G. Khan; Layyah; Muzaffar Garh; Rajanpur,D.G.KHAN,False
+2811,rural,1,D. G. Khan,D. G. Khan,True
+2821,rural,1,Rajanpur,Rajanpur,True
+2831,rural,1,Layyah,Layyah,True
+2841,rural,1,Muzaffar Garh,Muzaffar Garh,True
+2902,urban,3,Bahawalnagar; Bahawalpur; Rahim Yar Khan,BAHAWALPUR,False
+2911,rural,1,Bahawalpur,Bahawalpur,True
+2921,rural,1,Bahawalnagar,Bahawalnagar,True
+2931,rural,1,Rahim Yar Khan,Rahim Yar Khan,True
+3102,urban,5,Jacobabad; Kashmore; Larkana; Shahdadkot; Shikarpur,LARKANA,False
+3111,rural,1,Jacobabad,Jacobabad,True
+3121,rural,1,Kashmore,Kashmore,True
+3131,rural,1,Shikarpur,Shikarpur,True
+3141,rural,1,Larkana,Larkana,True
+3151,rural,1,Shahdadkot,Shahdadkot,True
+3202,urban,3,Ghotki; Khairpur; Sukkur,SUKKUR,False
+3211,rural,1,Sukkur,Sukkur,True
+3221,rural,1,Ghotki,Ghotki,True
+3231,rural,1,Khairpur,Khairpur,True
+3302,urban,9,Badin; Dadu; Hyderabad; Jamshoro; Matiari; Sujawal; Tando Allah Yar; Tando Muhammad Khan; Thatta,HYDERABAD,False
+3311,rural,1,Dadu,Dadu,True
+3321,rural,1,Jamshoro,Jamshoro,True
+3331,rural,1,Hyderabad,Hyderabad,True
+3341,rural,1,Tando Allah Yar,Tando Allah Yar,True
+3351,rural,1,Tando Muhammad Khan,Tando Muhammad Khan,True
+3361,rural,1,Matiari,Matiari,True
+3371,rural,1,Badin,Badin,True
+3381,rural,1,Thatta,Thatta,True
+3391,rural,1,Sujawal,Sujawal,True
+3402,urban,3,Mir Pur Khas; Tharparkar; Umer Kot,MIRPUR KHAS,False
+3411,rural,1,Mir Pur Khas,Mir Pur Khas,True
+3421,rural,1,Umer Kot,Umer Kot,True
+3431,rural,1,Tharparkar,Tharparkar,True
+3502,urban,6,Karachi Central; Karachi East; Karachi Malir; Karachi South; Karachi West; Korangi District,KARACHI,False
+3511,rural,1,Karachi West,Karachi West,True
+3521,rural,1,Karachi Malir,Karachi Malir,True
+3531,rural,1,Karachi South,Karachi South,True
+3541,rural,1,Karachi East,Karachi East,True
+3551,rural,1,Karachi Central,Karachi Central,True
+3561,rural,1,Korangi District,Korangi District,True
+3602,urban,3,Nawabshah; Nowshero Feroze; Sanghar,Shaheed Benazirabad,False
+3611,rural,1,Nowshero Feroze,Nowshero Feroze,True
+3621,rural,1,Nawabshah,Nawabshah,True
+3631,rural,1,Sanghar,Sanghar,True
+4101,rural,5,Chaghai; Nushki; Pishine; Qilla Abdullah; Quetta,Quetta,False
+4102,urban,5,Chaghai; Nushki; Pishine; Qilla Abdullah; Quetta,QUETTA,False
+4201,rural,6,Barkhan; Loralai; Musa Khel; Qilla Saifullah; Sherani; Zhob,Zhob,False
+4202,urban,6,Barkhan; Loralai; Musa Khel; Qilla Saifullah; Sherani; Zhob,ZHOB,False
+4301,rural,6,Dera Bugti; Harnai; Kohlu; Lehri; Sibbi; Ziarat,Sibbi,False
+4302,urban,6,Dera Bugti; Harnai; Kohlu; Lehri; Sibbi; Ziarat,SIBBI,False
+4401,rural,5,Bolan/ Kachhi; Jaffarabad; Jhal Magsi; Nasirabad; Sohbatpur,Nasirabad,False
+4402,urban,5,Bolan/ Kachhi; Jaffarabad; Jhal Magsi; Nasirabad/ Tamboo; Sohbatpur,NASIRABAD,False
+4501,rural,7,Awaran; Kalat; Kharan; Khuzdar; Lasbela; Mastung; Washuk,Kalat,False
+4502,urban,7,Awaran; Kalat; Kharan; Khuzdar; Lasbela; Mastung; Washuk,KALAT,False
+4601,rural,3,Gwader; Ketch/Turbat; Panjgoor,Mekran,False
+4602,urban,3,Gwader; Ketch/Turbat; Panjgoor,MEKRAN,False
+6102,urban,1,Islamabad,ISLAMABAD,True
+6111,rural,1,ISLAMABAD,ISLAMABAD,True
+7101,rural,4,Ghizer; Gilgit; Hunza; Nager,Gilgit,False
+7102,urban,4,Ghizer; Gilgit; Hunza; Nager,Gilgit,False
+7201,rural,4,Biltistan; Ghanche; Kaharmang; Shigar,Biltistan,False
+7202,urban,4,Biltistan; Ghanche; Kaharmang; Shigar,Biltistan,False
+7301,rural,2,Astore; Diamir,Astore,False
+7302,urban,2,Astore; Diamir,Astore,False
+8101,rural,3,Hattian Bala; Muzaffarabad; Neelum,Muzaffarabad,False
+8102,urban,3,Hattian Bala; Muzaffarabad; Neelum,Muzaffarabad,False
+8201,rural,4,Bagh; Haveli; Rawalakot/ponch; Sudhnoti,Rawalakot,False
+8202,urban,4,Bagh; Haveli; Rawalakot/ponch; Sudhnoti,Rawalakot,False
+8301,rural,3,Bhimber; Kotli; Mirpur,MIRPUR,False
+8302,urban,3,Bhimber; Kotli; Mirpur,MIRPUR,False

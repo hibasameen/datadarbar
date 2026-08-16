@@ -1790,75 +1790,141 @@ def load_lfs_2025(lfs_dir, census_pop=None):
 
 # ── HIES 2024-25 ──────────────────────────────────────────────────────────
 
-# HIES prcode: 8 digits = division(2) + district(2) + PSU(4).
-# District code = first 4 digits.  Within-division suffixes: 02, 11, 21, 31, …
-_HIES_CODE_SUFFIXES = [2, 11, 21, 31, 41, 51, 61, 71, 81, 91]
+# HIES 2024-25 P-code: 8 digits = province(1) + district-or-division(2) +
+# stratum(1) + PSU(4).  The first FOUR digits identify the sampling stratum.
+#
+# Position IV is the STRATUM, not a district serial:
+#     1 = rural  → positions II-III identify a DISTRICT
+#     2 = urban  → positions II-III identify a DIVISION only
+#
+# So `2721` is rural Multan, while `2702` is the whole urban stratum of Multan
+# division (Vehari, Multan, Lodhran and Khanewal together).  HIES 2024-25 carries
+# NO district identifier for urban households.  That is a property of the survey
+# and cannot be recovered by a better crosswalk, so urban codes are suppressed
+# rather than guessed at.
+#
+# The mapping is read from PBS's own coding scheme rather than reconstructed.
+# Previously this file rebuilt it from a hand-written division→district ordering,
+# which was off by one position on every rural district and collapsed each
+# division's entire urban stratum onto whichever district happened to be listed
+# first.  An audit against the 158 P-code prefixes present in weight.dta found 5
+# correct and 153 wrong, covering about 97 per cent of households.
 
-# Division → [normalised GeoJSON district names, in coding-scheme order]
-# Built from HIES coding scheme XLS (BIFF8 extraction) and administrative geography.
-_HIES_DIVISION_DISTRICTS = {
-    # KP
-    11: ["chitral", "upper dir", "lower dir", "swat", "shangla", "buner", "malakand", "bajaur agency",
-         "chitral", None],  # pos 9=Upper Chitral→same polygon, pos 10=unknown
-    12: ["kohistan", "mansehra", "batagram", "abbottabad", "haripur", "tor ghar",
-         "kohistan", "kohistan", None, None],  # 7-8 = Lower/Upper Kohistan → same polygon
-    13: ["mardan", "swabi", None],
-    14: ["charsadda", "peshawar", "nowshera", "khyber agency", "mohmand agency", None],
-    15: ["kohat", "hangu", "karak", "kurram agency", "orakzai agency", None],
-    16: ["bannu", "lakki marwat", "north waziristan agency"],
-    17: ["dera ismail khan", "tank", "south waziristan agency"],
-    # Punjab
-    21: ["attock", "rawalpindi", "jhelum", "chakwal", None],
-    22: ["sargodha", "bhakkar", "khushab", "mianwali", None],
-    23: ["faisalabad", "chiniot", "jhang", "toba tek singh", None],
-    24: ["gujranwala", "hafizabad", "gujrat", "mandi bahauddin", "sialkot", "narowal", None],
-    25: ["lahore", "kasur", "sheikhupura", "nankana sahib", None],
-    26: ["okara", "sahiwal", "pakpattan", None],
-    27: ["vehari", "multan", "lodhran", "khanewal", None],
-    28: ["dera ghazi khan", "rajanpur", "layyah", "muzaffargarh", None],
-    29: ["bahawalpur", "bahawalnagar", "rahim yar khan", None],
-    # ICT
-    61: ["islamabad", "islamabad"],  # rural Islamabad → same polygon
-    # Sindh
-    31: ["jacobabad", "kashmore", "shikarpur", "larkana", "kambar shahdadkot", None],
-    32: ["sukkur", "ghotki", "khairpur", None],
-    33: ["dadu", "jamshoro", "hyderabad", "tando allah yar", "tando muhammad khan",
-         "matiari", "badin", "thatta", "sajawal", None],
-    34: ["mirpurkhas", "umerkot", "tharparkar", "sanghar"],
-    35: ["karachi", "karachi", "karachi", "karachi", "karachi", "karachi"],
-    36: ["naushehro feroze", "shaheed benazirabad", "sanghar", None],
-    # Balochistan
-    41: ["quetta", "pishin", "killa abdullah", "chaghi", "nushki"],
-    42: ["loralai", "barkhan", "musakhail", "killa saifullah", "zhob", "sherani", None],
-    43: ["sibi", "harnai", "ziarat", "kohlu", "dera bugti", "sibi"],  # pos 5 = Lehri → merged into Sibi
-    44: ["kachhi", "jaffarabad", "nasirabad", "jhal magsi", "sohbatpur", None],
-    # NOTE: If HIES uses post-reorganisation codes, kharan & washuk moved to div 47
-    # (Rakhshan), so div 45 positions may have shifted.  Keeping old mapping for
-    # backward compatibility; if lasbela still missing after div 47 fix, try moving
-    # lasbela to position 4 (code 4541) in this list.
-    45: ["kalat", "mastung", "khuzdar", "awaran", "kharan", "washuk", "lasbela", None, None],
-    46: ["kech", "gwadar", "panjgur", None],
-    # Division 47 = Rakhshan Division (est. 2017, carved from Kalat + Quetta divs)
-    # Districts: Kharan (HQ), Washuk, Chagai, Nushki
-    # NOTE: Chagai & Nushki may ALSO appear under div 41 (old Quetta coding).
-    # The pipeline deduplicates via _MERGED_DISTRICTS or last-write-wins.
-    # District ordering within division is a best guess — verify against
-    # HIES coding scheme XLS if available.
-    47: ["kharan", "washuk", "chaghi", "nushki", None],
-    # Division 48 = Loralai Division (est. 2021, carved from Zhob div)
-    # Districts: Loralai (HQ), Barkhan, Musakhail, Duki (→ merged into Loralai polygon)
-    # NOTE: Loralai may ALSO appear under div 42 (old Zhob coding).
-    48: ["loralai", "barkhan", "musakhail", "loralai", None],  # pos 3 = Duki → merged into Loralai
+_HIES_CODING_SCHEME = "Coding-HIES-2024-25.xls"
+_HIES_CROSSWALK_CSV = "hies2425_pcode_district_crosswalk.csv"
+
+# Scheme spellings that differ from the GeoJSON keys, after norm().
+_HIES_NAME_FIXES = {
+    "bonair": "buner", "manshera": "mansehra", "tor garh": "tor ghar",
+    "charsada": "charsadda", "nowsehra": "nowshera", "d i khan": "dera ismail khan",
+    "jehlum": "jhelum", "bhakhar": "bhakkar", "t t singh": "toba tek singh",
+    "mandi bahuddin": "mandi bahauddin", "d g khan": "dera ghazi khan",
+    "muzaffar garh": "muzaffargarh", "mir pur khas": "mirpurkhas",
+    "nawabshah": "shaheed benazirabad", "nowshero feroze": "naushehro feroze",
+    "pakpatten": "pakpattan", "shahdadkot": "kambar shahdadkot",
+    "korangi district": "korangi", "khyber": "khyber agency",
+    "mohmand": "mohmand agency", "kurram": "kurram agency",
+    "orakzai": "orakzai agency", "bajaur": "bajaur agency",
+    "north waziristan": "north waziristan agency",
+    "south waziristan": "south waziristan agency",
+    "pishine": "pishin", "qilla abdullah": "killa abdullah",
+    "qilla saifullah": "killa saifullah", "musa khel": "musakhail",
+    "chaghai": "chaghi", "sibbi": "sibi", "bolan kachhi": "kachhi",
+    "ketch turbat": "kech", "gwader": "gwadar", "panjgoor": "panjgur",
+    "biltistan": "skardu", "kaharmang": "kharmang", "nager": "nagar",
+    "rawalakot ponch": "poonch", "sudhnoti": "sudhnutti",
 }
 
-def _build_hies_crosswalk():
-    """Build HIES 4-digit district code → normalised GeoJSON name crosswalk."""
-    xwalk = {}
-    for div_code, districts in _HIES_DIVISION_DISTRICTS.items():
-        for i, dist_name in enumerate(districts):
-            if i < len(_HIES_CODE_SUFFIXES):
-                hies_code = div_code * 100 + _HIES_CODE_SUFFIXES[i]
-                xwalk[hies_code] = dist_name  # None = skip
+
+def _read_hies_scheme(hies_dir):
+    """Parse PBS's HIES 2024-25 coding scheme into division rosters.
+
+    Returns { (province, division, stratum): [district names, in scheme order] }
+    where stratum is 1 for rural and 2 for urban.
+    """
+    from pathlib import Path
+
+    hies_dir = Path(hies_dir)
+    xls = hies_dir / _HIES_CODING_SCHEME
+    if not xls.exists():
+        raise FileNotFoundError(
+            f"HIES coding scheme not found at {xls}. Refusing to guess the "
+            "district crosswalk; the previous hand-written one was wrong for "
+            "about 97 per cent of households."
+        )
+    import xlrd
+
+    rosters, seen = {}, {}
+    book = xlrd.open_workbook(str(xls))
+    for sheet in book.sheets():
+        for r in range(2, sheet.nrows):
+            row = [str(c.value).strip() for c in sheet.row(r)]
+            if len(row) < 8 or not re.match(r"^\d{4}qi$", row[7]):
+                continue
+            code = row[7][:4]
+            prov, div, stratum = int(code[0]), int(code[1]), int(code[3])
+            name = (row[2] or row[1]).strip()
+            if not name:
+                continue
+            key = (prov, div, stratum)
+            roster = rosters.setdefault(key, [])
+            if name.lower() not in seen.setdefault(key, set()):
+                seen[key].add(name.lower())
+                roster.append(name)
+    return rosters
+
+
+def _build_hies_crosswalk(hies_dir):
+    """Build HIES 2024-25 P-code prefix → normalised GeoJSON district key.
+
+    The P-code is province(1) + division(1) + district(1) + stratum(1) + PSU(4),
+    so the first four digits identify the sampling stratum.  Position III is the
+    district's serial position within its division and position IV is the
+    stratum, 1 for rural and 2 for urban.
+
+    A serial of 0 means the stratum does not resolve to a district.  Every urban
+    stratum in the country is coded that way, as are the rural strata of
+    Balochistan, Gilgit-Baltistan and Azad Kashmir.  Those households are
+    dropped rather than assigned, because HIES 2024-25 simply does not record
+    which district they are in.
+
+    Where the scheme prints explicit serials — KP, Punjab, Sindh and ICT — the
+    serial matches the district's position in that division's listing.  The
+    microdata additionally carries non-zero serials for Balochistan, GB and AJK,
+    which the scheme leaves at 0; those are resolved by extending the same rule
+    and are reported separately so they can be suppressed if that inference is
+    not wanted.
+    """
+    rosters = _read_hies_scheme(hies_dir)
+    xwalk, inferred = {}, set()
+
+    for (prov, div, stratum), roster in rosters.items():
+        for serial, raw in enumerate(roster, start=1):
+            code = prov * 1000 + div * 100 + serial * 10 + stratum
+            key = norm(raw)
+            key = _HIES_NAME_FIXES.get(key, key)
+            resolved = apply_crosswalk(key)
+            if stratum != 1:
+                continue
+            xwalk.setdefault(code, resolved)
+            if len(roster) > 1 and prov >= 4:
+                inferred.add(code)
+
+        # The stratum's own division-level code, serial 0: not assignable.
+        xwalk[prov * 1000 + div * 100 + stratum] = None
+
+    # Divisions created after the coding scheme was written are not in it and
+    # are deliberately left unmapped rather than guessed at.  As of the 2024-25
+    # microdata these are Balochistan division 7 (Rakhshan: Kharan, Washuk,
+    # Chagai, Nushki, est. 2017) and division 8 (Loralai: Loralai, Barkhan,
+    # Musakhail, Duki, est. 2021), plus KP serials 1191 (probably Upper Chitral)
+    # and 1271/1281/1291 (probably the three Kohistans).  Together about 730
+    # households, 2.4 per cent of the sample.  Districts reached only through
+    # those codes will carry no HIES fields, which is the intended failure.
+    n = sum(1 for v in xwalk.values() if v)
+    print(f"  HIES crosswalk: {n} rural district strata mapped "
+          f"({len(inferred)} by extending the serial rule to Balochistan/GB/AJK); "
+          f"urban strata carry no district identifier and are dropped")
     return xwalk
 
 
@@ -1882,14 +1948,16 @@ def load_hies(hies_dir, census_pop=None):
     import numpy as np
 
     prefix = "hies_"
-    xwalk = _build_hies_crosswalk()
-    mapped = sum(1 for v in xwalk.values() if v is not None)
-    print(f"  HIES crosswalk: {mapped} codes mapped")
+    xwalk = _build_hies_crosswalk(hies_dir)
 
     # ── Load weights ──
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
     w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
     w["dk"] = w["dist_code"].map(xwalk)
+    _unknown = sorted(c for c in w["dist_code"].unique() if c not in xwalk)
+    if _unknown:
+        print(f"  ⚠ HIES: {len(_unknown)} strata present in the data but absent "
+              f"from the coding scheme, dropped: {_unknown}")
 
     # ── Diagnostic: show all district codes and mapping status ──
     all_codes = sorted(w["dist_code"].unique())
@@ -1920,26 +1988,62 @@ def load_hies(hies_dir, census_pop=None):
     hh_size["dk"] = hh_size["dist_code"].map(xwalk)
 
     # ── Consumption expenditure ──
+    # Section 6 records four value columns per item, all of which are consumption:
+    #   v1 paid & consumed, v2 wages/salaries in kind, v3 own produced & consumed,
+    #   v4 received as assistance/gift/dowry/inheritance.
+    # Reading v1 alone drops in-kind and own-produced consumption, which is
+    # concentrated in rural and farming households.
+    VCOLS = ["v1", "v2", "v3", "v4"]
     exp = pd.read_stata(str(hies_dir / "sec_6a_consum_exp.dta"), convert_categoricals=False,
-                        columns=["prcode", "hhno", "itc", "v1"])
+                        columns=["prcode", "hhno", "itc"] + VCOLS)
     exp["dist_code"] = exp["prcode"].astype(str).str[:4].astype(int)
     exp["dk"] = exp["dist_code"].map(xwalk)
-    # Food (itc=1000), Non-food frequent (itc=2000), Non-food infrequent (itc=5000)
-    food_exp = exp[exp["itc"] == 1000].groupby(["prcode", "hhno"])["v1"].sum().reset_index(name="food_monthly")
-    nonfood_exp = exp[exp["itc"] == 2000].groupby(["prcode", "hhno"])["v1"].sum().reset_index(name="nonfood_monthly")
-    annual_exp = exp[exp["itc"] == 5000].groupby(["prcode", "hhno"])["v1"].sum().reset_index(name="annual_items")
+    exp["value"] = exp[VCOLS].fillna(0).sum(axis=1)
 
-    hh_exp = food_exp.merge(nonfood_exp, on=["prcode", "hhno"], how="outer")
-    hh_exp = hh_exp.merge(annual_exp, on=["prcode", "hhno"], how="outer")
+    # itc < 10000 are PBS's section totals; itc >= 10000 are COICOP items.
+    # The five section totals partition the item rows exactly (household-level
+    # ratio of their sum to the item sum has median 1.000), so they must never
+    # be summed alongside the items, and 1000 is not "food": it is 2.2 per cent
+    # of the total, whereas COICOP division 01 is the food block.
+    _SECTION_TOTALS = [1000, 2000, 4000, 5000, 6000]
+    blocks = (exp[exp["itc"].isin(_SECTION_TOTALS)]
+              .pivot_table(index=["prcode", "hhno"], columns="itc", values="value", aggfunc="sum")
+              .reindex(columns=_SECTION_TOTALS).fillna(0).reset_index())
+    blocks.columns = ["prcode", "hhno"] + [f"exp_block_{c}" for c in _SECTION_TOTALS]
+
+    items = exp[exp["itc"] >= 10000].copy()
+    items["coicop"] = items["itc"] // 10000
+    food = (items[items["coicop"] == 1].groupby(["prcode", "hhno"])["value"]
+            .sum().reset_index(name="food_raw"))
+    all_items = (items.groupby(["prcode", "hhno"])["value"]
+                 .sum().reset_index(name="items_raw"))
+
+    hh_exp = blocks.merge(all_items, on=["prcode", "hhno"], how="outer")
+    hh_exp = hh_exp.merge(food, on=["prcode", "hhno"], how="left")
     hh_exp = hh_exp.merge(hh_size[["prcode", "hhno", "hh_size", "dk"]], on=["prcode", "hhno"], how="left")
     hh_exp = hh_exp.merge(w[["prcode", "weight"]], on="prcode", how="left")
-    hh_exp["food_monthly"] = hh_exp["food_monthly"].fillna(0)
-    hh_exp["nonfood_monthly"] = hh_exp["nonfood_monthly"].fillna(0)
-    hh_exp["annual_items"] = hh_exp["annual_items"].fillna(0)
-    # Total annual expenditure = (food + nonfood_frequent) × 12 + annual_items
-    hh_exp["total_annual"] = (hh_exp["food_monthly"] + hh_exp["nonfood_monthly"]) * 12 + hh_exp["annual_items"]
-    hh_exp["food_annual"] = hh_exp["food_monthly"] * 12
-    hh_exp["per_capita_monthly"] = (hh_exp["food_monthly"] + hh_exp["nonfood_monthly"]) / hh_exp["hh_size"].clip(lower=1)
+    for c in [f"exp_block_{c}" for c in _SECTION_TOTALS] + ["items_raw", "food_raw"]:
+        hh_exp[c] = hh_exp[c].fillna(0)
+
+    # NOT YET DERIVABLE: a per-capita consumption level or a food share.
+    #
+    # Section 6 mixes recall periods — Part C is "last 1 month", Parts D and E
+    # are "last 1 year" — and which section total covers which part has not been
+    # established from the questionnaire.  Summing the blocks raw mixes monthly
+    # and annual money; annualising the wrong ones inflates them twelvefold.
+    #
+    # The previous code did the latter: it treated 1000 and 2000 as monthly and
+    # 5000 as annual, multiplied the first two by twelve, and dropped 4000 and
+    # 6000 entirely.  Its per-capita figure was built from 6.6 per cent of
+    # recorded consumption and its food share from a block that is not food.
+    #
+    # Rather than replace one unverified assumption with another, the raw block
+    # totals ship as fields and the derived levels are withheld.  To finish this:
+    # extract the item codes listed under Parts C, D and E from
+    # Male-Questionnaire-HIES-2024-25-English.pdf, tag each COICOP item with its
+    # recall period, annualise on that basis, and check the resulting mean
+    # against PBS's published HIES 2024-25 household expenditure table.
+    hh_exp["per_capita_monthly"] = None
 
     # ── FIES food insecurity (8 questions, yes=1) ──
     fies = pd.read_stata(str(hies_dir / "sec_05m4_fies.dta"), convert_categoricals=False,
@@ -1997,7 +2101,12 @@ def load_hies(hies_dir, census_pop=None):
     for dk in set(hh_exp["dk"].dropna().unique()) | set(fies["dk"].dropna().unique()):
         if not dk:
             continue
-        d = {}
+        # Every HIES 2024-25 district estimate is now rural-only, because the
+        # survey has no urban district identifier.  Districts that are entirely
+        # urban (Lahore, the Karachi cores, urban Islamabad) return nothing at
+        # all, which is correct.  The flag travels with the data so that no
+        # consumer mistakes these for whole-district figures.
+        d = {f"{prefix}coverage": "rural_only"}
 
         # Count households for sample-size check
         n_hh = len(hh_exp[hh_exp["dk"] == dk])
@@ -2009,12 +2118,18 @@ def load_hies(hies_dir, census_pop=None):
         de = hh_exp[hh_exp["dk"] == dk]
         if len(de) > 0:
             wt = de["weight"].fillna(1) * cal
-            d[f"{prefix}median_monthly_percapita"] = round(de["per_capita_monthly"].median(), 0)
-            d[f"{prefix}mean_monthly_percapita"] = round(
-                (de["per_capita_monthly"] * wt).sum() / wt.sum(), 0)
-            total_food = (de["food_annual"] * wt).sum()
-            total_exp = (de["total_annual"] * wt).sum()
-            d[f"{prefix}food_share"] = round(total_food / total_exp * 100, 1) if total_exp else None
+            # Withheld pending the recall-period work described above.  Emitted
+            # as None so downstream consumers see a gap rather than a number.
+            d[f"{prefix}median_monthly_percapita"] = None
+            d[f"{prefix}mean_monthly_percapita"] = None
+            d[f"{prefix}food_share"] = None
+            d[f"{prefix}consumption_basis"] = "unverified_recall"
+            # Raw section totals, in the survey's own units, for the rebuild.
+            for c in _SECTION_TOTALS:
+                col = f"exp_block_{c}"
+                d[f"{prefix}{col}"] = round((de[col] * wt).sum() / wt.sum(), 0)
+            d[f"{prefix}exp_items_total"] = round((de["items_raw"] * wt).sum() / wt.sum(), 0)
+            d[f"{prefix}exp_items_food_coicop01"] = round((de["food_raw"] * wt).sum() / wt.sum(), 0)
             d[f"{prefix}avg_hh_size"] = round((de["hh_size"] * wt).sum() / wt.sum(), 1)
 
         # FIES
@@ -2080,7 +2195,7 @@ def load_hies_ict(hies_dir, census_pop=None):
     import pandas as pd
 
     prefix = "hies_ict_"
-    xwalk = _build_hies_crosswalk()
+    xwalk = _build_hies_crosswalk(hies_dir)
 
     # Load weights
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
@@ -2175,7 +2290,7 @@ def load_hies_housing_quality(hies_dir, census_pop=None):
     import pandas as pd
 
     prefix = "hies_hq_"
-    xwalk = _build_hies_crosswalk()
+    xwalk = _build_hies_crosswalk(hies_dir)
 
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
     w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
@@ -2277,7 +2392,7 @@ def load_hies_waste(hies_dir, census_pop=None):
     import pandas as pd
 
     prefix = "hies_waste_"
-    xwalk = _build_hies_crosswalk()
+    xwalk = _build_hies_crosswalk(hies_dir)
 
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
     w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
@@ -2364,7 +2479,7 @@ def load_hies_decisions(hies_dir, census_pop=None):
     import pandas as pd
 
     prefix = "hies_wdm_"
-    xwalk = _build_hies_crosswalk()
+    xwalk = _build_hies_crosswalk(hies_dir)
 
     w = pd.read_stata(str(hies_dir / "weight.dta"), convert_categoricals=False)
     w["dist_code"] = w["prcode"].astype(str).str[:4].astype(int)
