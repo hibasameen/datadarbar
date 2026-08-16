@@ -1102,17 +1102,28 @@ function showDistrictDetail(props) {
   // The value is honest; what it covers has to be visible next to it, or it
   // reads as a district estimate the survey never made.
   if (!notSurveyed) {
+    // NB: read `row`, not `props`. `props` is the GeoJSON feature's own
+    // properties (name, province, shape metadata); the indicator values and
+    // their provenance flags live in the districts.json row.
+    //
     // Flags are written per source family (hies_, pslm_, dhs_ …) while group
     // prefixes can be narrower (hies_wdm, pslm_digital), so match on the
     // family root rather than the full prefix.
     const family = (g.prefix || '').split('_')[0];
-    if (props[`${family}_coverage`] === 'karachi_citywide') {
+    if (row[`${family}_coverage`] === 'karachi_citywide') {
       html += `<div class="stat stat-notice">Karachi city-wide. The PDHS 2017-18 sample frame predates Karachi's split into seven districts, so the same figure covers all seven. The sample size shown is the city's.</div>`;
     }
-    const from = props[`${family}_inherited_from`];
+    const from = row[`${family}_inherited_from`];
     if (from) {
       const nice = from.replace(/\b\w/g, c => c.toUpperCase());
       html += `<div class="stat stat-notice">Figures shown are ${nice}'s. This district was created after the survey's sample frame was drawn, so it has no separate estimate. The sample size shown is ${nice}'s.</div>`;
+    }
+    // Census groups carry the flag under their own prefix (t1_, t_edu_ …),
+    // which is not the family root, so check the full prefix here.
+    const pair = row[`${g.prefix}_boundary_change`];
+    if (pair) {
+      const nice = pair.replace(/\b\w/g, c => c.toUpperCase());
+      html += `<div class="stat stat-notice">Boundary changed since 2017: this district and ${nice} were one area at the last census. The 2017 figure covers both and is shown on each, and the change is measured across the combined area — so don't add the two 2017 columns together.</div>`;
     }
   }
 

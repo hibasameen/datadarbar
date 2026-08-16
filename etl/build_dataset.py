@@ -2946,6 +2946,85 @@ def _inherit_from_parent_district(data):
     return data
 
 
+# Districts split off after Census 2017, mapped to the district they came from.
+# Their 2017 and 2023 boundaries are not comparable, so a naive 2023-2017 diff
+# reads the boundary change as real change. See _fix_boundary_change_pairs().
+_BOUNDARY_PAIRS = {"keamari": "karachi west"}
+
+_RATE_RE = re.compile(
+    r"(ratio|rate|pct|percent|proportion|avg_|average|density|_per_|_size)")
+
+
+def _is_rate_field(key):
+    """True for fields that must not be summed when combining two districts."""
+    return bool(_RATE_RE.search(key))
+
+
+def _fix_boundary_change_pairs(data):
+    """Make the 2017-2023 comparison honest where a district was split.
+
+    Keamari was carved out of Karachi West in 2020. Census 2017 therefore has
+    no Keamari row, and Karachi West's 2017 population (3,907,065) covers the
+    area that is now both districts. Differenced naively against Karachi West's
+    2023 population alone (2,679,380) that reads as a loss of 1.23 million
+    people and 559 km2 — the largest population decline anywhere on the site,
+    and entirely an artefact of the boundary moving. The combined area actually
+    grew by 840,766, or 21.5 per cent.
+
+    Census 2023 does measure the two separately and correctly, so those figures
+    are left alone. Only the 2017 fields and the derived diffs are treated as
+    belonging to the combined unit:
+
+      * the child inherits the parent's 2017 row, which already describes the
+        combined pre-split area;
+      * both districts' diffs are recomputed against the combined 2023 total,
+        summing counts and recomputing rates from those sums;
+      * both carry `<family>_boundary_change` naming the counterpart, so the
+        shared figure is visible rather than implied.
+
+    A reader must not sum the 2017 column across the pair — it is one figure
+    shown twice, which is what the flag is there to signal.
+    """
+    for child, parent in _BOUNDARY_PAIRS.items():
+        if child not in data or parent not in data:
+            continue
+        c, p = data[child], data[parent]
+
+        # 1. The child's 2017 row is the parent's: one pre-split area.
+        for k, v in list(p.items()):
+            if "_2017_" in k and c.get(k) is None:
+                c[k] = v
+
+        # 2. Combine 2023, then diff both against the shared 2017 baseline.
+        families = {k.split("_2017_")[0] for k in p if "_2017_" in k}
+        for fam in families:
+            k17 = [k for k in p if k.startswith(f"{fam}_2017_")]
+            for k in k17:
+                suffix = k.split("_2017_", 1)[1]
+                k23 = f"{fam}_2023_{suffix}"
+                a, b = c.get(k23), p.get(k23)
+                if a is None or b is None or p.get(k) is None:
+                    continue
+                if _is_rate_field(suffix):
+                    # Weight by 2023 population; fall back to a plain mean.
+                    wa = c.get("t1_2023_pop_total") or 0
+                    wb = p.get("t1_2023_pop_total") or 0
+                    combined = ((a * wa + b * wb) / (wa + wb)
+                                if (wa + wb) else (a + b) / 2)
+                else:
+                    combined = a + b
+                diff = round(combined - p[k], 4)
+                c[f"{fam}_diff_{suffix}"] = diff
+                p[f"{fam}_diff_{suffix}"] = diff
+            if k17:
+                c[f"{fam}_boundary_change"] = parent
+                p[f"{fam}_boundary_change"] = child
+
+        print(f"  {child}/{parent}: split since Census 2017 — 2017 row shared "
+              f"and change recomputed on the combined area")
+    return data
+
+
 def merge_into(target, source, valid_keys=None, label=None):
     """Merge source dict-of-dicts into target dict-of-dicts.
 
@@ -3265,6 +3344,11 @@ def main():
 
     # ── Compute diffs ────────────────────────────────────────────────────
     compute_diffs(data)
+
+    # Districts split since Census 2017 need their diffs recomputed on the
+    # combined area; must run after compute_diffs, which would otherwise leave
+    # the boundary change showing as real change.
+    _fix_boundary_change_pairs(data)
 
     # ── Add GeoJSON metadata & match report ──────────────────────────────
     matched, unmatched_csv, unmatched_geo = 0, [], []

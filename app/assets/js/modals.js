@@ -191,6 +191,14 @@
         carried across all seven districts flagged <code>karachi_citywide</code>. Without it, roughly 20
         million people would have no health indicators at all — and until this build they did, because the
         single "Karachi" row silently failed to match any of the seven keys.</li>
+      <li><strong>Keamari and Karachi West, 2017 vs 2023.</strong> Keamari did not exist at the 2017
+        census, and Karachi West's 2017 population of 3.91 million covers the area that is now both
+        districts. Differencing that against Karachi West's 2023 figure alone produced an apparent loss of
+        1.23 million people and 559&nbsp;km² — which was the largest population decline anywhere on the
+        site, and was purely the boundary moving. Census 2023 does measure the two separately and those
+        figures stand; only the 2017 row and the change are treated as belonging to the combined area, so
+        both districts now show <strong>+21.5%</strong> and carry a boundary-change note. The 2017 figure
+        is one number displayed on both, so the two 2017 columns must not be added together.</li>
       <li><strong>Keamari inherits from Karachi West.</strong> Keamari was carved out of Karachi West in
         2020 and appears in Census 2023 with 2.07 million people, but in none of the survey frames — PSLM
         2019-20, both Labour Force Surveys and HIES 2024-25 all predate it or still count it as part of
