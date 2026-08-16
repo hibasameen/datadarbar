@@ -3,7 +3,7 @@
    Auto-counts a pageview on load; adds a few lightweight engagement events.
    GoatCounter skips localhost / file:// automatically, so local dev is not counted. */
 (function () {
-  var ENDPOINT = 'https://hibasameen.goatcounter.com/count';
+  var ENDPOINT = 'https://datadarbar.goatcounter.com/count';
 
   // Config object must exist before count.js loads.
   window.goatcounter = window.goatcounter || {};
