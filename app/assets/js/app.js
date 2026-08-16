@@ -1096,6 +1096,26 @@ function showDistrictDetail(props) {
     html += `<div class="stat stat-notice">Rural households only. HIES 2024-25 records no district identifier for urban households.</div>`;
   }
 
+  // Borrowed-geography notices. Some figures are real but describe a coarser
+  // or older geography than the district you clicked — Karachi before it was
+  // split into seven, or Karachi West before Keamari was carved out of it.
+  // The value is honest; what it covers has to be visible next to it, or it
+  // reads as a district estimate the survey never made.
+  if (!notSurveyed) {
+    // Flags are written per source family (hies_, pslm_, dhs_ …) while group
+    // prefixes can be narrower (hies_wdm, pslm_digital), so match on the
+    // family root rather than the full prefix.
+    const family = (g.prefix || '').split('_')[0];
+    if (props[`${family}_coverage`] === 'karachi_citywide') {
+      html += `<div class="stat stat-notice">Karachi city-wide. The PDHS 2017-18 sample frame predates Karachi's split into seven districts, so the same figure covers all seven. The sample size shown is the city's.</div>`;
+    }
+    const from = props[`${family}_inherited_from`];
+    if (from) {
+      const nice = from.replace(/\b\w/g, c => c.toUpperCase());
+      html += `<div class="stat stat-notice">Figures shown are ${nice}'s. This district was created after the survey's sample frame was drawn, so it has no separate estimate. The sample size shown is ${nice}'s.</div>`;
+    }
+  }
+
   for (const [ind, label] of Object.entries(g.indicators)) {
     const pct = isPctLabel(label);
     let val;

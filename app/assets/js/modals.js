@@ -179,11 +179,30 @@
       <strong>Chitral</strong> (Upper + Lower). Count indicators are summed; rate indicators (literacy,
       unemployment) are recomputed from aggregated numerator and denominator counts rather than averaging
       percentages, which would be incorrect.</p>
-    <p><strong>Karachi</strong> was previously aggregated this way but is now shown as its seven separate
-      districts — Karachi Central, East, South, West, Korangi, Malir and Keamari. Any source that reports
-      only a single "Karachi" row is therefore no longer mapped, rather than being attributed to one of the
-      seven arbitrarily. The pipeline reports such rows explicitly at build time instead of dropping them
-      quietly.</p>
+    <h4>Karachi, and districts younger than the surveys</h4>
+    <p><strong>Karachi</strong> was previously aggregated into one polygon but is now shown as its seven
+      separate districts — Karachi Central, East, South, West, Korangi, Malir and Keamari. That creates a
+      mismatch with sources whose geography predates the split, and two rules handle it. Both publish the
+      geography that was actually measured and label it, rather than discarding real data or implying a
+      district estimate the source never made.</p>
+    <ul>
+      <li><strong>Karachi city-wide.</strong> The PDHS 2017-18 sampling frame predates the split, so the
+        survey carries a single Karachi category (1,016 women in the family-planning module). This is
+        carried across all seven districts flagged <code>karachi_citywide</code>. Without it, roughly 20
+        million people would have no health indicators at all — and until this build they did, because the
+        single "Karachi" row silently failed to match any of the seven keys.</li>
+      <li><strong>Keamari inherits from Karachi West.</strong> Keamari was carved out of Karachi West in
+        2020 and appears in Census 2023 with 2.07 million people, but in none of the survey frames — PSLM
+        2019-20, both Labour Force Surveys and HIES 2024-25 all predate it or still count it as part of
+        Karachi West. It is the only district on the site with a census population and no survey data
+        whatsoever. Survey families it has nothing of its own for are filled from Karachi West and flagged
+        <code>&lt;source&gt;_inherited_from</code>. Its census figures are untouched, because the census
+        does count it separately.</li>
+    </ul>
+    <p>In both cases sample sizes travel unchanged and describe the parent geography — the city, or Karachi
+      West — which is what the flags are there to signal. The pipeline also checks every incoming row
+      against the boundary file and reports any that fail to match, so this class of silent loss surfaces
+      at build time rather than as an unexplained gap on the map.</p>
 
     <h4>Choropleth &amp; change</h4>
     <p>Values are mapped to fill colours using quantile breaks (5 classes) via

@@ -2848,6 +2848,101 @@ def load_pslm_digital(pslm_dir, census_pop=None):
 
 # ── Main builder ─────────────────────────────────────────────────────────────
 
+_KARACHI_DISTRICTS = ["karachi central", "karachi east", "karachi south",
+                      "karachi west", "keamari", "korangi", "malir"]
+
+
+def _spread_presplit_karachi(table, label=""):
+    """Carry a source's single "Karachi" record across all seven districts.
+
+    Karachi became seven districts partway through the period this site covers.
+    Sources whose geography predates the split — the PDHS 2017-18 sampling
+    frame, for instance — carry one Karachi category, and matching them against
+    the seven-district boundary file drops them entirely. That silently removed
+    all health indicators for roughly 20 million people, and is the same class
+    of failure as the HIES "karachi" key described on merge_into().
+
+    The rule adopted here: where the split would cost us the data, fall back to
+    Karachi as a whole and label it, rather than either discarding a real
+    sample or implying a district estimate the source never made. Each of the
+    seven districts shows the city-wide value with `<prefix>_coverage:
+    "karachi_citywide"`, so the geography actually measured travels with the
+    number. This mirrors how division-level HIES urban strata are handled.
+
+    Only rates and means are involved, so nothing is apportioned. Sample sizes
+    travel unchanged and are therefore the city's, not the district's — which
+    is why the coverage flag matters when reading them.
+    """
+    if "karachi" not in table:
+        return table
+    out = dict(table)
+    citywide = out.pop("karachi")
+    # Flag under the same prefix as the fields themselves (dhs_, hies_, …).
+    prefixes = {k.split("_", 1)[0] for k in citywide if "_" in k}
+    for dk in _KARACHI_DISTRICTS:
+        rec = dict(citywide)
+        for p in prefixes:
+            rec[f"{p}_coverage"] = "karachi_citywide"
+        out.setdefault(dk, {}).update(rec)
+    print(f"  {label or 'table'}: Karachi predates the district split — "
+          f"city-wide record carried across {len(_KARACHI_DISTRICTS)} districts "
+          f"(flagged karachi_citywide)")
+    return out
+
+
+# Districts created after the survey sampling frames were drawn, mapped to the
+# district they were carved out of. Applied only where the successor has no
+# data of its own for a given source; see _inherit_from_parent_district().
+_SUCCESSOR_DISTRICTS = {
+    # Keamari was carved out of Karachi West in 2020. It appears in Census
+    # 2023 (2.07m people) but in none of the survey frames — PSLM 2019-20,
+    # LFS 2020-21, LFS 2024-25 and HIES 2024-25 all predate it or still treat
+    # it as part of Karachi West. It is the only district on the site with a
+    # census population and no survey data whatsoever.
+    "keamari": "karachi west",
+}
+
+
+def _inherit_from_parent_district(data):
+    """Fill a successor district's empty survey fields from its parent.
+
+    Where a district was split off after a survey was fielded, the survey has
+    no record of it — not because it was missed, but because it did not exist.
+    Leaving it blank implies the data is absent when in fact the household was
+    surveyed, just counted under the parent's name.
+
+    Only families the successor has *nothing* for are filled, existing values
+    are never overwritten, and each inherited family carries
+    `<prefix>_inherited_from` naming the parent, so the substitution is visible
+    rather than implied. Census fields are untouched: the census does count
+    these districts separately and its figures are genuinely their own.
+
+    Note that sample sizes travel unchanged and describe the parent, which is
+    what the flag is there to signal.
+    """
+    families = ("hies_", "pslm_", "lfs21_", "lfs25_", "ec_", "dhs_")
+    for child, parent in _SUCCESSOR_DISTRICTS.items():
+        if child not in data or parent not in data:
+            continue
+        filled = []
+        for fam in families:
+            child_has = any(k.startswith(fam) and v is not None
+                            for k, v in data[child].items())
+            if child_has:
+                continue
+            inherited = {k: v for k, v in data[parent].items()
+                         if k.startswith(fam) and v is not None}
+            if not inherited:
+                continue
+            data[child].update(inherited)
+            data[child][f"{fam}inherited_from"] = parent
+            filled.append(f"{fam.rstrip('_')} ({len(inherited)})")
+        if filled:
+            print(f"  {child}: created after the survey frames were drawn — "
+                  f"inherited from {parent}: {', '.join(filled)}")
+    return data
+
+
 def merge_into(target, source, valid_keys=None, label=None):
     """Merge source dict-of-dicts into target dict-of-dicts.
 
@@ -3065,13 +3160,31 @@ def main():
 
     # PDHS 2017-18 (NIPS microdata) — health & demographic indicators.
     # Standalone module; see etl/dhs_district.py for methodology + source.
+    #
+    # The PDHS microdata is not redistributable and is not in the repo, so on
+    # most machines the directory below is absent. It used to be skipped
+    # silently, which meant a full rebuild quietly dropped all 24 dhs_* fields
+    # AND the 17 AJK/GB districts that only the PDHS reaches — the rebuild
+    # would write 130 districts where the site serves 147, with no warning.
+    # The computed output is committed as dhs_district_indicators.json, so fall
+    # back to it and rebuild from microdata only when the microdata is present.
     dhs_dir = PBS / "Microdata" / "DHS 2017-18"
+    dhs_cache = HERE / "dhs_district_indicators.json"
     if dhs_dir.exists():
         try:
             from dhs_district import compute as compute_dhs
             tables.append(("PDHS 2017-18", compute_dhs(dhs_dir)))
         except Exception as e:
             print(f"  WARNING: DHS 2017-18 failed: {e}")
+    elif dhs_cache.exists():
+        with open(dhs_cache, encoding="utf-8") as fh:
+            dhs_cached = json.load(fh)
+        print(f"  PDHS 2017-18: microdata not present, using cached "
+              f"{dhs_cache.name} ({len(dhs_cached)} districts)")
+        tables.append(("PDHS 2017-18 (cached)", dhs_cached))
+    else:
+        print("  WARNING: no PDHS microdata and no cached indicators — "
+              "24 dhs_* fields and the AJK/GB districts will be absent")
 
     # ── Merge ────────────────────────────────────────────────────────────
     # Every source key is checked against the GeoJSON district list. A table
@@ -3081,6 +3194,9 @@ def main():
     valid_keys = set(geo_index)
     all_orphans = {}
     for name, tbl in tables:
+        # Any source still keyed to pre-split Karachi is carried across the
+        # seven districts rather than dropped on the boundary mismatch.
+        tbl = _spread_presplit_karachi(tbl, label=name)
         orphans = merge_into(data, tbl, valid_keys=valid_keys, label=name)
         if orphans:
             all_orphans[name] = orphans
@@ -3140,6 +3256,9 @@ def main():
                     vals[f"t5_{year}_pct_urban"] = round(urban / total * 100, 2)
                 if rural is not None:
                     vals[f"t5_{year}_pct_rural"] = round(rural / total * 100, 2)
+
+    # ── Districts created after the survey frames were drawn ─────────────
+    _inherit_from_parent_district(data)
 
     # ── Compute diffs ────────────────────────────────────────────────────
     compute_diffs(data)
