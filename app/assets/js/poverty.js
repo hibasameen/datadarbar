@@ -280,7 +280,7 @@ async function drawGeometry() {
       lyr.bindTooltip(() => tooltipHtml(f.properties), { sticky: true, className: 'dd-tip' });
     },
   }).addTo(map);
-  map.fitBounds(layerGroup.getBounds(), { padding: [16, 16] });
+  map.fitBounds(layerGroup.getBounds(), { padding: [8, 8] });
 }
 
 function tooltipHtml(props) {
@@ -387,7 +387,7 @@ function renderLegend(breaks, scale, diverging, classColors) {
   h += `<div class="legend-labels"><span>${fmt(breaks[0], s.pct, s.dp)}</span><span>${fmt(breaks[breaks.length - 1], s.pct, s.dp)}</span></div>`;
   if (curLayer === 'mpi') h += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — suppressed</div>';
   if (curLayer === 'nl') h += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Uninhabited terrain — snow/sand albedo, not activity</div>';
-  if (curLayer === 'mouza') h += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> Urban tehsils are outside the rural frame; AJK and GB were not enumerated</div>';
+  if (curLayer === 'mouza') h += '<div class="legend-lown">Urban tehsils sit outside the rural frame; AJK and GB were not enumerated</div>';
   h += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> No data for this unit</div>';
   legendDiv.innerHTML = h;
 }
@@ -491,7 +491,13 @@ function doSearch(q) {
 
 // ── Init ────────────────────────────────────────────────────────────────────
 async function init() {
-  map = L.map('map', { zoomControl: true, attributionControl: false, minZoom: 4, maxZoom: 11 });
+  // zoomSnap defaults to 1, so fitBounds has to round DOWN to a whole zoom level and
+  // Pakistan landed at zoom 5 in a container that comfortably fits 5.9 — the country
+  // drew at about half size with the slack as empty margin. Fractional snapping lets
+  // the fit use the space it actually has. zoomDelta stays coarse so the +/- buttons
+  // and keyboard still move in useful steps rather than 0.1 at a time.
+  map = L.map('map', { zoomControl: true, attributionControl: false, minZoom: 4, maxZoom: 11,
+                       zoomSnap: 0.1, zoomDelta: 0.5 });
   DATA = window.DD_POV || await (await fetch(DATA_PATH)).json();
   // Mouza Census payload ships separately and is keyed on the same dd_id.
   if (window.DD_POV_MOUZA) {
@@ -531,7 +537,7 @@ async function init() {
     unitNameEl.textContent = 'Select an area';
     unitProvEl.textContent = '';
     statsDiv.innerHTML = '<p class="stats-placeholder">Click any area on the map to explore its data.</p>';
-    map.fitBounds(layerGroup.getBounds(), { padding: [16, 16] });
+    map.fitBounds(layerGroup.getBounds(), { padding: [8, 8] });
     render();
   });
   const mb = $('mobileControlToggle');
