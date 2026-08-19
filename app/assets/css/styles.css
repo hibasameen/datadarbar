@@ -938,3 +938,145 @@ select:focus, input:focus {
   .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
   .ranking-list { max-height: 180px; overflow-y: auto; }
 }
+
+/* ── "What is a mouza?" explainer view ─────────────────────────── */
+/* Takes over the map and detail columns. Controls that only make sense
+   against a map are hidden by body.explainer-mode rather than removed,
+   so switching back restores the previous selection untouched. */
+#explainer {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  overflow-y: auto;
+  background: var(--white);
+  min-height: 0;
+}
+#explainer[hidden] { display: none; }
+
+body.explainer-mode #map,
+body.explainer-mode .right-sidebar,
+body.explainer-mode [data-map-only] { display: none; }
+
+.explainer-inner {
+  max-width: 62ch;
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+  color: var(--slate-700);
+  font-size: 14.5px;
+  line-height: 1.72;
+}
+.explainer-inner h1 {
+  font-size: 27px;
+  line-height: 1.2;
+  margin: 0 0 12px;
+  color: var(--green-900);
+  letter-spacing: -0.015em;
+}
+.explainer-lede {
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--slate-600);
+  margin: 0 0 34px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--slate-200);
+}
+.explainer-inner h2 {
+  font-size: 17px;
+  margin: 36px 0 10px;
+  color: var(--green-800);
+  letter-spacing: -0.01em;
+}
+.explainer-inner h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 26px 0 6px;
+  color: var(--slate-600);
+}
+.explainer-inner p { margin: 0 0 14px; }
+.explainer-inner strong { color: var(--green-800); }
+
+/* Administrative ladder */
+.explainer-ladder {
+  margin: 20px 0 8px;
+  padding: 18px 20px;
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 6px;
+}
+.ladder-row {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  grid-template-areas: "n l" "n b";
+  column-gap: 14px;
+  padding: 5px 0;
+  align-items: center;
+}
+.ladder-n {
+  grid-area: n;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  font-size: 14px;
+  color: var(--slate-500);
+}
+.ladder-l { grid-area: l; font-size: 12.5px; color: var(--slate-600); }
+.ladder-l em { font-style: normal; color: var(--slate-400); }
+.ladder-bar {
+  grid-area: b;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--slate-300);
+  margin-top: 3px;
+}
+.ladder-row.is-here .ladder-n,
+.ladder-row.is-here .ladder-l { color: var(--gold-600); }
+.ladder-row.is-here .ladder-bar { background: var(--gold-400); }
+.ladder-row.is-unit .ladder-n,
+.ladder-row.is-unit .ladder-l { color: var(--green-800); font-weight: 650; }
+.ladder-row.is-unit .ladder-bar { background: var(--green-600); height: 7px; }
+
+/* Reading-rule cards */
+.explainer-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0 10px;
+  /* Break out of the 62ch prose measure: three cards will not sit side by side
+     inside it, and a 2 + 1 orphan reads as a mistake rather than a choice. */
+  width: min(760px, calc(100vw - 340px));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+@media (max-width: 1100px) {
+  .explainer-cards {
+    grid-template-columns: 1fr;
+    width: 100%; margin-left: 0; transform: none;
+  }
+}
+.explainer-card {
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.explainer-card h3 {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  color: var(--green-700);
+}
+.explainer-card p { margin: 0; font-size: 13px; line-height: 1.62; }
+
+.explainer-source {
+  margin-top: 34px;
+  padding-top: 18px;
+  border-top: 1px solid var(--slate-200);
+  font-size: 12px;
+  color: var(--slate-500);
+}
+.explainer-source a { color: var(--green-700); }
+
+@media (max-width: 900px) {
+  #explainer { grid-column: 1 / -1; }
+  .explainer-inner { padding: 28px 20px 48px; }
+  .explainer-inner h1 { font-size: 23px; }
+}

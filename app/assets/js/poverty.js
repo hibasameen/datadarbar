@@ -141,6 +141,10 @@ const LAYERS = {
       unpop:        MZ('unpop',    'Mouzas unpopulated (%)',                 'Settlement'),
     },
   },
+  mouza_about: {
+    label: 'What is a mouza?',
+    explainer: true,
+  },
   nl: {
     label: 'Night-time Lights',
     geo: 'tehsil',
@@ -179,6 +183,7 @@ function fmt(v, pct, dp) {
   return Math.abs(v) >= 1000 ? Math.round(v).toLocaleString() : v.toFixed(2);
 }
 
+function isExplainer() { return !!LAYERS[curLayer].explainer; }
 function spec() { return LAYERS[curLayer].indicators[curInd]; }
 function isTehsil() { return LAYERS[curLayer].geo === 'tehsil'; }
 function records() { return isTehsil() ? DATA.tehsils : DATA.districts; }
@@ -208,6 +213,20 @@ function hasData(rec) {
   return true;
 }
 
+function syncExplainer() {
+  const on = isExplainer();
+  document.body.classList.toggle('explainer-mode', on);
+  $('explainer').hidden = !on;
+  if (!on) return;
+  // Repurpose the summary bar as the scale of the census rather than leaving
+  // three em-dashes hanging over an explainer with no map behind it.
+  $('summaryUnitsLabel').textContent = 'Mouzas counted';
+  $('summaryUnits').textContent = '48,738';
+  $('summaryIndicatorLabel').textContent = 'Tehsils';
+  $('summaryIndicatorValue').textContent = '595';
+  $('summaryScope').textContent = 'PBS Mouza Census 2020';
+}
+
 // ── Controls ────────────────────────────────────────────────────────────────
 function buildLayerSelect() {
   layerSelect.innerHTML = Object.entries(LAYERS)
@@ -216,6 +235,7 @@ function buildLayerSelect() {
 }
 function buildIndicatorSelect() {
   const L0 = LAYERS[curLayer];
+  if (!L0.indicators) { indicatorSelect.innerHTML = ''; return; }
   const entries = Object.entries(L0.indicators);
   if (entries.some(([, v]) => v.grp)) {
     // 50-odd indicators is too many for a flat list, so group them by theme.
@@ -246,7 +266,7 @@ function buildProvinceSelect() {
 }
 function syncYearUI() {
   const L0 = LAYERS[curLayer];
-  const show = !!L0.hasYears && !spec().noYear;
+  const show = !!L0.hasYears && !L0.explainer && !spec().noYear;
   yearPanel.style.display = show ? '' : 'none';
   if (show) { yearSlider.value = DATA.meta.years.indexOf(+curYear); yearLabel.textContent = 'June ' + curYear; }
 }
@@ -263,6 +283,7 @@ async function loadGeo(which) {
 }
 
 async function drawGeometry() {
+  if (isExplainer()) return;
   const which = LAYERS[curLayer].geo;
   const geo = await loadGeo(which);
   if (layerGroup) { map.removeLayer(layerGroup); }
@@ -293,7 +314,7 @@ function tooltipHtml(props) {
 
 // ── Render ──────────────────────────────────────────────────────────────────
 function render() {
-  if (!layerGroup) return;
+  if (isExplainer() || !layerGroup) return;
   const L0 = LAYERS[curLayer], s = spec();
   const recs = records();
   const vals = [];
@@ -507,7 +528,7 @@ async function init() {
   }
   curYear = String(DATA.meta.years[DATA.meta.years.length - 1]);
 
-  buildLayerSelect(); buildIndicatorSelect(); buildProvinceSelect();
+  buildLayerSelect(); buildIndicatorSelect(); buildProvinceSelect(); syncExplainer();
   yearSlider.min = 0; yearSlider.max = DATA.meta.years.length - 1;
   yearSlider.value = DATA.meta.years.length - 1;
   syncYearUI();
@@ -518,9 +539,14 @@ async function init() {
   layerSelect.addEventListener('change', async e => {
     const prevGeo = LAYERS[curLayer].geo;
     curLayer = e.target.value;
-    curInd = Object.keys(LAYERS[curLayer].indicators)[0];
-    buildIndicatorSelect(); syncYearUI();
+    if (LAYERS[curLayer].indicators) curInd = Object.keys(LAYERS[curLayer].indicators)[0];
+    buildIndicatorSelect(); syncExplainer(); syncYearUI();
+    if (isExplainer()) return;
+    // The map was display:none while the explainer showed, so Leaflet's cached
+    // container size is stale; invalidateSize before any fitBounds runs.
+    map.invalidateSize();
     if (LAYERS[curLayer].geo !== prevGeo) await drawGeometry();
+    else map.fitBounds(layerGroup.getBounds(), { padding: [8, 8] });
     render();
   });
   indicatorSelect.addEventListener('change', e => { curInd = e.target.value; syncYearUI(); render(); });
