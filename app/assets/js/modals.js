@@ -89,7 +89,7 @@
         flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
       <li><strong>Poverty Metrics</strong> — a multidimensional poverty index built from household
         microdata, alongside satellite measures of relative wealth, population and night-time lights,
-        mapped down to all 554 tehsils.</li>
+        mapped down to all 554 tehsils, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
 
     <h3>Built by</h3>
@@ -134,7 +134,7 @@
       <li><strong>Industry Statistics (QIM &amp; CMI)</strong> — Quantum Index of large-scale Manufacturing
         (monthly and annual, 2005-06 and 2015-16 bases) and the Census of Manufacturing Industries.</li>
       <li><strong>Poverty &amp; satellite</strong> — Alkire–Foster Multidimensional Poverty Index from PSLM
-        microdata, plus Meta's Relative Wealth Index, WorldPop population and VIIRS night-lights at tehsil level.</li>
+        microdata, plus Meta's Relative Wealth Index, WorldPop population, VIIRS night-lights and the PBS Mouza Census 2020 facility inventory at tehsil level.</li>
     </ul>
     <p>All sources are public-domain publications of the Government of Pakistan, except the Relative Wealth Index
        (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
@@ -373,6 +373,22 @@
       signal measures surface albedo rather than activity. Note that night-lights are themselves an
       <em>input</em> to the Relative Wealth Index, so those two layers are not independent of each other;
       the survey-based MPI is the one independent benchmark.</p>
+
+    <h4>Rural facilities (tehsil)</h4>
+    <p>PBS's <strong>Mouza Census 2020</strong>, a hundred-per-cent count of 48,738 revenue villages
+      carried out with the provincial revenue departments. For each mouza an enumerator records what
+      exists in it — a girls' primary school, a basic health unit, a metalled street, mains
+      electricity — so every figure here is a <em>share of mouzas</em>, not of people. A mouza of
+      12,000 counts the same as a mouza of 300, and the frame is rural by construction: cities are
+      not revenue villages, so urban Karachi and the city tehsils sit outside it entirely.</p>
+    <p>PBS does not publish the denominator, and its own indicator blocks disagree about how many
+      mouzas answered — only 33 of 544 enumerated tehsils give a single consistent base. Each block
+      is therefore divided by its own row sum, and where the blocks diverge by more than 5% the
+      detail panel says so. PBS enumerates 595 tehsils against the boundary file's 553, mostly
+      because it carries sub-tehsils created after the polygons were drawn, so those are pooled into
+      the unit they were carved from; the crosswalk is published alongside the code. Azad Jammu and
+      Kashmir and Gilgit-Baltistan were not enumerated in this round. Neither were Mand and Tump in
+      Kech or Kallag in Panjgur, though every neighbouring sub-tehsil reports normally.</p>
 
     <h3>Limitations</h3>
     <ul>
