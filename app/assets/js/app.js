@@ -15,10 +15,15 @@ const TOPICS = {
   // rural-only (HIES) ones, so the default view of a district is not a rural
   // figure. See HIES_DISTRICT_COVERAGE.md.
   welfare:        { label: 'Household Welfare',         groups: ['pslmFies', 'hies'] },
-  housing:        { label: 'Housing & Infrastructure',  groups: ['pslmWash', 'hiesHousing', 'hiesWaste'] },
+  housing:        { label: 'Housing & Infrastructure',  groups: ['micsWash', 'pslmWash', 'hiesHousing', 'hiesWaste'] },
   ict:            { label: 'ICT & Digital',             groups: ['pslmDigital', 'hiesIct'] },
-  health:         { label: 'Health',                    groups: ['pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
-  women:          { label: "Women's Empowerment",       groups: ['hiesDecisions'] },
+  // MICS groups lead the health, WASH and women topics because they are
+  // district-representative where the DHS groups are not. See the note above
+  // INDICATOR_GROUPS.micsMaternal.
+  health:         { label: 'Health',                    groups: ['micsMaternal', 'micsChildHealth', 'micsNutrition', 'pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
+  women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
+  children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
+  survey:         { label: 'Survey Coverage',           groups: ['micsVintage'] },
 };
 
 const INDICATOR_GROUPS = {
@@ -345,6 +350,108 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'hies_wdm', hasYears: false, noYear: true,
   },
+  // ── MICS 2016-2021 ───────────────────────────────────────────────────
+  // Listed ahead of the DHS groups below, and for a reason worth stating.
+  // PDHS 2017-18 is representative at region level, not district: its median
+  // district holds about 88 women, which is why every dhs_* figure here is
+  // labelled indicative and suppressed below n=30. Every MICS round used is
+  // designed to estimate for districts, on 1,000-2,000 women each. Where the
+  // two measure the same thing, MICS is the series to quote.
+  //
+  // Islamabad is blank on every MICS indicator and that is not a gap. ICT has
+  // never had a MICS — the surveys are run by provincial and territorial
+  // statistics bureaus and Islamabad has none. It does not need one: ICT is
+  // both a single district and a PDHS reporting domain, so the DHS groups
+  // below rest on 1,072 women there rather than a thin district cut.
+  micsMaternal: {
+    label: 'Maternal Health — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    indicators: {
+      inst_delivery:       'Institutional Delivery (%)',
+      skilled_attendance:  'Skilled Birth Attendance (%)',
+      anc4:                '4+ Antenatal Care Visits (%)',
+    },
+    prefix: 'mics_mat', hasYears: false, noYear: true,
+  },
+  micsNutrition: {
+    label: 'Child Nutrition — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    indicators: {
+      stunting:    'Stunting, under-5 (%)',
+      wasting:     'Wasting, under-5 (%)',
+      underweight: 'Underweight, under-5 (%)',
+    },
+    prefix: 'mics_nut', hasYears: false, noYear: true,
+  },
+  micsChildHealth: {
+    label: 'Child Health — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    indicators: {
+      careseek_fever: 'Care Sought for Child with Fever (%)',
+    },
+    prefix: 'mics_ch', hasYears: false, noYear: true,
+  },
+  micsWash: {
+    label: 'Water Quality & Sanitation — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    // The E. coli tests have no substitute anywhere else on this site. The
+    // PSLM group measures whether a household has piped water; this measures
+    // whether the water is safe to drink, and the two diverge sharply.
+    // Gilgit-Baltistan is blank because its round is MICS5, which predates
+    // water quality testing — structurally absent, not missing.
+    indicators: {
+      ecoli_household: 'E. coli in Household Drinking Water (%)',
+      ecoli_source:    'E. coli at Water Source (%)',
+      open_defecation: 'Open Defecation (%)',
+    },
+    prefix: 'mics_wash', hasYears: false, noYear: true,
+  },
+  micsProtection: {
+    label: 'Child Protection — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    indicators: {
+      birth_registered:    'Birth Registered (%)',
+      violent_discipline:  'Violent Discipline, age 1-14 (%)',
+    },
+    prefix: 'mics_prot', hasYears: false, noYear: true,
+  },
+  micsEquity: {
+    label: 'Child Functioning — MICS 2016-2021',
+    dataset: 'MICS, latest district round per province/region',
+    // Washington Group short set. The only district-level disability measure
+    // that exists for Pakistan; the census question is not comparable to it.
+    indicators: {
+      child_func_difficulty: 'Functional Difficulty, age 5-17 (%)',
+    },
+    prefix: 'mics_eq', hasYears: false, noYear: true,
+  },
+  micsWomen: {
+    label: "Women — MICS 2016-2021",
+    dataset: 'MICS, latest district round per province/region',
+    // Literacy here is TESTED, not self-reported: women who did not reach
+    // lower secondary are asked to read a sentence aloud. It is not the same
+    // statistic as the census literacy group and will read lower.
+    indicators: {
+      literate:           'Literate, women 15-49 (%, tested)',
+      married_before_18:  'Married Before 18, women 20-49 (%)',
+      mcpr:               'Modern Contraceptive Prevalence (%)',
+      cpr_any:            'Contraceptive Prevalence, any method (%)',
+      dv_justified:       'Wife-Beating Justified, any reason (%)',
+    },
+    prefix: 'mics_wom', hasYears: false, noYear: true,
+  },
+  micsVintage: {
+    label: 'Survey Vintage — MICS',
+    dataset: 'Year each district’s MICS round was fielded',
+    // Published as an indicator rather than left in a tooltip. The rounds span
+    // 2016-17 to 2020-21, so part of any difference between two districts in
+    // different provinces is four years of elapsed time rather than
+    // geography. This layer makes that structure inspectable.
+    indicators: {
+      survey_year: 'Year of MICS Round',
+    },
+    prefix: 'mics', hasYears: false, noYear: true,
+  },
   // ── FERTILITY & FAMILY PLANNING — DHS 2017-18 ────────────────────────
   dhsFamilyPlanning: {
     label: 'Family Planning — DHS 2017-18',
@@ -428,6 +535,15 @@ const COLOR_RAMPS = {
   pslmHealth:       ['#e8f5e9', '#1b5e20'],
   // Women's Empowerment
   hiesDecisions:    ['#fce4ec', '#880e4f'],
+  // MICS 2016-2021 — topic colours matched to their DHS/PSLM counterparts
+  micsMaternal:     ['#e8f5e9', '#1b5e20'],
+  micsNutrition:    ['#fff3e0', '#e65100'],
+  micsChildHealth:  ['#e8f5e9', '#2e7d32'],
+  micsWash:         ['#e0f2f1', '#004d40'],
+  micsProtection:   ['#fce4ec', '#880e4f'],
+  micsEquity:       ['#fce4ec', '#ad1457'],
+  micsWomen:        ['#fce4ec', '#880e4f'],
+  micsVintage:      ['#eceff1', '#37474f'],
   // Fertility & Family Planning — DHS 2017-18
   dhsFamilyPlanning:['#ede7f6', '#4527a0'],
   dhsFertility:     ['#ede7f6', '#5e35b1'],
@@ -463,6 +579,15 @@ const HIGHER_IS_WORSE = new Set([
   // Waste Management
   'pct_open_dumping',     // open dumping = worse
   'pct_no_bin_access',    // no bin = worse
+  // MICS. Note these keys are shared with the DHS nutrition group, which is
+  // fine — the set is keyed on the indicator name, not the group.
+  'ecoli_household',      // faecal contamination of drinking water
+  'ecoli_source',         // faecal contamination at source
+  'open_defecation',      // no toilet facility
+  'violent_discipline',   // physical punishment or psychological aggression
+  'married_before_18',    // child marriage
+  'dv_justified',         // wife-beating held to be justified
+  'child_func_difficulty',// higher difficulty prevalence = worse
   // Women's Decision-Making
   'pct_fp_husband_alone',     // husband alone = less agency
   'pct_not_permitted_work',   // not permitted = less agency
@@ -544,9 +669,17 @@ function fmt(v, pct) {
   const n = Number(v);
   if (isNaN(n)) return '\u2014';
   if (pct) return n.toFixed(1) + '%';
+  // Years are the one four-digit number here that must not be grouped or
+  // given a decimal: the survey-vintage layer would otherwise read "2,017.0".
+  if (isYearValue(n)) return String(Math.round(n));
   if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
   if (Math.abs(n) >= 1e3) return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
   return n.toFixed(1);
+}
+
+function isYearValue(n) {
+  return currentIndicator === 'survey_year'
+    && Number.isFinite(n) && n >= 1900 && n <= 2100;
 }
 
 function isPct(indicator) {

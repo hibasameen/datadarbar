@@ -2923,7 +2923,10 @@ def _inherit_from_parent_district(data):
     Note that sample sizes travel unchanged and describe the parent, which is
     what the flag is there to signal.
     """
-    families = ("hies_", "pslm_", "lfs21_", "lfs25_", "ec_", "dhs_")
+    # mics_ is included so Keamari inherits Karachi West's MICS figures. Every
+    # MICS round here predates the 2020 split, so Keamari's households were
+    # surveyed — just counted under Karachi West.
+    families = ("hies_", "pslm_", "lfs21_", "lfs25_", "ec_", "dhs_", "mics_")
     for child, parent in _SUCCESSOR_DISTRICTS.items():
         if child not in data or parent not in data:
             continue
@@ -3267,6 +3270,32 @@ def main():
     else:
         print("  WARNING: no PDHS microdata and no cached indicators — "
               "24 dhs_* fields and the AJK/GB districts will be absent")
+
+    # MICS — district-designed survey rounds, one per province/region.
+    # Standalone module; see etl/mics_district.py for methodology and sources.
+    #
+    # Same caching arrangement as the PDHS above, and for a sharper reason. The
+    # inputs are built panels that live in the Adaad repo, not here, and one of
+    # the three (AJK) is transcribed from a published report and cannot be
+    # recomputed from anything at all. The committed JSON is therefore the
+    # authoritative copy for this repo, and recomputation is the exception.
+    mics_panels = Path(os.environ.get("MICS_PANEL_DIR", "")) if os.environ.get("MICS_PANEL_DIR") else None
+    mics_cache = HERE / "mics_district_indicators.json"
+    if mics_panels and mics_panels.exists():
+        try:
+            from mics_district import compute as compute_mics
+            tables.append(("MICS 2016-2021", compute_mics(mics_panels)))
+        except Exception as e:
+            print(f"  WARNING: MICS failed: {e}")
+    elif mics_cache.exists():
+        with open(mics_cache, encoding="utf-8") as fh:
+            mics_cached = json.load(fh)
+        print(f"  MICS: using cached {mics_cache.name} "
+              f"({len(mics_cached)} districts)")
+        tables.append(("MICS 2016-2021 (cached)", mics_cached))
+    else:
+        print("  WARNING: no MICS panels and no cached indicators — "
+              "18 mics_* fields will be absent")
 
     # ── Merge ────────────────────────────────────────────────────────────
     # Every source key is checked against the GeoJSON district list. A table
