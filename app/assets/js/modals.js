@@ -58,6 +58,27 @@
   .dd-send:hover{background:#0c3a1e}
   .dd-send:disabled{opacity:.5;cursor:default}
   .dd-status{font-size:13px;font-weight:600;margin-top:2px}
+  .dd-mz-lede{font-size:14.5px;line-height:1.62;color:#505662;margin:0 0 16px;
+    padding-bottom:14px;border-bottom:1px solid #e2e5ea}
+  .dd-ladder{margin:14px 0 6px;padding:14px 16px;background:#f8f9fb;border:1px solid #e2e5ea;
+    border-radius:8px}
+  .dd-ladder-row{display:grid;grid-template-columns:62px 1fr;grid-template-areas:"n l" "n b";
+    column-gap:12px;padding:4px 0;align-items:center}
+  .dd-ladder-n{grid-area:n;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;
+    font-size:13px;color:#6b7280}
+  .dd-ladder-l{grid-area:l;font-size:12px;color:#505662}
+  .dd-ladder-l em{font-style:normal;color:#9ca3af}
+  .dd-ladder-bar{grid-area:b;height:5px;border-radius:3px;background:#c5cad3;margin-top:3px}
+  .dd-ladder-row.is-here .dd-ladder-n,.dd-ladder-row.is-here .dd-ladder-l{color:#b8941a}
+  .dd-ladder-row.is-here .dd-ladder-bar{background:#e8b92e}
+  .dd-ladder-row.is-unit .dd-ladder-n,.dd-ladder-row.is-unit .dd-ladder-l{color:#145228;font-weight:700}
+  .dd-ladder-row.is-unit .dd-ladder-bar{background:#1e6b3e;height:7px}
+  .dd-mz-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 6px}
+  .dd-mz-card{background:#f0f9f4;border:1px solid #e6f4ec;border-radius:8px;padding:12px 14px}
+  .dd-mz-card h5{margin:0 0 5px;font-size:11px;font-weight:700;color:#1a5632;
+    text-transform:uppercase;letter-spacing:.06em}
+  .dd-mz-card p{margin:0;font-size:12.5px;line-height:1.6}
+  @media(max-width:560px){.dd-mz-cards{grid-template-columns:1fr}}
   .dd-status.ok{color:#1e6b3e}.dd-status.err{color:#c0392b}
   @keyframes ddFade{from{opacity:0}to{opacity:1}}
   @keyframes ddSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -407,6 +428,74 @@
     </ul>
   `;
 
+
+  /* ---- What is a mouza? (opened from the Rural Facilities layer) ---- */
+  var MOUZA = `
+    <p class="dd-mz-lede">Every figure on the Rural Facilities layer counts mouzas. Almost nothing
+      else published about Pakistan uses this unit, so it is worth knowing what is being counted —
+      and what a share of mouzas can and cannot tell you.</p>
+
+    <h4>A unit of land, not a settlement</h4>
+    <p>A mouza is a <strong>revenue village</strong>: a bounded piece of land in the provincial land
+      records, with a name, a fixed boundary and an area measured plot by plot. It is the smallest
+      permanent unit of Pakistani land administration, and most boundaries were drawn during
+      colonial-era settlements and have barely moved since.</p>
+    <p>Because it is a unit of <em>land</em>, a mouza is not the same thing as a village. One may
+      hold several hamlets, a single large village, or nobody at all — 1,808 were recorded as
+      unpopulated. Sizes vary enormously: a few hundred acres in canal-irrigated Punjab, hundreds of
+      thousands in Balochistan.</p>
+
+    <h4>Where it sits</h4>
+    <p>The mouza is the bottom rung of the revenue hierarchy. Everything mapped here at tehsil level
+      is, underneath, a bundle of these.</p>
+    <div class="dd-ladder">
+      <div class="dd-ladder-row"><span class="dd-ladder-n">5</span><span class="dd-ladder-l">Provinces</span><span class="dd-ladder-bar" style="width:2%"></span></div>
+      <div class="dd-ladder-row"><span class="dd-ladder-n">36</span><span class="dd-ladder-l">Divisions</span><span class="dd-ladder-bar" style="width:4%"></span></div>
+      <div class="dd-ladder-row"><span class="dd-ladder-n">151</span><span class="dd-ladder-l">Districts</span><span class="dd-ladder-bar" style="width:8%"></span></div>
+      <div class="dd-ladder-row is-here"><span class="dd-ladder-n">595</span><span class="dd-ladder-l">Tehsils <em>— the finest level mapped</em></span><span class="dd-ladder-bar" style="width:16%"></span></div>
+      <div class="dd-ladder-row"><span class="dd-ladder-n">1,715</span><span class="dd-ladder-l">Qanungo halqas</span><span class="dd-ladder-bar" style="width:26%"></span></div>
+      <div class="dd-ladder-row"><span class="dd-ladder-n">12,734</span><span class="dd-ladder-l">Patwar circles</span><span class="dd-ladder-bar" style="width:52%"></span></div>
+      <div class="dd-ladder-row is-unit"><span class="dd-ladder-n">48,738</span><span class="dd-ladder-l">Mouzas <em>— what every figure counts</em></span><span class="dd-ladder-bar" style="width:100%"></span></div>
+    </div>
+
+    <h4>What the census does</h4>
+    <p>The <strong>Mouza Census</strong> is run by PBS with the provincial revenue departments as a
+      hundred-per-cent count rather than a sample. An enumerator goes to each mouza and records what
+      is there: a girls' primary school, a basic health unit, a metalled street, mains electricity,
+      a bazar, a police post. The 2020 round is the most recent; 2008 was the one before it. It
+      supplies the sampling frame for PBS's rural household surveys, and it is the only source that
+      describes rural facilities for the whole country at once.</p>
+
+    <h4>How to read a percentage</h4>
+    <div class="dd-mz-cards">
+      <div class="dd-mz-card"><h5>Places, not people</h5>
+        <p>64.8% of mouzas have a girls' primary school — 30,554 of 47,120. That is <em>not</em>
+          64.8% of rural girls. A mouza of 12,000 and a mouza of 300 each count once.</p></div>
+      <div class="dd-mz-card"><h5>Presence, not access</h5>
+        <p>The question is whether a facility sits <em>inside the boundary</em>. One 500 metres over
+          the line counts as absent; one at the far end of a 40 km² mouza counts as present.</p></div>
+    </div>
+    <p>Plain percentages come from mutually exclusive questions. Drinking water, health facility
+      type, fuel and street surface are <strong>multiple response</strong> — a mouza can report
+      three water sources — so those are divided by the reporting base and can exceed 100%.</p>
+
+    <h4>Where it stops</h4>
+    <p><strong>The denominator is not published.</strong> PBS reports how many mouzas have a facility
+      and how many do not, but never how many were asked. Its own blocks disagree: only 33 of the 544
+      enumerated tehsils give a single consistent base, and they can differ by up to 181 mouzas.</p>
+    <p><strong>The rural edge is soft.</strong> A city is not a revenue village, so built-up cores are
+      absent — 22 Karachi towns and several city tehsils show as no-data. But mouzas that urbanise
+      stay in: 4.9% are classified urban and 2.4% partly urban, above 20% in 49 tehsils and
+      effectively everything in Model Town, Shalimar, Raiwind and Sukkur City. The Settlement group
+      in the indicator list shows each tehsil's exposure.</p>
+    <p><strong>Three gaps.</strong> Azad Jammu and Kashmir and Gilgit-Baltistan appear in the frame
+      but were not enumerated. Neither were Mand and Tump in Kech, or Kallag in Panjgur. And it is a
+      single snapshot — nothing here supports a claim about change over time.</p>
+
+    <p style="font-size:12px;color:#6b7280;margin-top:16px">Source: Pakistan Bureau of Statistics,
+      <a href="https://www.pbs.gov.pk/mouza-census/" target="_blank" rel="noopener">Mouza Census 2020</a>.</p>
+  `;
+
   /* ---- build ---- */
   function modal(id, title, body) {
     return '<div id="' + id + '" class="dd-modal-overlay dd-hidden" role="dialog" aria-modal="true" aria-label="' + title + '">' +
@@ -426,10 +515,12 @@
     host.innerHTML =
       modal('ddAboutModal', 'About Data Darbar', ABOUT) +
       modal('ddMethodologyModal', 'Methodology', METH) +
-      modal('ddContactModal', 'Contact', CONTACT);
+      modal('ddContactModal', 'Contact', CONTACT) +
+      modal('ddMouzaModal', 'What is a mouza?', MOUZA);
     document.body.appendChild(host);
 
-    var MAP = { about: 'ddAboutModal', methodology: 'ddMethodologyModal', contact: 'ddContactModal' };
+    var MAP = { about: 'ddAboutModal', methodology: 'ddMethodologyModal', contact: 'ddContactModal',
+                mouza: 'ddMouzaModal' };
 
     function open(id) {
       var m = document.getElementById(id);

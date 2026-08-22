@@ -28,6 +28,10 @@
     .stat-active { background: #f7f3e6; margin: 0 -18px; padding: 6px 18px; border-radius: 6px; }
     .stat-note { font-size: 11.5px; color: var(--slate-500, #6b7280); margin-top: 10px; line-height: 1.5; }
     .source-note { font-size: 11.5px; color: var(--slate-600, #505662); line-height: 1.55; }
+    .source-explain { display: inline-block; margin-top: 8px; font-weight: 600;
+                      color: var(--green-700, #1a5632); text-decoration: none;
+                      border-bottom: 1px solid rgba(26,86,50,.35); cursor: pointer; }
+    .source-explain:hover { border-bottom-color: var(--green-700, #1a5632); }
     .stat-group { margin: 10px 0 2px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
                   color: var(--slate-600, #505662); border-bottom: 1px solid rgba(0,0,0,.08); padding-bottom: 3px; }
     .stat-group:first-child { margin-top: 0; }
@@ -83,7 +87,7 @@
       </button>
 
       <div id="controlPanelInner" class="left-sidebar-inner">
-        <div class="panel panel-search" data-map-only>
+        <div class="panel panel-search">
           <div class="search-wrap">
             <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchInput" placeholder="Search districts or tehsils…" />
@@ -101,7 +105,7 @@
           </div>
         </div>
 
-        <div class="panel panel-control" data-map-only>
+        <div class="panel panel-control">
           <label for="indicatorSelect">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             Indicator
@@ -123,9 +127,9 @@
           </div>
         </div>
 
-        <div class="panel panel-legend" data-map-only><div id="legend"></div></div>
+        <div class="panel panel-legend"><div id="legend"></div></div>
 
-        <div class="panel panel-control" data-map-only>
+        <div class="panel panel-control">
           <label for="provinceSelect">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Province
@@ -136,7 +140,7 @@
           </div>
         </div>
 
-        <div class="panel panel-control" data-map-only>
+        <div class="panel panel-control">
           <label>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download CSV
@@ -147,7 +151,7 @@
           </a>
         </div>
 
-        <div class="panel panel-control" data-map-only>
+        <div class="panel panel-control">
           <button id="resetBtn" class="btn-reset">Reset view</button>
         </div>
 
@@ -158,107 +162,6 @@
     </aside>
 
     <div id="map"></div>
-
-    <section id="explainer" class="explainer" hidden>
-      <div class="explainer-inner">
-
-        <h1>What is a mouza?</h1>
-        <p class="explainer-lede">Every figure on the Rural Facilities layer counts mouzas. Almost
-          nothing published about Pakistan uses this unit, so it is worth two minutes to know what
-          is being counted — and what a share of mouzas can and cannot tell you.</p>
-
-        <h2>A unit of land, not a settlement</h2>
-        <p>A mouza is a <strong>revenue village</strong>: a bounded piece of land in the provincial
-          land records, with a name, a fixed boundary and an area measured plot by plot. It is the
-          smallest permanent unit of Pakistani land administration, and it long predates the state
-          — most boundaries were drawn during colonial-era settlements and have barely moved since.</p>
-        <p>Because it is a unit of <em>land</em>, a mouza is not the same thing as a village. One
-          mouza may contain several hamlets, a single large village, or nobody at all: 1,808 of them
-          were recorded as unpopulated in 2020. Sizes vary enormously — a few hundred acres in
-          canal-irrigated Punjab, hundreds of thousands in Balochistan.</p>
-
-        <h2>Where it sits</h2>
-        <p>The mouza is the bottom rung of the revenue hierarchy. Everything published on this
-          site at tehsil level is, underneath, a bundle of these.</p>
-
-        <div class="explainer-ladder" role="img"
-             aria-label="Administrative ladder: 5 provinces, 36 divisions, 151 districts, 595 tehsils, 1,715 qanungo halqas, 12,734 patwar circles, 48,738 mouzas.">
-          <div class="ladder-row"><span class="ladder-n">5</span><span class="ladder-l">Provinces</span><span class="ladder-bar" style="width:2%"></span></div>
-          <div class="ladder-row"><span class="ladder-n">36</span><span class="ladder-l">Divisions</span><span class="ladder-bar" style="width:4%"></span></div>
-          <div class="ladder-row"><span class="ladder-n">151</span><span class="ladder-l">Districts</span><span class="ladder-bar" style="width:8%"></span></div>
-          <div class="ladder-row is-here"><span class="ladder-n">595</span><span class="ladder-l">Tehsils <em>— the finest level mapped here</em></span><span class="ladder-bar" style="width:16%"></span></div>
-          <div class="ladder-row"><span class="ladder-n">1,715</span><span class="ladder-l">Qanungo halqas</span><span class="ladder-bar" style="width:26%"></span></div>
-          <div class="ladder-row"><span class="ladder-n">12,734</span><span class="ladder-l">Patwar circles</span><span class="ladder-bar" style="width:52%"></span></div>
-          <div class="ladder-row is-unit"><span class="ladder-n">48,738</span><span class="ladder-l">Mouzas <em>— what every figure counts</em></span><span class="ladder-bar" style="width:100%"></span></div>
-        </div>
-
-        <h2>What the census does</h2>
-        <p>The <strong>Mouza Census</strong> is run by the Pakistan Bureau of Statistics with the
-          provincial revenue departments, as a hundred-per-cent count rather than a sample. An
-          enumerator goes to each mouza and records what is there: whether it has a girls' primary
-          school, a basic health unit, a metalled street, mains electricity, a bazar, a police post.
-          The 2020 round is the most recent; 2008 was the one before it.</p>
-        <p>It exists for two reasons. It supplies the sampling frame from which PBS draws rural
-          household surveys, and it is the only source that describes rural facilities for the whole
-          country at once — no survey, however large, visits every village.</p>
-
-        <h2>How to read a percentage here</h2>
-
-        <div class="explainer-cards">
-          <div class="explainer-card">
-            <h3>Places, not people</h3>
-            <p>64.8% of mouzas have a girls' primary school. That is 30,554 mouzas out of 47,120 —
-              <em>not</em> 64.8% of rural girls. A mouza of 12,000 people and a mouza of 300 each
-              count exactly once. To say anything about people you would have to weight these by
-              population, and the census does not carry any.</p>
-          </div>
-          <div class="explainer-card">
-            <h3>Presence, not access</h3>
-            <p>The question is whether a facility sits <em>inside the boundary</em>. A school 500
-              metres over the line counts as absent; a school at the far end of a 40 km² mouza
-              counts as present. Nothing here records distance, quality, staffing, or whether the
-              building is in use.</p>
-          </div>
-          <div class="explainer-card">
-            <h3>Two kinds of share</h3>
-            <p>Indicators ending in a plain percentage come from questions with mutually exclusive
-              answers, so they sum to 100. Drinking water, health facility type, fuel and street
-              surface are <em>multiple response</em> — one mouza can report three water sources —
-              so those are divided by the reporting base and can legitimately exceed 100%.</p>
-          </div>
-        </div>
-
-        <h2>Where it stops</h2>
-
-        <h3>The denominator is not published</h3>
-        <p>PBS reports how many mouzas have a facility and how many do not, but never states how
-          many were asked. Its own indicator blocks disagree: only 33 of the 544 enumerated tehsils
-          give a single consistent base, and the blocks can differ by up to 181 mouzas. Every share
-          on this site is therefore divided by the base implied by its own question, and where the
-          blocks diverge by more than 5% the tehsil detail panel says so.</p>
-
-        <h3>The rural edge is soft</h3>
-        <p>The frame is rural by construction — a city is not a revenue village, so the built-up
-          cores are simply absent, which is why 22 Karachi towns and cantonments and several city
-          tehsils appear as no-data. But mouzas that urbanise stay in the frame: 4.9% are classified
-          urban and a further 2.4% partly urban. Nationally that is small. In 49 tehsils it is above
-          20%, and in a handful — Model Town, Shalimar, Raiwind, Sukkur City — it is everything.
-          PBS does not cross-tabulate the indicators by mouza status, so those cannot be separated
-          out. The Settlement group in the indicator list shows each tehsil's exposure.</p>
-
-        <h3>Three kinds of gap</h3>
-        <p>Azad Jammu and Kashmir and Gilgit-Baltistan appear in the frame but were not enumerated
-          in this round, so all 48 of their tehsils return nothing. Neither were Mand and Tump in
-          Kech, or Kallag in Panjgur — three populated Makran sub-tehsils whose neighbours all
-          report normally. And the census is a single snapshot: nothing here supports a claim about
-          change over time.</p>
-
-        <p class="explainer-source">Source: Pakistan Bureau of Statistics,
-          <a href="https://www.pbs.gov.pk/mouza-census/" target="_blank" rel="noopener">Mouza Census 2020</a>.
-          The extraction, the tehsil crosswalk and a fuller account of the source's quirks are
-          documented alongside the code.</p>
-      </div>
-    </section>
 
 
     <aside id="sidebar" class="right-sidebar">
