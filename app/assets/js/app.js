@@ -23,7 +23,6 @@ const TOPICS = {
   health:         { label: 'Health',                    groups: ['micsMaternal', 'micsChildHealth', 'micsNutrition', 'pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
   women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
   children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
-  survey:         { label: 'Survey Coverage',           groups: ['micsVintage'] },
   ruralFacilities: { label: 'Rural Facilities \u2014 Mouza Census 2020',
                      groups: ['mouza_electricity_energy', 'mouza_drinking_water', 'mouza_streets_roads', 'mouza_housing', 'mouza_schools', 'mouza_health', 'mouza_connectivity', 'mouza_cooking_fuel', 'mouza_markets_credit', 'mouza_hazards', 'mouza_settlement'] },
 };
@@ -574,18 +573,6 @@ const INDICATOR_GROUPS = {
     },
     prefix: 'mics_wom', hasYears: false, noYear: true,
   },
-  micsVintage: {
-    label: 'Survey Vintage — MICS',
-    dataset: 'Year each district’s MICS round was fielded',
-    // Published as an indicator rather than left in a tooltip. The rounds span
-    // 2016-17 to 2020-21, so part of any difference between two districts in
-    // different provinces is four years of elapsed time rather than
-    // geography. This layer makes that structure inspectable.
-    indicators: {
-      survey_year: 'Year of MICS Round',
-    },
-    prefix: 'mics', hasYears: false, noYear: true,
-  },
   // ── FERTILITY & FAMILY PLANNING — DHS 2017-18 ────────────────────────
   dhsFamilyPlanning: {
     label: 'Family Planning — DHS 2017-18',
@@ -677,7 +664,6 @@ const COLOR_RAMPS = {
   micsProtection:   ['#fce4ec', '#880e4f'],
   micsEquity:       ['#fce4ec', '#ad1457'],
   micsWomen:        ['#fce4ec', '#880e4f'],
-  micsVintage:      ['#eceff1', '#37474f'],
   // Fertility & Family Planning — DHS 2017-18
   dhsFamilyPlanning:['#ede7f6', '#4527a0'],
   dhsFertility:     ['#ede7f6', '#5e35b1'],
@@ -856,17 +842,9 @@ function fmt(v, pct) {
   const n = Number(v);
   if (isNaN(n)) return '\u2014';
   if (pct) return n.toFixed(1) + '%';
-  // Years are the one four-digit number here that must not be grouped or
-  // given a decimal: the survey-vintage layer would otherwise read "2,017.0".
-  if (isYearValue(n)) return String(Math.round(n));
   if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
   if (Math.abs(n) >= 1e3) return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
   return n.toFixed(1);
-}
-
-function isYearValue(n) {
-  return currentIndicator === 'survey_year'
-    && Number.isFinite(n) && n >= 1900 && n <= 2100;
 }
 
 function isPct(indicator) {
