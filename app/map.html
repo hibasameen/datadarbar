@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0c3a1e" />
-  <title>Data Darbar — Pakistan in Numbers</title>
+  <title>Data Darbar — District & Tehsil Map</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 
   <!-- Open Graph (link previews on WhatsApp, Facebook, LinkedIn, iMessage, etc.) -->
-  <meta property="og:title" content="Data Darbar — Pakistan in Numbers" />
+  <meta property="og:title" content="Data Darbar — District & Tehsil Map" />
   <meta property="og:description" content="Explore Pakistan's district-level census, survey and labour force data on an interactive map." />
   <meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-map.png" />
   <meta property="og:image:width" content="1200" />
@@ -18,7 +18,7 @@
 
   <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Data Darbar — Pakistan in Numbers" />
+  <meta name="twitter:title" content="Data Darbar — District & Tehsil Map" />
   <meta name="twitter:description" content="Explore Pakistan's district-level census, survey and labour force data on an interactive map." />
   <meta name="twitter:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-map.png" />
 
@@ -54,7 +54,7 @@
   <!-- Summary stats bar -->
   <div class="summary-bar">
     <div class="summary-item">
-      <span class="summary-label">Districts Showing</span>
+      <span class="summary-label" id="summaryUnitsLabel">Districts Showing</span>
       <span class="summary-value" id="summaryDistricts">—</span>
     </div>
     <div class="summary-item">
@@ -71,7 +71,7 @@
   <div id="zoomBar" class="zoom-bar hidden">
     <button id="zoomOutBtn" class="btn btn-zoom-out">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to all districts
+      <span id="zoomOutLabel">Back to all districts</span>
       <kbd>Esc</kbd>
     </button>
     <span id="zoomDistrictName" class="zoom-district-label"></span>

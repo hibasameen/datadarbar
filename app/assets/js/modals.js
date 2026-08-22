@@ -102,8 +102,8 @@
 
     <h3>The four views</h3>
     <ul>
-      <li><strong>District Map</strong> — census, PSLM, labour-force, household and DHS health indicators
-        across all 141 districts, with a 2017 vs 2023 comparison.</li>
+      <li><strong>District &amp; Tehsil Map</strong> — census, PSLM, labour-force, household and DHS health indicators
+        across all 141 districts, with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
       <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>Economy &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
@@ -185,7 +185,7 @@
       into a <strong>DuckDB + Parquet</strong> warehouse, then exported as the compact data files the site
       loads. The notes below cover each view in turn.</p>
 
-    <h3><span class="dd-tag" style="background:#e4f0e8;color:#1e6b3e">District Map</span></h3>
+    <h3><span class="dd-tag" style="background:#e4f0e8;color:#1e6b3e">District &amp; Tehsil Map</span></h3>
 
     <h4>District-name matching &amp; crosswalk</h4>
     <p>A core challenge in Pakistani administrative data is inconsistent district naming — the same place

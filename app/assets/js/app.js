@@ -24,9 +24,143 @@ const TOPICS = {
   women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
   children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
   survey:         { label: 'Survey Coverage',           groups: ['micsVintage'] },
+  ruralFacilities: { label: 'Rural Facilities \u2014 Mouza Census 2020',
+                     groups: ['mouza_electricity_energy', 'mouza_drinking_water', 'mouza_streets_roads', 'mouza_housing', 'mouza_schools', 'mouza_health', 'mouza_connectivity', 'mouza_cooking_fuel', 'mouza_markets_credit', 'mouza_hazards', 'mouza_settlement'] },
 };
 
 const INDICATOR_GROUPS = {
+  mouza_electricity_energy: {
+    label: "Electricity & energy",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      elec_none:     "No electricity (%)",
+      elec_partial:  "Electricity in some houses only (%)",
+      elec_all:      "Electricity in all houses (%)",
+      solar:         "Solar in use (%)",
+      alt_none:      "No alternative energy source (%)",
+    },
+  },
+  mouza_drinking_water: {
+    label: "Drinking water",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      w_piped:    "Government piped supply (%)",
+      w_pump:     "Hand or motor pump (%)",
+      w_well:     "Well (%)",
+      w_surface:  "River, canal or pond (%)",
+      w_karez:    "Spring, ravine or karez (%)",
+      w_treated:  "Filtration or RO plant (%)",
+      wdepth:     "Water table depth (feet)",
+    },
+  },
+  mouza_streets_roads: {
+    label: "Streets & roads",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      st_dirt:       "Dirt streets (%)",
+      st_paved:      "Cemented or bricked streets (%)",
+      st_metaled:    "Metalled streets (%)",
+      road_metaled:  "On a metalled road (%)",
+    },
+  },
+  mouza_housing: {
+    label: "Housing",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      h_bricked:  "Houses mainly brick (%)",
+      h_mud:      "Houses mainly mud (%)",
+    },
+  },
+  mouza_schools: {
+    label: "Schools",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      sch_pri_f:   "Girls' primary school (%)",
+      sch_pri_m:   "Boys' primary school (%)",
+      sch_mid_f:   "Girls' middle school (%)",
+      sch_mid_m:   "Boys' middle school (%)",
+      sch_high_f:  "Girls' high school (%)",
+      sch_high_m:  "Boys' high school (%)",
+      col_f:       "Girls' college (%)",
+      col_m:       "Boys' college (%)",
+      madrasa:     "Deeni madrasa (%)",
+    },
+  },
+  mouza_health: {
+    label: "Health",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      hf_bhu:      "Basic health unit (%)",
+      hf_rhc:      "Rural health centre (%)",
+      hf_hosp:     "Hospital or dispensary (%)",
+      hf_private:  "Private MBBS doctor (%)",
+      hf_midwife:  "Midwife (%)",
+      hf_mch:      "Mother and child centre (%)",
+    },
+  },
+  mouza_connectivity: {
+    label: "Connectivity",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      mobile:      "Mobile signal (%)",
+      net_mobile:  "Mobile internet (%)",
+      net_dsl:     "Fixed-line DSL (%)",
+      transport:   "Public transport (%)",
+      post:        "Post office (%)",
+      police:      "Police station (%)",
+    },
+  },
+  mouza_cooking_fuel: {
+    label: "Cooking fuel",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      fuel_wood:  "Firewood (%)",
+      fuel_dung:  "Animal dung cake (%)",
+      fuel_gas:   "Piped sui gas (%)",
+      fuel_lpg:   "LPG (%)",
+    },
+  },
+  mouza_markets_credit: {
+    label: "Markets & credit",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      bazar:        "Bazar (%)",
+      mkt_grain:    "Grain wholesale market (%)",
+      bank_online:  "Commercial bank branch (%)",
+      credit_mfi:   "Microfinance lender (%)",
+      ind_none:     "No industry of any scale (%)",
+    },
+  },
+  mouza_hazards: {
+    label: "Hazards",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      dis_any:      "Exposed to natural disaster (%)",
+      dis_flood:    "Flood (%)",
+      dis_drought:  "Drought (%)",
+    },
+  },
+  mouza_settlement: {
+    label: "Settlement",
+    dataset: 'Mouza Census 2020',
+    geo: 'tehsil', flatKeys: true, noYear: true, hasYears: false,
+    indicators: {
+      rural:     "Mouzas classified rural (%)",
+      urbanish:  "Mouzas urban or partly urban (%)",
+      unpop:     "Mouzas unpopulated (%)",
+    },
+  },
+
   // ── DEMOGRAPHICS ─────────────────────────────────────────────────────
   demographics: {
     label: 'Census 2017/23',
@@ -603,9 +737,61 @@ const HIGHER_IS_WORSE = new Set([
   'underweight',
 ]);
 
+// ── Geography ───────────────────────────────────────────────────────────────
+// Most groups are districts (ADM2). A group carrying geo:'tehsil' draws on the
+// ADM3 layer instead. Every call site goes through these shims rather than
+// reading feature properties directly, so nothing below has to know which
+// geography is on screen.
+const GEOGRAPHIES = {
+  district: {
+    unit: 'district', unitPlural: 'districts', UnitPlural: 'Districts',
+    placeholder: 'Search districts\u2026',
+    geo:  () => window.DD_GEO,
+    rows: () => rawData,
+    key:  p => normName(p.districts || p.district_agency || ''),
+    name: p => p.districts || p.district_agency || '',
+    prov: p => p.province_territory || '',
+    assets: [],
+  },
+  tehsil: {
+    unit: 'tehsil', unitPlural: 'tehsils', UnitPlural: 'Tehsils',
+    placeholder: 'Search tehsils\u2026',
+    geo:  () => window.DD_GEO_T,
+    rows: () => window.DD_POV_MOUZA || {},
+    key:  p => p.dd_id || '',
+    name: p => ((window.DD_POV_MOUZA || {})[p.dd_id] || {}).name || '',
+    prov: p => p.prov || '',
+    // 1 MB between them, and most visits never leave the district geography,
+    // so these load the first time a tehsil group is chosen and not before.
+    assets: ['data/tehsils_geo.js', 'data/mouza_data.js'],
+  },
+};
+
+function geoKind(group) { return (INDICATOR_GROUPS[group || currentGroup] || {}).geo || 'district'; }
+function G() { return GEOGRAPHIES[geoKind()]; }
+function unitName(p) { return G().name(p || {}); }
+function unitProv(p) { return G().prov(p || {}); }
+function unitRecord(p) { return G().rows()[G().key(p || {})]; }
+
+const _assetsLoaded = new Set();
+function loadScriptOnce(src) {
+  if (_assetsLoaded.has(src)) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src; el.async = false;
+    el.onload = () => { _assetsLoaded.add(src); resolve(); };
+    el.onerror = () => reject(new Error('could not load ' + src));
+    document.head.appendChild(el);
+  });
+}
+async function ensureGeography(kind) {
+  for (const a of GEOGRAPHIES[kind].assets) await loadScriptOnce(a);
+}
+
 // ── State ───────────────────────────────────────────────────────────────────
 
 let map, districtLayer, rawData = {}, geoData;
+let unitLayers = {};
 let currentTopic = 'demographics';
 let currentGroup = 'demographics';
 let currentIndicator = 'pop_total';
@@ -632,9 +818,10 @@ function deselectDistrict() {
   const prev = layerFills.get(selectedDistrict);
   if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity, dashArray: prev.dashArray || null });
   selectedDistrict = null;
-  districtNameEl.textContent = 'Select a district';
+  districtNameEl.textContent = 'Select a ' + G().unit;
   districtProvEl.textContent = '';
-  statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+  statsDiv.innerHTML = '<p class="stats-placeholder">Click any ' + G().unit
+    + ' on the map to explore its data.</p>';
   document.getElementById('sidebar').classList.remove('has-district');
 }
 
@@ -740,8 +927,7 @@ function _surveyMetaPrefixes() {
 function isLowN(props) {
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return false;
-  const dist = props.districts || props.district_agency || '';
-  const row = rawData[normName(dist)];
+  const row = unitRecord(props);
   if (!row) return false;
   // Flag if ANY contributing source is low_n
   return mps.some(mp => !!row[`${mp}_low_n`]);
@@ -750,8 +936,7 @@ function isLowN(props) {
 function getNObs(props) {
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return null;
-  const dist = props.districts || props.district_agency || '';
-  const row = rawData[normName(dist)];
+  const row = unitRecord(props);
   if (!row) return null;
   // Return minimum n_obs across sources (most conservative)
   const obs = mps.map(mp => row[`${mp}_n_obs`]).filter(v => v != null);
@@ -765,8 +950,7 @@ function getNObs(props) {
 function isNotSurveyed(props) {
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return false;  // census group, always covered
-  const dist = props.districts || props.district_agency || '';
-  const row = rawData[normName(dist)];
+  const row = unitRecord(props);
   if (!row) return false;
   // Not surveyed = none of the expected n_obs keys exist
   return mps.every(mp => row[`${mp}_n_obs`] == null);
@@ -898,7 +1082,7 @@ function matchesProvince(provFilter, districtProv) {
 function populateProvinceSelect() {
   const provinces = new Set();
   districtLayer.eachLayer(l => {
-    provinces.add((l.feature.properties || {}).province_territory || 'Unknown');
+    provinces.add(unitProv(l.feature.properties) || 'Unknown');
   });
   provinceSelect.innerHTML = '<option value="ALL">All Provinces</option>';
   [...provinces].sort().forEach(p => {
@@ -931,9 +1115,16 @@ function updateYearButtons() {
 // ── GeoJSON layer ───────────────────────────────────────────────────────────
 
 function getVal(props) {
-  const dist = props.districts || props.district_agency || '';
-  const row  = rawData[normName(dist)];
+  const row = unitRecord(props);
   if (!row) return null;
+  const g = INDICATOR_GROUPS[currentGroup];
+  // Flat payloads (the Mouza Census) key straight off the indicator, and carry
+  // their own coverage flag: a polygon outside the frame is missing, not zero.
+  if (g && g.flatKeys) {
+    if (!row.cov) return null;
+    const fv = row[currentIndicator];
+    return (fv === null || fv === undefined) ? null : Number(fv);
+  }
   const k = (currentYear === 'diff')
     ? diffKey(currentGroup, currentIndicator)
     : dataKey(currentGroup, currentYear, currentIndicator);
@@ -943,7 +1134,7 @@ function getVal(props) {
 
 // Build rich tooltip content showing district name + current indicator value
 function getTooltipContent(props) {
-  const dist = props.districts || props.district_agency || '';
+  const dist = unitName(props);
   const v = getVal(props);
   const pct = isPct(currentIndicator);
   const g = INDICATOR_GROUPS[currentGroup];
@@ -1041,7 +1232,7 @@ function zoomToDistrict(layer) {
   map.fitBounds(bounds, { padding: [60, 60], maxZoom: 10 });
   isZoomedIn = true;
 
-  const dist = layer.feature.properties.districts || layer.feature.properties.district_agency || '';
+  const dist = unitName(layer.feature.properties);
   zoomDistName.textContent = dist;
   zoomBar.classList.remove('hidden');
 }
@@ -1053,15 +1244,53 @@ function zoomOut() {
   map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
 }
 
-function buildLayer() {
+async function buildLayer() {
+  const kind = geoKind();
+  await ensureGeography(kind);
   if (districtLayer) map.removeLayer(districtLayer);
-  districtLayer = L.geoJSON(geoData, {
+  if (unitLayers[kind]) {
+    districtLayer = unitLayers[kind];
+    districtLayer.addTo(map);
+    map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
+    populateProvinceSelect();
+    return;
+  }
+  districtLayer = L.geoJSON(GEOGRAPHIES[kind].geo(), {
     style: () => ({ color: '#8a9480', weight: 1, fillOpacity: 0.92, fillColor: '#e2e5ea' }),
     onEachFeature: onEachDistrict,
   }).addTo(map);
 
+  unitLayers[kind] = districtLayer;
   map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
   populateProvinceSelect();
+}
+
+// Switching geography invalidates the selection: it points at a layer that is
+// no longer on the map.
+async function syncGeography() {
+  const kind = geoKind();
+  if (districtLayer && unitLayers[kind] === districtLayer) return false;
+  selectedDistrict = null;
+  isZoomedIn = false;
+  zoomBar.classList.add('hidden');
+  await buildLayer();
+  syncUnitCopy();
+  return true;
+}
+
+// The visible nouns follow the geography rather than being baked into markup.
+function syncUnitCopy() {
+  const g = G();
+  searchInput.placeholder = g.placeholder;
+  const label = document.getElementById('summaryUnitsLabel');
+  if (label) label.textContent = g.UnitPlural + ' Showing';
+  const zo = document.getElementById('zoomOutLabel');
+  if (zo) zo.textContent = 'Back to all ' + g.unitPlural;
+  if (!selectedDistrict) {
+    districtNameEl.textContent = 'Select a ' + g.unit;
+    statsDiv.innerHTML = '<p class="stats-placeholder">Click any ' + g.unit
+      + ' on the map to explore its data.</p>';
+  }
 }
 
 // ── Colorize ────────────────────────────────────────────────────────────────
@@ -1072,7 +1301,7 @@ function colorize() {
 
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
-    const prov = p.province_territory || 'Unknown';
+    const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
     const v = getVal(p);
     if (v !== null && !isNaN(v)) values.push(v);
@@ -1082,7 +1311,7 @@ function colorize() {
     const provBoundsGroup = L.featureGroup();
     districtLayer.eachLayer(l => {
       const p = l.feature.properties || {};
-      const prov = p.province_territory || 'Unknown';
+      const prov = unitProv(p) || 'Unknown';
       let s;
       if (!matchesProvince(provFilter, prov)) {
         s = { fillOpacity: 0, fillColor: 'transparent', weight: 0, color: 'transparent', opacity: 0 };
@@ -1127,7 +1356,7 @@ function colorize() {
 
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
-    const prov = p.province_territory || 'Unknown';
+    const prov = unitProv(p) || 'Unknown';
     let style;
     if (!matchesProvince(provFilter, prov)) {
       // Hide non-matching provinces entirely
@@ -1160,7 +1389,7 @@ function colorize() {
 
   // Keep selected district highlighted
   if (selectedDistrict) {
-    const selProv = (selectedDistrict.feature.properties || {}).province_territory || '';
+    const selProv = unitProv(selectedDistrict.feature.properties);
     if (provFilter === 'ALL' || selProv === provFilter) {
       selectedDistrict.setStyle({ weight: 2.5, color: '#0c3a1e' });
       selectedDistrict.bringToFront();
@@ -1208,15 +1437,18 @@ function renderLegend(breaks, scale, isDiff) {
 // ── District detail panel ───────────────────────────────────────────────────
 
 function showDistrictDetail(props) {
-  const dist = props.districts || props.district_agency || '';
-  const prov = props.province_territory || '';
-  const key = normName(dist);
-  const row = rawData[key] || {};
+  const dist = unitName(props);
+  const prov = unitProv(props);
+  const key = G().key(props);
+  const row = unitRecord(props) || {};
 
   districtNameEl.textContent = dist;
   districtProvEl.textContent = prov;
 
   const g = INDICATOR_GROUPS[currentGroup];
+  // Flat payloads have none of the survey furniture below — no sample frame,
+  // no borrowed geography, no 2017/2023 pair, no census quick-stats.
+  if (g.flatKeys) { renderFlatDetail(g, row); return; }
   let html = '';
 
   // Check if district was not surveyed for this group
@@ -1295,6 +1527,28 @@ function showDistrictDetail(props) {
   document.getElementById('sidebar').classList.add('has-district');
 }
 
+// Flat payloads have no survey metadata, no 2017/2023 pair and no census
+// quick-stats to fall back on — just the indicators, plus what the row is made of.
+function renderFlatDetail(g, row) {
+  let html = '';
+  for (const [ind, label] of Object.entries(g.indicators)) {
+    const v = row.cov ? row[ind] : null;
+    html += `<div class="stat"><span>${label}</span><strong>${fmt(v)}</strong></div>`;
+  }
+  if (!row.cov) {
+    html += '<p class="stat-note">Not enumerated in the Mouza Census 2020. '
+         +  'Urban tehsils sit outside the rural frame; AJK and GB were not covered.</p>';
+  } else {
+    html += `<p class="stat-note">${(row.m || 0).toLocaleString()} mouzas`
+         + (row.np > 1 ? `, pooled from ${row.np} PBS tehsils that share this boundary` : '')
+         + (row.apx ? ' \u00b7 includes a tehsil placed here by judgement' : '')
+         + (row.bsp > 5 ? ` \u00b7 the reporting base varies by up to ${row.bsp}% between questions` : '')
+         + '. <a href="#" data-modal="mouza">What is a mouza?</a></p>';
+  }
+  statsDiv.innerHTML = html;
+  document.getElementById('sidebar').classList.add('has-district');
+}
+
 function quickStat(row, prefix, ind, label, pct = false) {
   const v = row[`${prefix}_2023_${ind}`] ?? row[`${prefix}_2017_${ind}`];
   return `<div class="stat stat-quick"><span>${label}</span><strong>${fmt(v, pct)}</strong></div>`;
@@ -1309,7 +1563,7 @@ function quickStatRaw(row, key, label, pct = false) {
 function updateDiagnostics(matched) {
   let total = 0;
   districtLayer.eachLayer(() => total++);
-  diagEl.textContent = `${matched} / ${total} districts matched`;
+  diagEl.textContent = `${matched} / ${total} ${G().unitPlural} matched`;
 }
 
 // ── CSV download ────────────────────────────────────────────────────────────
@@ -1320,12 +1574,11 @@ function prepareDownload() {
   const rows = [];
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
-    const dist = p.districts || p.district_agency || '';
-    const prov = p.province_territory || 'Unknown';
+    const dist = unitName(p);
+    const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
-    const key = normName(dist);
-    const row = rawData[key] || {};
-    const entry = { district: dist, province: prov };
+    const row = unitRecord(p) || {};
+    const entry = { [G().unit]: dist, province: prov };
     for (const ind of Object.keys(g.indicators)) {
       if (g.noYear) {
         entry[ind] = row[`${g.prefix}_${ind}`] ?? '';
@@ -1352,7 +1605,7 @@ function handleSearch() {
   if (!q) return;
   let found;
   districtLayer.eachLayer(l => {
-    const dist = l.feature.properties.districts || l.feature.properties.district_agency || '';
+    const dist = unitName(l.feature.properties);
     if (normName(dist).includes(q) && !found) found = l;
   });
   if (found) {
@@ -1363,17 +1616,19 @@ function handleSearch() {
 // ── Event wiring ────────────────────────────────────────────────────────────
 
 function wireEvents() {
-  topicSelect.addEventListener('change', () => {
+  topicSelect.addEventListener('change', async () => {
     currentTopic = topicSelect.value;
     populateGroupSelect();        // re-fill datasets for this topic
     populateIndicatorSelect();    // re-fill indicators for the new dataset
     updateYearButtons();
+    await syncGeography();
     colorize();
   });
-  groupSelect.addEventListener('change', () => {
+  groupSelect.addEventListener('change', async () => {
     currentGroup = groupSelect.value;
     populateIndicatorSelect();
     updateYearButtons();
+    await syncGeography();
     colorize();
   });
   indicatorSelect.addEventListener('change', () => {
@@ -1391,7 +1646,7 @@ function wireEvents() {
   });
 
   // Reset
-  if (resetBtn) resetBtn.addEventListener('click', () => {
+  if (resetBtn) resetBtn.addEventListener('click', async () => {
     currentTopic = 'demographics';
     currentGroup = 'demographics';
     currentIndicator = 'pop_total';
@@ -1404,12 +1659,15 @@ function wireEvents() {
     populateIndicatorSelect();
     provinceSelect.value = 'ALL';
     searchInput.value = '';
-    districtNameEl.textContent = 'Select a district';
+    districtNameEl.textContent = 'Select a ' + G().unit;
     districtProvEl.textContent = '';
-    statsDiv.innerHTML = '<p class="stats-placeholder">Click any district on the map to explore its data.</p>';
+    statsDiv.innerHTML = '<p class="stats-placeholder">Click any ' + G().unit
+      + ' on the map to explore its data.</p>';
     document.getElementById('sidebar').classList.remove('has-district');
     selectedDistrict = null;
     updateYearButtons();
+    await syncGeography();
+    syncUnitCopy();
     colorize();
     map.fitBounds(districtLayer.getBounds(), { padding: [20, 20] });
   });
@@ -1440,7 +1698,7 @@ function updateSummaryBar() {
 
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
-    const prov = p.province_territory || 'Unknown';
+    const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
     total++;
     const v = getVal(p);
@@ -1462,7 +1720,7 @@ function updateSummaryBar() {
     const values = [];
     districtLayer.eachLayer(l => {
       const p = l.feature.properties || {};
-      const prov = p.province_territory || 'Unknown';
+      const prov = unitProv(p) || 'Unknown';
       if (!matchesProvince(provFilter, prov)) return;
       const v = getVal(p);
       if (v !== null && !isNaN(v)) values.push(v);
@@ -1510,11 +1768,11 @@ function buildRankings() {
 
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
-    const prov = p.province_territory || 'Unknown';
+    const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
-    const dist = p.districts || p.district_agency || '';
+    const dist = unitName(p);
     const v = getVal(p);
-    if (v !== null && !isNaN(v)) entries.push({ dist, prov, v, layer: l });
+    if (v !== null && !isNaN(v)) entries.push({ dist, prov, v, layer: l, key: G().key(p) });
   });
 
   entries.sort((a, b) => b.v - a.v);
@@ -1539,7 +1797,7 @@ function buildRankings() {
     items.forEach((e, i) => {
       const rank = descending ? totalEntries - i : startRank + i;
       const valStr = currentYear === 'diff' ? fmtDiff(e.v, pct) : fmt(e.v, pct);
-      html += `<div class="ranking-row" data-dist-key="${normName(e.dist)}">` +
+      html += `<div class="ranking-row" data-dist-key="${e.key}">` +
         `<span class="ranking-rank">${rank}</span>` +
         `<span class="ranking-name">${e.dist}</span>` +
         `<strong class="ranking-val">${valStr}</strong></div>`;
@@ -1550,7 +1808,7 @@ function buildRankings() {
     container.querySelectorAll('.ranking-row').forEach(row => {
       row.addEventListener('click', () => {
         const key = row.dataset.distKey;
-        const match = entries.find(e => normName(e.dist) === key);
+        const match = entries.find(e => e.key === key);
         if (match && match.layer) {
           showDistrictDetail(match.layer.feature.properties);
           match.layer.openTooltip();
@@ -1601,7 +1859,8 @@ function wireMobile() {
 async function init() {
   initMap();
   await loadData();
-  buildLayer();
+  await buildLayer();
+  syncUnitCopy();
   populateTopicSelect();
   populateGroupSelect();
   populateIndicatorSelect();

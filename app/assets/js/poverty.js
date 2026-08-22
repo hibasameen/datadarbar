@@ -1,20 +1,15 @@
 /* global L, chroma */
 /* Data Darbar — Poverty Metrics
-   Five layers on two geometries: the survey-based MPI at district (ADM2) level,
-   three satellite-derived layers and the Mouza Census facility inventory at tehsil
-   (ADM3) level. Join keys (dd_key / dd_id) are baked into the GeoJSON, so no name
-   matching happens in the browser. */
+   Four layers on two geometries: the survey-based MPI at district (ADM2) level,
+   three satellite-derived layers at tehsil (ADM3) level. Join keys (dd_key /
+   dd_id) are baked into the GeoJSON, so no name matching happens in the browser.
+   The Mouza Census lives on the district & tehsil map, not here. */
 
 const GEO_DISTRICT = 'data/poverty_districts.geojson';
 const GEO_TEHSIL   = 'data/poverty_tehsils.geojson';
 const DATA_PATH    = 'data/poverty_data.json';
 
 const N = (v) => (v === null || v === undefined || Number.isNaN(v)) ? null : +v;
-
-// Mouza Census indicators all live under rec.mz and are already percentages.
-// grp drives the grouped dropdown and the grouped detail panel.
-const MZ = (k, label, grp, extra) => Object.assign(
-  { label, grp, pct: true, get: r => (r.mz && r.mz.cov) ? N(r.mz[k]) : null }, extra || {});
 
 const LAYERS = {
   mpi: {
@@ -64,86 +59,6 @@ const LAYERS = {
     },
   },
 
-  mouza: {
-    label: 'Rural Facilities',
-    geo: 'tehsil',
-    unitLabel: 'tehsils',
-    source: 'PBS Mouza Census 2020 · 48,738 mouzas',
-    blurb: 'What exists on the ground in each revenue village. Every figure is a share of the '
-         + 'mouzas that answered that question, so it measures places, not people — a mouza of '
-         + '12,000 and a mouza of 300 count the same. Rural only: cities are not in the frame.',
-    ramp: ['#eef4f1', '#3f7d6a', '#12332b'],
-    // modals.js registers this pop-out; the link only appears on this layer
-    explains: 'mouza',
-    explainLabel: 'What is a mouza?',
-    indicators: {
-      // Electricity and energy
-      elec_none:    MZ('elec_none',    'No electricity (%)',                  'Electricity & energy'),
-      elec_partial: MZ('elec_partial', 'Electricity in some houses only (%)', 'Electricity & energy'),
-      elec_all:     MZ('elec_all',     'Electricity in all houses (%)',       'Electricity & energy'),
-      solar:        MZ('solar',        'Solar in use (%)',                    'Electricity & energy'),
-      alt_none:     MZ('alt_none',     'No alternative energy source (%)',    'Electricity & energy'),
-      // Drinking water
-      w_piped:      MZ('w_piped',   'Government piped supply (%)',        'Drinking water'),
-      w_pump:       MZ('w_pump',    'Hand or motor pump (%)',             'Drinking water'),
-      w_well:       MZ('w_well',    'Well (%)',                           'Drinking water'),
-      w_surface:    MZ('w_surface', 'River, canal or pond (%)',           'Drinking water'),
-      w_karez:      MZ('w_karez',   'Spring, ravine or karez (%)',        'Drinking water'),
-      w_treated:    MZ('w_treated', 'Filtration or RO plant (%)',         'Drinking water'),
-      wdepth:       MZ('wdepth',    'Water table depth (feet)',           'Drinking water', { pct: false, dp: 0 }),
-      // Streets and roads
-      st_dirt:      MZ('st_dirt',      'Dirt streets (%)',            'Streets & roads'),
-      st_paved:     MZ('st_paved',     'Cemented or bricked streets (%)', 'Streets & roads'),
-      st_metaled:   MZ('st_metaled',   'Metalled streets (%)',        'Streets & roads'),
-      road_metaled: MZ('road_metaled', 'On a metalled road (%)',      'Streets & roads'),
-      // Housing
-      h_bricked:    MZ('h_bricked', 'Houses mainly brick (%)', 'Housing'),
-      h_mud:        MZ('h_mud',     'Houses mainly mud (%)',   'Housing'),
-      // Schools
-      sch_pri_f:    MZ('sch_pri_f',  "Girls' primary school (%)",  'Schools'),
-      sch_pri_m:    MZ('sch_pri_m',  "Boys' primary school (%)",   'Schools'),
-      sch_mid_f:    MZ('sch_mid_f',  "Girls' middle school (%)",   'Schools'),
-      sch_mid_m:    MZ('sch_mid_m',  "Boys' middle school (%)",    'Schools'),
-      sch_high_f:   MZ('sch_high_f', "Girls' high school (%)",     'Schools'),
-      sch_high_m:   MZ('sch_high_m', "Boys' high school (%)",      'Schools'),
-      col_f:        MZ('col_f',      "Girls' college (%)",         'Schools'),
-      col_m:        MZ('col_m',      "Boys' college (%)",          'Schools'),
-      madrasa:      MZ('madrasa',    'Deeni madrasa (%)',          'Schools'),
-      // Health
-      hf_bhu:       MZ('hf_bhu',     'Basic health unit (%)',        'Health'),
-      hf_rhc:       MZ('hf_rhc',     'Rural health centre (%)',      'Health'),
-      hf_hosp:      MZ('hf_hosp',    'Hospital or dispensary (%)',   'Health'),
-      hf_private:   MZ('hf_private', 'Private MBBS doctor (%)',      'Health'),
-      hf_midwife:   MZ('hf_midwife', 'Midwife (%)',                  'Health'),
-      hf_mch:       MZ('hf_mch',     'Mother and child centre (%)',  'Health'),
-      // Connectivity
-      mobile:       MZ('mobile',     'Mobile signal (%)',            'Connectivity'),
-      net_mobile:   MZ('net_mobile', 'Mobile internet (%)',          'Connectivity'),
-      net_dsl:      MZ('net_dsl',    'Fixed-line DSL (%)',           'Connectivity'),
-      transport:    MZ('transport',  'Public transport (%)',         'Connectivity'),
-      post:         MZ('post',       'Post office (%)',              'Connectivity'),
-      police:       MZ('police',     'Police station (%)',           'Connectivity'),
-      // Cooking fuel
-      fuel_wood:    MZ('fuel_wood', 'Firewood (%)',        'Cooking fuel'),
-      fuel_dung:    MZ('fuel_dung', 'Animal dung cake (%)', 'Cooking fuel'),
-      fuel_gas:     MZ('fuel_gas',  'Piped sui gas (%)',   'Cooking fuel'),
-      fuel_lpg:     MZ('fuel_lpg',  'LPG (%)',             'Cooking fuel'),
-      // Markets and credit
-      bazar:        MZ('bazar',       'Bazar (%)',                  'Markets & credit'),
-      mkt_grain:    MZ('mkt_grain',   'Grain wholesale market (%)', 'Markets & credit'),
-      bank_online:  MZ('bank_online', 'Commercial bank branch (%)', 'Markets & credit'),
-      credit_mfi:   MZ('credit_mfi',  'Microfinance lender (%)',    'Markets & credit'),
-      ind_none:     MZ('ind_none',    'No industry of any scale (%)', 'Markets & credit'),
-      // Hazards
-      dis_any:      MZ('dis_any',     'Exposed to natural disaster (%)', 'Hazards'),
-      dis_flood:    MZ('dis_flood',   'Flood (%)',                      'Hazards'),
-      dis_drought:  MZ('dis_drought', 'Drought (%)',                    'Hazards'),
-      // Settlement
-      rural:        MZ('rural',    'Mouzas classified rural (%)',            'Settlement'),
-      urbanish:     MZ('urbanish', 'Mouzas urban or partly urban (%)',       'Settlement'),
-      unpop:        MZ('unpop',    'Mouzas unpopulated (%)',                 'Settlement'),
-    },
-  },
   nl: {
     label: 'Night-time Lights',
     geo: 'tehsil',
@@ -215,9 +130,6 @@ function suppressed(rec) {
 function hasData(rec) {
   if (!rec) return false;
   if (curLayer === 'mpi') return rec.mpi !== undefined;
-  // A tehsil can be outside the Mouza Census frame entirely (urban Karachi), or
-  // inside it but never enumerated (AJK, GB, three Makran sub-tehsils).
-  if (curLayer === 'mouza') return !!(rec.mz && rec.mz.cov);
   return true;
 }
 
@@ -363,8 +275,7 @@ function render() {
   updateSummary(vals);
   buildRankings();
   prepareDownload();
-  sourceNote.innerHTML = `<b>${L0.label}</b> — ${L0.source}<br>${L0.blurb}`
-    + (L0.explains ? ` <a href="#" class="source-explain" data-modal="${L0.explains}">${L0.explainLabel}</a>` : '');
+  sourceNote.innerHTML = `<b>${L0.label}</b> — ${L0.source}<br>${L0.blurb}`;
   if (selectedKey) showDetail(selectedKey);
 }
 
@@ -396,7 +307,6 @@ function renderLegend(breaks, scale, diverging, classColors) {
   h += `<div class="legend-labels"><span>${fmt(breaks[0], s.pct, s.dp)}</span><span>${fmt(breaks[breaks.length - 1], s.pct, s.dp)}</span></div>`;
   if (curLayer === 'mpi') h += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — suppressed</div>';
   if (curLayer === 'nl') h += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Uninhabited terrain — snow/sand albedo, not activity</div>';
-  if (curLayer === 'mouza') h += '<div class="legend-lown">Urban tehsils sit outside the rural frame; AJK and GB were not enumerated</div>';
   h += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> No data for this unit</div>';
   legendDiv.innerHTML = h;
 }
@@ -452,14 +362,6 @@ function showDetail(key) {
     const on = k === curInd ? ' stat-active' : '';
     h += `<div class="stat${on}"><span>${sp.label}</span><strong>${fmt(v, sp.pct, sp.dp)}</strong></div>`;
   }
-  if (curLayer === 'mouza' && rec.mz && rec.mz.cov) {
-    const mz = rec.mz;
-    h += `<p class="stat-note">${mz.m.toLocaleString()} mouzas`
-       + (mz.np > 1 ? `, pooled from ${mz.np} PBS tehsils that share this boundary` : '')
-       + (mz.apx ? ' · includes a tehsil placed here by judgement, see the crosswalk' : '')
-       + (mz.bsp > 5 ? ` · the reporting base varies by up to ${mz.bsp}% between questions` : '')
-       + '.</p>';
-  }
   if (curLayer === 'mpi' && rec.rank) h += `<p class="stat-note">Rank ${rec.rank} of 119 districts by MPI (1 = poorest). Sample: ${rec.n_obs.toLocaleString()} households.</p>`;
   if (curLayer === 'nl' && rec.nl && Object.keys(rec.nl).length) {
     h += '<p class="stat-note">Lights per km², June of each year:</p><div class="spark">';
@@ -511,12 +413,6 @@ async function init() {
   map = L.map('map', { zoomControl: true, attributionControl: false, minZoom: 4, maxZoom: 11,
                        zoomSnap: 0.1, zoomDelta: 0.5 });
   DATA = window.DD_POV || await (await fetch(DATA_PATH)).json();
-  // Mouza Census payload ships separately and is keyed on the same dd_id.
-  if (window.DD_POV_MOUZA) {
-    for (const [id, mz] of Object.entries(window.DD_POV_MOUZA)) {
-      if (DATA.tehsils[id]) DATA.tehsils[id].mz = mz;
-    }
-  }
   curYear = String(DATA.meta.years[DATA.meta.years.length - 1]);
 
   buildLayerSelect(); buildGroupSelect(); buildIndicatorSelect(); buildProvinceSelect();
