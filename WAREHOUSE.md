@@ -29,10 +29,11 @@ python3 etl/build_web_warehouse.py            # reads the iCloud desktop warehou
 python3 etl/build_web_warehouse.py --src /path/to/data_darbar_warehouse
 ```
 
-It reads `app/data/districts.json`, `app/data/poverty_data.js`, the macro Parquet files
-from the desktop warehouse, and `app/assets/js/app.js` (for indicator labels — the label
-dictionary is derived from `INDICATOR_GROUPS`, so the console and the map can't drift
-apart). Rerun it after any `build_dataset.py` run.
+It reads `app/data/districts.json`, `app/data/poverty_data.js`, `etl/mouza2020/*.csv`,
+the macro Parquet files from the desktop warehouse, and `app/assets/js/app.js` (for
+indicator labels — the label dictionary is derived from `INDICATOR_GROUPS`, so the console
+and the map can't drift apart). Rerun it after any `build_dataset.py` run, or after
+regenerating the Mouza Census crosswalk in `etl/mouza2020`.
 
 `catalog.json` carries a `generated` date which is appended to every Parquet URL as
 `?v=…`, so a rebuild busts the CDN cache automatically.

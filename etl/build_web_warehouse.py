@@ -15,6 +15,7 @@ Inputs  (all local, no network):
   <icloud>/data_darbar_warehouse/*.parquet   trade, national accounts, budget, LSM, file catalog
   app/data/districts.json                    district indicator panel (built by build_dataset.py)
   app/data/poverty_data.js                   MPI (district) + RWI/pop/night-lights (tehsil)
+  etl/mouza2020/*.csv                        Mouza Census 2020 counts + the ADM3 crosswalk
   app/assets/js/app.js                       INDICATOR_GROUPS -> human labels for district fields
 
 Output: app/data/warehouse/{*.parquet, catalog.json}
@@ -425,6 +426,105 @@ def build(src: Path) -> None:
         "SELECT * FROM df_lights ORDER BY tehsil_id, year",
     )
 
+    # ── 4. Mouza Census 2020 ─────────────────────────────────────────────────
+    # The raw PBS counts rather than the shares the map draws. Shares bake in a
+    # denominator choice the source does not publish (see notes); counts let
+    # anyone recompute with their own.
+    print("mouza…")
+    mz_dir = REPO / "etl" / "mouza2020"
+    mz_csv = (mz_dir / "pk-mouza-2020-tehsil.csv").as_posix()
+    xw_csv = (mz_dir / "mouza2020_tehsil_crosswalk.csv").as_posix()
+
+    def mouza_col_desc(name):
+        """230 columns is too many to hand-write, and the families are regular."""
+        fams = [
+            ("EducationFacility_", "mouzas with / without this school type (Existance / NotExistance pair)"),
+            ("HealthFacility_", "mouzas reporting this health facility (multiple response)"),
+            ("SourceOfDrinkingWater_", "mouzas reporting this drinking-water source (multiple response)"),
+            ("StatusTypeOfStreets_", "mouzas reporting this street surface (multiple response)"),
+            ("ElectrictiyAvailability_", "mouzas by how much of the settlement has electricity (exclusive; PBS spelling)"),
+            ("AlternateEnergySource_", "mouzas reporting this alternative energy source"),
+            ("FuelAvailability_", "mouzas reporting this domestic fuel (multiple response)"),
+            ("CommunityInfrastructure_", "mouzas with / without this facility"),
+            ("CreditSource_", "mouzas reporting this credit source, post office or police station"),
+            ("IndustryAndSourceOfEmployment_", "mouzas by industry scale, and by how much of the workforce is in each sector"),
+            ("NaturalDisaster_", "mouzas exposed to natural disaster, and to each type"),
+            ("HousingConstruction_", "mouzas by predominant house construction material (exclusive)"),
+            ("MauzaStatus_", "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"),
+            ("Livestock_", "mouzas with / without this veterinary facility"),
+            ("WholesaleMarket_", "mouzas with this wholesale market"),
+            ("DepoAgencyShop_", "mouzas with this agricultural input supplier"),
+            ("MediaSource_", "mouzas reached by this medium (multiple response)"),
+        ]
+        for pre, txt in fams:
+            if name.startswith(pre):
+                return txt
+        return {
+            "province_code": "PBS province code", "province": "province name",
+            "division_code": "PBS division code", "division": "division name",
+            "district_code": "PBS district code (999 = the Cholistan pseudo-district)",
+            "district": "district name", "tehsil_code": "PBS tehsil code, unique nationally",
+            "tehsil": "tehsil name as PBS writes it",
+            "TotalMauzaCount": "mouzas enumerated in the tehsil",
+            "CompletedMouzaCount": "of which completed",
+            "CompletedWithErrorMouzaCount": "of which flagged with an error at source",
+            "RuralPopulatedMouzaCount": "mouzas that are rural and populated",
+            "TotalArea": "total area, acres", "CultivatedArea": "cultivated area, acres",
+            "NonCultivatedArea": "non-cultivated area, acres",
+            "PopulatedArea": "built-up area, acres",
+            "AvgDepthOfWater": "mean water-table depth, feet",
+            "MinDepthOfWater": "minimum water-table depth, feet",
+            "MaxDepthOfWater": "maximum water-table depth, feet",
+        }.get(name, "count of mouzas reporting this")
+
+    mz_schema = con.sql(f"DESCRIBE SELECT * FROM read_csv_auto('{mz_csv}')").fetchall()
+    register(
+        "mouza_tehsil",
+        "Mouza Census 2020 facility counts, one row per PBS tehsil.",
+        "Every column is a COUNT OF MOUZAS (revenue villages), never of people or households — "
+        "a mouza of 12,000 and a mouza of 300 each count once. PBS publishes numerators without "
+        "a denominator, and its own indicator blocks disagree about how many mouzas answered: "
+        "only 33 of the 544 enumerated tehsils give a single consistent base, and blocks can "
+        "differ by up to 181. Take each block's own row sum as its base rather than "
+        "TotalMauzaCount. Existance/NotExistance pairs are exclusive; drinking water, health "
+        "facility type, fuel, street surface and media are multiple response, so they can sum "
+        "past the base. The frame is rural — cities are not revenue villages — but mouzas that "
+        "urbanise stay in it (4.9% urban, 2.4% partly urban). 51 tehsils return all zeros: AJK "
+        "and GB were not enumerated, nor were Mand and Tump in Kech or Kallag in Panjgur. Join "
+        "to the ADM3 geography through mouza_crosswalk. Column names keep PBS's own casing and "
+        "spelling; DuckDB matches them case-insensitively.",
+        {c[0]: mouza_col_desc(c[0]) for c in mz_schema},
+        "PBS Mouza Census 2020 (mc2020.pbos.gov.pk)",
+        f"SELECT * FROM read_csv_auto('{mz_csv}') ORDER BY province_code, district_code, tehsil_code",
+    )
+
+    register(
+        "mouza_crosswalk",
+        "Maps each PBS tehsil to the ADM3 polygon Data Darbar maps it on.",
+        "MANY-TO-ONE by design: PBS enumerates 595 tehsils against the boundary file's 553, "
+        "because it carries sub-tehsils created after the polygons were drawn. Since every "
+        "Mouza Census figure is a count of mouzas, summing several PBS tehsils into one polygon "
+        "is the correct operation — group by tehsil_id and sum before taking any share. "
+        "match records how each row was resolved: exact_name, variant (same place spelled "
+        "differently), contained, fuzzy, only_tehsil_in_district, parent (a sub-tehsil folded "
+        "into the unit it was carved from), and approx (no polygon exists for the area, so it "
+        "was placed in a neighbour — treat those tehsils' placement as a judgement call). "
+        "All 48,738 mouzas are assigned. The 10 unresolved rows all have zero mouzas.",
+        {
+            "tehsil_code": "PBS tehsil code — joins to mouza_tehsil.tehsil_code",
+            "tehsil": "PBS tehsil name",
+            "district_code": "PBS district code", "district": "PBS district name",
+            "province": "province name", "mouzas": "mouzas enumerated (0 = not enumerated)",
+            "dd_id": "ADM3 identifier — joins to tehsil_satellite.tehsil_id",
+            "dd_name": "boundary-file tehsil name", "dd_district": "boundary-file district key",
+            "match": "how the row was matched (see notes)",
+            "dd_candidates": "boundary-file names considered, where the match failed",
+        },
+        "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3",
+        f"SELECT * FROM read_csv_auto('{xw_csv}', all_varchar=true) "
+        f"ORDER BY province, district, tehsil",
+    )
+
     # ── 3. macro tables lifted from the desktop warehouse ────────────────────
     print("macro…")
     t = (src / "trade_hs8.parquet").as_posix()
@@ -586,6 +686,41 @@ EXAMPLES = [
              "JOIN tehsil_satellite s USING (tehsil_id)\n"
              "WHERE s.nl_lowc = 0 AND s.pop > 200000\n"
              "GROUP BY 1, 2, 5\nORDER BY y2026 / nullif(y2020, 0) DESC\nLIMIT 20;")},
+    {"title": "Rural electrification, worst tehsils (Mouza Census)",
+     "sql": ("-- Shares are of MOUZAS, not people. Aggregate to the polygon first:\n"
+             "-- several PBS tehsils can share one boundary.\n"
+             "SELECT x.dd_name AS tehsil, m.province,\n"
+             "       sum(m.\"ElectrictiyAvailability_NoneMouzas\") AS no_electricity,\n"
+             "       sum(m.\"ElectrictiyAvailability_AllMouzas\"\n"
+             "         + m.\"ElectrictiyAvailability_MostlyMouzas\"\n"
+             "         + m.\"ElectrictiyAvailability_SomeMouzas\"\n"
+             "         + m.\"ElectrictiyAvailability_NoneMouzas\") AS base,\n"
+             "       round(100.0 * sum(m.\"ElectrictiyAvailability_NoneMouzas\")\n"
+             "             / nullif(sum(m.\"ElectrictiyAvailability_AllMouzas\"\n"
+             "               + m.\"ElectrictiyAvailability_MostlyMouzas\"\n"
+             "               + m.\"ElectrictiyAvailability_SomeMouzas\"\n"
+             "               + m.\"ElectrictiyAvailability_NoneMouzas\"), 0), 1) AS pct_dark\n"
+             "FROM mouza_tehsil m\n"
+             "JOIN mouza_crosswalk x USING (tehsil_code)\n"
+             "WHERE m.TotalMauzaCount > 0\n"
+             "GROUP BY 1, 2 HAVING base >= 50\n"
+             "ORDER BY pct_dark DESC LIMIT 20;")},
+    {"title": "Do brighter tehsils have more girls' schools?",
+     "sql": ("-- Facilities are places, lights are satellite: this asks whether the\n"
+             "-- two agree, not whether either causes the other.\n"
+             "SELECT s.prov,\n"
+             "       count(*) AS tehsils,\n"
+             "       round(corr(g.pct_girls_primary, ln(s.nl_latest + 0.01)), 3) AS corr\n"
+             "FROM (SELECT x.dd_id,\n"
+             "             100.0 * sum(m.\"EducationFacility_FemalePrimaryExistanceCount\")\n"
+             "             / nullif(sum(m.\"EducationFacility_FemalePrimaryExistanceCount\"\n"
+             "               + m.\"EducationFacility_FemalePrimaryNotExistanceCount\"), 0)\n"
+             "               AS pct_girls_primary\n"
+             "      FROM mouza_tehsil m JOIN mouza_crosswalk x USING (tehsil_code)\n"
+             "      WHERE m.TotalMauzaCount > 0 GROUP BY 1) g\n"
+             "JOIN tehsil_satellite s ON s.tehsil_id = g.dd_id\n"
+             "WHERE s.nl_lowc = 0\n"
+             "GROUP BY 1 HAVING count(*) >= 5 ORDER BY 3;")},
     {"title": "Urbanisation vs multidimensional poverty",
      "sql": ("SELECT d.district, d.province, d.value AS pct_urban_2023, m.mpi\n"
              "FROM district_indicators d\n"

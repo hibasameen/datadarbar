@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-08-16",
+ "generated": "2026-08-22",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -286,6 +286,1235 @@
      "name": "monthly_index",
      "type": "DOUBLE",
      "description": "monthly index level"
+    }
+   ]
+  },
+  {
+   "name": "mouza_crosswalk",
+   "file": "mouza_crosswalk.parquet",
+   "bytes": 17991,
+   "rows": 595,
+   "description": "Maps each PBS tehsil to the ADM3 polygon Data Darbar maps it on.",
+   "notes": "MANY-TO-ONE by design: PBS enumerates 595 tehsils against the boundary file's 553, because it carries sub-tehsils created after the polygons were drawn. Since every Mouza Census figure is a count of mouzas, summing several PBS tehsils into one polygon is the correct operation \u2014 group by tehsil_id and sum before taking any share. match records how each row was resolved: exact_name, variant (same place spelled differently), contained, fuzzy, only_tehsil_in_district, parent (a sub-tehsil folded into the unit it was carved from), and approx (no polygon exists for the area, so it was placed in a neighbour \u2014 treat those tehsils' placement as a judgement call). All 48,738 mouzas are assigned. The 10 unresolved rows all have zero mouzas.",
+   "unit": null,
+   "source": "PBS Mouza Census 2020 frame \u00d7 geoBoundaries PAK ADM3",
+   "columns": [
+    {
+     "name": "tehsil_code",
+     "type": "VARCHAR",
+     "description": "PBS tehsil code \u2014 joins to mouza_tehsil.tehsil_code"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "PBS tehsil name"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS district code"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "PBS district name"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province name"
+    },
+    {
+     "name": "mouzas",
+     "type": "VARCHAR",
+     "description": "mouzas enumerated (0 = not enumerated)"
+    },
+    {
+     "name": "dd_id",
+     "type": "VARCHAR",
+     "description": "ADM3 identifier \u2014 joins to tehsil_satellite.tehsil_id"
+    },
+    {
+     "name": "dd_name",
+     "type": "VARCHAR",
+     "description": "boundary-file tehsil name"
+    },
+    {
+     "name": "dd_district",
+     "type": "VARCHAR",
+     "description": "boundary-file district key"
+    },
+    {
+     "name": "match",
+     "type": "VARCHAR",
+     "description": "how the row was matched (see notes)"
+    },
+    {
+     "name": "dd_candidates",
+     "type": "VARCHAR",
+     "description": "boundary-file names considered, where the match failed"
+    }
+   ]
+  },
+  {
+   "name": "mouza_tehsil",
+   "file": "mouza_tehsil.parquet",
+   "bytes": 190122,
+   "rows": 595,
+   "description": "Mouza Census 2020 facility counts, one row per PBS tehsil.",
+   "notes": "Every column is a COUNT OF MOUZAS (revenue villages), never of people or households \u2014 a mouza of 12,000 and a mouza of 300 each count once. PBS publishes numerators without a denominator, and its own indicator blocks disagree about how many mouzas answered: only 33 of the 544 enumerated tehsils give a single consistent base, and blocks can differ by up to 181. Take each block's own row sum as its base rather than TotalMauzaCount. Existance/NotExistance pairs are exclusive; drinking water, health facility type, fuel, street surface and media are multiple response, so they can sum past the base. The frame is rural \u2014 cities are not revenue villages \u2014 but mouzas that urbanise stay in it (4.9% urban, 2.4% partly urban). 51 tehsils return all zeros: AJK and GB were not enumerated, nor were Mand and Tump in Kech or Kallag in Panjgur. Join to the ADM3 geography through mouza_crosswalk. Column names keep PBS's own casing and spelling; DuckDB matches them case-insensitively.",
+   "unit": null,
+   "source": "PBS Mouza Census 2020 (mc2020.pbos.gov.pk)",
+   "columns": [
+    {
+     "name": "province_code",
+     "type": "BIGINT",
+     "description": "PBS province code"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province name"
+    },
+    {
+     "name": "division_code",
+     "type": "VARCHAR",
+     "description": "PBS division code"
+    },
+    {
+     "name": "division",
+     "type": "VARCHAR",
+     "description": "division name"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS district code (999 = the Cholistan pseudo-district)"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district name"
+    },
+    {
+     "name": "tehsil_code",
+     "type": "VARCHAR",
+     "description": "PBS tehsil code, unique nationally"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil name as PBS writes it"
+    },
+    {
+     "name": "TotalMauzaCount",
+     "type": "BIGINT",
+     "description": "mouzas enumerated in the tehsil"
+    },
+    {
+     "name": "CompletedMouzaCount",
+     "type": "BIGINT",
+     "description": "of which completed"
+    },
+    {
+     "name": "CompletedWithErrorMouzaCount",
+     "type": "BIGINT",
+     "description": "of which flagged with an error at source"
+    },
+    {
+     "name": "RuralMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "UrbanMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "PartlyUrbanMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "ForestMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "ForestPopulatedMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "ForestUnPopulatedMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "UnPopulatedMouzaCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "RuralPopulatedMouzaCount",
+     "type": "BIGINT",
+     "description": "mouzas that are rural and populated"
+    },
+    {
+     "name": "TotalArea",
+     "type": "BIGINT",
+     "description": "total area, acres"
+    },
+    {
+     "name": "CultivatedArea",
+     "type": "BIGINT",
+     "description": "cultivated area, acres"
+    },
+    {
+     "name": "NonCultivatedArea",
+     "type": "BIGINT",
+     "description": "non-cultivated area, acres"
+    },
+    {
+     "name": "PopulatedArea",
+     "type": "BIGINT",
+     "description": "built-up area, acres"
+    },
+    {
+     "name": "WheatCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "RiceCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "CottonCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "SugarCaneCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "CornCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "PulsesCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "FarmsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "VegetablesCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "CanalCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "RiverCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "TubewellCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "StreamsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "WatercourseCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "AridCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "FloodedCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "OthersCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "DripSystemCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "SprinklerSystemCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "OtherSystemCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "SweetWaterCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "BarkishWaterCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "PoultryFarmsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "LiveStockFarmsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "FishFarmsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "MetaledRoadsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "CementedRoadsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "BrickedRoadsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "DirtRoadsCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "MauzaStatus_RuralCount",
+     "type": "BIGINT",
+     "description": "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"
+    },
+    {
+     "name": "MauzaStatus_UrbanCount",
+     "type": "BIGINT",
+     "description": "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"
+    },
+    {
+     "name": "MauzaStatus_PartiallyUrbanCount",
+     "type": "BIGINT",
+     "description": "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"
+    },
+    {
+     "name": "MauzaStatus_ForestCount",
+     "type": "BIGINT",
+     "description": "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"
+    },
+    {
+     "name": "MauzaStatus_UnPopulatedCount",
+     "type": "BIGINT",
+     "description": "mouzas by settlement status (exclusive; sums to TotalMauzaCount)"
+    },
+    {
+     "name": "HousingConstruction_Bricked",
+     "type": "BIGINT",
+     "description": "mouzas by predominant house construction material (exclusive)"
+    },
+    {
+     "name": "HousingConstruction_MudMade",
+     "type": "BIGINT",
+     "description": "mouzas by predominant house construction material (exclusive)"
+    },
+    {
+     "name": "HousingConstruction_BricksAndMud",
+     "type": "BIGINT",
+     "description": "mouzas by predominant house construction material (exclusive)"
+    },
+    {
+     "name": "HousingConstruction_Others",
+     "type": "BIGINT",
+     "description": "mouzas by predominant house construction material (exclusive)"
+    },
+    {
+     "name": "EducationFacility_MalePrimaryExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MalePrimaryNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemalePrimaryExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemalePrimaryNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleMiddleExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleMiddleNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleMiddleExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleMiddleNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleHHSchoolExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleHHSchoolNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleHHSchoolExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleHHSchoolNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleCollegeExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleCollegeNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleCollegeExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleCollegeNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleTechInstituteExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleTechInstituteNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleTechInstituteExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleTechInstituteNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleDeniMudarsaExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_MaleDeniMudarsaNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleDeniMudarsaExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "EducationFacility_FemaleDeniMudarsaNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this school type (Existance / NotExistance pair)"
+    },
+    {
+     "name": "Livestock_VeterinaryCenterExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "Livestock_VeterinaryCenterNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "Livestock_PrivateFacilityExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "Livestock_PrivateFacilityNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "Livestock_MobileVeterinaryExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "Livestock_MobileVeterinaryNotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this veterinary facility"
+    },
+    {
+     "name": "MediaSource_RadioCount",
+     "type": "BIGINT",
+     "description": "mouzas reached by this medium (multiple response)"
+    },
+    {
+     "name": "MediaSource_TVCount",
+     "type": "BIGINT",
+     "description": "mouzas reached by this medium (multiple response)"
+    },
+    {
+     "name": "MediaSource_CableCount",
+     "type": "BIGINT",
+     "description": "mouzas reached by this medium (multiple response)"
+    },
+    {
+     "name": "MediaSource_NewspaperCount",
+     "type": "BIGINT",
+     "description": "mouzas reached by this medium (multiple response)"
+    },
+    {
+     "name": "MediaSource_NoneCount",
+     "type": "BIGINT",
+     "description": "mouzas reached by this medium (multiple response)"
+    },
+    {
+     "name": "DepoAgencyShop_FertilizerCount",
+     "type": "BIGINT",
+     "description": "mouzas with this agricultural input supplier"
+    },
+    {
+     "name": "DepoAgencyShop_SeedCount",
+     "type": "BIGINT",
+     "description": "mouzas with this agricultural input supplier"
+    },
+    {
+     "name": "DepoAgencyShop_PesticideCount",
+     "type": "BIGINT",
+     "description": "mouzas with this agricultural input supplier"
+    },
+    {
+     "name": "WholesaleMarket_LivestockCount",
+     "type": "BIGINT",
+     "description": "mouzas with this wholesale market"
+    },
+    {
+     "name": "WholesaleMarket_GrainsCount",
+     "type": "BIGINT",
+     "description": "mouzas with this wholesale market"
+    },
+    {
+     "name": "WholesaleMarket_FruitsVegetableCount",
+     "type": "BIGINT",
+     "description": "mouzas with this wholesale market"
+    },
+    {
+     "name": "AvgDepthOfWater",
+     "type": "BIGINT",
+     "description": "mean water-table depth, feet"
+    },
+    {
+     "name": "MinDepthOfWater",
+     "type": "BIGINT",
+     "description": "minimum water-table depth, feet"
+    },
+    {
+     "name": "MaxDepthOfWater",
+     "type": "BIGINT",
+     "description": "maximum water-table depth, feet"
+    },
+    {
+     "name": "SourceOfDrinkingWater_GovtPipedSupply",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_PersonalPump",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_WaterFiltrationPlant",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_ROPlant",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_NearbyPump",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_Well",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_RiverCanal",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_SpringRavineKarez",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_PondToba",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "SourceOfDrinkingWater_Others",
+     "type": "BIGINT",
+     "description": "mouzas reporting this drinking-water source (multiple response)"
+    },
+    {
+     "name": "StatusTypeOfStreets_Metaled",
+     "type": "BIGINT",
+     "description": "mouzas reporting this street surface (multiple response)"
+    },
+    {
+     "name": "StatusTypeOfStreets_Cemented",
+     "type": "BIGINT",
+     "description": "mouzas reporting this street surface (multiple response)"
+    },
+    {
+     "name": "StatusTypeOfStreets_Bricked",
+     "type": "BIGINT",
+     "description": "mouzas reporting this street surface (multiple response)"
+    },
+    {
+     "name": "StatusTypeOfStreets_DirtRoad",
+     "type": "BIGINT",
+     "description": "mouzas reporting this street surface (multiple response)"
+    },
+    {
+     "name": "HealthFacility_PoupulationWelfareCentre",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_BHU",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_RHC",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_NGODispensary",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_ChildMotherCareCentre",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_PrivateDoctorMBBS",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_HospitalDispensary",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "HealthFacility_FacilityOfMidwife",
+     "type": "BIGINT",
+     "description": "mouzas reporting this health facility (multiple response)"
+    },
+    {
+     "name": "ElectrictiyAvailability_AllMouzas",
+     "type": "BIGINT",
+     "description": "mouzas by how much of the settlement has electricity (exclusive; PBS spelling)"
+    },
+    {
+     "name": "ElectrictiyAvailability_MostlyMouzas",
+     "type": "BIGINT",
+     "description": "mouzas by how much of the settlement has electricity (exclusive; PBS spelling)"
+    },
+    {
+     "name": "ElectrictiyAvailability_SomeMouzas",
+     "type": "BIGINT",
+     "description": "mouzas by how much of the settlement has electricity (exclusive; PBS spelling)"
+    },
+    {
+     "name": "ElectrictiyAvailability_NoneMouzas",
+     "type": "BIGINT",
+     "description": "mouzas by how much of the settlement has electricity (exclusive; PBS spelling)"
+    },
+    {
+     "name": "AlternateEnergySource_SolarEnergy",
+     "type": "BIGINT",
+     "description": "mouzas reporting this alternative energy source"
+    },
+    {
+     "name": "AlternateEnergySource_BioGas",
+     "type": "BIGINT",
+     "description": "mouzas reporting this alternative energy source"
+    },
+    {
+     "name": "AlternateEnergySource_Generator",
+     "type": "BIGINT",
+     "description": "mouzas reporting this alternative energy source"
+    },
+    {
+     "name": "AlternateEnergySource_Others",
+     "type": "BIGINT",
+     "description": "mouzas reporting this alternative energy source"
+    },
+    {
+     "name": "AlternateEnergySource_None",
+     "type": "BIGINT",
+     "description": "mouzas reporting this alternative energy source"
+    },
+    {
+     "name": "FuelAvailability_SuiGas",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "FuelAvailability_LPG",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "FuelAvailability_keroseneOil",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "FuelAvailability_Wood",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "FuelAvailability_Coal",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "FuelAvailability_AnimalDungCake",
+     "type": "BIGINT",
+     "description": "mouzas reporting this domestic fuel (multiple response)"
+    },
+    {
+     "name": "BazarAvailabilityCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "ColdStorageAvailabilityCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "ProcurementCentreAvailabilityCount",
+     "type": "BIGINT",
+     "description": "count of mouzas reporting this"
+    },
+    {
+     "name": "CommunityInfrastructure_AgriMachineryWorkshopAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_DieselPumpAgencyAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TransportFacilityAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TransportFacilityNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_CNGFacilityAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_CNGFacilityNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_FixedlineAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_FixedlineNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_PCOAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_PCONotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_MobileSignalsAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_TelephoneFacility_MobileSignalsNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_FixedlineDSLAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_FixedlineDSLNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_CableNetAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_CableNetNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_MobileNetAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "CommunityInfrastructure_InternetFacility_MobileNetNotAvailableCount",
+     "type": "BIGINT",
+     "description": "mouzas with / without this facility"
+    },
+    {
+     "name": "NaturalDisaster_ExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "NaturalDisaster_NotExistanceCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "NaturalDisaster_DroughtCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "NaturalDisaster_FloodCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "NaturalDisaster_EarthquakeCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "NaturalDisaster_OthersCount",
+     "type": "BIGINT",
+     "description": "mouzas exposed to natural disaster, and to each type"
+    },
+    {
+     "name": "CreditSource_ZTBL",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_CooperativeBank",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_CommercialBank",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_MicrofinanceBank",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_NGO",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_RSP",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_Govt",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_Broker",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_Others",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_OnlineCommercialBankExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_OnlineCommercialBankNotExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_PostOfficeExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_PostOfficeNotExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_PoliceStationExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "CreditSource_PoliceStationNotExistance",
+     "type": "BIGINT",
+     "description": "mouzas reporting this credit source, post office or police station"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_LargeScale",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MediumScale",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_SmallScale",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_CottageIndustries",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_None",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleServiceMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleServiceSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleServiceNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleAgricultureMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleAgricultureSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleAgricultureNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleTradeMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleTradeSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleTradeNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleIndustriesMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleIndustriesSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleIndustriesNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MalePersonalBusinessMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MalePersonalBusinessSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MalePersonalBusinessNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleOverseasMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleOverseasSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleOverseasNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleLabourMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleLabourSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_MaleLabourNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleServiceMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleServiceSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleServiceNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleAgricultureMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleAgricultureSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleAgricultureNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleTradeMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleTradeSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleTradeNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleIndustriesMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleIndustriesSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleIndustriesNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemalePersonalBusinessMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemalePersonalBusinessSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemalePersonalBusinessNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleOverseasMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleOverseasSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleOverseasNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleLabourMostlyCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleLabourSomeCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
+    },
+    {
+     "name": "IndustryAndSourceOfEmployment_FemaleLabourNoneCount",
+     "type": "BIGINT",
+     "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
     }
    ]
   },
@@ -627,6 +1856,14 @@
   {
    "title": "Night-lights, tehsil trajectories since 2020",
    "sql": "SELECT s.name AS tehsil, s.prov,\n       max(l.radiance) FILTER (l.year = 2020) AS y2020,\n       max(l.radiance) FILTER (l.year = 2026) AS y2026,\n       s.pop\nFROM tehsil_nightlights l\nJOIN tehsil_satellite s USING (tehsil_id)\nWHERE s.nl_lowc = 0 AND s.pop > 200000\nGROUP BY 1, 2, 5\nORDER BY y2026 / nullif(y2020, 0) DESC\nLIMIT 20;"
+  },
+  {
+   "title": "Rural electrification, worst tehsils (Mouza Census)",
+   "sql": "-- Shares are of MOUZAS, not people. Aggregate to the polygon first:\n-- several PBS tehsils can share one boundary.\nSELECT x.dd_name AS tehsil, m.province,\n       sum(m.\"ElectrictiyAvailability_NoneMouzas\") AS no_electricity,\n       sum(m.\"ElectrictiyAvailability_AllMouzas\"\n         + m.\"ElectrictiyAvailability_MostlyMouzas\"\n         + m.\"ElectrictiyAvailability_SomeMouzas\"\n         + m.\"ElectrictiyAvailability_NoneMouzas\") AS base,\n       round(100.0 * sum(m.\"ElectrictiyAvailability_NoneMouzas\")\n             / nullif(sum(m.\"ElectrictiyAvailability_AllMouzas\"\n               + m.\"ElectrictiyAvailability_MostlyMouzas\"\n               + m.\"ElectrictiyAvailability_SomeMouzas\"\n               + m.\"ElectrictiyAvailability_NoneMouzas\"), 0), 1) AS pct_dark\nFROM mouza_tehsil m\nJOIN mouza_crosswalk x USING (tehsil_code)\nWHERE m.TotalMauzaCount > 0\nGROUP BY 1, 2 HAVING base >= 50\nORDER BY pct_dark DESC LIMIT 20;"
+  },
+  {
+   "title": "Do brighter tehsils have more girls' schools?",
+   "sql": "-- Facilities are places, lights are satellite: this asks whether the\n-- two agree, not whether either causes the other.\nSELECT s.prov,\n       count(*) AS tehsils,\n       round(corr(g.pct_girls_primary, ln(s.nl_latest + 0.01)), 3) AS corr\nFROM (SELECT x.dd_id,\n             100.0 * sum(m.\"EducationFacility_FemalePrimaryExistanceCount\")\n             / nullif(sum(m.\"EducationFacility_FemalePrimaryExistanceCount\"\n               + m.\"EducationFacility_FemalePrimaryNotExistanceCount\"), 0)\n               AS pct_girls_primary\n      FROM mouza_tehsil m JOIN mouza_crosswalk x USING (tehsil_code)\n      WHERE m.TotalMauzaCount > 0 GROUP BY 1) g\nJOIN tehsil_satellite s ON s.tehsil_id = g.dd_id\nWHERE s.nl_lowc = 0\nGROUP BY 1 HAVING count(*) >= 5 ORDER BY 3;"
   },
   {
    "title": "Urbanisation vs multidimensional poverty",
