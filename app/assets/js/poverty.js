@@ -164,11 +164,13 @@ const WORSE = new Set(['growth_none']);
 
 let map, layerGroup, geoCache = {}, DATA = null;
 let curLayer = 'mpi', curInd = 'mpi', curYear = '2026', provFilter = 'ALL';
+let curGroup = null;
 let selected = null, selectedKey = null;
 const fillCache = new WeakMap();
 
 const $ = id => document.getElementById(id);
 const layerSelect = $('layerSelect'), indicatorSelect = $('indicatorSelect'),
+      groupSelect = $('groupSelect'), groupPanel = $('groupPanel'),
       provinceSelect = $('provinceSelect'), legendDiv = $('legend'),
       yearPanel = $('yearPanel'), yearSlider = $('yearSlider'), yearLabel = $('yearLabel'),
       unitNameEl = $('unitName'), unitProvEl = $('unitProvince'), statsDiv = $('stats'),
@@ -184,6 +186,14 @@ function fmt(v, pct, dp) {
 
 function spec() { return LAYERS[curLayer].indicators[curInd]; }
 function isTehsil() { return LAYERS[curLayer].geo === 'tehsil'; }
+// Layers whose indicators carry a grp get a Category select in front of the
+// Indicator select. 54 entries behind one control is a scroll, not a choice.
+function groupsOf(L0) {
+  const seen = [];
+  Object.values(L0.indicators).forEach(v => { if (v.grp && !seen.includes(v.grp)) seen.push(v.grp); });
+  return seen;
+}
+function isGrouped() { return groupsOf(LAYERS[curLayer]).length > 0; }
 function records() { return isTehsil() ? DATA.tehsils : DATA.districts; }
 function keyOf(props) { return isTehsil() ? props.dd_id : props.dd_key; }
 
@@ -217,27 +227,22 @@ function buildLayerSelect() {
     .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
   layerSelect.value = curLayer;
 }
+function buildGroupSelect() {
+  const groups = groupsOf(LAYERS[curLayer]);
+  groupPanel.style.display = groups.length ? '' : 'none';
+  if (!groups.length) { curGroup = null; return; }
+  if (!groups.includes(curGroup)) curGroup = groups[0];
+  groupSelect.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
+  groupSelect.value = curGroup;
+}
+
 function buildIndicatorSelect() {
   const L0 = LAYERS[curLayer];
-  const entries = Object.entries(L0.indicators);
-  if (entries.some(([, v]) => v.grp)) {
-    // 50-odd indicators is too many for a flat list, so group them by theme.
-    const groups = [];
-    entries.forEach(([k, v]) => {
-      const g = v.grp || 'Other';
-      let bucket = groups.find(x => x.name === g);
-      if (!bucket) groups.push(bucket = { name: g, items: [] });
-      bucket.items.push([k, v]);
-    });
-    indicatorSelect.innerHTML = groups.map(g =>
-      `<optgroup label="${g.name}">` +
-      g.items.map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('') +
-      '</optgroup>').join('');
-  } else {
-    indicatorSelect.innerHTML = entries
-      .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
-  }
-  if (!L0.indicators[curInd]) curInd = Object.keys(L0.indicators)[0];
+  const entries = Object.entries(L0.indicators)
+    .filter(([, v]) => !curGroup || v.grp === curGroup);
+  indicatorSelect.innerHTML = entries
+    .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+  if (!entries.some(([k]) => k === curInd)) curInd = entries[0][0];
   indicatorSelect.value = curInd;
 }
 function buildProvinceSelect() {
@@ -438,7 +443,10 @@ function showDetail(key) {
   unitProvEl.textContent = isTehsil() ? `${rec.prov} · ${(rec.dk || '').replace(/\b\w/g, c => c.toUpperCase())} district` : rec.prov;
   const L0 = LAYERS[curLayer];
   let h = '', lastGrp = null;
-  for (const [k, sp] of Object.entries(L0.indicators)) {
+  // Grouped layers show only the category on screen; the rest is a scroll nobody
+  // reads, and the Category select is right there.
+  const shown = Object.entries(L0.indicators).filter(([, sp]) => !curGroup || sp.grp === curGroup);
+  for (const [k, sp] of shown) {
     if (sp.grp && sp.grp !== lastGrp) { h += `<div class="stat-group">${sp.grp}</div>`; lastGrp = sp.grp; }
     const v = suppressed(rec) ? null : sp.get(rec, curYear);
     const on = k === curInd ? ' stat-active' : '';
@@ -511,7 +519,7 @@ async function init() {
   }
   curYear = String(DATA.meta.years[DATA.meta.years.length - 1]);
 
-  buildLayerSelect(); buildIndicatorSelect(); buildProvinceSelect();
+  buildLayerSelect(); buildGroupSelect(); buildIndicatorSelect(); buildProvinceSelect();
   yearSlider.min = 0; yearSlider.max = DATA.meta.years.length - 1;
   yearSlider.value = DATA.meta.years.length - 1;
   syncYearUI();
@@ -522,10 +530,18 @@ async function init() {
   layerSelect.addEventListener('change', async e => {
     const prevGeo = LAYERS[curLayer].geo;
     curLayer = e.target.value;
-    curInd = Object.keys(LAYERS[curLayer].indicators)[0];
+    curGroup = null;
+    buildGroupSelect();
+    curInd = Object.keys(LAYERS[curLayer].indicators)
+      .filter(k => !curGroup || LAYERS[curLayer].indicators[k].grp === curGroup)[0];
     buildIndicatorSelect(); syncYearUI();
     if (LAYERS[curLayer].geo !== prevGeo) await drawGeometry();
     render();
+  });
+  groupSelect.addEventListener('change', e => {
+    curGroup = e.target.value;
+    curInd = Object.entries(LAYERS[curLayer].indicators).find(([, v]) => v.grp === curGroup)[0];
+    buildIndicatorSelect(); syncYearUI(); render();
   });
   indicatorSelect.addEventListener('change', e => { curInd = e.target.value; syncYearUI(); render(); });
   provinceSelect.addEventListener('change', e => { provFilter = e.target.value; render(); });
