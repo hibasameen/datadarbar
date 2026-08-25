@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-08-22",
+ "generated": "2026-08-25",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -64,8 +64,8 @@
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 152881,
-   "rows": 41120,
+   "bytes": 167883,
+   "rows": 45741,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead.",
    "unit": null,

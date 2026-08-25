@@ -8,7 +8,7 @@ const DATA_PATH    = 'data/districts.json';
 // Topic → ordered list of dataset group keys
 const TOPICS = {
   demographics:   { label: 'Demographics',              groups: ['demographics', 'urbanRural'] },
-  education:      { label: 'Education',                 groups: ['literacy', 'education', 'pslmEducation'] },
+  education:      { label: 'Education',                 groups: ['literacy', 'censusSchooling', 'education', 'pslmEducation'] },
   employment:     { label: 'Employment',                groups: ['employment', 'pslmEmployment', 'lfs', 'lfs25'] },
   economic:       { label: 'Economic Activity',         groups: ['econCensus'] },
   // Within each topic, whole-district (PSLM) series are listed before
@@ -201,6 +201,32 @@ const INDICATOR_GROUPS = {
     },
     prefix: 't12', hasYears: true,
   },
+
+  // Schooling from Census 2023 Table 12. Three of these fields (ever_attended,
+  // never_school_all, out_of_school_5_16) were already in districts.json but
+  // belonged to no group, so they carried no label and never reached the map.
+  // The sex splits are new. There is deliberately no 2017 column: Census 2017's
+  // district tables cover mother tongue, literacy and the educational
+  // attainment of the literate population, and none of them reports current
+  // school attendance. The sex-split trend that DOES span both censuses is
+  // literacy, in the group above.
+  censusSchooling: {
+    label: 'Schooling — Census 2023',
+    dataset: 'Census 2023',
+    indicators: {
+      in_school_5_16_female:     'In School 5-16, Girls (%)',
+      in_school_5_16_male:       'In School 5-16, Boys (%)',
+      schooling_gender_gap:      'In-School Gender Gap (pp, boys minus girls)',
+      out_of_school_5_16:        'Out of School 5-16 (count)',
+      out_of_school_5_16_female: 'Out of School 5-16, Girls (count)',
+      out_of_school_5_16_male:   'Out of School 5-16, Boys (count)',
+      never_school_5_16_female:  'Never Attended 5-16, Girls (count)',
+      never_school_5_16_male:    'Never Attended 5-16, Boys (count)',
+      never_school_all:          'Never Attended, All Ages (count)',
+      ever_attended:             'Ever Attended School (count)',
+    },
+    prefix: 't12', hasYears: true,
+  },
   education: {
     label: 'Education Attainment — Census 2017/23',
     dataset: 'Census 2017/23',
@@ -224,7 +250,15 @@ const INDICATOR_GROUPS = {
       literacy_rate: 'Literacy Rate (%)',
       numeracy_rate: 'Numeracy Rate (%)',
       net_enrolment_rate: 'Net Enrolment Rate 5-16 (%)',
+      // Male and female are computed on the same definition and sample as the
+      // total above (share of ages 5-16 currently attending), so they
+      // decompose it rather than sitting beside it as a second estimate.
+      net_enrolment_rate_female: 'Net Enrolment Rate 5-16, Girls (%)',
+      net_enrolment_rate_male: 'Net Enrolment Rate 5-16, Boys (%)',
+      enrolment_gender_gap: 'Enrolment Gender Gap (pp, boys minus girls)',
       pct_never_attended: '% Never Attended School',
+      pct_never_attended_female: '% Never Attended School, Female',
+      pct_never_attended_male: '% Never Attended School, Male',
       pct_govt_school: '% in Govt. School',
       pct_private_school: '% in Private School',
     },
