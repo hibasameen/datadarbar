@@ -225,7 +225,11 @@ const INDICATOR_GROUPS = {
       never_school_all:          'Never Attended, All Ages (count)',
       ever_attended:             'Ever Attended School (count)',
     },
-    prefix: 't12', hasYears: true,
+    // 2023-only: Census 2017's district tables carry no school-attendance
+    // figures, so there is no year to toggle. noYear makes dataKey() resolve
+    // t12_2023_<indicator> directly instead of asking for a 2017 field that
+    // does not exist — which rendered the layer with every district null.
+    prefix: 't12_2023', hasYears: false, noYear: true,
   },
   education: {
     label: 'Education Attainment — Census 2017/23',
