@@ -618,6 +618,80 @@ def build(src: Path) -> None:
         p = (src / f"{nm}.parquet").as_posix()
         register(nm, desc, notes, cols, srcname, f"SELECT * FROM '{p}'")
 
+    # ── 4. SBP EasyData (optional — appears once build_sbp.py has run) ───────
+    sbp_cat = src / "sbp_series_catalog.parquet"
+    sbp_obs = src / "sbp_observations.parquet"
+    if sbp_cat.exists() and sbp_obs.exists():
+        print("sbp…")
+        # Two tables rather than one denormalised view on purpose: the observation
+        # table is long and the series names/descriptions are verbatim SBP prose, so
+        # repeating them per observation would multiply the download for no
+        # analytical gain. Users join on series_key — see the examples.
+        register(
+            "sbp_series_catalog",
+            "Every SBP EasyData series held here: name, unit, frequency, coverage, method note.",
+            "One row per series — browse this first, then join to sbp_observations on "
+            "series_key. DATE CONVENTION: observations are stamped on the LAST day of their "
+            "period, and annual series on the last day of the FISCAL year, so FY2023-24 "
+            "appears as 2024-06-30. Not every annual series is fiscal though — population "
+            "and literacy are calendar years. `available_upto` is SBP's own claim and "
+            "several datasets are stale (province-wise banking stops at Jun-2023), so check "
+            "it before presenting a series as current.",
+            {
+                "series_key": "join key to sbp_observations.series_key",
+                "dataset_code": "EasyData dataset the series belongs to",
+                "dataset_name": "published dataset title",
+                "subject_area": "External Sector | Monetary and Financial Sector | Real Sector | "
+                                "Public Finance | Interest Rates | Pakistan's Debt Profile",
+                "series_name": "published series title",
+                "series_short_name": "abbreviated title",
+                "frequency": "Daily | Weekly | Monthly | Quarterly | Half-yearly | Annual | As-Needed",
+                "unit": "unit as published (PKR, USD, Percent, Index…)",
+                "variable_type": "Flow | Stock (level) Variable | ratio",
+                "available_since": "first observation date claimed by SBP",
+                "available_upto": "last observation date claimed by SBP",
+                "last_refresh": "when SBP last revised the series",
+                "description": "SBP's own methodological note",
+            },
+            "State Bank of Pakistan, EasyData API (easydata.sbp.org.pk)",
+            f"SELECT * FROM '{sbp_cat.as_posix()}' ORDER BY subject_area, dataset_code, series_key",
+        )
+        register(
+            "sbp_observations",
+            "The macro time-series panel: every observation of every SBP series held here.",
+            "One row per series × date. UNITS ARE PER-SERIES — join to sbp_series_catalog and "
+            "read `unit` before summing anything, because this table mixes rupees, dollars, "
+            "percentages and index levels in one `value` column. value IS NULL where SBP "
+            "suppressed or has not published the figure and `status` says which ('Normal', "
+            "'Missing value', …) — a NULL is not a zero. Frequencies are mixed, so filter on "
+            "the catalogue's `frequency` before resampling or averaging across series. "
+            "DOUBLE-COUNTING TRAP (country-wise remittances, TS_GP_BOP_WR_M): the country series "
+            "are hierarchical, so summing them all overstates the total by ~42% (FY2024-25: "
+            "54,384 vs the published 38,299 Mn USD). 'U.A.E.' already contains Dubai, Abu Dhabi, "
+            "Sharjah and 'Other four U.A.E.'s States'; 'Other GCC Countries excluding Saudi Arabia "
+            "& U.A.E.' already contains Bahrain, Kuwait, Oman and Qatar; 'ten European Countries' "
+            "already contains Belgium, Denmark, France, Germany, Greece, Ireland, Italy, "
+            "Netherland, Spain and Sweden — Norway and Switzerland are reported separately. "
+            "The partition that reconciles exactly to the published total is: Saudi Arabia, "
+            "U.A.E., U.K., U.S.A., Other GCC, ten European Countries, Norway, Switzerland, "
+            "Australia, Canada, Japan, Malaysia, South Africa, South Korea, Other Countries. "
+            "The same shape applies to province-wise banking (TS_GP_BAM_ADVDEP_HY), where "
+            "'all Pakistan' is the total of the regional series.",
+            {
+                "series_key": "joins to sbp_series_catalog.series_key",
+                "dataset_code": "EasyData dataset code, denormalised for cheap filtering",
+                "obs_date": "observation date — END of the period (see catalogue notes)",
+                "value": "the observation; unit depends on the series",
+                "status": "SBP observation status; anything but 'Normal' needs care",
+                "comment": "SBP status comment, usually empty",
+            },
+            "State Bank of Pakistan, EasyData API (easydata.sbp.org.pk)",
+            f"SELECT * FROM '{sbp_obs.as_posix()}' ORDER BY series_key, obs_date",
+        )
+        EXAMPLES.extend(SBP_EXAMPLES)
+    else:
+        print("sbp…  skipped (run build_sbp.py catalog / observations / load first)")
+
     # ── catalog ──────────────────────────────────────────────────────────────
     catalog = {
         "name": "Data Darbar",
@@ -727,6 +801,112 @@ EXAMPLES = [
              "JOIN mpi_districts m USING (district_key)\n"
              "WHERE d.indicator = 'urban_proportion' AND d.year = '2023'\n"
              "  AND m.low_n = 0\nORDER BY m.mpi DESC;")},
+]
+
+
+SBP_EXAMPLES = [
+    {"title": "The rupee since 1947",
+     "sql": ("SELECT obs_date, value AS pkr_per_usd\n"
+             "FROM sbp_observations\n"
+             "WHERE series_key = 'TS_GP_ER_FAERPKR_M.E00220'\n"
+             "ORDER BY obs_date;")},
+    {"title": "The real policy rate",
+     "sql": ("-- The policy rate only moves when SBP meets, so it cannot be joined\n"
+             "-- month-to-month against CPI. ASOF JOIN carries the last rate forward.\n"
+             "SELECT c.obs_date,\n"
+             "       p.value AS policy_rate,\n"
+             "       c.value AS cpi_yoy,\n"
+             "       round(p.value - c.value, 2) AS real_rate\n"
+             "FROM sbp_observations c\n"
+             "ASOF JOIN (SELECT obs_date, value FROM sbp_observations\n"
+             "           WHERE series_key = 'TS_GP_IR_SIRPR_AH.SBPOL0030') p\n"
+             "  ON p.obs_date <= c.obs_date\n"
+             "WHERE c.series_key = 'TS_GP_PT_CPI_M.P00011516'\n"
+             "ORDER BY c.obs_date;")},
+    {"title": "Where remittances come from, FY2024-25",
+     "sql": ("-- The country series are hierarchical: U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n"
+             "-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, and 'ten European Countries'\n"
+             "-- contains Belgium..Sweden. Summing all of them overstates the total by ~42%,\n"
+             "-- so this restricts to the partition that reconciles to the published figure.\n"
+             "SELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n"
+             "       round(sum(o.value), 0) AS mn_usd\n"
+             "FROM sbp_observations o\n"
+             "JOIN sbp_series_catalog c USING (series_key)\n"
+             "WHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n"
+             "  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n"
+             "  AND c.series_name LIKE '%received from%'\n"
+             "  AND c.series_name NOT ILIKE '%Dubai%'    AND c.series_name NOT ILIKE '%Abu Dhabi%'\n"
+             "  AND c.series_name NOT ILIKE '%Sharjah%'  AND c.series_name NOT ILIKE '%four U.A.E%'\n"
+             "  AND c.series_name NOT ILIKE '%Bahrain%'  AND c.series_name NOT ILIKE '%Kuwait%'\n"
+             "  AND c.series_name NOT ILIKE '%Oman%'     AND c.series_name NOT ILIKE '%Qatar%'\n"
+             "  AND c.series_name NOT ILIKE '%Belgium%'  AND c.series_name NOT ILIKE '%Denmark%'\n"
+             "  AND c.series_name NOT ILIKE '%France%'   AND c.series_name NOT ILIKE '%Germany%'\n"
+             "  AND c.series_name NOT ILIKE '%Greece%'   AND c.series_name NOT ILIKE '%Ireland%'\n"
+             "  AND c.series_name NOT ILIKE '%Italy%'    AND c.series_name NOT ILIKE '%Netherland%'\n"
+             "  AND c.series_name NOT ILIKE '%Spain%'    AND c.series_name NOT ILIKE '%Sweden%'\n"
+             "GROUP BY 1\nORDER BY mn_usd DESC;")},
+    {"title": "Pakistan's fiscal balance, and whether it adds up",
+     "sql": ("-- Revenue - Expenditure = Fiscal Balance, and + Interest = Primary Balance.\n"
+             "-- Both identities hold exactly in the source data.\n"
+             "SELECT o.obs_date,\n"
+             "       round(max(o.value) FILTER (c.series_name LIKE 'Total Revenue%') / 1e6, 2) AS revenue_trn,\n"
+             "       round(max(o.value) FILTER (c.series_name LIKE 'Total Expenditure (%') / 1e6, 2) AS spending_trn,\n"
+             "       round(max(o.value) FILTER (c.series_name LIKE 'Fiscal Balance%') / 1e6, 2) AS fiscal_bal_trn,\n"
+             "       round(100 * max(o.value) FILTER (c.series_name LIKE 'Fiscal Balance%')\n"
+             "                 / max(o.value) FILTER (c.series_name LIKE 'Gross Domestic Product%'), 2) AS pct_of_gdp\n"
+             "FROM sbp_observations o\n"
+             "JOIN sbp_series_catalog c USING (series_key)\n"
+             "WHERE c.dataset_code = 'TS_GP_PF_SPF_Y'\n"
+             "GROUP BY 1\nORDER BY 1;")},
+    {"title": "Reserves cover: months of imports",
+     "sql": ("WITH res AS (\n"
+             "  SELECT o.obs_date, o.value AS sbp_reserves\n"
+             "  FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\n"
+             "  WHERE c.series_name = 'Total SBP Reserves'),\n"
+             "imp AS (\n"
+             "  SELECT o.obs_date, o.value AS goods_imports\n"
+             "  FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\n"
+             "  WHERE c.series_name = 'Goods - Import (FOB)')\n"
+             "SELECT r.obs_date, round(r.sbp_reserves, 0) AS reserves_mn_usd,\n"
+             "       round(r.sbp_reserves / nullif(avg(i.goods_imports) OVER (\n"
+             "            ORDER BY r.obs_date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW), 0), 1) AS months_cover\n"
+             "FROM res r JOIN imp i USING (obs_date)\n"
+             "ORDER BY r.obs_date DESC\nLIMIT 24;")},
+    {"title": "Urban vs rural food inflation",
+     "sql": ("SELECT o.obs_date,\n"
+             "       max(o.value) FILTER (c.series_name ILIKE 'Urban Food%') AS urban_food,\n"
+             "       max(o.value) FILTER (c.series_name ILIKE 'Rural Food%') AS rural_food\n"
+             "FROM sbp_observations o\n"
+             "JOIN sbp_series_catalog c USING (series_key)\n"
+             "WHERE c.dataset_code = 'TS_GP_PT_CPI_M'\n"
+             "  AND c.series_name ILIKE '%Year-on-Year%'\n"
+             "GROUP BY 1\nHAVING urban_food IS NOT NULL\nORDER BY 1;")},
+    {"title": "Bank deposits by province (stops Jun-2023)",
+     "sql": ("-- The only sub-national SBP data. Stops Jun-2023.\n"
+             "SELECT c.series_name, o.obs_date, round(o.value / 1000, 1) AS rs_bn\n"
+             "FROM sbp_observations o\n"
+             "JOIN sbp_series_catalog c USING (series_key)\n"
+             "WHERE c.dataset_code = 'TS_GP_BAM_ADVDEP_HY'\n"
+             "  AND c.series_name ILIKE 'Total Outstanding Deposits%'\n"
+             "  AND o.obs_date = (SELECT max(obs_date) FROM sbp_observations\n"
+             "                    WHERE dataset_code = 'TS_GP_BAM_ADVDEP_HY')\n"
+             "ORDER BY rs_bn DESC;")},
+    {"title": "What SBP series are actually current?",
+     "sql": ("SELECT subject_area, frequency,\n"
+             "       count(*) AS series,\n"
+             "       max(available_upto) AS latest\n"
+             "FROM sbp_series_catalog\n"
+             "GROUP BY 1, 2\nORDER BY 1, series DESC;")},
+    {"title": "SBP vs PBS: two measures of the same GDP",
+     "sql": ("-- Should agree: same PBS source, different distribution channel.\n"
+             "SELECT n.year, n.value AS pbs_workbook,\n"
+             "       s.value AS sbp_easydata\n"
+             "FROM national_accounts n\n"
+             "JOIN sbp_observations s\n"
+             "  ON s.series_key = 'TS_GP_RLS_PAKGDP15_Y.GDP00150000'\n"
+             " AND CAST(left(n.year, 4) AS INT) + 1 = year(s.obs_date)\n"
+             "WHERE n.table_sheet = 'Table 5' AND n.item LIKE 'D GDP%'\n"
+             "ORDER BY n.year;")},
 ]
 
 
