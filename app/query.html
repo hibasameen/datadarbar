@@ -5,7 +5,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta name="description" content="Run SQL against Pakistan's census, trade, budget and national-accounts data — in your browser, with no signup and no server."/>
 <meta property="og:title" content="Query the Data — Data Darbar"/><meta property="og:description" content="Run SQL against Pakistan's official statistics, straight in the browser."/>
-<meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:url" content="https://hibasameen.github.io/datadarbar/query.html"/><meta name="twitter:card" content="summary_large_image"/><meta property="og:type" content="website"/>
+<meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta property="og:url" content="https://darbar.adaad.org/query.html"/><meta name="twitter:card" content="summary_large_image"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -159,15 +159,15 @@ import duckdb
 duckdb.sql("INSTALL httpfs; LOAD httpfs;")
 duckdb.sql("""
   SELECT name, prov, mpi
-  FROM 'https://hibasameen.github.io/datadarbar/data/warehouse/mpi_districts.parquet'
+  FROM 'https://darbar.adaad.org/data/warehouse/mpi_districts.parquet'
   WHERE low_n = 0 ORDER BY mpi DESC LIMIT 10
 """).show()
 
 # R
-# arrow::read_parquet("https://hibasameen.github.io/datadarbar/data/warehouse/mpi_districts.parquet")
+# arrow::read_parquet("https://darbar.adaad.org/data/warehouse/mpi_districts.parquet")
 
 # The table list, schemas and caveats live in
-# https://hibasameen.github.io/datadarbar/data/warehouse/catalog.json</pre>
+# https://darbar.adaad.org/data/warehouse/catalog.json</pre>
     </details>
   </main>
 </div>
