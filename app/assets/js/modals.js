@@ -92,15 +92,16 @@
     <h3>The project</h3>
     <p>Data Darbar is an open explorer of Pakistan's official statistics. It brings together the
       population census, household and labour-force surveys, 8-digit external-trade data, the national
-      accounts and the federal budget — sources published by the
-      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>
-      and the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Finance Division</a> —
+      accounts, the federal budget and the central bank's monetary and external-sector series — sources published by the
+      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>,
+      the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Finance Division</a> and the
+      <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> —
       into a single set of interactive views. The name is a nod to the shrine in Lahore, reimagined here
       as a place of gathering for Pakistan's data.</p>
     <p>Every figure is traceable to its published source, and the cleaned data behind the site is held in
       a queryable DuckDB + Parquet warehouse rather than locked inside PDFs.</p>
 
-    <h3>The four views</h3>
+    <h3>The five views</h3>
     <ul>
       <li><strong>District &amp; Tehsil Map</strong> — census, PSLM, labour-force, household and DHS health indicators
         across all 141 districts, with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
@@ -108,13 +109,15 @@
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
         flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
-      <li><strong>Macro &amp; Finance</strong> — State Bank of Pakistan series: the rupee since 1947, the policy
+      <li><strong>Macro &amp; Finance</strong> — <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> series: the rupee since 1947, the policy
         rate since 1956, inflation, the interbank curve, reserves, the current account broken down to individual
         commodities, remittances by source, the money supply and bad loans.</li>
       <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
         microdata, alongside satellite measures of relative wealth, population and night-time lights,
         mapped down to all 554 tehsils, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
+    <p>A sixth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the five
+      views — to SQL in the browser, with nothing sent to a server.</p>
 
     <h3>Built by</h3>
     <p><strong>Hiba Sameen</strong> is an economist and data scientist based in London. She holds a PhD in
@@ -157,11 +160,17 @@
         2009–2027.</li>
       <li><strong>Industry Statistics (QIM &amp; CMI)</strong> — Quantum Index of large-scale Manufacturing
         (monthly and annual, 2005-06 and 2015-16 bases) and the Census of Manufacturing Industries.</li>
+      <li><strong>State Bank of Pakistan, <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">EasyData</a></strong> — 1,336 monthly, quarterly, daily and annual series
+        from 33 datasets, pulled through SBP's REST API: exchange rates (from Aug-1947), the policy rate (from
+        Jan-1956), the CPI/SPI/WPI (2015-16 base), KIBOR, lending and deposit rates, reserves (from Jun-1948),
+        the BPM6 balance of payments, export receipts and import payments by commodity, services trade,
+        country-wise workers' remittances (from Jul-1972), repatriation of profits by sector, monetary
+        aggregates and non-performing loans.</li>
       <li><strong>Poverty &amp; satellite</strong> — Alkire–Foster Multidimensional Poverty Index from PSLM
         microdata, plus Meta's Relative Wealth Index, WorldPop population, VIIRS night-lights and the PBS Mouza Census 2020 facility inventory at tehsil level.</li>
     </ul>
-    <p>All sources are public-domain publications of the Government of Pakistan, except the Relative Wealth Index
-       (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
+    <p>All sources are public publications of the Government of Pakistan and the <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a>, except the
+       Relative Wealth Index (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
   `;
 
   var CONTACT = `
@@ -184,7 +193,8 @@
 
   var METH = `
     <p>Data Darbar is built from a reproducible pipeline: raw PBS and Finance Division publications
-      (PDF tables parsed programmatically, CSV releases and survey microdata) are cleaned and normalised
+      (PDF tables parsed programmatically, CSV releases and survey microdata) and State Bank series fetched
+      from its API are cleaned and normalised
       into a <strong>DuckDB + Parquet</strong> warehouse, then exported as the compact data files the site
       loads. The notes below cover each view in turn.</p>
 
@@ -373,7 +383,51 @@
       All figures are nominal budget estimates as published; presentation of some line items changes across
       years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
 
-    <h2>Poverty & Wealth</h2>
+    <h3><span class="dd-tag" style="background:#ece4f2;color:#7a5195">Macro &amp; Finance</span></h3>
+
+    <h4>Source &amp; extraction</h4>
+    <p>Every series comes from the State Bank's <a href="https://easydata.sbp.org.pk/" target="_blank"
+      rel="noopener">EasyData</a> portal through its REST API, one request per series with full history.
+      The portal serves 226 datasets and about 23,000 series; the warehouse holds a curated 1,336 of them
+      (the headline and "core" tiers of a published selection file), with the full catalogue indexed so
+      any other series can be added. Fetching is checkpointed and rate-limited (SBP's binding cap is
+      250 requests an hour), and two flavours of malformed JSON in the portal's responses — raw control
+      characters and unescaped quotes inside strings — are repaired before parsing. The page itself ships
+      only the ~50 series it draws, as a plain script file, so it loads instantly and works offline.</p>
+
+    <h4>Fiscal years, partial years and scales</h4>
+    <p>Monthly flows are summed to Pakistan's July–June fiscal year. The newest year is nearly always
+      partial, so the year picker defaults to the last <em>complete</em> year and labels partial ones with
+      their month count; a one-month "year" shown beside a twelve-month one reads as a collapse that never
+      happened. The rupee chart uses a log scale by default: on a series that runs from 3 to 280 per dollar
+      only a log axis shows equal percentage moves as equal distances. Daily KIBOR is thinned to month-end
+      for the chart (the SQL console keeps every day).</p>
+
+    <h4>The current-account treemap</h4>
+    <p>"Dollars in" and "dollars out" are the credit and debit sides of the BPM6 current account — goods,
+      services, primary income and secondary income — drawn to scale, so the deficit is the extra width
+      of the right-hand box. The build refuses to publish unless credits minus debits equals SBP's
+      reported current-account balance to the dollar, every year. Clicking a box opens its breakdown:
+      services by type and transfers by kind come straight from the BPM6 tables; remittances by source use
+      the country-wise table; goods use SBP's export receipts and import payments by commodity; income paid
+      abroad splits into repatriated profits by sector and a residual (interest and other investment
+      income) equal to the primary-income debit less the repatriation table.</p>
+    <p>Two of those tables have no published hierarchy: the 147 commodity series and the 50 sector series
+      are listed in document order with no level marker, yet many are sub-totals of their neighbours
+      (Transport Group ⊃ Road Motor Vehicles ⊃ CKD ⊃ Motor Cars; Power ⊃ Thermal, Hydel, Coal). Summing
+      everything overstates goods and repatriation totals by up to 28%. The build recovers the tree
+      arithmetically — a series is a parent when the top-level items after it sum to it in every fiscal
+      year — and checks the result against the published totals. The commodity tables are on a
+      "through banks" basis; the balance-of-payments figure deducts freight and adds other flows, so the
+      zoomed header shows both numbers rather than rescaling tiles to force them to match.</p>
+
+    <h4>Remittances</h4>
+    <p>SBP's country series are nested: U.A.E. already contains Dubai, Abu Dhabi and Sharjah; "Other GCC"
+      contains Bahrain, Kuwait, Oman and Qatar; "ten European countries" contains Belgium through Sweden.
+      Adding every series overstates the total by 42%. The site uses the fifteen-source partition that
+      reconciles exactly to SBP's published total, and the build fails if it ever stops doing so.</p>
+
+    <h3><span class="dd-tag" style="background:#dceef0;color:#0f6e78">Poverty &amp; Wealth</span></h3>
     <h4>Multidimensional Poverty Index (district)</h4>
     <p>An <strong>Alkire–Foster adjusted headcount</strong>, M<sub>0</sub> = H &times; A, computed directly
       from <strong>PSLM 2019-20 household microdata</strong> — from the joint distribution of deprivations
@@ -427,6 +481,10 @@
       <li>National accounts and budget figures are nominal unless stated; base-year rebasing and changes in
         budget presentation create breaks that are not spliced away.</li>
       <li>The input-output snapshot is a single year (2015-16) and structural, not a trend.</li>
+      <li><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank</a> series are taken as published: the BPM6 monthly balance of payments begins in July
+        2013, the commodity breakdowns in July 2013 and repatriation by sector in July 2007, so the
+        treemap's drill-downs cover a shorter span than the headline series. Goods breakdowns are
+        payments-basis (through banks) and will not match PBS customs figures on the Trade Atlas.</li>
       <li>Census 2023 results used are provisional and may differ from final published figures.</li>
     </ul>
   `;
