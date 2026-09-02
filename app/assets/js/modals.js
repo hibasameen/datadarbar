@@ -109,7 +109,7 @@
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
         flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
-      <li><strong>Macro &amp; Finance</strong> — <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> series: the rupee since 1947, the policy
+      <li><strong>Monetary &amp; External</strong> — <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> series: the rupee since 1947, the policy
         rate since 1956, inflation, the interbank curve, reserves, the current account broken down to individual
         commodities, remittances by source, the money supply and bad loans.</li>
       <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
@@ -383,7 +383,7 @@
       All figures are nominal budget estimates as published; presentation of some line items changes across
       years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
 
-    <h3><span class="dd-tag" style="background:#ece4f2;color:#7a5195">Macro &amp; Finance</span></h3>
+    <h3><span class="dd-tag" style="background:#ece4f2;color:#7a5195">Monetary &amp; External</span></h3>
 
     <h4>Source &amp; extraction</h4>
     <p>Every series comes from the State Bank's <a href="https://easydata.sbp.org.pk/" target="_blank"

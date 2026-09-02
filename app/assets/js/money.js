@@ -1,4 +1,4 @@
-/* Data Darbar — Macro & Finance
+/* Data Darbar — Monetary & External
    Charts SBP monetary and external series. Payload: data/money_data.js (window.DD_MONEY).
 
    Conventions follow finance.js: full redraw on every change (no D3 update pattern),
@@ -658,8 +658,21 @@ function applyTopic(k, push) {
 function setScale(v) { scale = v;
   d3.selectAll('#scaleSeg button').classed('on', function () { return this.dataset.sc === v; });
   drawUsd(); writeHash(false); }
-function setFy(v) { fy = v; d3.select('#fySelect').property('value', v);
+function setFy(v) { fy = v; d3.select('#fySelect').property('value', v); syncFySliders();
   drawRemit(); drawBop(); drawKpis(); writeHash(false); }
+/* the in-card year sliders mirror the sidebar select; fys is oldest -> newest */
+function syncFySliders() {
+  d3.selectAll('.fySlider').property('value', fys.indexOf(fy));
+  d3.selectAll('.yr-lbl[data-for]').text(fy + (fyPartial(fy) ? ` · ${fyMonths(fy)} mth${fyMonths(fy) === 1 ? '' : 's'}` : ''));
+}
+function initFySliders() {
+  d3.selectAll('.fySlider').attr('min', 0).attr('max', fys.length - 1).attr('step', 1)
+    .on('input', function () { setFy(fys[+this.value]); });
+  /* the treemap has nothing before the BPM6 series starts (Jul-2013); its slider begins there */
+  const firstBop = fys.findIndex(f => bopMonths(f) > 0);
+  if (firstBop > 0) d3.select('#bopYr').attr('min', firstBop);
+  syncFySliders();
+}
 function setBopView(v) { bopView = v; drawBop(); writeHash(false); }
 
 function writeHash(push) {
@@ -737,6 +750,7 @@ function buildFySelect() {
     .attr('value', d => d)
     .text(d => d + (fyPartial(d) ? ` (${fyMonths(d)} mth${fyMonths(d) === 1 ? '' : 's'} so far)` : ''));
   d3.select('#fySelect').property('value', fy);
+  initFySliders();
 }
 function buildFoot() {
   d3.select('#pageFoot').html(

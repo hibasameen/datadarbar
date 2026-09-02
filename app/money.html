@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#0c3a1e"/>
-<title>Data Darbar — Macro &amp; Finance</title>
+<title>Data Darbar — Monetary &amp; External</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta name="description" content="The rupee, inflation, interest rates, reserves and the banking system — State Bank of Pakistan series, some running back to 1947."/>
-<meta property="og:title" content="Data Darbar — Macro &amp; Finance"/><meta property="og:description" content="Eight decades of Pakistani monetary data: the rupee since 1947, the policy rate since 1956, inflation, reserves, the balance of payments and the banking system."/><meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:url" content="https://hibasameen.github.io/datadarbar/money.html"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Data Darbar — Macro &amp; Finance"/><meta name="twitter:description" content="The rupee since 1947, the policy rate since 1956, inflation, reserves and banks."/><meta name="twitter:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:type" content="website"/>
+<meta property="og:title" content="Data Darbar — Monetary &amp; External"/><meta property="og:description" content="Eight decades of Pakistani monetary data: the rupee since 1947, the policy rate since 1956, inflation, reserves, the balance of payments and the banking system."/><meta property="og:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:url" content="https://hibasameen.github.io/datadarbar/money.html"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Data Darbar — Monetary &amp; External"/><meta name="twitter:description" content="The rupee since 1947, the policy rate since 1956, inflation, reserves and banks."/><meta name="twitter:image" content="https://hibasameen.github.io/datadarbar/assets/img/og-preview.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="assets/js/d3.v7.min.js"></script>
@@ -222,7 +222,7 @@ body{padding-bottom:34px}
   <button class="csvbtn" data-csv="bop">CSV</button>
   <h2>Where the dollars come from, and where they go <span class="unit">— the current account, US$</span></h2>
   <div class="desc">Every dollar Pakistan earns from the rest of the world on the left; every dollar it spends on the right. The boxes are drawn to scale, so when the right-hand side is wider the country ran a current-account deficit that year and had to borrow or draw down reserves to cover it. <b>Click any box to break it down</b> — goods go four levels deep, to individual commodities.</div>
-  <div class="controls"><div class="seg" id="bopSeg"><button data-bv="tree" class="on">Structure</button><button data-bv="trend">Monthly trend</button></div><span class="topic-desc" style="margin:0">Pick the fiscal year in the sidebar.</span></div>
+  <div class="controls"><div class="seg" id="bopSeg"><button data-bv="tree" class="on">Structure</button><button data-bv="trend">Monthly trend</button></div><span class="yr-wrap"><input type="range" class="fySlider" id="bopYr" aria-label="Fiscal year"/><span class="yr-lbl" data-for="bopYr">—</span></span></div>
   <div class="crumb" id="bopCrumb" style="display:none"></div>
   <div class="note" id="bopNote" style="display:none"></div>
   <div class="chips" id="chips-bop" style="display:none"></div>
@@ -234,6 +234,7 @@ body{padding-bottom:34px}
   <button class="csvbtn" data-csv="remit">CSV</button>
   <h2>Where remittances come from <span class="unit">— million US$, fiscal year</span></h2>
   <div class="desc">Money sent home by Pakistanis abroad — now worth more than goods exports.</div>
+  <div class="controls"><span class="yr-wrap"><input type="range" class="fySlider" id="remitYr" aria-label="Fiscal year"/><span class="yr-lbl" data-for="remitYr">—</span></span></div>
   <div class="note" id="remitNote" style="display:none"></div>
   <div id="chRemit"></div>
   <div class="note">These series are hierarchical: <b>U.A.E.</b> already contains Dubai, Abu Dhabi and Sharjah, <b>Other GCC</b> contains Bahrain, Kuwait, Oman and Qatar, and <b>ten European Countries</b> contains Belgium through Sweden. Adding every country series together overstates the total by 42%. This chart uses the partition that reconciles exactly to SBP's published figure.</div>

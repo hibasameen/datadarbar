@@ -16,7 +16,7 @@ Data Darbar is a landing page (`index.html`) plus four self-contained products, 
 
 **GDP & Budget** (`finance.html`) — an interactive "structure of the economy" dashboard: sector-share of GDP from 1951-52 to today (with a pre-1999 backcast), contributions to real growth, the Large-Scale Manufacturing and Quantum indices, the CMI manufacturing censuses, a 12-sector input-output flow (as a heatmap, focus view, or chord), and the federal budget — receipts and current expenditure broken down as a treemap or trend. Shareable chart states and CSV export throughout.
 
-**Macro & Finance** (`money.html`) — State Bank of Pakistan series, some running back to 1947: the exchange rate and effective exchange rate indices, inflation and its components, the policy rate and the KIBOR curve, lending and deposit rates, reserves and import cover, the current account as a two-sided treemap with click-through breakdowns (goods to individual commodities, services by type, remittances by source, income paid by sector), the money supply and non-performing loans. Built by `etl/build_money.py` from the SBP EasyData warehouse.
+**Monetary & External** (`money.html`) — State Bank of Pakistan series, some running back to 1947: the exchange rate and effective exchange rate indices, inflation and its components, the policy rate and the KIBOR curve, lending and deposit rates, reserves and import cover, the current account as a two-sided treemap with click-through breakdowns (goods to individual commodities, services by type, remittances by source, income paid by sector), the money supply and non-performing loans. Built by `etl/build_money.py` from the SBP EasyData warehouse.
 
 **Poverty & Wealth** (`poverty.html`) — a multidimensional poverty index built from PSLM household microdata, plus satellite measures of relative wealth, population, and night-time lights. The map is mixed-geometry: the MPI is district-level (ADM2), while relative wealth, population, and night-lights are tehsil-level (ADM3), and the "Measure" selector switches the geometry automatically. Night-lights carry a year slider (June 2020–2026) and a growth view.
 
@@ -31,7 +31,7 @@ datadarbar/
 │   ├── map.html             ← District Map
 │   ├── trade.html           ← Trade Atlas
 │   ├── finance.html         ← GDP & Budget
-│   ├── money.html           ← Macro & Finance
+│   ├── money.html           ← Monetary & External
 │   ├── poverty.html         ← Poverty & Wealth
 │   ├── economy.html         ← redirect → finance.html
 │   ├── assets/
@@ -40,7 +40,7 @@ datadarbar/
 │   │   │   ├── app.js       ← District Map
 │   │   │   ├── trade.js     ← Trade Atlas
 │   │   │   ├── finance.js   ← GDP & Budget
-│   │   │   ├── money.js     ← Macro & Finance
+│   │   │   ├── money.js     ← Monetary & External
 │   │   │   ├── poverty.js   ← Poverty & Wealth
 │   │   │   ├── nav.js       ← shared "Data" nav dropdown
 │   │   │   ├── modals.js    ← About / Methodology / Contact

@@ -23,7 +23,7 @@
     { href: 'poverty.html', title: 'Poverty & Wealth',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
     { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },
     { href: 'finance.html', title: 'GDP & Budget', desc: 'GDP by sector, input-output flows and the federal budget' },
-    { href: 'money.html',   title: 'Macro & Finance',   desc: 'Inflation, interest rates, the rupee, the current account, remittances and the banks' },
+    { href: 'money.html',   title: 'Monetary & External',   desc: 'Inflation, interest rates, the rupee, the current account, remittances and the banks' },
     { href: 'query.html',   title: 'Query the Data',   desc: 'Run SQL against every table, in your browser — no signup' }
   ];
 
