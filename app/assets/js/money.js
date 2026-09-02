@@ -407,6 +407,24 @@ function sideTree(items, fi) {
   return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, d.colour, 1)) };
 }
 
+/* depth toggle: open every box down to level n (0 = none, 9 = everything) */
+function openToDepth(n) {
+  bopOpen = new Set();
+  const walk = (path, kids, depth) => { if (!kids || !kids.length || depth > n) return;
+    bopOpen.add(pathKey(path)); kids.forEach((c, i) => walk([...path, i], c.ch, depth + 1)); };
+  [...CREDITS, ...DEBITS].forEach(([k]) => { const r = drillRoot(k); if (r) walk([k], r.ch, 1); });
+  drawBop(); writeHash(true);
+}
+function syncDepthSeg() {
+  /* highlight the level the open set corresponds to, if it corresponds to one */
+  const depths = [0, 1, 2, 9].map(n => { const s = new Set();
+    const walk = (path, kids, depth) => { if (!kids || !kids.length || depth > n) return; s.add(pathKey(path)); kids.forEach((c, i) => walk([...path, i], c.ch, depth + 1)); };
+    [...CREDITS, ...DEBITS].forEach(([k]) => { const r = drillRoot(k); if (r) walk([k], r.ch, 1); });
+    return [n, s]; });
+  const cur = [...bopOpen].sort().join('|');
+  const match = depths.find(([n, s]) => [...s].sort().join('|') === cur);
+  d3.selectAll('#bopDepthSeg button').classed('on', function () { return match && +this.dataset.depth === match[0]; });
+}
 function toggleOpen(path) {
   const k = pathKey(path);
   if (bopOpen.has(k)) { [...bopOpen].forEach(o => { if (o === k || o.startsWith(k + '.')) bopOpen.delete(o); }); }
@@ -456,6 +474,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     const extra = open ? (` · ${usdm(dd.v)}`.length * 6.5 + 14) : 0;
     for (let k = words.length; k >= 1 && label.length * 8.4 + extra > w - 12; k--) label = words.slice(0, k).join(' ');
     label = label.replace(/\s*(&|and|of|for)$/, '');
+    if (label.length * 8.4 + extra > w - 12) { const n = Math.floor((w - 12 - extra) / 8.4) - 1; if (n >= 3) label = label.slice(0, n) + '…'; }
     if (open) {
       /* heading strip: name · value ▾  — clicking it closes the box */
       t.append('text').attr('x', 7).attr('y', 14).attr('class', 'cl').attr('fill', fg).text(label + '  ▾');
@@ -474,8 +493,10 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
 function drawBop() {
   d3.selectAll('#bopSeg button').classed('on', function () { return this.dataset.bv === bopView; });
   d3.select('#chips-bop').style('display', bopView === 'trend' ? null : 'none');
+  d3.select('#bopDepthSeg').style('display', bopView === 'trend' ? 'none' : null);
   d3.select('#bopCrumb').style('display', 'none');
   if (bopView === 'trend') return drawBopTrend();
+  syncDepthSeg();
   const el = d3.select('#chBop'); el.selectAll('*').remove();
   if (!bopMonths(fy)) return nodata('#chBop', `No balance-of-payments detail for ${fy} — the BPM6 monthly series begins in July 2013.`);
   const partial = bopMonths(fy) < 12, fi = fyIdx();
@@ -759,6 +780,7 @@ function initTopics() {
   });
   d3.selectAll('#scaleSeg button').on('click', function () { setScale(this.dataset.sc); });
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
+  d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
   d3.select('#fySelect').on('change', function () { setFy(this.value); });
   d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopOpen.size) { bopOpen.clear(); drawBop(); writeHash(true); } });
   window.addEventListener('hashchange', () => { if (!applyingHash) applyStateFromHash(); });
