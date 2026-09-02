@@ -407,7 +407,7 @@
     <p>"Dollars in" and "dollars out" are the credit and debit sides of the BPM6 current account — goods,
       services, primary income and secondary income — drawn to scale, so the deficit is the extra width
       of the right-hand box. The build refuses to publish unless credits minus debits equals SBP's
-      reported current-account balance to the dollar, every year. Clicking a box opens its breakdown:
+      reported current-account balance to the dollar, every year. Clicking a box subdivides it in place, inside its own area, so the two sides and the balance stay on screen while you drill; the sub-boxes are drawn as shares of the parent's headline figure. The breakdowns:
       services by type and transfers by kind come straight from the BPM6 tables; remittances by source use
       the country-wise table; goods use SBP's export receipts and import payments by commodity; income paid
       abroad splits into repatriated profits by sector and a residual (interest and other investment

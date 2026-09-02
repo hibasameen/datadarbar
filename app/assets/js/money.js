@@ -362,11 +362,13 @@ const DEB_COL  = { gm:'#a32d2d', sm:'#d85a30', pid:'#e24b4a', sid:'#f09595' };
 const fySum = (k, f) => (S[k] || []).filter(p => fyOf(p[0]) === f).reduce((a, p) => a + p[1], 0);
 const bopMonths = f => (D.bop_months && D.bop_months[f]) || 0;
 
-/* Drill-down. D.drill.nodes[k] holds a tree under each top-level tile (goods to
-   four levels, services by type, remittances by source, income paid by sector);
-   node values are FY totals aligned to D.drill.fys. bopPath = [] is the two-sided
-   overview; ['gx', 1, 3] is goods exports > 2nd group > 4th member. Hash: bz=gx.1.3 */
-let bopPath = [];
+/* Drill-down, nested. D.drill.nodes[k] holds a tree under each top-level tile
+   (goods to four levels, services by type, remittances by source, income paid by
+   sector); node values are FY totals aligned to D.drill.fys. A box that has been
+   opened is subdivided in place, inside its own area, so "dollars in / dollars out"
+   and the deficit stay on screen while you drill. bopOpen is the set of open paths
+   ('gx', 'gx.1', 'gm.2.0'); hash: bz=gx.1|gm.2.0 */
+let bopOpen = new Set();
 const TOP_NAME = Object.fromEntries([...CREDITS, ...DEBITS]);
 const drillRoot = k => D.drill && D.drill.nodes && D.drill.nodes[k];
 function drillNode(path) {
@@ -376,48 +378,98 @@ function drillNode(path) {
 }
 const fyIdx = () => D.drill ? D.drill.fys.indexOf(fy) : -1;
 const nodeVal = (nd, i) => (nd.v && nd.v[i] != null) ? nd.v[i] : null;
+const pathKey = p => p.join('.');
+const isDark = c => d3.hsl(c).l < 0.62;
 
-/* one treemap panel; items are {n, v, has (children?), onClick, colour} */
-function tilePanel(svg, items, x0, y0, w, h, title, total, subtitle, dark) {
-  const root = d3.hierarchy({ children: items }).sum(d => d.v).sort((a, b) => b.value - a.value);
-  d3.treemap().size([w, h]).paddingInner(3).paddingOuter(0).round(true)(root);
+/* Build the hierarchy for one side. Children are only attached where the box is
+   open. Each child's AREA is its share of the parent's displayed value (the parent
+   keeps the headline figure, so the two panels still add up to the current account);
+   its $ figure in the tooltip is the source value. For goods the two differ by the
+   freight adjustment, and the tooltip says so. */
+function sideTree(items, fi) {
+  const build = (path, n, v, kids, colour, depth) => {
+    const node = { path, n, v, colour, depth, has: !!(kids && kids.length) };
+    if (node.has && bopOpen.has(pathKey(path))) {
+      const raw = kids.map((c, i) => ({ i, c, val: nodeVal(c, fi) })).filter(d => d.val > 0);
+      const sum = d3.sum(raw, d => d.val);
+      if (raw.length && sum > 0) {
+        raw.sort((a, b) => b.val - a.val);
+        node.children = raw.map((d, r) => build([...path, d.i], d.c.n, d.val, d.c.ch,
+          d3.interpolateRgb(colour, '#fff')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
+        node.scale = v / sum;     // area factor applied to children
+        node.children.forEach(c => c.area = c.v * node.scale);
+        return node;
+      }
+    }
+    node.area = v;
+    return node;
+  };
+  return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, d.colour, 1)) };
+}
+
+function toggleOpen(path) {
+  const k = pathKey(path);
+  if (bopOpen.has(k)) { [...bopOpen].forEach(o => { if (o === k || o.startsWith(k + '.')) bopOpen.delete(o); }); }
+  else bopOpen.add(k);
+  drawBop(); writeHash(true);
+}
+
+/* one side: a nested treemap of whatever is open */
+function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
+  const root = d3.hierarchy(tree).sum(d => d.children ? 0 : (d.area || 0));
+  d3.treemap().size([w, h]).paddingInner(3).paddingOuter(d => d.depth ? 3 : 0)
+    .paddingTop(d => d.depth && d.children ? 20 : (d.depth ? 3 : 0)).round(true)(root);
   const g = svg.append('g').attr('transform', `translate(${x0},${y0})`);
-  if (title) {
-    svg.append('text').attr('x', x0).attr('y', 16).attr('font-size', 13).attr('font-weight', 800)
-      .attr('fill', 'var(--green-900)').text(title);
-    svg.append('text').attr('x', x0).attr('y', 32).attr('font-size', 11.5).attr('font-weight', 600)
-      .attr('fill', 'var(--slate-500)').text(subtitle);
-  }
-  const cell = g.selectAll('g').data(root.leaves()).join('g').attr('transform', d => `translate(${d.x0},${d.y0})`);
+  svg.append('text').attr('x', x0).attr('y', 16).attr('font-size', 13).attr('font-weight', 800)
+    .attr('fill', 'var(--green-900)').text(title);
+  svg.append('text').attr('x', x0).attr('y', 32).attr('font-size', 11.5).attr('font-weight', 600)
+    .attr('fill', 'var(--slate-500)').text(subtitle);
+  const nodes = root.descendants().filter(d => d.depth > 0);
+  const cell = g.selectAll('g').data(nodes).join('g').attr('transform', d => `translate(${d.x0},${d.y0})`);
+  const tipHtml = d => {
+    const dd = d.data, parent = d.parent && d.parent.depth ? d.parent.data : null;
+    let h = `<b>${dd.n}</b><br>${usdm(dd.v)} in ${fy}`;
+    if (parent) h += `<br>${(100 * dd.v / d3.sum(d.parent.children, c => c.data.v)).toFixed(1)}% of ${parent.n.toLowerCase()}`;
+    else h += `<br>${(100 * dd.v / total).toFixed(1)}% of ${title.toLowerCase()}`;
+    if (dd.path.length === 1 && dd.children && drillRoot(dd.path[0]).basis) h += `<br><i>Breakdown on a ${drillRoot(dd.path[0]).basis.split(' (')[0]} basis; boxes scaled to the ${usdm(dd.v)} balance-of-payments figure</i>`;
+    if (dd.has) h += `<br><i>${dd.children ? 'Click the heading to close' : 'Click to break down'}</i>`;
+    return h;
+  };
   cell.append('rect').attr('width', d => d.x1 - d.x0).attr('height', d => d.y1 - d.y0).attr('rx', 3)
-    .attr('fill', d => d.data.colour).attr('stroke', '#fff').attr('stroke-width', 1)
+    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, '#fff')(0.78) : d.data.colour)
+    .attr('stroke', d => d.children ? d.data.colour : '#fff').attr('stroke-width', d => d.children ? 1.2 : 1)
     .attr('class', d => d.data.has ? 'zoom' : null)
-    .on('mousemove', (e, d) => showTip(`<b>${d.data.n}</b><br>${usdm(d.data.v)} in ${fy}<br>${(100 * d.data.v / total).toFixed(1)}% of ${(title || 'this').toLowerCase()}`
-      + (d.data.has ? '<br><i>Click to break down</i>' : ''), e))
-    .on('mouseleave', hideTip)
-    .on('click', (e, d) => { if (d.data.has) { hideTip(); d.data.onClick(); } });
-  /* text is clipped to its tile: a width estimate is only ever an estimate, and the
-     first cut let "Services imports" run past its box */
+    .on('mousemove', (e, d) => showTip(tipHtml(d), e)).on('mouseleave', hideTip)
+    .on('click', (e, d) => { e.stopPropagation(); if (d.data.has) { hideTip(); toggleOpen(d.data.path); } });
   cell.each(function (d, i) {
-    const w = d.x1 - d.x0, h = d.y1 - d.y0, c = d3.select(this);
-    if (w < 58 || h < 30) return;
-    const id = `clip-${(title || 'z').replace(/\W/g, '')}-${i}`;
-    c.append('clipPath').attr('id', id).append('rect').attr('width', Math.max(0, w - 6)).attr('height', h);
+    const w = d.x1 - d.x0, h = d.y1 - d.y0, c = d3.select(this), dd = d.data;
+    const open = !!d.children;
+    if (w < (open ? 40 : 58) || h < (open ? 18 : 30)) return;
+    const id = `clip-${title.replace(/\W/g, '')}-${i}`;
+    c.append('clipPath').attr('id', id).append('rect').attr('width', Math.max(0, w - 6)).attr('height', open ? 20 : h);
     const t = c.append('g').attr('clip-path', `url(#${id})`).style('pointer-events', 'none');
-    const fg = dark(d.data.colour) ? '#fff' : '#1a1a1a', fg2 = dark(d.data.colour) ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.65)';
-    /* conservative width estimate; drop trailing words until it fits, so "Other
-       exports (land-borne…)" shortens to "Other exports", not to "Other" */
-    const words = d.data.n.replace(/\s*\(.*$/, '').split(' ');
-    let label = d.data.n;
-    for (let k = words.length; k >= 1 && label.length * 8.4 > w - 12; k--) label = words.slice(0, k).join(' ');
+    const dark = !open && isDark(dd.colour);
+    const fg = open ? d3.color(dd.colour).darker(0.8) : (dark ? '#fff' : '#1a1a1a');
+    const fg2 = open ? d3.color(dd.colour).darker(0.4) : (dark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.65)');
+    const words = dd.n.replace(/\s*\(.*$/, '').split(' ');
+    let label = dd.n;
+    const extra = open ? (` · ${usdm(dd.v)}`.length * 6.5 + 14) : 0;
+    for (let k = words.length; k >= 1 && label.length * 8.4 + extra > w - 12; k--) label = words.slice(0, k).join(' ');
+    label = label.replace(/\s*(&|and|of|for)$/, '');
+    if (open) {
+      /* heading strip: name · value ▾  — clicking it closes the box */
+      t.append('text').attr('x', 7).attr('y', 14).attr('class', 'cl').attr('fill', fg).text(label + '  ▾');
+      if (w > 150) t.append('text').attr('x', w - 9).attr('y', 14).attr('text-anchor', 'end').attr('class', 'cv').attr('fill', fg2).text(usdm(dd.v));
+      return;
+    }
     t.append('text').attr('x', 7).attr('y', 16).attr('class', 'cl').attr('fill', fg).text(label);
+    const share = d.parent && d.parent.depth ? 100 * dd.v / d3.sum(d.parent.children, c => c.data.v) : 100 * dd.v / total;
     if (h > 44) t.append('text').attr('x', 7).attr('y', 31).attr('class', 'cv').attr('fill', fg2)
-      .text(usdm(d.data.v) + (w > 130 ? ` · ${(100 * d.data.v / total).toFixed(0)}%` : ''));
-    if (d.data.has && w > 40 && h > 20) t.append('text').attr('x', w - 9).attr('y', h - 6).attr('text-anchor', 'end')
+      .text(usdm(dd.v) + (w > 130 ? ` · ${share.toFixed(0)}%` : ''));
+    if (dd.has && w > 40 && h > 20) t.append('text').attr('x', w - 9).attr('y', h - 6).attr('text-anchor', 'end')
       .attr('font-size', 11).attr('fill', fg2).text('▸');
   });
 }
-const isDark = c => d3.hsl(c).l < 0.62;
 
 function drawBop() {
   d3.selectAll('#bopSeg button').classed('on', function () { return this.dataset.bv === bopView; });
@@ -426,24 +478,22 @@ function drawBop() {
   if (bopView === 'trend') return drawBopTrend();
   const el = d3.select('#chBop'); el.selectAll('*').remove();
   if (!bopMonths(fy)) return nodata('#chBop', `No balance-of-payments detail for ${fy} — the BPM6 monthly series begins in July 2013.`);
-  const partial = bopMonths(fy) < 12;
+  const partial = bopMonths(fy) < 12, fi = fyIdx();
   d3.select('#bopNote').style('display', partial ? null : 'none')
     .text(`${fy} covers ${bopMonths(fy)} month${bopMonths(fy) === 1 ? '' : 's'} so far — not comparable with full years.`);
-  if (bopPath.length && drillNode(bopPath)) return drawBopZoom(el);
-  bopPath = [];
-  const cred = CREDITS.map(([k, n]) => ({ k, n, v: k === 'sic_other' ? fySum('sic', fy) - fySum('remit_bop', fy) : fySum(k, fy),
-    colour: CRED_COL[k], has: !!drillRoot(k), onClick: () => zoomTo([k]) })).filter(d => d.v > 0);
-  const deb = DEBITS.map(([k, n]) => ({ k, n, v: fySum(k, fy), colour: DEB_COL[k], has: !!drillRoot(k),
-    onClick: () => zoomTo([k]) })).filter(d => d.v > 0);
+  const cred = CREDITS.map(([k, n]) => ({ k, n, v: k === 'sic_other' ? fySum('sic', fy) - fySum('remit_bop', fy) : fySum(k, fy), colour: CRED_COL[k] })).filter(d => d.v > 0);
+  const deb = DEBITS.map(([k, n]) => ({ k, n, v: fySum(k, fy), colour: DEB_COL[k] })).filter(d => d.v > 0);
   const tc = d3.sum(cred, d => d.v), td = d3.sum(deb, d => d.v), bal = tc - td;
 
-  const W = el.node().clientWidth || 1100, H = Math.max(300, Math.min(400, W * 0.34));
+  /* open boxes need room: grow the chart with the deepest open level */
+  const depth = d3.max([0, ...[...bopOpen].map(k => k.split('.').length)]);
+  const W = el.node().clientWidth || 1100, H = Math.max(300, Math.min(400 + 90 * depth, W * (0.34 + 0.08 * depth)));
   const gap = 34, hdr = 42;
   const wc = Math.round((W - gap) * tc / (tc + td)), wd = W - gap - wc;
   const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
   const sub = t => usdm(t) + (partial ? ` · ${bopMonths(fy)} months` : '');
-  tilePanel(svg, cred, 0, hdr, wc, H - hdr, 'Dollars in', tc, sub(tc), isDark);
-  tilePanel(svg, deb, wc + gap, hdr, wd, H - hdr, 'Dollars out', td, sub(td), isDark);
+  nestedPanel(svg, sideTree(cred, fi), 0, hdr, wc, H - hdr, 'Dollars in', tc, sub(tc), fi);
+  nestedPanel(svg, sideTree(deb, fi), wc + gap, hdr, wd, H - hdr, 'Dollars out', td, sub(td), fi);
   /* the balance, in the gap */
   const gx = wc + gap / 2;
   svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--slate-200)');
@@ -451,41 +501,15 @@ function drawBop() {
     .attr('transform', `rotate(-90 ${gx} ${H / 2 + hdr / 2})`).attr('font-size', 11).attr('font-weight', 800)
     .attr('fill', bal < 0 ? '#a32d2d' : '#186636');
   bt.text(`${bal < 0 ? 'Deficit' : 'Surplus'} ${usdm(Math.abs(bal))}`);
-}
-
-function zoomTo(path) { bopPath = path; drawBop(); writeHash(true); }
-
-function drawBopZoom(el) {
-  const k = bopPath[0], nd = drillNode(bopPath), fi = fyIdx();
-  const base = CRED_COL[k] || DEB_COL[k];
-  const items = (nd.ch || []).map((c, i) => ({ i, n: c.n, v: nodeVal(c, fi), has: !!(c.ch && c.ch.length),
-    onClick: () => zoomTo([...bopPath, i]) })).filter(d => d.v > 0).sort((a, b) => b.v - a.v);
-  /* breadcrumb: every level above the current one is a link */
-  const crumb = d3.select('#bopCrumb').style('display', null).html('');
-  const names = [['Current account', []]];
-  bopPath.forEach((p, i) => names.push([i === 0 ? TOP_NAME[p] : drillNode(bopPath.slice(0, i + 1)).n, bopPath.slice(0, i + 1)]));
-  names.forEach(([n, path], i) => {
-    if (i) crumb.append('span').attr('class', 'sep').text('›');
-    if (i < names.length - 1) crumb.append('a').text(n).on('click', () => zoomTo(path));
-    else crumb.append('span').attr('class', 'here').text(n);
-  });
-  const root = drillRoot(k);
-  if (bopPath.length === 1 && root.basis) crumb.append('span').attr('class', 'basis').text('Basis: ' + root.basis);
-  if (!items.length) return nodata('#chBop', `No breakdown of ${names[names.length - 1][0].toLowerCase()} for ${fy}.`);
-
-  const total = d3.sum(items, d => d.v);
-  items.forEach((d, i) => { d.colour = d3.interpolateRgb(base, '#fff')(items.length === 1 ? 0 : 0.6 * i / (items.length - 1)); });
-  const W = el.node().clientWidth || 1100, H = Math.max(300, Math.min(420, W * 0.36)), hdr = 42;
-  const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
-  const parentV = bopPath.length === 1 ? fySum(k === 'sic_other' ? 'sic' : k, fy) - (k === 'sic_other' ? fySum('remit_bop', fy) : 0)
-    : nodeVal(drillNode(bopPath), fi);
-  let sub = usdm(total) + (bopMonths(fy) < 12 ? ` · ${bopMonths(fy)} months` : '');
-  if (bopPath.length === 1 && root.adj && root.adj.v[fi] != null && Math.abs(total - parentV) > 1)
-    sub += ` before ${root.adj.n.toLowerCase()} of ${usdm(root.adj.v[fi])}; ${usdm(parentV)} in the balance of payments`;
-  tilePanel(svg, items, 0, hdr, W, H - hdr, names[names.length - 1][0], total, sub, isDark);
-  svg.append('text').attr('x', W).attr('y', 16).attr('text-anchor', 'end').attr('font-size', 11.5).attr('font-weight', 600)
-    .attr('fill', 'var(--green-700)').style('cursor', 'pointer').text('← back')
-    .on('click', () => zoomTo(bopPath.slice(0, -1)));
+  /* what is open, and a way to close it all */
+  if (bopOpen.size) {
+    const crumb = d3.select('#bopCrumb').style('display', null).html('');
+    const tops = [...new Set([...bopOpen].map(k => k.split('.')[0]))];
+    crumb.append('span').attr('class', 'here').text('Open: ' + tops.map(k => TOP_NAME[k]).join(', '));
+    crumb.append('a').text('Collapse all').on('click', () => { bopOpen.clear(); drawBop(); writeHash(true); });
+    const g = tops.find(k => drillRoot(k) && drillRoot(k).basis);
+    if (g) crumb.append('span').attr('class', 'basis').text(`${TOP_NAME[g]} breakdown: ${drillRoot(g).basis}`);
+  }
 }
 function drawBopTrend() {
   chips('bop', drawBopTrend);
@@ -581,12 +605,13 @@ function pairTable(keys) {
 }
 /* the breakdown on screen, every fiscal year, one row per node with its depth */
 function drillCSV() {
-  const nd = drillNode(bopPath), fys = D.drill.fys, rows = [['level', 'item', ...fys.map(f => f + '_mn_usd')]];
-  const walk = (n, depth) => { rows.push([depth, n.n, ...(n.v || fys.map(() => null))]); (n.ch || []).forEach(c => walk(c, depth + 1)); };
-  (nd.ch || []).forEach(c => walk(c, 1));
-  const name = bopPath.map((p, i) => i ? drillNode(bopPath.slice(0, i + 1)).n : TOP_NAME[p]).join('-')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  return [name, rows];
+  const fys = D.drill.fys, rows = [['top', 'level', 'item', ...fys.map(f => f + '_mn_usd')]];
+  const tops = [...new Set([...bopOpen].map(k => k.split('.')[0]))];
+  tops.forEach(k => {
+    const walk = (n, depth) => { rows.push([TOP_NAME[k], depth, n.n, ...(n.v || fys.map(() => null))]); (n.ch || []).forEach(c => walk(c, depth + 1)); };
+    (drillRoot(k).ch || []).forEach(c => walk(c, 1));
+  });
+  return ['current-account-breakdown-' + tops.join('-'), rows];
 }
 const CSV = {
   usd:    () => ['pkr-usd', [['date', 'pkr_per_usd'], ...S.usd]],
@@ -597,7 +622,7 @@ const CSV = {
   kibor:  () => ['kibor-month-end', pairTable(CH.kibor.avail)],
   spread: () => ['lending-deposit-rates', pairTable(CH.spread.avail)],
   res:    () => ['fx-reserves', pairTable(CH.res.avail)],
-  bop:    () => bopView === 'tree' && bopPath.length ? drillCSV()
+  bop:    () => bopView === 'tree' && bopOpen.size ? drillCSV()
                 : ['balance-of-payments-monthly', pairTable(['gx','gm','sx','sm','pic','pid','sic','remit_bop','sid','ca'])],
   remit:  () => ['remittances-by-source', [['source', 'fiscal_year', 'mn_usd'], ...D.remit]],
   money:  () => ['monetary-aggregates', pairTable(CH.money.avail)],
@@ -682,7 +707,7 @@ function writeHash(push) {
   if ((topic === 'rupee' || all) && scale !== 'log') p.set('sc', scale);
   if ((topic === 'external' || all) && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
   if ((topic === 'external' || all) && bopView !== 'tree') p.set('bv', bopView);
-  if ((topic === 'external' || all) && bopView === 'tree' && bopPath.length) p.set('bz', bopPath.join('.'));
+  if ((topic === 'external' || all) && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
   const charts = all ? Object.values(TOPIC_CHARTS).flat() : (TOPIC_CHARTS[topic] || []);
   charts.forEach(c => { if (!isDefault(c)) p.set('c_' + c, [...SEL[c]].join('.')); });
   const hv = '#' + p.toString(); _lastNavHash = hv;
@@ -709,9 +734,11 @@ function applyStateFromHash() {
     if (!SEL[c].size) SEL[c] = new Set(CH[c].def);
   });
   if (o.bv === 'trend' || o.bv === 'tree') bopView = o.bv;
-  bopPath = [];
-  if (o.bz) { const p = o.bz.split('.').map((x, i) => i ? +x : x);
-    if (drillRoot(p[0]) && p.slice(1).every(Number.isInteger) && drillNode(p)) bopPath = p; }
+  bopOpen = new Set();
+  if (o.bz) o.bz.split('|').forEach(s => { const p = s.split('.').map((x, i) => i ? +x : x);
+    if (drillRoot(p[0]) && p.slice(1).every(Number.isInteger) && drillNode(p)) {
+      for (let i = 1; i <= p.length; i++) bopOpen.add(pathKey(p.slice(0, i)));   // ancestors must be open too
+    } });
   applyTopic(k, false);
   if (o.sc) setScale(o.sc);
   if (o.fy && fys.includes(o.fy)) setFy(o.fy);
@@ -733,7 +760,7 @@ function initTopics() {
   d3.selectAll('#scaleSeg button').on('click', function () { setScale(this.dataset.sc); });
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
   d3.select('#fySelect').on('change', function () { setFy(this.value); });
-  d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopPath.length) zoomTo(bopPath.slice(0, -1)); });
+  d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopOpen.size) { bopOpen.clear(); drawBop(); writeHash(true); } });
   window.addEventListener('hashchange', () => { if (!applyingHash) applyStateFromHash(); });
   window.addEventListener('popstate', () => { if (!applyingHash) applyStateFromHash(); });
   initShare();
