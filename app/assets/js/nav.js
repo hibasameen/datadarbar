@@ -1,8 +1,8 @@
 /*
    Data Darbar — shared "Data" nav dropdown
    ----------------------------------------
-   Collapses the product links (District & Tehsil Map, Poverty Metrics, Trade Atlas,
-   Economy & Budget, Query the Data) into a single "Data" tab that opens a menu.
+   Collapses the product links (District & Tehsil Map, Poverty & Wealth, Trade Atlas,
+   GDP & Budget, Query the Data) into a single "Data" tab that opens a menu.
 
    Included on every page. Self-contained like modals.js: injects its own <style>
    with literal hex colours so it works regardless of which stylesheet the page
@@ -20,9 +20,10 @@
 
   var VIEWS = [
     { href: 'map.html',     title: 'District & Tehsil Map', desc: 'Census, PSLM, labour force and household indicators by district, and the Mouza Census by tehsil' },
-    { href: 'poverty.html', title: 'Poverty Metrics',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
+    { href: 'poverty.html', title: 'Poverty & Wealth',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
     { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },
-    { href: 'finance.html', title: 'Economy & Budget', desc: 'GDP by sector, input-output flows and the federal budget' },
+    { href: 'finance.html', title: 'GDP & Budget', desc: 'GDP by sector, input-output flows and the federal budget' },
+    { href: 'money.html',   title: 'Macro & Finance',   desc: 'Inflation, interest rates, the rupee, the current account, remittances and the banks' },
     { href: 'query.html',   title: 'Query the Data',   desc: 'Run SQL against every table, in your browser — no signup' }
   ];
 

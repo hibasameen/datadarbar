@@ -1,4 +1,4 @@
-/* Data Darbar — Economy & Budget: interactive structure-of-the-economy dashboard.
+/* Data Darbar — GDP & Budget: interactive structure-of-the-economy dashboard.
    D3 v7 + window.ECON.{structure,industry,budget,indicators,io}. Linked views:
    selYear (year cursor) and selSector (macro focus) drive the top panels. */
 const fmtBn=v=>v==null?'—':(Math.abs(v)>=1000?(v/1000).toFixed(v>=10000?0:1)+' tn':Math.round(v).toLocaleString()+' bn');

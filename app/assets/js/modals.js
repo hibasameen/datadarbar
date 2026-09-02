@@ -106,9 +106,12 @@
         across all 141 districts, with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
       <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
         sector, with drill-down, top partners and change over time (2015–2024).</li>
-      <li><strong>Economy &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
+      <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
         flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
-      <li><strong>Poverty Metrics</strong> — a multidimensional poverty index built from household
+      <li><strong>Macro &amp; Finance</strong> — State Bank of Pakistan series: the rupee since 1947, the policy
+        rate since 1956, inflation, the interbank curve, reserves, the current account broken down to individual
+        commodities, remittances by source, the money supply and bad loans.</li>
+      <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
         microdata, alongside satellite measures of relative wealth, population and night-time lights,
         mapped down to all 554 tehsils, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
@@ -335,7 +338,7 @@
       the total level only from the Pakistan Economic Survey (Pakistan stopped reporting to UN Comtrade after
       2018, so no commodity breakdown is available). These years are flagged in the source note.</p>
 
-    <h3><span class="dd-tag" style="background:#f3dedb;color:#b23b2c">Economy &amp; Budget</span></h3>
+    <h3><span class="dd-tag" style="background:#f3dedb;color:#b23b2c">GDP &amp; Budget</span></h3>
 
     <h4>National accounts (GDP by sector &amp; growth)</h4>
     <p>GDP is taken from the national accounts on the <strong>2015-16 base year</strong>. The "economy by
@@ -370,7 +373,7 @@
       All figures are nominal budget estimates as published; presentation of some line items changes across
       years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
 
-    <h2>Poverty Metrics</h2>
+    <h2>Poverty & Wealth</h2>
     <h4>Multidimensional Poverty Index (district)</h4>
     <p>An <strong>Alkire–Foster adjusted headcount</strong>, M<sub>0</sub> = H &times; A, computed directly
       from <strong>PSLM 2019-20 household microdata</strong> — from the joint distribution of deprivations

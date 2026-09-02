@@ -1,5 +1,5 @@
 /* global L, chroma */
-/* Data Darbar — Poverty Metrics
+/* Data Darbar — Poverty & Wealth
    Four layers on two geometries: the survey-based MPI at district (ADM2) level,
    three satellite-derived layers at tehsil (ADM3) level. Join keys (dd_key /
    dd_id) are baked into the GeoJSON, so no name matching happens in the browser.
