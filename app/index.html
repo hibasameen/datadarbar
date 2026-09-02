@@ -39,7 +39,6 @@ body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 .wrap{max-width:1120px;margin:0 auto;padding:20px 20px 60px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px}
 @media(max-width:720px){.cards{grid-template-columns:1fr}}
-.pcard-wide{grid-column:1/-1}
 .pcard{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--slate-200);border-left:5px solid var(--accent);border-radius:16px;padding:22px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s;position:relative}
 .pcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 
@@ -92,8 +91,8 @@ body{padding-bottom:34px}
       <div class="pcard-body"><div class="pcard-title">Poverty &amp; Wealth</div><div class="pcard-tag">Deprivation, wealth and activity from space</div><div class="pcard-desc">A multidimensional poverty index built from household microdata, plus satellite measures of relative wealth, population and night-time lights — down to all 554 tehsils.</div></div>
       <div class="pcard-go">Open →</div>
     </a>
-    <a class="pcard pcard-wide" href="query.html" style="--accent:#5b3fa8">
-      <div class="pcard-body"><div class="pcard-title">Query the Data</div><div class="pcard-tag">For analysts — SQL, straight in the browser</div><div class="pcard-desc">Every table behind Data Darbar — districts, poverty, 8-digit trade, national accounts, the federal budget — as one queryable warehouse. Full SQL, no signup, nothing sent to a server. Export CSV or read the same files from Python and R.</div></div>
+    <a class="pcard" href="query.html" style="--accent:#5b3fa8">
+      <div class="pcard-body"><div class="pcard-title">Query the Data</div><div class="pcard-tag">For analysts — SQL, straight in the browser</div><div class="pcard-desc">Every table behind Data Darbar — districts, poverty, 8-digit trade, national accounts, the budget and 1,300 State Bank series — as one warehouse. Full SQL in the browser, no signup, nothing sent to a server; export CSV or read the same files from Python and R.</div></div>
       <div class="pcard-go">Open →</div>
     </a>
   </div>
