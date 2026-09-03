@@ -4,7 +4,7 @@ An open explorer of Pakistan's official statistics — the population census, 8-
 
 ## Live demo
 
-<https://hibasameen.github.io/datadarbar/>
+<https://darbar.adaad.org>
 
 ## The four products
 
