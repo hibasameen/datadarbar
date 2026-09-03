@@ -6,7 +6,7 @@ An open explorer of Pakistan's official statistics — the population census, 8-
 
 <https://darbar.adaad.org>
 
-## The four products
+## The five products
 
 Data Darbar is a landing page (`index.html`) plus four self-contained products, sharing one header (with a **Data ▾** dropdown), footer, and green/gold/slate design system.
 
