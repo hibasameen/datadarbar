@@ -117,7 +117,8 @@
         mapped down to all 554 tehsils, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
     <p>A sixth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the five
-      views — to SQL in the browser, with nothing sent to a server.</p>
+      views — to SQL in the browser, with nothing sent to a server. A <a href="dictionary.html">data dictionary</a>
+      documents every table, column, unit and caveat.</p>
 
     <h3>Built by</h3>
     <p><strong>Hiba Sameen</strong> is an economist and data scientist based in London. She holds a PhD in

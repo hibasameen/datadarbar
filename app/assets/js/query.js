@@ -178,24 +178,89 @@
 
   /* ── export ────────────────────────────────────────────────────────────── */
 
-  function csv() {
-    if (!lastResult) return;
-    var cols = lastResult.columns.map(function (c) { return c.name; });
+  function withNotes() { return $('withNotes') && $('withNotes').checked; }
+
+  function saveBlob(blob, name) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  /* one download: plain CSV, or CSV + README.md zipped when notes are on */
+  function deliver(csvBytesOrText, base, tables, opts) {
+    if (withNotes() && window.DD_EXPORT) {
+      var md = DD_EXPORT.readme(wh.catalog, tables, opts);
+      var z = DD_EXPORT.zip([{ name: base + '.csv', data: csvBytesOrText }, { name: 'README.md', data: md }]);
+      saveBlob(new Blob([z], { type: 'application/zip' }), base + '.zip');
+    } else {
+      saveBlob(new Blob([csvBytesOrText], { type: 'text/csv;charset=utf-8' }), base + '.csv');
+    }
+  }
+
+  function rowsToCsv(res) {
+    var cols = res.columns.map(function (c) { return c.name; });
     var q = function (v) {
       if (v === null) return '';
       v = String(v);
       return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
     };
     var lines = [cols.map(q).join(',')];
-    lastResult.rows.forEach(function (r) {
+    res.rows.forEach(function (r) {
       lines.push(cols.map(function (c) { return q(cell(r[c])); }).join(','));
     });
-    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'data-darbar-query.csv';
-    a.click();
-    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    return lines.join('\n');
+  }
+
+  function csv() {
+    if (!lastResult) return;
+    var sql = currentSql();
+    deliver(rowsToCsv(lastResult), 'data-darbar-query', wh.tablesIn(sql),
+            { sql: sql, title: 'Data Darbar query result', rows: lastResult.rows.length });
+    track('csv-download');
+  }
+
+  /* ── whole-table extraction ────────────────────────────────────────────── */
+
+  function renderExtract(cat) {
+    var sel = $('extractSel'); if (!sel) return;
+    sel.innerHTML = cat.tables.map(function (t) {
+      return '<option value="' + esc(t.name) + '">' + esc(t.name) + ' — ' + num(t.rows) + ' rows</option>';
+    }).join('');
+    var upd = function () {
+      var t = cat.tables.filter(function (x) { return x.name === sel.value; })[0];
+      $('extractMeta').textContent = t ? (t.description || '') : '';
+    };
+    sel.addEventListener('change', upd); upd();
+    $('extractBtn').addEventListener('click', extract);
+  }
+
+  function extract() {
+    var name = $('extractSel').value;
+    var t = wh.catalog.tables.filter(function (x) { return x.name === name; })[0];
+    if (!t) return;
+    var sql = 'SELECT * FROM "' + name + '"';
+    $('extractBtn').disabled = true;
+    status('Extracting ' + name + '…');
+    var prog = function (tt, frac) {
+      status('Loading ' + tt.name + ' — ' + Math.round(frac * 100) + '% of ' + mb(tt.bytes) + '…');
+    };
+    /* COPY-to-file is the fast path; if the WASM filesystem refuses, fall back to
+       a normal query and serialise the rows (fine for every table but trade_hs8,
+       where it is merely slow) */
+    wh.exportCsv(sql, prog).catch(function () {
+      return wh.query(sql, prog).then(function (res) { return new TextEncoder().encode(rowsToCsv(res)); });
+    }).then(function (bytes) {
+      markLoaded();
+      deliver(bytes, name, [t], { sql: sql, title: name, rows: t.rows });
+      status(name + ': ' + num(t.rows) + ' rows, ' + mb(bytes.length) + (withNotes() ? ' + method notes' : ''));
+      track('table-extract');
+    }).catch(function (e) {
+      $('err').style.display = 'block';
+      $('err').textContent = 'Could not extract ' + name + ': ' + (e.message || e);
+      status('');
+    }).then(function () { $('extractBtn').disabled = false; });
   }
 
   function share() {
@@ -248,6 +313,7 @@
     wh.init(function (m) { $('bootmsg').textContent = m; }).then(function (info) {
       renderCatalog(info.catalog);
       wireSidebar(info.catalog);
+      renderExtract(info.catalog);
       markLoaded();
       $('boot').style.display = 'none';
       $('console').style.display = 'flex';

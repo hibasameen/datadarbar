@@ -178,9 +178,28 @@ window.DDWarehouse = (function () {
       });
     }
 
+    /* Whole-result CSV without materialising rows in JS: DuckDB writes the file
+       into its virtual filesystem and we lift the bytes out. A 1.1M-row table
+       round-trips in a few seconds this way; toArray() on the same would take
+       hundreds of MB of JS objects. */
+    function exportCsv(sql, onProgress) {
+      var needed = tablesIn(sql).filter(function (t) { return !registered[t.name]; });
+      var path = 'dd_export_' + Date.now() + '.csv';
+      return Promise.all(needed.map(function (t) {
+        return load(t, function (f) { onProgress && onProgress(t, f); });
+      })).then(function () {
+        return conn.query('COPY (' + sql + ') TO \'' + path + '\' (HEADER, DELIMITER \',\')');
+      }).then(function () {
+        return db.copyFileToBuffer(path);
+      }).then(function (buf) {
+        return db.dropFile(path).catch(function () {}).then(function () { return buf; });
+      });
+    }
+
     return {
       init: init,
       query: query,
+      exportCsv: exportCsv,
       load: load,
       get catalog() { return catalog; },
       get registered() { return registered; },

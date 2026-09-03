@@ -656,6 +656,18 @@ def build(src: Path) -> None:
             "State Bank of Pakistan, EasyData API (easydata.sbp.org.pk)",
             f"SELECT * FROM '{sbp_cat.as_posix()}' ORDER BY subject_area, dataset_code, series_key",
         )
+        # The data dictionary lists which SBP datasets actually carry observations
+        # (the catalogue inventories all 226; only the fetched ones have data).
+        ds = con.sql(f"""
+            SELECT c.dataset_code, any_value(c.dataset_name) AS name, any_value(c.subject_area) AS subject,
+                   count(DISTINCT o.series_key) AS series,
+                   strftime(min(o.obs_date), '%Y-%m') AS since, strftime(max(o.obs_date), '%Y-%m') AS upto
+            FROM '{sbp_obs.as_posix()}' o JOIN '{sbp_cat.as_posix()}' c USING (series_key)
+            WHERE o.value IS NOT NULL GROUP BY 1 ORDER BY subject, series DESC""").fetchall()
+        for t in tables:
+            if t["name"] == "sbp_series_catalog":
+                t["datasets"] = [{"code": r[0], "name": r[1], "subject": r[2], "series": r[3],
+                                  "since": r[4], "upto": r[5]} for r in ds]
         register(
             "sbp_observations",
             "The macro time-series panel: every observation of every SBP series held here.",
@@ -709,8 +721,14 @@ def build(src: Path) -> None:
 
 
 EXAMPLES = [
+    # Ten, deliberately: one or two per table family, each answering a question a
+    # reader would actually ask, and each showing one habit the table needs
+    # (filter low_n, country IS NULL, is_own_year_be, kind='indicator').
     {"title": "Ten poorest districts",
-     "sql": "SELECT rank, name, prov, mpi, H, A\nFROM mpi_districts\nWHERE low_n = 0\nORDER BY rank\nLIMIT 10;"},
+     "sql": ("SELECT rank, name, prov, mpi, H, A\n"
+             "FROM mpi_districts\n"
+             "WHERE low_n = 0   -- drop districts whose sample is too small to rank\n"
+             "ORDER BY rank LIMIT 10;")},
     {"title": "Female literacy, 2017 vs 2023",
      "sql": ("SELECT district, province,\n"
              "       max(value) FILTER (year = '2017') AS lit_2017,\n"
@@ -719,47 +737,42 @@ EXAMPLES = [
              "           - max(value) FILTER (year = '2017'), 1) AS change\n"
              "FROM district_indicators\n"
              "WHERE indicator = 'literacy_ratio_female'\n"
-             "GROUP BY 1, 2\nORDER BY change DESC;")},
+             "GROUP BY 1, 2\n"
+             "ORDER BY change DESC;")},
+    {"title": "Urbanisation vs multidimensional poverty",
+     "sql": ("SELECT d.district, d.province, d.value AS pct_urban_2023, m.mpi\n"
+             "FROM district_indicators d\n"
+             "JOIN mpi_districts m USING (district_key)\n"
+             "WHERE d.indicator = 'urban_proportion' AND d.year = '2023'\n"
+             "  AND m.low_n = 0\n"
+             "ORDER BY m.mpi DESC;")},
+    {"title": "What Pakistan exports most, FY2024-25",
+     "sql": ("-- country IS NULL rows are the commodity totals; country rows are the\n"
+             "-- partner split of the same money. Never add both.\n"
+             "SELECT hs8, any_value(commodity) AS commodity,\n"
+             "       round(sum(fy_value_kpkr) / 1e6, 1) AS rs_bn\n"
+             "FROM trade_hs8\n"
+             "WHERE direction = 'export' AND fiscal_year = '2024-25'\n"
+             "  AND country IS NULL\n"
+             "GROUP BY 1 ORDER BY rs_bn DESC LIMIT 20;")},
     {"title": "Top import partners, FY2024-25 (Rs bn)",
      "sql": ("SELECT country, round(sum(fy_value_kpkr) / 1e6, 1) AS rs_bn\n"
              "FROM trade_hs8\n"
              "WHERE direction = 'import' AND fiscal_year = '2024-25'\n"
              "  AND country IS NOT NULL\n"
-             "GROUP BY 1\nORDER BY rs_bn DESC\nLIMIT 15;")},
-    {"title": "What Pakistan exports most (FY2024-25)",
-     "sql": ("SELECT hs8, any_value(commodity) AS commodity,\n"
-             "       round(sum(fy_value_kpkr) / 1e6, 1) AS rs_bn\n"
-             "FROM trade_hs8\n"
-             "WHERE direction = 'export' AND fiscal_year = '2024-25'\n"
-             "  AND country IS NULL\n"
-             "GROUP BY 1\nORDER BY rs_bn DESC\nLIMIT 20;")},
+             "GROUP BY 1 ORDER BY rs_bn DESC LIMIT 15;")},
     {"title": "Real GDP growth by year",
      "sql": ("SELECT year, round(value, 2) AS growth_pct\n"
              "FROM national_accounts\n"
              "WHERE table_sheet = 'Table 6' AND item LIKE 'D GDP%'\n"
              "ORDER BY year;")},
     {"title": "Federal defence budget over time",
-     "sql": ("SELECT doc_fy, item, value_rs_mn\n"
+     "sql": ("-- is_own_year_be keeps the document's own-year budget estimate,\n"
+             "-- the only column that strings into a clean time series.\n"
+             "SELECT doc_fy, item, value_rs_mn\n"
              "FROM budget_lines\n"
              "WHERE is_own_year_be AND item ILIKE '%defence%'\n"
              "ORDER BY doc_fy;")},
-    {"title": "Do lights track wealth? (tehsils, by province)",
-     "sql": ("-- Note: Meta's RWI uses night-lights as an input, so this correlation\n"
-             "-- is partly mechanical. Read it as consistency, not as validation.\n"
-             "SELECT prov,\n"
-             "       count(*) AS tehsils,\n"
-             "       round(corr(rwi, ln(nl_latest + 0.01)), 3) AS corr_rwi_lognl\n"
-             "FROM tehsil_satellite\n"
-             "WHERE nl_lowc = 0\nGROUP BY 1\nHAVING count(*) >= 5\nORDER BY 3 DESC;")},
-    {"title": "Night-lights, tehsil trajectories since 2020",
-     "sql": ("SELECT s.name AS tehsil, s.prov,\n"
-             "       max(l.radiance) FILTER (l.year = 2020) AS y2020,\n"
-             "       max(l.radiance) FILTER (l.year = 2026) AS y2026,\n"
-             "       s.pop\n"
-             "FROM tehsil_nightlights l\n"
-             "JOIN tehsil_satellite s USING (tehsil_id)\n"
-             "WHERE s.nl_lowc = 0 AND s.pop > 200000\n"
-             "GROUP BY 1, 2, 5\nORDER BY y2026 / nullif(y2020, 0) DESC\nLIMIT 20;")},
     {"title": "Rural electrification, worst tehsils (Mouza Census)",
      "sql": ("-- Shares are of MOUZAS, not people. Aggregate to the polygon first:\n"
              "-- several PBS tehsils can share one boundary.\n"
@@ -779,134 +792,44 @@ EXAMPLES = [
              "WHERE m.TotalMauzaCount > 0\n"
              "GROUP BY 1, 2 HAVING base >= 50\n"
              "ORDER BY pct_dark DESC LIMIT 20;")},
-    {"title": "Do brighter tehsils have more girls' schools?",
-     "sql": ("-- Facilities are places, lights are satellite: this asks whether the\n"
-             "-- two agree, not whether either causes the other.\n"
-             "SELECT s.prov,\n"
-             "       count(*) AS tehsils,\n"
-             "       round(corr(g.pct_girls_primary, ln(s.nl_latest + 0.01)), 3) AS corr\n"
-             "FROM (SELECT x.dd_id,\n"
-             "             100.0 * sum(m.\"EducationFacility_FemalePrimaryExistanceCount\")\n"
-             "             / nullif(sum(m.\"EducationFacility_FemalePrimaryExistanceCount\"\n"
-             "               + m.\"EducationFacility_FemalePrimaryNotExistanceCount\"), 0)\n"
-             "               AS pct_girls_primary\n"
-             "      FROM mouza_tehsil m JOIN mouza_crosswalk x USING (tehsil_code)\n"
-             "      WHERE m.TotalMauzaCount > 0 GROUP BY 1) g\n"
-             "JOIN tehsil_satellite s ON s.tehsil_id = g.dd_id\n"
-             "WHERE s.nl_lowc = 0\n"
-             "GROUP BY 1 HAVING count(*) >= 5 ORDER BY 3;")},
-    {"title": "Urbanisation vs multidimensional poverty",
-     "sql": ("SELECT d.district, d.province, d.value AS pct_urban_2023, m.mpi\n"
-             "FROM district_indicators d\n"
-             "JOIN mpi_districts m USING (district_key)\n"
-             "WHERE d.indicator = 'urban_proportion' AND d.year = '2023'\n"
-             "  AND m.low_n = 0\nORDER BY m.mpi DESC;")},
 ]
 
 
+# The State Bank tables are long: one row per series x date, and the series are
+# identified by name in sbp_series_catalog. Every example therefore starts from
+# the catalogue, by name, so it reads as English rather than as a code.
 SBP_EXAMPLES = [
-    {"title": "The rupee since 1947",
-     "sql": ("SELECT obs_date, value AS pkr_per_usd\n"
-             "FROM sbp_observations\n"
-             "WHERE series_key = 'TS_GP_ER_FAERPKR_M.E00220'\n"
-             "ORDER BY obs_date;")},
-    {"title": "The real policy rate",
-     "sql": ("-- The policy rate only moves when SBP meets, so it cannot be joined\n"
-             "-- month-to-month against CPI. ASOF JOIN carries the last rate forward.\n"
-             "SELECT c.obs_date,\n"
-             "       p.value AS policy_rate,\n"
-             "       c.value AS cpi_yoy,\n"
-             "       round(p.value - c.value, 2) AS real_rate\n"
-             "FROM sbp_observations c\n"
-             "ASOF JOIN (SELECT obs_date, value FROM sbp_observations\n"
-             "           WHERE series_key = 'TS_GP_IR_SIRPR_AH.SBPOL0030') p\n"
-             "  ON p.obs_date <= c.obs_date\n"
-             "WHERE c.series_key = 'TS_GP_PT_CPI_M.P00011516'\n"
-             "ORDER BY c.obs_date;")},
-    {"title": "Where remittances come from, FY2024-25",
-     "sql": ("-- The country series are hierarchical: U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n"
-             "-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, and 'ten European Countries'\n"
-             "-- contains Belgium..Sweden. Summing all of them overstates the total by ~42%,\n"
-             "-- so this restricts to the partition that reconciles to the published figure.\n"
-             "SELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n"
-             "       round(sum(o.value), 0) AS mn_usd\n"
+    {"title": "Find a State Bank series by name",
+     "sql": ("-- sbp_observations is one row per series x date. Start here: find the\n"
+             "-- series, note its unit and frequency, then join on series_key.\n"
+             "SELECT series_key, series_name, unit, frequency, available_since, available_upto\n"
+             "FROM sbp_series_catalog\n"
+             "WHERE series_name ILIKE '%remittance%'\n"
+             "ORDER BY dataset_code, series_key;")},
+    {"title": "The rupee against the dollar since 1947",
+     "sql": ("SELECT o.obs_date, o.value AS pkr_per_usd\n"
              "FROM sbp_observations o\n"
              "JOIN sbp_series_catalog c USING (series_key)\n"
+             "WHERE c.dataset_code = 'TS_GP_ER_FAERPKR_M'   -- bank floating average rates, monthly\n"
+             "  AND c.series_name = 'Average Exchange rate of Pak Rupees per U.S. Dollar'\n"
+             "  -- (a sibling series, 'App (+) / Dep (-) ...', holds the monthly % change)\n"
+             "ORDER BY o.obs_date;")},
+    {"title": "Where remittances come from, FY2024-25",
+     "sql": ("-- The country series are hierarchical (U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n"
+             "-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, 'ten European Countries'\n"
+             "-- contains Belgium..Sweden). Summing all of them overstates the total by 42%;\n"
+             "-- these fifteen add up exactly to SBP's published figure.\n"
+             "SELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n"
+             "       round(sum(o.value)) AS mn_usd\n"
+             "FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\n"
              "WHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n"
              "  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n"
-             "  AND c.series_name LIKE '%received from%'\n"
-             "  AND c.series_name NOT ILIKE '%Dubai%'    AND c.series_name NOT ILIKE '%Abu Dhabi%'\n"
-             "  AND c.series_name NOT ILIKE '%Sharjah%'  AND c.series_name NOT ILIKE '%four U.A.E%'\n"
-             "  AND c.series_name NOT ILIKE '%Bahrain%'  AND c.series_name NOT ILIKE '%Kuwait%'\n"
-             "  AND c.series_name NOT ILIKE '%Oman%'     AND c.series_name NOT ILIKE '%Qatar%'\n"
-             "  AND c.series_name NOT ILIKE '%Belgium%'  AND c.series_name NOT ILIKE '%Denmark%'\n"
-             "  AND c.series_name NOT ILIKE '%France%'   AND c.series_name NOT ILIKE '%Germany%'\n"
-             "  AND c.series_name NOT ILIKE '%Greece%'   AND c.series_name NOT ILIKE '%Ireland%'\n"
-             "  AND c.series_name NOT ILIKE '%Italy%'    AND c.series_name NOT ILIKE '%Netherland%'\n"
-             "  AND c.series_name NOT ILIKE '%Spain%'    AND c.series_name NOT ILIKE '%Sweden%'\n"
-             "GROUP BY 1\nORDER BY mn_usd DESC;")},
-    {"title": "Pakistan's fiscal balance, and whether it adds up",
-     "sql": ("-- Revenue - Expenditure = Fiscal Balance, and + Interest = Primary Balance.\n"
-             "-- Both identities hold exactly in the source data.\n"
-             "SELECT o.obs_date,\n"
-             "       round(max(o.value) FILTER (c.series_name LIKE 'Total Revenue%') / 1e6, 2) AS revenue_trn,\n"
-             "       round(max(o.value) FILTER (c.series_name LIKE 'Total Expenditure (%') / 1e6, 2) AS spending_trn,\n"
-             "       round(max(o.value) FILTER (c.series_name LIKE 'Fiscal Balance%') / 1e6, 2) AS fiscal_bal_trn,\n"
-             "       round(100 * max(o.value) FILTER (c.series_name LIKE 'Fiscal Balance%')\n"
-             "                 / max(o.value) FILTER (c.series_name LIKE 'Gross Domestic Product%'), 2) AS pct_of_gdp\n"
-             "FROM sbp_observations o\n"
-             "JOIN sbp_series_catalog c USING (series_key)\n"
-             "WHERE c.dataset_code = 'TS_GP_PF_SPF_Y'\n"
-             "GROUP BY 1\nORDER BY 1;")},
-    {"title": "Reserves cover: months of imports",
-     "sql": ("WITH res AS (\n"
-             "  SELECT o.obs_date, o.value AS sbp_reserves\n"
-             "  FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\n"
-             "  WHERE c.series_name = 'Total SBP Reserves'),\n"
-             "imp AS (\n"
-             "  SELECT o.obs_date, o.value AS goods_imports\n"
-             "  FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\n"
-             "  WHERE c.series_name = 'Goods - Import (FOB)')\n"
-             "SELECT r.obs_date, round(r.sbp_reserves, 0) AS reserves_mn_usd,\n"
-             "       round(r.sbp_reserves / nullif(avg(i.goods_imports) OVER (\n"
-             "            ORDER BY r.obs_date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW), 0), 1) AS months_cover\n"
-             "FROM res r JOIN imp i USING (obs_date)\n"
-             "ORDER BY r.obs_date DESC\nLIMIT 24;")},
-    {"title": "Urban vs rural food inflation",
-     "sql": ("SELECT o.obs_date,\n"
-             "       max(o.value) FILTER (c.series_name ILIKE 'Urban Food%') AS urban_food,\n"
-             "       max(o.value) FILTER (c.series_name ILIKE 'Rural Food%') AS rural_food\n"
-             "FROM sbp_observations o\n"
-             "JOIN sbp_series_catalog c USING (series_key)\n"
-             "WHERE c.dataset_code = 'TS_GP_PT_CPI_M'\n"
-             "  AND c.series_name ILIKE '%Year-on-Year%'\n"
-             "GROUP BY 1\nHAVING urban_food IS NOT NULL\nORDER BY 1;")},
-    {"title": "Bank deposits by province (stops Jun-2023)",
-     "sql": ("-- The only sub-national SBP data. Stops Jun-2023.\n"
-             "SELECT c.series_name, o.obs_date, round(o.value / 1000, 1) AS rs_bn\n"
-             "FROM sbp_observations o\n"
-             "JOIN sbp_series_catalog c USING (series_key)\n"
-             "WHERE c.dataset_code = 'TS_GP_BAM_ADVDEP_HY'\n"
-             "  AND c.series_name ILIKE 'Total Outstanding Deposits%'\n"
-             "  AND o.obs_date = (SELECT max(obs_date) FROM sbp_observations\n"
-             "                    WHERE dataset_code = 'TS_GP_BAM_ADVDEP_HY')\n"
-             "ORDER BY rs_bn DESC;")},
-    {"title": "What SBP series are actually current?",
-     "sql": ("SELECT subject_area, frequency,\n"
-             "       count(*) AS series,\n"
-             "       max(available_upto) AS latest\n"
-             "FROM sbp_series_catalog\n"
-             "GROUP BY 1, 2\nORDER BY 1, series DESC;")},
-    {"title": "SBP vs PBS: two measures of the same GDP",
-     "sql": ("-- Should agree: same PBS source, different distribution channel.\n"
-             "SELECT n.year, n.value AS pbs_workbook,\n"
-             "       s.value AS sbp_easydata\n"
-             "FROM national_accounts n\n"
-             "JOIN sbp_observations s\n"
-             "  ON s.series_key = 'TS_GP_RLS_PAKGDP15_Y.GDP00150000'\n"
-             " AND CAST(left(n.year, 4) AS INT) + 1 = year(s.obs_date)\n"
-             "WHERE n.table_sheet = 'Table 5' AND n.item LIKE 'D GDP%'\n"
-             "ORDER BY n.year;")},
+             "  AND replace(c.series_name, 'Workers'' remittances received from ', '') IN (\n"
+             "    'Saudi Arabia', 'U.A.E.', 'U.K.', 'U.S.A.',\n"
+             "    'Other GCC Countries excluding Saudi Arabia & U.A.E.', 'ten European Countries',\n"
+             "    'Norway', 'Switzerland', 'Australia', 'Canada', 'Japan', 'Malaysia',\n"
+             "    'South Africa', 'South Korea', 'Other Countries')\n"
+             "GROUP BY 1 ORDER BY mn_usd DESC;")},
 ]
 
 

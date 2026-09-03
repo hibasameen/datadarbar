@@ -79,6 +79,10 @@ body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 .btn.primary:disabled{opacity:.5;cursor:default}
 .btn.ghost{background:#fff;color:var(--green-800);border-color:var(--slate-300)}
 .btn.ghost:hover{border-color:var(--green-600)}
+.notes-opt{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--slate-600);cursor:pointer}.notes-opt input{accent-color:var(--green-600)}
+.bar.extract{padding-top:0;border-top:0}.extract-lbl{font-size:12.5px;font-weight:700;color:var(--slate-600)}
+#extractSel{font:inherit;font-size:13px;font-weight:600;padding:7px 10px;border:1px solid var(--slate-300);border-radius:8px;background:#fff;color:var(--green-800);max-width:340px}
+#extractMeta{font-size:11.5px;color:var(--slate-500)}
 .kbd{font-family:var(--mono);font-size:10.5px;color:var(--slate-500)}
 #status{font-size:12.5px;color:var(--slate-600);display:none}
 #meta{font-size:12px;color:var(--slate-500);margin-left:auto;font-variant-numeric:tabular-nums}
@@ -128,7 +132,7 @@ details.api pre{margin:0;padding:0 13px 13px;font-family:var(--mono);font-size:1
   <aside class="side">
     <h3>Example queries</h3>
     <div id="examples"></div>
-    <h3>Tables</h3>
+    <h3>Tables <a href="dictionary.html" style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--green-600);margin-left:6px">dictionary ↗</a></h3>
     <div id="tables"></div>
   </aside>
 
@@ -140,8 +144,15 @@ details.api pre{margin:0;padding:0 13px 13px;font-family:var(--mono);font-size:1
       <button id="runbtn" class="btn primary">Run <span class="kbd">⌘⏎</span></button>
       <button id="dl" class="btn ghost" style="display:none">Download CSV</button>
       <button id="share" class="btn ghost" style="display:none">Copy link</button>
+      <label class="notes-opt" title="Bundle a README with the source, unit, caveats and column dictionary for every table in the download"><input type="checkbox" id="withNotes" checked/> with method notes</label>
       <span id="status"></span>
       <span id="meta"></span>
+    </div>
+    <div class="bar extract">
+      <span class="extract-lbl">Extract a whole table</span>
+      <select id="extractSel" aria-label="Table to extract"></select>
+      <button id="extractBtn" class="btn ghost">Download</button>
+      <span id="extractMeta"></span>
     </div>
     <div id="err"></div>
     <div class="res" id="out"></div>
@@ -150,7 +161,9 @@ details.api pre{margin:0;padding:0 13px 13px;font-family:var(--mono);font-size:1
       the query engine (<span id="engine">DuckDB-WASM</span>) runs inside your browser tab, so
       nothing you type is sent anywhere. Full DuckDB SQL is available — CTEs, window functions,
       <code>corr()</code>, <code>PIVOT</code>. Click a table name to start a query; click the row
-      to see its columns and caveats. Queries are shareable: the URL carries your SQL.
+      to see its columns and caveats, or read the full <a href="dictionary.html">data dictionary</a>. Queries are shareable: the URL carries your SQL. Downloads can carry
+      their <b>method notes</b> — a README with each table's source, unit, caveats and column dictionary —
+      and whole tables can be pulled with the extract row above.
     </div>
     <details class="api">
       <summary>Use the same data from Python, R or the DuckDB CLI</summary>
@@ -177,6 +190,7 @@ duckdb.sql("""
   document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});
 </script>
 <script src="assets/js/warehouse.js"></script>
+<script src="assets/js/export.js"></script>
 <script src="assets/js/query.js"></script>
 <script src="assets/js/nav.js"></script>
 <script src="assets/js/modals.js"></script>

@@ -68,11 +68,18 @@ reads only the columns and row groups a query needs.
     "description": "one sentence, shown in the sidebar",
     "notes": "caveats — units, double-counting traps, suppression rules",
     "source": "provenance line",
-    "columns": [{ "name": "mpi", "type": "DOUBLE", "description": "…" }]
+    "columns": [{ "name": "mpi", "type": "DOUBLE", "description": "…" }],
+    "datasets": [ … ]                 // optional: sub-collections with observations
+                                      // (sbp_series_catalog lists its 33 SBP datasets)
   }],
   "examples": [{ "title": "Ten poorest districts", "sql": "SELECT …" }]
 }
 ```
+
+The same file feeds three consumers: the console sidebar, `dictionary.html` (the
+human-readable data dictionary, rendered client-side so it cannot drift from the data,
+with a Markdown download) and the method-notes README that `export.js` bundles into
+every download when "with method notes" is ticked. Write `notes` once, carefully.
 
 The `notes` field is doing real work. A public SQL console hands people a loaded gun —
 `trade_hs8` contains both commodity totals and country breakdowns, so summing naively

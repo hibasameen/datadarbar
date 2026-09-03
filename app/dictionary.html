@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0c3a1e"/>
+<title>Data Dictionary — Data Darbar</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
+<meta name="description" content="Every table, column, unit and caveat in the Data Darbar warehouse — the reference for writing SQL against Pakistan's official statistics."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+
+:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--shadow:0 2px 10px rgba(12,58,30,.07);--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;display:flex;flex-direction:column;padding-bottom:30px}
+
+/* ===== Unified site header ===== */
+.site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500);flex-shrink:0}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;line-height:1}
+.header-title{font-size:20px;font-weight:800;color:var(--gold-400);letter-spacing:-.01em}
+.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
+.header-link:hover{color:var(--gold-300);border-color:var(--gold-500);background:rgba(255,255,255,.05)}
+.header-link.active{color:var(--green-900);background:var(--gold-500);border-color:var(--gold-500)}
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
+.mobile-nav{background:var(--green-800);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300)}
+.mobile-nav-link.active{color:var(--gold-400)}
+@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
+
+
+/* ===== dictionary ===== */
+body{padding-bottom:44px}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 40px}
+.hero h1{font-size:clamp(23px,3.6vw,32px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
+.hero p{color:var(--slate-600);font-size:15px;max-width:80ch;margin-top:6px;line-height:1.55}
+.hero .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font:inherit;font-size:13px;font-weight:700;border-radius:8px;padding:8px 15px;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn.primary{background:var(--green-800);color:#fff}.btn.primary:hover{background:var(--green-600)}
+.btn.ghost{background:#fff;color:var(--green-800);border-color:var(--slate-300)}.btn.ghost:hover{border-color:var(--green-600)}
+.conv{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:22px 0 8px}
+.conv .c{background:#fff;border:1px solid var(--slate-200);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--slate-700);line-height:1.55}
+.conv .c b{display:block;color:var(--green-900);margin-bottom:4px}
+.conv code, .tbl code, .cols code{font-family:var(--mono);font-size:11.5px;background:var(--slate-100);padding:1px 5px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 6px}
+.toc a{font-size:12px;font-weight:700;color:var(--green-800);background:#fff;border:1px solid var(--slate-300);border-radius:999px;padding:5px 11px;text-decoration:none}
+.toc a:hover{border-color:var(--green-600)}
+.tbl{background:#fff;border:1px solid var(--slate-200);border-radius:12px;padding:18px 20px;margin-top:18px;scroll-margin-top:70px}
+.tbl h2{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--green-900);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tbl h2 .meta{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--slate-500)}
+.tbl h2 a.open{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--green-800);margin-left:auto;text-decoration:none;border:1px solid var(--slate-300);border-radius:6px;padding:4px 9px}
+.tbl h2 a.open:hover{border-color:var(--green-600)}
+.tbl .desc{font-size:14px;color:var(--slate-700);margin:8px 0 4px;line-height:1.5}
+.tbl .facts{font-size:12.5px;color:var(--slate-600);margin-top:4px;line-height:1.7}
+.tbl .facts b{color:var(--slate-700)}
+.note{background:var(--gold-100,#fef6dc);border:1px solid var(--gold-400);border-radius:9px;padding:9px 12px;font-size:12.5px;color:#6b5311;margin-top:10px;line-height:1.55}
+.note b{display:block;margin-bottom:2px}
+.cols{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+.cols th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);padding:6px 8px;border-bottom:1px solid var(--slate-200)}
+.cols td{padding:6px 8px;border-bottom:1px solid var(--slate-100);vertical-align:top;color:var(--slate-700)}
+.cols td.ty{font-family:var(--mono);font-size:11px;color:var(--slate-500);white-space:nowrap}
+.cols tr:hover td{background:var(--slate-50,#f8f9fb)}
+details.more{margin-top:8px}details.more summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--green-800)}
+#status{padding:40px;text-align:center;color:var(--slate-500)}
+/* ===== Fixed site footer bar ===== */
+.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:var(--green-900);color:rgba(255,255,255,.45);font-size:11px;line-height:1.2;border-top:1px solid rgba(255,255,255,.08)}
+.site-footer a{color:rgba(255,255,255,.55);text-decoration:none}
+.site-footer a:hover{color:var(--gold-300)}
+.footer-sep{color:rgba(255,255,255,.2)}
+@media(max-width:640px){.site-footer{font-size:10px;padding:8px 12px}body{padding-bottom:38px}}
+
+</style></head><body>
+<header class="site-header">
+  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
+  <nav class="header-nav"><a href="index.html" class="header-link">Home</a><div data-dd-nav></div><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="header-link">SBP ↗</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="mobile-nav-link">SBP ↗</a></nav>
+
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Data dictionary</h1>
+    <p>Every table in the Data Darbar warehouse, with its source, unit, caveats and columns — the reference for writing SQL in the <a href="query.html">console</a> or reading the Parquet files from Python and R. Generated from the same <code>catalog.json</code> the console loads, so it cannot drift from the data.</p>
+    <div class="acts"><a class="btn primary" href="query.html">Open the SQL console</a><button class="btn ghost" id="dlmd">Download as Markdown</button><a class="btn ghost" href="data/warehouse/catalog.json" target="_blank" rel="noopener">catalog.json</a></div>
+  </div>
+  <div class="conv" id="conv"></div>
+  <div class="toc" id="toc"></div>
+  <div id="status">Loading the catalogue…</div>
+  <div id="tables"></div>
+</div>
+<script src="assets/js/export.js"></script>
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var num = function (n) { return Number(n).toLocaleString('en-US'); };
+  var mb = function (b) { return b < 1e6 ? Math.round(b / 1e3) + ' KB' : (b / 1e6).toFixed(1) + ' MB'; };
+  var CONV = [
+    ['Joining tables', 'Districts join on <code>district_key</code> (<code>district_indicators</code> ↔ <code>mpi_districts</code>); tehsils on <code>tehsil_id</code> (satellite ↔ night-lights) and <code>tehsil_code</code> (Mouza Census ↔ crosswalk); State Bank series on <code>series_key</code> (<code>sbp_series_catalog</code> ↔ <code>sbp_observations</code>).'],
+    ['Units are per table — and per row in two of them', 'Trade is thousand rupees, the budget is Rs million, national accounts vary by table, and every SBP series carries its own unit in the catalogue. Read the unit before you sum.'],
+    ['Long tables', '<code>district_indicators</code> and <code>sbp_observations</code> are one row per (thing × indicator × date). Filter to one indicator or series first; pivot with <code>FILTER</code> or <code>PIVOT</code> if you want columns.'],
+    ['Fiscal years', 'Pakistan\u2019s year runs July–June. Trade and budget tables label it <code>2024-25</code>; SBP annual and monthly series are stamped on the <em>last</em> day of the period, so FY2023-24 appears as <code>2024-06-30</code>.'],
+    ['NULL is not zero', 'A NULL means suppressed or not published (SBP rows say why in <code>status</code>). Survey districts with too few respondents are flagged (<code>low_n</code>); rankings should exclude them.'],
+    ['Two trade bases', '<code>trade_hs8</code> is PBS customs data by 8-digit product; the SBP balance-of-payments series are payments-basis. They measure different things and will not reconcile.']
+  ];
+  document.getElementById('conv').innerHTML = CONV.map(function (c) { return '<div class="c"><b>' + c[0] + '</b>' + c[1] + '</div>'; }).join('');
+
+  fetch('data/warehouse/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (cat) {
+    window.DD_CATALOG = cat;
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('toc').innerHTML = cat.tables.map(function (t) { return '<a href="#' + esc(t.name) + '">' + esc(t.name) + '</a>'; }).join('');
+    document.getElementById('tables').innerHTML = cat.tables.map(function (t) {
+      var h = '<section class="tbl" id="' + esc(t.name) + '"><h2>' + esc(t.name)
+        + '<span class="meta">' + num(t.rows) + ' rows · ' + mb(t.bytes) + '</span>'
+        + '<a class="open" href="query.html#q=' + encodeURIComponent('SELECT *\nFROM ' + t.name + '\nLIMIT 100;') + '">Query ↗</a></h2>'
+        + '<div class="desc">' + esc(t.description) + '</div>'
+        + '<div class="facts">' + (t.unit ? '<b>Unit:</b> ' + esc(t.unit) + ' · ' : '') + '<b>Source:</b> ' + esc(t.source || '—')
+        + ' · <b>File:</b> <a href="data/warehouse/' + esc(t.file) + '">' + esc(t.file) + '</a></div>';
+      if (t.notes) h += '<div class="note"><b>Caveats</b>' + esc(t.notes) + '</div>';
+      h += '<table class="cols"><thead><tr><th>column</th><th>type</th><th>description</th></tr></thead><tbody>'
+        + t.columns.map(function (c) { return '<tr><td><code>' + esc(c.name) + '</code></td><td class="ty">' + esc(String(c.type).toLowerCase()) + '</td><td>' + esc(c.description) + '</td></tr>'; }).join('')
+        + '</tbody></table>';
+      if (t.datasets && t.datasets.length) {
+        h += '<details class="more" open><summary>' + t.datasets.length + ' State Bank datasets with observations (' + num(t.datasets.reduce(function (a, d) { return a + d.series; }, 0)) + ' series)</summary>'
+          + '<table class="cols"><thead><tr><th>dataset_code</th><th>dataset</th><th>subject</th><th>series</th><th>span</th></tr></thead><tbody>'
+          + t.datasets.map(function (d) { return '<tr><td><code>' + esc(d.code) + '</code></td><td>' + esc(d.name) + '</td><td>' + esc(d.subject) + '</td><td>' + d.series + '</td><td class="ty">' + esc(d.since) + ' → ' + esc(d.upto) + '</td></tr>'; }).join('')
+          + '</tbody></table></details>';
+      }
+      return h + '</section>';
+    }).join('');
+    if (location.hash) { var el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView(); }
+  }).catch(function (e) { document.getElementById('status').textContent = 'Could not load catalog.json: ' + e.message; });
+
+  document.getElementById('dlmd').addEventListener('click', function () {
+    var cat = window.DD_CATALOG; if (!cat || !window.DD_EXPORT) return;
+    var md = DD_EXPORT.readme(cat, cat.tables, { title: 'Data Darbar warehouse — data dictionary' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown;charset=utf-8' }));
+    a.download = 'data-darbar-data-dictionary.md'; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});
+})();
+</script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/modals.js"></script>
+<script src="assets/js/analytics.js"></script>
+<footer class="site-footer"><span>&copy; 2026 Hiba Sameen. All rights reserved.</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span></footer>
+</body></html>
