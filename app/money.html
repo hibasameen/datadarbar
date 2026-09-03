@@ -81,7 +81,6 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
 .sharebtn:hover{color:var(--green-700);border-color:var(--green-500);background:#fff}
 .sharebtn.ok{color:#fff;background:var(--green-600);border-color:var(--green-600)}
 .grid2 .card .csvbtn{top:12px;right:12px}
-.mobile-topic-toggle{display:none}
 @media(max-width:1000px){
   .eco-side{position:static;width:auto;height:auto;bottom:auto;border-right:0;border-bottom:1px solid var(--slate-200);box-shadow:none;flex-direction:column}
   .eco-side .eco-panel{border-bottom:1px solid var(--slate-100)}
@@ -114,7 +113,30 @@ select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;borde
 .site-footer a:hover{color:var(--gold-300);text-decoration:none}
 .footer-sep{color:rgba(255,255,255,.2)}
 body{padding-bottom:34px}
-@media(max-width:640px){.site-footer{font-size:10px;padding:8px 12px}body{padding-bottom:38px}}
+/* ===== Small screens ===== */
+.mobile-topic-toggle{display:none}
+@media(max-width:1000px){
+  .mobile-topic-toggle{display:flex;width:100%;align-items:center;gap:10px;padding:12px 16px;background:#fff;border:0;border-bottom:1px solid var(--slate-200);font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--green-900);cursor:pointer;text-align:left}
+  .mobile-topic-toggle .cur{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--green-600)}
+  .mobile-topic-toggle .chev{flex:none;color:var(--slate-500);transition:transform .15s}
+  .eco-side.open .mobile-topic-toggle .chev{transform:rotate(180deg)}
+  .eco-side>.eco-panel{display:none}
+  .eco-side.open>.eco-panel{display:block}
+}
+@media(max-width:640px){
+  /* the fixed footer ate 100px of a phone screen; let it sit at the end of the page */
+  .site-footer{position:static;flex-wrap:wrap;justify-content:center;gap:4px 8px;padding:12px 14px;font-size:10.5px;line-height:1.5;text-align:center}
+  .site-footer .footer-sep{display:none}
+  body{padding-bottom:0}
+  /* card action buttons sat on top of the title */
+  .card:has(.csvbtn){padding-top:52px}
+  .card .csvbtn,.card .sharebtn{top:12px}
+  .card h2{font-size:16px}
+  .controls .seg{flex-wrap:wrap}.seg{max-width:100%}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px}.kpi{padding:10px 12px}.kpi .val{font-size:20px}
+  .wrap{padding:12px 12px 24px}
+  .navhelp{font-size:12.5px}
+}
 </style></head><body><header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
   <nav class="header-nav"><a href="index.html" class="header-link">Home</a><div data-dd-nav></div><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="header-link">SBP ↗</a></nav>
@@ -265,6 +287,7 @@ body{padding-bottom:34px}
 <script src="data/money_data.js"></script>
 <script src="assets/js/money.js"></script>
 <script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
+<script src="assets/js/sidebar-mobile.js"></script>
 <script src="assets/js/nav.js"></script>
 <script src="assets/js/modals.js"></script>
 <script src="assets/js/analytics.js"></script>

@@ -683,7 +683,7 @@ function styleChips(){
 function drawLsm(){
  const el=d3.select('#lsm');el.selectAll('*').remove();
  const sel=Object.keys(lsmSeries).filter(c=>lsmSel.has(c));
- const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(330,W*0.28)),m={t:16,r:150,b:28,l:42};
+ const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(330,W*0.28)),narrow=W<600,m={t:16,r:narrow?16:150,b:28,l:42};
  const allPts=sel.flatMap(c=>lsmSeries[c]);
  if(!allPts.length){el.append('div').style('padding','30px').style('color','var(--slate-500)').text('Pick at least one sector.');return;}
  const x=d3.scaleLinear().domain(d3.extent(allPts,p=>p.n)).range([m.l,W-m.r]);
@@ -707,7 +707,7 @@ function drawLsm(){
   svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','#fff').attr('stroke-width',1)
    .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}${p.fy==='2025-26'?' (Jul–May)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
   const lp=lastPt(pts);
-  svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
+  if(!narrow) svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
  });
 }
 

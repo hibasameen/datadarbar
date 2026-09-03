@@ -115,9 +115,15 @@ const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
 function frame(sel, hFrac, m, fallbackH) {
   const el = d3.select(sel); el.selectAll('*').remove();
   const W = el.node() ? (el.node().clientWidth || 1100) : 1100;
-  const H = fallbackH || Math.max(260, Math.min(360, W * hFrac));
+  /* phones: the right-hand gutter for end labels would eat a third of the plot,
+     so it shrinks to fit a short value label and long names are dropped (the
+     chips row above each chart is the legend). Charts with a right axis keep
+     room for it. */
+  const narrow = W < 600;
+  if (narrow) m = Object.assign({}, m, { r: m.axisR ? 92 : 48, l: Math.min(m.l, 44) });
+  const H = fallbackH || Math.max(narrow ? 240 : 260, Math.min(360, W * hFrac));
   const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
-  return { el, W, H, m, svg, labels: [] };
+  return { el, W, H, m, svg, labels: [], narrow };
 }
 const xTime = (f, dom) => d3.scaleTime().domain(dom).range([f.m.l, f.W - f.m.r]);
 function axes(f, x, y, yFmt, xTicks) {
@@ -136,6 +142,7 @@ const linePath = (f, pts, x, y, colour, w, dash) => f.svg.append('path').datum(p
 
 /* Queue an end-of-line label; placeLabels() lays them all out at the end. */
 function endLabel(f, x, y, p, colour, text) {
+  if (f.narrow && String(text).length > 6 && /[a-z]{3}/i.test(text)) return;   // no room on a phone; the chips are the legend
   if (!p) return;
   f.labels.push({ x: x(dt(p[0])), y: y(p[1]), colour, text });
 }
@@ -329,7 +336,7 @@ function drawRes() {
   /* the import-cover line gets its own right-hand axis rather than borrowing the
      dollar one — a reader looking at "3 months" against a $-scale is being misled */
   multiLine('res', '#chRes', { yFmt: usdBn, fmt: v => usdm(v), hFrac: 0.30,
-    m: { t: 16, r: 150, b: 28, l: 56 },
+    m: { t: 16, r: 150, b: 28, l: 56, axisR: true },
     before: (f, x, y) => {
       if (!cover.length) return;
       const y2 = d3.scaleLinear().domain([0, Math.max(9, d3.max(cover, p => p[1]))]).nice().range([f.H - f.m.b, f.m.t]);
@@ -338,7 +345,7 @@ function drawRes() {
       ax.selectAll('text').attr('fill', '#b8860b');
       ax.select('.domain').attr('stroke', '#e8b92e');
       f.svg.append('text').attr('x', f.W - f.m.r + 44).attr('y', f.m.t - 4).attr('font-size', 9.5)
-        .attr('fill', '#b8860b').text('months of imports');
+        .attr('fill', '#b8860b').text(f.narrow ? 'months' : 'months of imports');
       f.svg.append('path').datum(cover).attr('fill', 'none').attr('stroke', '#d4a017')
         .attr('stroke-width', 1.6).attr('stroke-dasharray', '4 3')
         .attr('d', d3.line().x(p => x(dt(p[0]))).y(p => y2(p[1])));
@@ -508,7 +515,8 @@ function drawBop() {
 
   /* open boxes need room: grow the chart with the deepest open level */
   const depth = d3.max([0, ...[...bopOpen].map(k => k.split('.').length)]);
-  const W = el.node().clientWidth || 1100, H = Math.max(300, Math.min(400 + 90 * depth, W * (0.34 + 0.08 * depth)));
+  const W = el.node().clientWidth || 1100;
+  const H = W < 600 ? 420 + 110 * depth : Math.max(300, Math.min(400 + 90 * depth, W * (0.34 + 0.08 * depth)));
   const gap = 34, hdr = 42;
   const wc = Math.round((W - gap) * tc / (tc + td)), wd = W - gap - wc;
   const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
