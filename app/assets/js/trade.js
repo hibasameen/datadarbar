@@ -140,6 +140,8 @@ function drawDrill(){
      children:c.products.map(p=>({hs8:p.hs8,name:p.name,bn:p.bn,section:s.section}))}));
  }
  const W=el.node().clientWidth||900,H=Math.max(320,Math.min(430,W*0.42));
+ // Start with larger sector targets on phones; products remain in the drill-down.
+ const overview=W<500&&dPath.length===0;
  const root=d3.hierarchy({children:groups}).sum(d=>d.bn||0).sort((a,b)=>b.value-a.value);
  const total=root.value;
  d3.treemap().size([W,H]).paddingOuter(2).paddingTop(16).paddingInner(1).round(true)(root);
@@ -147,14 +149,21 @@ function drawDrill(){
  // group rects + labels (depth 1)
  const grp=svg.selectAll('g.grp').data(root.children||[]).join('g').attr('class','grp');
  grp.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>d.y1-d.y0)
-   .attr('fill',d=>d.data.color).attr('rx',3).attr('opacity',0.28)
+   .attr('fill',d=>d.data.color).attr('rx',3).attr('opacity',overview?0.9:0.28)
    .style('cursor',d=>dPath.length===0?'pointer':'default')
-   .on('click',(e,d)=>{if(dPath.length===0){dPath=[d.data.key];drawDrill();}})
+   .attr('role',dPath.length===0?'button':null).attr('tabindex',dPath.length===0?0:null)
+   .attr('aria-label',d=>dPath.length===0?`Explore ${d.data.label}: ${fmtRs(d.value)}, ${(100*d.value/total).toFixed(1)}%`:null)
+   .on('click',(e,d)=>{if(dPath.length===0){hideTip();dPath=[d.data.key];drawDrill();}})
+   .on('keydown',(e,d)=>{if(dPath.length===0&&(e.key==='Enter'||e.key===' ')){e.preventDefault();hideTip();dPath=[d.data.key];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%${dPath.length===0?'<br><span style=opacity:.7>click to zoom in</span>':''}`,e)).on('mouseleave',hideTip);
  grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','#123')
-   .attr('pointer-events','none').text(d=>{const w=d.x1-d.x0,m=Math.floor(w/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
+   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff'):'#123')
+    .text(d=>{const w=d.x1-d.x0,m=Math.floor((w-10)/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
+ if(overview)grp.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>36).append('text')
+   .attr('x',d=>d.x0+5).attr('y',d=>d.y0+29).attr('font-size',12).attr('font-weight',700).attr('pointer-events','none')
+   .attr('fill',d=>d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff').text(d=>(100*d.value/total).toFixed(1)+'%');
  // product leaves (depth 2)
- const leaf=svg.selectAll('g.lf').data(root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
+ const leaf=svg.selectAll('g.lf').data(overview?[]:root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
  leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2)
    .attr('fill',d=>d.parent.data.color).attr('stroke','#fff').attr('stroke-width',0.5)
    .style('cursor',dPath.length===0?'pointer':'default')
@@ -168,17 +177,21 @@ function drawDrill(){
  const lv=[{t:dDir==='export'?'All exports':'All imports',i:0}];
  if(dPath[0])lv.push({t:SN[dPath[0]],i:1});
  lv.forEach((x,i)=>{if(i>0)bc.append('span').attr('class','sep').text(' › ');
-   bc.append('span').attr('class','cr'+(i===lv.length-1?' on':'')).text(x.t).style('cursor',i<lv.length-1?'pointer':'default').on('click',()=>{dPath=dPath.slice(0,x.i);drawDrill();});});
- d3.select('#drillMeta').text(`${dDir==='export'?'Exports':'Imports'} ${dYears[dYi]} · ${dPath.length===0?'all products, grouped by section':'section '+dPath[0]+', by chapter'} · total ${fmtRs(total)}`);
+   const actionable=i<lv.length-1;
+   const goBack=()=>{if(actionable){hideTip();dPath=dPath.slice(0,x.i);drawDrill();}};
+   bc.append('span').attr('class','cr'+(actionable?'':' on')).text(x.t).style('cursor',actionable?'pointer':'default')
+     .attr('role',actionable?'button':null).attr('tabindex',actionable?0:null)
+     .on('click',goBack).on('keydown',e=>{if(actionable&&(e.key==='Enter'||e.key===' ')){e.preventDefault();goBack();}});});
+ d3.select('#drillMeta').text(`${dDir==='export'?'Exports':'Imports'} ${dYears[dYi]} · ${dPath.length===0?(overview?'sector overview — select a sector for products':'all products, grouped by section'):'section '+dPath[0]+', by chapter'} · total ${fmtRs(total)}`);
 }
 /* ---------- trade over time ---------- */
 function drawTotalsInto(el,W,H,hi){
- const T=E.totals,years=T.years,m={t:16,r:20,b:28,l:54};
+ const T=E.totals,years=T.years,m={t:16,r:64,b:28,l:54};
  const x=d3.scalePoint().domain(years).range([m.l,W-m.r]).padding(.5);
  const av=[];years.forEach(y=>['export','import','balance'].forEach(k=>{if(T[k][y]!=null)av.push(T[k][y]);}));
  const y=d3.scaleLinear().domain([Math.min(0,d3.min(av)),d3.max(av)]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H);
- svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%2===0)));
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%(W<420?3:2)===0)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','#c5cad3');
  const ser=[['export','Exports',scolor('XI')],['import','Imports','#c0392b'],['balance','Balance','#3d6db5']];

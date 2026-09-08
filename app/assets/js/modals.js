@@ -590,7 +590,13 @@
       m.classList.remove('dd-hidden');
       window.__ddModalOpen = true;
       var mn = document.getElementById('mobileNav');
-      if (mn) mn.classList.add('hidden');
+      if (mn && !mn.classList.contains('hidden')) {
+        mn.classList.add('hidden');
+        var menuBtn = document.getElementById('mobileMenuBtn');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+        // Closing the drawer changes the space available to the tablet map.
+        requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')); });
+      }
     }
     function closeAll() {
       document.querySelectorAll('.dd-modal-overlay').forEach(function (m) { m.classList.add('dd-hidden'); });

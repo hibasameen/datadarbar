@@ -35,7 +35,7 @@ body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 
 /* ===== dictionary ===== */
 body{padding-bottom:44px}
-.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 40px}
+.wrap{width:100%;max-width:1120px;min-width:0;margin:0 auto;padding:28px 20px 40px}
 .hero h1{font-size:clamp(23px,3.6vw,32px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
 .hero p{color:var(--slate-600);font-size:15px;max-width:80ch;margin-top:6px;line-height:1.55}
 .hero .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
@@ -59,7 +59,9 @@ body{padding-bottom:44px}
 .tbl .facts b{color:var(--slate-700)}
 .note{background:var(--gold-100,#fef6dc);border:1px solid var(--gold-400);border-radius:9px;padding:9px 12px;font-size:12.5px;color:#6b5311;margin-top:10px;line-height:1.55}
 .note b{display:block;margin-bottom:2px}
-.cols{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+.table-scroll{max-width:100%;overflow-x:auto;margin-top:12px}
+.table-scroll:focus-visible{outline:2px solid var(--green-600);outline-offset:2px}
+.cols{width:100%;border-collapse:collapse;font-size:12.5px}
 .cols th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);padding:6px 8px;border-bottom:1px solid var(--slate-200)}
 .cols td{padding:6px 8px;border-bottom:1px solid var(--slate-100);vertical-align:top;color:var(--slate-700)}
 .cols td.ty{font-family:var(--mono);font-size:11px;color:var(--slate-500);white-space:nowrap}
@@ -72,7 +74,7 @@ details.more{margin-top:8px}details.more summary{cursor:pointer;font-size:12.5px
 .site-footer a:hover{color:var(--gold-300)}
 .footer-sep{color:rgba(255,255,255,.2)}
 @media(max-width:640px){.site-footer{position:static;flex-wrap:wrap;justify-content:center;gap:4px 8px;padding:12px 14px;font-size:10.5px;line-height:1.5;text-align:center}.site-footer .footer-sep{display:none}body{padding-bottom:0}}
-@media(max-width:640px){.wrap{padding:18px 14px 30px}.tbl{padding:14px 12px;overflow-x:auto}.cols{min-width:520px}.conv{grid-template-columns:1fr}.tbl h2 a.open{margin-left:0}}
+@media(max-width:640px){.wrap{padding:18px 14px 30px}.tbl{padding:14px 12px}.cols{min-width:520px}.conv{grid-template-columns:1fr}.tbl h2 a.open{margin-left:0}}
 
 </style></head><body>
 <header class="site-header">
@@ -122,14 +124,14 @@ details.more{margin-top:8px}details.more summary{cursor:pointer;font-size:12.5px
         + '<div class="facts">' + (t.unit ? '<b>Unit:</b> ' + esc(t.unit) + ' · ' : '') + '<b>Source:</b> ' + esc(t.source || '—')
         + ' · <b>File:</b> <a href="data/warehouse/' + esc(t.file) + '">' + esc(t.file) + '</a></div>';
       if (t.notes) h += '<div class="note"><b>Caveats</b>' + esc(t.notes) + '</div>';
-      h += '<table class="cols"><thead><tr><th>column</th><th>type</th><th>description</th></tr></thead><tbody>'
+      h += '<div class="table-scroll" tabindex="0" role="region" aria-label="Columns in ' + esc(t.name) + '"><table class="cols"><thead><tr><th>column</th><th>type</th><th>description</th></tr></thead><tbody>'
         + t.columns.map(function (c) { return '<tr><td><code>' + esc(c.name) + '</code></td><td class="ty">' + esc(String(c.type).toLowerCase()) + '</td><td>' + esc(c.description) + '</td></tr>'; }).join('')
-        + '</tbody></table>';
+        + '</tbody></table></div>';
       if (t.datasets && t.datasets.length) {
         h += '<details class="more" open><summary>' + t.datasets.length + ' State Bank datasets with observations (' + num(t.datasets.reduce(function (a, d) { return a + d.series; }, 0)) + ' series)</summary>'
-          + '<table class="cols"><thead><tr><th>dataset_code</th><th>dataset</th><th>subject</th><th>series</th><th>span</th></tr></thead><tbody>'
+          + '<div class="table-scroll" tabindex="0" role="region" aria-label="State Bank datasets in ' + esc(t.name) + '"><table class="cols"><thead><tr><th>dataset_code</th><th>dataset</th><th>subject</th><th>series</th><th>span</th></tr></thead><tbody>'
           + t.datasets.map(function (d) { return '<tr><td><code>' + esc(d.code) + '</code></td><td>' + esc(d.name) + '</td><td>' + esc(d.subject) + '</td><td>' + d.series + '</td><td class="ty">' + esc(d.since) + ' → ' + esc(d.upto) + '</td></tr>'; }).join('')
-          + '</tbody></table></details>';
+          + '</tbody></table></div></details>';
       }
       return h + '</section>';
     }).join('');

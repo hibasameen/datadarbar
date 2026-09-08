@@ -18,6 +18,7 @@
 .nodata{padding:26px 14px;border:1px dashed var(--slate-300);border-radius:8px;background:var(--slate-50,#f7f8f7);color:var(--slate-600);font-size:13px;line-height:1.5;text-align:center}
 .card h2{font-size:18px;font-weight:800;color:var(--green-900)}.card .desc{font-size:13px;color:var(--slate-600);margin:2px 0 6px}.unit{font-size:12px;font-weight:600;color:var(--slate-500)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+#io{max-width:100%;min-width:0}#io.io-scrollable{overflow-x:auto;overscroll-behavior-x:contain}#io.io-scrollable:focus-visible{outline:2px solid var(--green-600);outline-offset:3px}.chart-scroll-hint{font-size:12px;color:var(--slate-600);margin:6px 0 10px}.chart-scroll-hint[hidden]{display:none}
 @media(max-width:1100px){.grid2{grid-template-columns:1fr}}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
 .trend-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
@@ -166,7 +167,7 @@ body{padding-bottom:34px}
 <div class="wrap">
  <div class="navhelp">
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-  <span><b>Getting around:</b> switch topics in the sidebar on the left. Each topic has a few charts stacked below — <b>scroll down for more</b>. Hover any chart for detail, click bars or sectors to filter, and use the sidebar to <b>focus a sector or sub-sector</b>, drag the year cursor, or pick which budget lines to trend. <b>↓&nbsp;CSV</b> on any chart downloads its data.</span>
+  <span><b>Getting around:</b> choose a topic and its controls from the sidebar, or open <b>Topic</b> above on smaller screens. Each topic has a few charts stacked below — <b>scroll down for more</b>. Select bars or sectors to filter, <b>focus a sector or sub-sector</b>, move the year slider, or pick which budget lines to trend. With a mouse, hover charts for more detail. <b>↓&nbsp;CSV</b> on any chart downloads its data.</span>
  </div>
 
  <!-- ===== structure ===== -->
@@ -271,6 +272,7 @@ body{padding-bottom:34px}
    </div>
   </div>
   <div id="ioFocusStats" class="legend-inline"></div>
+  <p id="ioScrollHint" class="chart-scroll-hint" hidden>Scroll sideways to see every sector and the totals. Tap a sector to focus it.</p>
   <div id="io"></div>
   <div class="note">A <b>2015-16 snapshot</b> — this is the only Supply-Use / Input-Output table the Pakistan Bureau of Statistics has published, so it cannot be shown as a trend. Flows are intermediate consumption at basic prices between 12 aggregated sectors; a sector's use of its own output is excluded from the circle view and shown separately in focus view.</div>
  </div>

@@ -838,6 +838,9 @@ function setIOView(v){ioView=v;d3.selectAll('#ioView button').classed('on',funct
 function setIOSector(i){ioSec=i;d3.select('#ioSector').property('value',i);if(ioView!=='focus'){ioView='focus';d3.selectAll('#ioView button').classed('on',function(){return this.dataset.v==='focus';});}drawIO();writeHash();}
 function drawIO(){
  const el=d3.select('#io');if(!el.node()||!E.io)return;el.selectAll('*').remove();
+ el.classed('io-scrollable',false).attr('tabindex',null).attr('role',null).attr('aria-label',null).attr('aria-describedby',null);
+ el.node().scrollLeft=0;
+ d3.select('#ioScrollHint').property('hidden',true);
  d3.select('#ioSecWrap').style('display',ioView==='focus'?null:'none');
  d3.select('#ioFocusStats').style('display',ioView==='focus'?null:'none').html('');
  if(ioView==='chord')return drawIOChord();
@@ -938,10 +941,16 @@ function drawIOGrid(){
  const el=d3.select('#io');
  const {sectors,colors,matrix_nodiag:M}=E.io;
  const n=sectors.length;
- const W=el.node().clientWidth||900;
- const m={t:112,l:Math.max(120,Math.min(190,W*0.19)),r:70,b:26};
- const cell=Math.max(16,Math.min(40,(W-m.l-m.r)/n));
- const H=m.t+cell*n+m.b;
+ const availableW=el.node().clientWidth||900;
+ // Keep every sector and total readable; narrow screens scroll the chart only.
+ const m={t:156,l:190,r:70,b:26};
+ const cell=Math.max(26,Math.min(40,(availableW-m.l-m.r)/n));
+ const W=Math.max(availableW,m.l+cell*n+m.r),H=m.t+cell*n+m.b;
+ const scrollable=W>availableW+1;
+ el.classed('io-scrollable',scrollable).attr('tabindex',scrollable?0:null)
+   .attr('role',scrollable?'region':null).attr('aria-label',scrollable?'Sector input-output grid':null)
+   .attr('aria-describedby',scrollable?'ioScrollHint':null);
+ d3.select('#ioScrollHint').property('hidden',!scrollable);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const maxV=d3.max(M.flat());
  const col=d3.scaleSequential(d3.interpolateYlGn).domain([0,Math.sqrt(maxV)]);
@@ -949,9 +958,9 @@ function drawIOGrid(){
  // column headers (rotated)
  sectors.forEach((s,j)=>{
   svg.append('text').attr('transform',`translate(${m.l+j*cell+cell/2},${m.t-8}) rotate(-52)`)
-   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-600)').text(s.length>22?s.slice(0,21)+'…':s);
+   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-600)').text(s);
  });
- svg.append('text').attr('x',m.l).attr('y',m.t-88).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('BUYER →');
+ svg.append('text').attr('x',m.l).attr('y',18).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('BUYER →');
  svg.append('text').attr('x',6).attr('y',m.t-8).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('SUPPLIER ↓');
  sectors.forEach((s,i)=>{
   svg.append('text').attr('x',m.l-8).attr('y',m.t+i*cell+cell/2).attr('dy','.32em').attr('text-anchor','end')

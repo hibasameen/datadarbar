@@ -754,11 +754,10 @@ select:focus, input:focus {
   .mobile-control-toggle.expanded svg {
     transform: rotate(180deg);
   }
-  .left-sidebar-inner {
-    display: none;
-  }
-  .left-sidebar-inner.expanded {
-    display: flex;
+  /* Keep the map key visible when controls are collapsed. Some controls set
+     display inline when the dataset changes, so the collapsed rule wins. */
+  .left-sidebar-inner:not(.expanded) > :not(.panel-legend) {
+    display: none !important;
   }
 
   /* Right sidebar: below controls */
@@ -852,9 +851,7 @@ select:focus, input:focus {
 .mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
 .mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
 .mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
-@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
-
-@media(max-width:900px){.header-nav{display:none!important}}
+@media(max-width:900px){.header-nav{display:none}.mobile-menu-btn{display:block}}
 
 
 /* ===== Live-map additions: rankings panel, suppression notice, no-survey legend swatch ===== */

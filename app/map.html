@@ -45,7 +45,7 @@
   <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
   <nav class="header-nav"><a href="index.html" class="header-link">Home</a><div data-dd-nav></div><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
-  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-controls="mobileNav" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
 <nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
 
@@ -83,7 +83,7 @@
     <aside id="controlPanel" class="left-sidebar">
 
       <!-- Mobile toggle for controls -->
-      <button id="mobileControlToggle" class="mobile-control-toggle">
+      <button id="mobileControlToggle" class="mobile-control-toggle" aria-controls="controlPanelInner" aria-expanded="false">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         Filters &amp; Options
       </button>

@@ -456,8 +456,25 @@ async function init() {
     map.fitBounds(layerGroup.getBounds(), { padding: [8, 8] });
     render();
   });
-  const mb = $('mobileControlToggle');
-  if (mb) mb.addEventListener('click', () => $('controlPanelInner').classList.toggle('open'));
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function wireMobile() {
+  const menuBtn = $('mobileMenuBtn');
+  const menu = $('mobileNav');
+  menuBtn.addEventListener('click', () => {
+    const expanded = menu.classList.toggle('hidden') === false;
+    menuBtn.setAttribute('aria-expanded', String(expanded));
+    if (map) requestAnimationFrame(() => map.invalidateSize());
+  });
+  const toggle = $('mobileControlToggle');
+  toggle.addEventListener('click', () => {
+    const expanded = $('controlPanelInner').classList.toggle('expanded');
+    toggle.classList.toggle('expanded', expanded);
+    toggle.setAttribute('aria-expanded', String(expanded));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  wireMobile();
+  init();
+});

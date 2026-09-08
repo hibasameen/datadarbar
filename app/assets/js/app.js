@@ -1849,7 +1849,9 @@ function wireMobile() {
   // Hamburger menu toggle
   if (mobileMenuBtn && mobileNav) {
     mobileMenuBtn.addEventListener('click', () => {
-      mobileNav.classList.toggle('hidden');
+      const expanded = !mobileNav.classList.toggle('hidden');
+      mobileMenuBtn.setAttribute('aria-expanded', String(expanded));
+      if (map) requestAnimationFrame(() => map.invalidateSize());
     });
   }
 
@@ -1866,6 +1868,7 @@ function wireMobile() {
     mobileControlToggle.addEventListener('click', () => {
       const expanded = controlPanelInner.classList.toggle('expanded');
       mobileControlToggle.classList.toggle('expanded', expanded);
+      mobileControlToggle.setAttribute('aria-expanded', String(expanded));
     });
   }
 }
@@ -1873,6 +1876,7 @@ function wireMobile() {
 // ── Init ────────────────────────────────────────────────────────────────────
 
 async function init() {
+  wireMobile();
   initMap();
   await loadData();
   await buildLayer();
@@ -1882,7 +1886,6 @@ async function init() {
   populateIndicatorSelect();
   updateYearButtons();
   wireEvents();
-  wireMobile();
   colorize();
 }
 
