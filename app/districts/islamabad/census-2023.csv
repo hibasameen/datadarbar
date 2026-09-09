@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Islamabad,Islamabad Capital Territory,2023,Population,2363863.0,people,t1_2023_pop_total
+Islamabad,Islamabad Capital Territory,2023,Male population,1247693.0,people,t1_2023_pop_male
+Islamabad,Islamabad Capital Territory,2023,Female population,1115900.0,people,t1_2023_pop_female
+Islamabad,Islamabad Capital Territory,2023,Transgender population,270.0,people,t1_2023_pop_transgender
+Islamabad,Islamabad Capital Territory,2023,Area,906.0,km²,t1_2023_area_sq_km
+Islamabad,Islamabad Capital Territory,2023,Population density,2609.12,people per km²,t1_2023_density_per_sq_km
+Islamabad,Islamabad Capital Territory,2023,Urban population share,46.91,%,t1_2023_urban_proportion
+Islamabad,Islamabad Capital Territory,2023,Average household size,5.7,people per household,t1_2023_avg_household_size
+Islamabad,Islamabad Capital Territory,2023,"Literacy, ages 10+",83.97,%,t12_2023_literacy_ratio_all
+Islamabad,Islamabad Capital Territory,2023,"Male literacy, ages 10+",88.23,%,t12_2023_literacy_ratio_male
+Islamabad,Islamabad Capital Territory,2023,"Female literacy, ages 10+",79.13,%,t12_2023_literacy_ratio_female
+Islamabad,Islamabad Capital Territory,2023,"Out-of-school children, ages 5–16",89127.0,children,t12_2023_out_of_school_5_16

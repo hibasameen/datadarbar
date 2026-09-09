@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Gujranwala,Punjab,2023,Population,5959750.0,people,t1_2023_pop_total
+Gujranwala,Punjab,2023,Male population,3028290.0,people,t1_2023_pop_male
+Gujranwala,Punjab,2023,Female population,2930923.0,people,t1_2023_pop_female
+Gujranwala,Punjab,2023,Transgender population,537.0,people,t1_2023_pop_transgender
+Gujranwala,Punjab,2023,Area,3622.0,km²,t1_2023_area_sq_km
+Gujranwala,Punjab,2023,Population density,1645.43,people per km²,t1_2023_density_per_sq_km
+Gujranwala,Punjab,2023,Urban population share,60.3,%,t1_2023_urban_proportion
+Gujranwala,Punjab,2023,Average household size,7.0,people per household,t1_2023_avg_household_size
+Gujranwala,Punjab,2023,"Literacy, ages 10+",76.77,%,t12_2023_literacy_ratio_all
+Gujranwala,Punjab,2023,"Male literacy, ages 10+",78.14,%,t12_2023_literacy_ratio_male
+Gujranwala,Punjab,2023,"Female literacy, ages 10+",75.36,%,t12_2023_literacy_ratio_female
+Gujranwala,Punjab,2023,"Out-of-school children, ages 5–16",321967.0,children,t12_2023_out_of_school_5_16

@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- SEO:START -->
+<title>About Data Darbar — Data Darbar</title>
+<meta name="description" content="Data Darbar by Adaad is an independent explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen.">
+<link rel="canonical" href="https://darbar.adaad.org/about.html">
+<meta property="og:title" content="About Data Darbar — Data Darbar">
+<meta property="og:description" content="Data Darbar by Adaad is an independent explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen.">
+<meta property="og:url" content="https://darbar.adaad.org/about.html">
+<meta name="twitter:title" content="About Data Darbar — Data Darbar">
+<meta name="twitter:description" content="Data Darbar by Adaad is an independent explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/about.html#page", "url": "https://darbar.adaad.org/about.html", "name": "About Data Darbar — Data Darbar", "description": "Data Darbar by Adaad is an independent explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<!-- SEO:END -->
+<link rel="icon" href="/assets/img/favicon-32.png"><link rel="stylesheet" href="/assets/css/research.css">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header><a class="brand" href="/">Data Darbar <small>by Adaad</small></a><nav aria-label="Main"><a href="/map.html">Map</a><a href="/districts/">Districts</a><a href="/datasets/">Datasets</a><a href="/about.html">About</a><a href="/methodology.html">Methods</a></nav></header>
+<main id="main"><p class="eyebrow">Pakistan · Data · Sources</p><h1>About Data Darbar</h1><p class="intro">Data Darbar by Adaad is an independent explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen.</p><div class="method-content">
+    <h2>The project</h2>
+    <p>Data Darbar is an open explorer of Pakistan's official statistics. It brings together the
+      population census, household and labour-force surveys, 8-digit external-trade data, the national
+      accounts, the federal budget and the central bank's monetary and external-sector series — sources published by the
+      <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics (PBS)</a>,
+      the <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Finance Division</a> and the
+      <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> —
+      into a single set of interactive views. The name is a nod to the shrine in Lahore, reimagined here
+      as a place of gathering for Pakistan's data.</p>
+    <p>Every figure is traceable to its published source, and the cleaned data behind the site is held in
+      a queryable DuckDB + Parquet warehouse rather than locked inside PDFs.</p>
+
+    <h2>The five views</h2>
+    <ul>
+      <li><strong>District &amp; Tehsil Map</strong> — census, PSLM, labour-force, household and DHS health indicators
+        across the available district records (coverage varies by source), with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
+      <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
+        sector, with drill-down, top partners and change over time (2015–2024).</li>
+      <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
+        flows, and the federal budget's receipts and expenditure as a detailed line-item treemap.</li>
+      <li><strong>Monetary &amp; External</strong> — <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> series: the rupee since 1947, the policy
+        rate since 1956, inflation, the interbank curve, reserves, the current account broken down to individual
+        commodities, remittances by source, the money supply and bad loans.</li>
+      <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
+        microdata, alongside satellite measures of relative wealth, population and night-time lights,
+        with district-level poverty estimates and tehsil-level satellite measures where available, alongside the Mouza Census inventory of what rural villages actually have.</li>
+    </ul>
+    <p>A sixth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the five
+      views — to SQL in the browser, with nothing sent to a server. A <a href="dictionary.html">data dictionary</a>
+      documents every table, column, unit and caveat.</p>
+
+    <h2>Built by</h2>
+    <p><strong>Hiba Sameen</strong> is an economist and data scientist based in London. She holds a PhD in
+      Economics and has worked across academia, government and think tanks on economic policy, with an
+      interest in data science and engineering focused on making public data more accessible. Data Darbar
+      grew out of the frustration of comparing Pakistani statistics that are scattered across PDF tables
+      and separate reports.</p>
+    <p class="dd-about-links">
+      <a href="https://github.com/hibasameen" target="_blank" rel="noopener" class="dd-about-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+        GitHub</a>
+      <a href="https://www.linkedin.com/in/hiba-sameen-86750819/" target="_blank" rel="noopener" class="dd-about-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn</a>
+      <a class="dd-about-link" data-modal="contact">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z" fill="none"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact</a>
+    </p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><strong>Population &amp; Housing Census 2017 and 2023</strong> — district demographic, education
+        and employment tables.</li>
+      <li><strong>PSLM, LFS &amp; HIES</strong> — social/living-standards, labour-force and household
+        income &amp; expenditure surveys. PSLM 2019-20 is a district-level round and carries urban and
+        rural households alike; HIES 2024-25 is a provincial round whose urban stratum is the division,
+        so its district figures are rural-only (see Methodology).</li>
+      <li><strong>PSLM district FIES</strong> — district-level food insecurity (moderate or severe) as
+        published by PBS on the <a href="https://pslm-sdgs.data.gov.pk/districtlevel" target="_blank"
+        rel="noopener">PSLM district dashboard</a>, computed on FAO's FIES methodology.</li>
+      <li><strong>PDHS 2017-18</strong> — Pakistan Demographic and Health Survey microdata, published by the
+        <a href="https://www.nips.org.pk/" target="_blank" rel="noopener">National Institute of Population
+        Studies (NIPS)</a>: family planning, fertility, maternal &amp; child health, and child nutrition, at
+        district level. Also fills the AJK &amp; Gilgit-Baltistan districts the census tables omit.</li>
+      <li><strong>External Trade Statistics</strong> — 8-digit HS imports and exports by commodity and
+        partner country, 2015–2024.</li>
+      <li><strong>National Accounts (2015-16 base)</strong> — GDP by sector, real growth and the
+        supply-use / input-output table.</li>
+      <li><strong>Federal Budget "Budget in Brief"</strong> — receipts and expenditure line items,
+        2009–2027.</li>
+      <li><strong>Industry Statistics (QIM &amp; CMI)</strong> — Quantum Index of large-scale Manufacturing
+        (monthly and annual, 2005-06 and 2015-16 bases) and the Census of Manufacturing Industries.</li>
+      <li><strong>State Bank of Pakistan, <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">EasyData</a></strong> — 1,336 monthly, quarterly, daily and annual series
+        from 33 datasets, pulled through SBP's REST API: exchange rates (from Aug-1947), the policy rate (from
+        Jan-1956), the CPI/SPI/WPI (2015-16 base), KIBOR, lending and deposit rates, reserves (from Jun-1948),
+        the BPM6 balance of payments, export receipts and import payments by commodity, services trade,
+        country-wise workers' remittances (from Jul-1972), repatriation of profits by sector, monetary
+        aggregates and non-performing loans.</li>
+      <li><strong>Poverty &amp; satellite</strong> — Alkire–Foster Multidimensional Poverty Index from PSLM
+        microdata, plus Meta's Relative Wealth Index, WorldPop population, VIIRS night-lights and the PBS Mouza Census 2020 facility inventory at tehsil level.</li>
+    </ul>
+    <p>All sources are public publications of the Government of Pakistan and the <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a>, except the
+       Relative Wealth Index (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
+  </div></main>
+<footer><p>Hiba Sameen · <a href="https://adaad.org/">Adaad</a> · <a href="https://aiwan.adaad.org/elections/">Pakistan election results</a></p><p>Derived data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Original sources and limitations are identified on each page.</p></footer>
+<script src="/assets/js/modals.js" defer></script><script src="/assets/js/analytics.js" defer></script></body></html>

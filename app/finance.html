@@ -1,10 +1,8 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#0c3a1e"/>
-<title>Data Darbar — GDP &amp; Budget</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
-<meta name="description" content="The structure of Pakistan's economy and how it has changed — seven decades of sector shares, what drives growth, factory output, manufacturing censuses, sector linkages and the federal budget."/>
-<meta property="og:title" content="Data Darbar — GDP &amp; Budget"/><meta property="og:description" content="An interactive dashboard of Pakistan's economic structure: sector shares since 1952, growth contributions, LSM output, manufacturing censuses, input-output flows and the federal budget."/><meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:url" content="https://darbar.adaad.org/finance.html"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Data Darbar — GDP &amp; Budget"/><meta name="twitter:description" content="Seven decades of Pakistan's economic structure: sector shares, growth, industry, budget."/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
+<meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="assets/js/d3.v7.min.js"></script>
@@ -136,13 +134,24 @@ body{padding-bottom:34px}
   .wrap{padding:12px 12px 24px}
   .navhelp{font-size:12.5px}
 }
-</style></head><body>
+</style><!-- SEO:START -->
+<title>Pakistan GDP &amp; Federal Budget Data — Data Darbar</title>
+<meta name="description" content="Explore Pakistan&#x27;s GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data.">
+<link rel="canonical" href="https://darbar.adaad.org/finance.html">
+<meta property="og:title" content="Pakistan GDP &amp; Federal Budget Data — Data Darbar">
+<meta property="og:description" content="Explore Pakistan&#x27;s GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data.">
+<meta property="og:url" content="https://darbar.adaad.org/finance.html">
+<meta name="twitter:title" content="Pakistan GDP &amp; Federal Budget Data — Data Darbar">
+<meta name="twitter:description" content="Explore Pakistan&#x27;s GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/finance.html#page", "url": "https://darbar.adaad.org/finance.html", "name": "Pakistan GDP & Federal Budget Data — Data Darbar", "description": "Explore Pakistan's GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<!-- SEO:END -->
+</head><body>
 <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
-  <nav class="header-nav"><a href="index.html" class="header-link">Home</a><div data-dd-nav></div><a href="#" data-modal="about" class="header-link">About</a><a href="#" data-modal="methodology" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
+  <nav class="header-nav"><a href="index.html" class="header-link">Home</a><div data-dd-nav></div><a href="about.html" class="header-link">About</a><a href="methodology.html" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a></nav>
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
-<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="#" data-modal="about" class="mobile-nav-link">About</a><a href="#" data-modal="methodology" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="about.html" class="mobile-nav-link">About</a><a href="methodology.html" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a></nav>
 
 <aside class="eco-side">
  <div class="eco-panel">
@@ -306,5 +315,5 @@ body{padding-bottom:34px}
 <script src="assets/js/nav.js"></script>
 <script src="assets/js/modals.js"></script>
 <script src="assets/js/analytics.js"></script>
-<footer class="site-footer"><span>&copy; 2026 Hiba Sameen. All rights reserved.</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span></footer>
+<footer class="site-footer"><span>&copy; 2026 Hiba Sameen. All rights reserved.</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span data-research-links><a href="/districts/">District profiles</a> · <a href="/datasets/">Data catalogue</a> · <a href="https://adaad.org/">Adaad</a></span></footer>
 </body></html>

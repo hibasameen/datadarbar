@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Rawalpindi,Punjab,2023,Population,6118911.0,people,t1_2023_pop_total
+Rawalpindi,Punjab,2023,Male population,3109807.0,people,t1_2023_pop_male
+Rawalpindi,Punjab,2023,Female population,3007760.0,people,t1_2023_pop_female
+Rawalpindi,Punjab,2023,Transgender population,1344.0,people,t1_2023_pop_transgender
+Rawalpindi,Punjab,2023,Area,5285.0,km²,t1_2023_area_sq_km
+Rawalpindi,Punjab,2023,Population density,1157.79,people per km²,t1_2023_density_per_sq_km
+Rawalpindi,Punjab,2023,Urban population share,68.82,%,t1_2023_urban_proportion
+Rawalpindi,Punjab,2023,Average household size,6.1,people per household,t1_2023_avg_household_size
+Rawalpindi,Punjab,2023,"Literacy, ages 10+",83.22,%,t12_2023_literacy_ratio_all
+Rawalpindi,Punjab,2023,"Male literacy, ages 10+",87.9,%,t12_2023_literacy_ratio_male
+Rawalpindi,Punjab,2023,"Female literacy, ages 10+",78.36,%,t12_2023_literacy_ratio_female
+Rawalpindi,Punjab,2023,"Out-of-school children, ages 5–16",239415.0,children,t12_2023_out_of_school_5_16

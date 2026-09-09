@@ -19,6 +19,8 @@
   'use strict';
 
   var VIEWS = [
+    { href: 'districts/', title: 'District Profiles', desc: 'Census 2023 population, literacy and downloadable district tables' },
+    { href: 'datasets/', title: 'Data Catalogue', desc: 'Documented research datasets, source notes and downloads' },
     { href: 'map.html',     title: 'District & Tehsil Map', desc: 'Census, PSLM, labour force and household indicators by district, and the Mouza Census by tehsil' },
     { href: 'poverty.html', title: 'Poverty & Wealth',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
     { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },

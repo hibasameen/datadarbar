@@ -104,7 +104,7 @@
     <h3>The five views</h3>
     <ul>
       <li><strong>District &amp; Tehsil Map</strong> — census, PSLM, labour-force, household and DHS health indicators
-        across all 141 districts, with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
+        across the available district records (coverage varies by source), with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
       <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
@@ -114,7 +114,7 @@
         commodities, remittances by source, the money supply and bad loans.</li>
       <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
         microdata, alongside satellite measures of relative wealth, population and night-time lights,
-        mapped down to all 554 tehsils, alongside the Mouza Census inventory of what rural villages actually have.</li>
+        with district-level poverty estimates and tehsil-level satellite measures where available, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
     <p>A sixth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the five
       views — to SQL in the browser, with nothing sent to a server. A <a href="dictionary.html">data dictionary</a>
@@ -486,7 +486,7 @@
         2013, the commodity breakdowns in July 2013 and repatriation by sector in July 2007, so the
         treemap's drill-downs cover a shorter span than the headline series. Goods breakdowns are
         payments-basis (through banks) and will not match PBS customs figures on the Trade Atlas.</li>
-      <li>Census 2023 results used are provisional and may differ from final published figures.</li>
+      <li>Census figures retain the vintage of the downloaded source tables; consult the cited PBS release before treating them as the latest revision.</li>
     </ul>
   `;
 

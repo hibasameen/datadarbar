@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Faisalabad,Punjab,2023,Population,9075819.0,people,t1_2023_pop_total
+Faisalabad,Punjab,2023,Male population,4731224.0,people,t1_2023_pop_male
+Faisalabad,Punjab,2023,Female population,4343633.0,people,t1_2023_pop_female
+Faisalabad,Punjab,2023,Transgender population,962.0,people,t1_2023_pop_transgender
+Faisalabad,Punjab,2023,Area,5857.0,km²,t1_2023_area_sq_km
+Faisalabad,Punjab,2023,Population density,1549.57,people per km²,t1_2023_density_per_sq_km
+Faisalabad,Punjab,2023,Urban population share,48.4,%,t1_2023_urban_proportion
+Faisalabad,Punjab,2023,Average household size,6.5,people per household,t1_2023_avg_household_size
+Faisalabad,Punjab,2023,"Literacy, ages 10+",73.41,%,t12_2023_literacy_ratio_all
+Faisalabad,Punjab,2023,"Male literacy, ages 10+",77.34,%,t12_2023_literacy_ratio_male
+Faisalabad,Punjab,2023,"Female literacy, ages 10+",69.11,%,t12_2023_literacy_ratio_female
+Faisalabad,Punjab,2023,"Out-of-school children, ages 5–16",479098.0,children,t12_2023_out_of_school_5_16

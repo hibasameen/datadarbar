@@ -24,6 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Build search pages
+        run: python3 scripts/build_seo.py
+
+      - name: Validate search pages
+        run: python3 scripts/check_seo.py
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Bahawalpur,Punjab,2023,Population,4284964.0,people,t1_2023_pop_total
+Bahawalpur,Punjab,2023,Male population,2174995.0,people,t1_2023_pop_male
+Bahawalpur,Punjab,2023,Female population,2109500.0,people,t1_2023_pop_female
+Bahawalpur,Punjab,2023,Transgender population,469.0,people,t1_2023_pop_transgender
+Bahawalpur,Punjab,2023,Area,24830.0,km²,t1_2023_area_sq_km
+Bahawalpur,Punjab,2023,Population density,172.57,people per km²,t1_2023_density_per_sq_km
+Bahawalpur,Punjab,2023,Urban population share,37.79,%,t1_2023_urban_proportion
+Bahawalpur,Punjab,2023,Average household size,6.3,people per household,t1_2023_avg_household_size
+Bahawalpur,Punjab,2023,"Literacy, ages 10+",53.35,%,t12_2023_literacy_ratio_all
+Bahawalpur,Punjab,2023,"Male literacy, ages 10+",59.4,%,t12_2023_literacy_ratio_male
+Bahawalpur,Punjab,2023,"Female literacy, ages 10+",47.09,%,t12_2023_literacy_ratio_female
+Bahawalpur,Punjab,2023,"Out-of-school children, ages 5–16",487764.0,children,t12_2023_out_of_school_5_16

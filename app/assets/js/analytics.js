@@ -3,6 +3,8 @@
    Auto-counts a pageview on load; adds a few lightweight engagement events.
    GoatCounter skips localhost / file:// automatically, so local dev is not counted. */
 (function () {
+  // Exclude local previews, staging and old hosts from production reporting.
+  if (location.hostname !== 'darbar.adaad.org') return;
   var ENDPOINT = 'https://datadarbar.goatcounter.com/count';
 
   // Config object must exist before count.js loads.
@@ -17,7 +19,7 @@
 
   // Which product page are we on? (index|map|trade|finance|poverty)
   function pageSlug() {
-    var f = (location.pathname.split('/').pop() || 'index.html').replace(/\.html?$/, '');
+    var f = (location.pathname.replace(/\/$/, '').split('/').pop() || 'index.html').replace(/\.html?$/, '');
     return f || 'index';
   }
 
@@ -38,7 +40,7 @@
     // Landing-page product cards → open-<product>
     var card = t.closest('.pcard');
     if (card && card.getAttribute('href')) {
-      var dest = card.getAttribute('href').replace(/\.html?$/, '').replace(/^.*\//, '') || 'index';
+      var dest = card.getAttribute('href').replace(/\/$/, '').replace(/\.html?$/, '').replace(/^.*\//, '') || 'index';
       ev('open-' + dest, 'Open ' + dest);
       return;
     }

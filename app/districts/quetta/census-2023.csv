@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Quetta,Balochistan,2023,Population,2595492.0,people,t1_2023_pop_total
+Quetta,Balochistan,2023,Male population,1319869.0,people,t1_2023_pop_male
+Quetta,Balochistan,2023,Female population,1275512.0,people,t1_2023_pop_female
+Quetta,Balochistan,2023,Transgender population,111.0,people,t1_2023_pop_transgender
+Quetta,Balochistan,2023,Area,3447.0,km²,t1_2023_area_sq_km
+Quetta,Balochistan,2023,Population density,752.97,people per km²,t1_2023_density_per_sq_km
+Quetta,Balochistan,2023,Urban population share,60.32,%,t1_2023_urban_proportion
+Quetta,Balochistan,2023,Average household size,8.9,people per household,t1_2023_avg_household_size
+Quetta,Balochistan,2023,"Literacy, ages 10+",56.29,%,t12_2023_literacy_ratio_all
+Quetta,Balochistan,2023,"Male literacy, ages 10+",65.06,%,t12_2023_literacy_ratio_male
+Quetta,Balochistan,2023,"Female literacy, ages 10+",46.96,%,t12_2023_literacy_ratio_female
+Quetta,Balochistan,2023,"Out-of-school children, ages 5–16",276511.0,children,t12_2023_out_of_school_5_16

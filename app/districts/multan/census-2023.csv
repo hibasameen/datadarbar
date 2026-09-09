@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Multan,Punjab,2023,Population,5362305.0,people,t1_2023_pop_total
+Multan,Punjab,2023,Male population,2730613.0,people,t1_2023_pop_male
+Multan,Punjab,2023,Female population,2631285.0,people,t1_2023_pop_female
+Multan,Punjab,2023,Transgender population,407.0,people,t1_2023_pop_transgender
+Multan,Punjab,2023,Area,3720.0,km²,t1_2023_area_sq_km
+Multan,Punjab,2023,Population density,1441.48,people per km²,t1_2023_density_per_sq_km
+Multan,Punjab,2023,Urban population share,46.62,%,t1_2023_urban_proportion
+Multan,Punjab,2023,Average household size,6.0,people per household,t1_2023_avg_household_size
+Multan,Punjab,2023,"Literacy, ages 10+",61.41,%,t12_2023_literacy_ratio_all
+Multan,Punjab,2023,"Male literacy, ages 10+",67.28,%,t12_2023_literacy_ratio_male
+Multan,Punjab,2023,"Female literacy, ages 10+",55.27,%,t12_2023_literacy_ratio_female
+Multan,Punjab,2023,"Out-of-school children, ages 5–16",475376.0,children,t12_2023_out_of_school_5_16
