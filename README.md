@@ -6,19 +6,17 @@ An open explorer of Pakistan's official statistics — the population census, 8-
 
 <https://darbar.adaad.org>
 
-## The five products
+## The four products
 
-Data Darbar is a landing page (`index.html`) plus four self-contained products, sharing one header (with a **Data ▾** dropdown), footer, and green/gold/slate design system.
+Data Darbar is a landing page (`index.html`) plus four self-contained products, a data catalogue and a SQL console, sharing one header (with a **Data ▾** dropdown), footer, and green/gold/slate design system.
 
-**District Map** (`map.html`) — a Leaflet choropleth of Pakistan across all 141 districts, with 17 indicator groups covering demographics, urban/rural splits, literacy, education attainment, employment, school attendance, PSLM welfare indicators, the Economic Census, the Labour Force Survey, HIES household income and expenditure, and PDHS family planning, fertility, maternal health, child immunisation and nutrition. Includes a 2017-vs-2023 census "Change" toggle, a sample-size confidence UI, province filter, district search, and CSV export.
+**District & Tehsil Map** (`map.html`) — a Leaflet choropleth of Pakistan across all 141 districts, with indicator groups covering demographics, urban/rural splits, literacy, education attainment, employment, school attendance, PSLM welfare indicators, the Economic Census, the Labour Force Survey, HIES household income and expenditure, MICS and PDHS health, and the Mouza Census 2020 by tehsil. Since September 2026 it also carries the **Poverty & Wealth** layers that used to be their own page: a multidimensional poverty index built from PSLM household microdata at district level (ADM2), and satellite measures of relative wealth, population and night-time lights at tehsil level (ADM3); choosing a tehsil dataset switches the geometry, and night-lights carry a year slider (June 2020–2026) and a growth view. Includes a 2017-vs-2023 census "Change" toggle, a sample-size confidence UI, province filter, search, CSV export, and `?topic=`/`?group=`/`?indicator=` deep links (`poverty.html` redirects to `map.html?topic=poverty`).
 
 **Trade Atlas** (`trade.html`) — every 8-digit product Pakistan buys and sells, rendered as a nested treemap grouped and coloured by HS section (~1,050 tiles). Drill from a sector down to individual commodities, track trade over time (2015–2024), see top partners and products, a "what's growing" movers view with year-on-year timelines, and per-country breakdowns. Every chart exports to CSV and its state is shareable via URL hash.
 
 **GDP & Budget** (`finance.html`) — an interactive "structure of the economy" dashboard: sector-share of GDP from 1951-52 to today (with a pre-1999 backcast), contributions to real growth, the Large-Scale Manufacturing and Quantum indices, the CMI manufacturing censuses, a 12-sector input-output flow (as a heatmap, focus view, or chord), and the federal budget — receipts and current expenditure broken down as a treemap or trend. Shareable chart states and CSV export throughout.
 
 **Monetary & External** (`money.html`) — State Bank of Pakistan series, some running back to 1947: the exchange rate and effective exchange rate indices, inflation and its components, the policy rate and the KIBOR curve, lending and deposit rates, reserves and import cover, the current account as a two-sided treemap with in-place nested breakdowns (goods to individual commodities, services by type, remittances by source, income paid by sector), the money supply and non-performing loans. Built by `etl/build_money.py` from the SBP EasyData warehouse.
-
-**Poverty & Wealth** (`poverty.html`) — a multidimensional poverty index built from PSLM household microdata, plus satellite measures of relative wealth, population, and night-time lights. The map is mixed-geometry: the MPI is district-level (ADM2), while relative wealth, population, and night-lights are tehsil-level (ADM3), and the "Measure" selector switches the geometry automatically. Night-lights carry a year slider (June 2020–2026) and a growth view.
 
 ## Project structure
 
@@ -27,21 +25,20 @@ datadarbar/
 ├── .github/workflows/       ← GitHub Actions deployment
 │   └── deploy.yml
 ├── app/                     ← static site (deployed to GitHub Pages)
-│   ├── index.html           ← landing (four product cards)
-│   ├── map.html             ← District Map
+│   ├── index.html           ← landing (product cards)
+│   ├── map.html             ← District & Tehsil Map (incl. Poverty & Wealth)
 │   ├── trade.html           ← Trade Atlas
 │   ├── finance.html         ← GDP & Budget
 │   ├── money.html           ← Monetary & External
-│   ├── poverty.html         ← Poverty & Wealth
+│   ├── poverty.html         ← redirect → map.html?topic=poverty
 │   ├── economy.html         ← redirect → finance.html
 │   ├── assets/
-│   │   ├── css/styles.css   ← shared app-shell CSS (map + poverty)
+│   │   ├── css/styles.css   ← shared app-shell CSS
 │   │   ├── js/
-│   │   │   ├── app.js       ← District Map
+│   │   │   ├── app.js       ← District & Tehsil Map
 │   │   │   ├── trade.js     ← Trade Atlas
 │   │   │   ├── finance.js   ← GDP & Budget
 │   │   │   ├── money.js     ← Monetary & External
-│   │   │   ├── poverty.js   ← Poverty & Wealth
 │   │   │   ├── nav.js       ← shared "Data" nav dropdown
 │   │   │   ├── modals.js    ← About / Methodology / Contact
 │   │   │   ├── econ_data.js ← trade + economy data (window.ECON)
@@ -50,7 +47,7 @@ datadarbar/
 │   └── data/
 │       ├── districts.json               ← District Map indicators
 │       ├── census_data.js               ← inlined map data (file:// safe)
-│       ├── poverty_data.js              ← MPI / RWI / pop / night-lights + geometry
+│       ├── poverty_data.js              ← MPI / RWI / pop / night-lights (+ legacy geometry), loaded on demand by the map
 │       ├── econ_industry.json           ← QIM / LSM / CMI
 │       ├── econ_structure.json          ← long-arc sector series
 │       ├── econ_trade_extra.json        ← country detail + movers

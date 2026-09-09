@@ -935,3 +935,14 @@ select:focus, input:focus {
   .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
   .ranking-list { max-height: 180px; overflow-y: auto; }
 }
+
+/* ── Poverty & Wealth layers (merged from the former poverty page) ── */
+.stat-active { background: #f7f3e6; margin: 0 -18px; padding: 6px 18px; border-radius: 6px; }
+.stat-note { font-size: 11.5px; color: var(--slate-500, #6b7280); margin-top: 10px; line-height: 1.5; }
+.spark { display: flex; align-items: flex-end; gap: 5px; height: 62px; margin-top: 8px; }
+.spark-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.spark-bar > div { width: 100%; background: linear-gradient(180deg, #e8b92e, #d4a017); border-radius: 3px 3px 0 0; }
+.spark-bar > span { font-size: 9px; color: var(--slate-500, #6b7280); margin-top: 3px; }
+.year-slider-wrap { display: flex; align-items: center; gap: 10px; }
+.year-slider-wrap input[type=range] { flex: 1; accent-color: #d4a017; height: 4px; }
+.year-value { font-size: 12px; font-weight: 700; color: var(--green-800, #145228); white-space: nowrap; min-width: 66px; text-align: right; }

@@ -1,8 +1,8 @@
 /*
    Data Darbar — shared "Data" nav dropdown
    ----------------------------------------
-   Collapses the product links (District & Tehsil Map, Poverty & Wealth, Trade Atlas,
-   GDP & Budget, Query the Data) into a single "Data" tab that opens a menu.
+   Collapses the product links (District & Tehsil Map, GDP & Budget, Trade Atlas,
+   Monetary & External, Data Catalogue, Query the Data) into a single "Data" tab that opens a menu.
 
    Included on every page. Self-contained like modals.js: injects its own <style>
    with literal hex colours so it works regardless of which stylesheet the page
@@ -19,13 +19,11 @@
   'use strict';
 
   var VIEWS = [
-    { href: 'districts/', title: 'District Profiles', desc: 'Census 2023 population, literacy and downloadable district tables' },
-    { href: 'datasets/', title: 'Data Catalogue', desc: 'Documented research datasets, source notes and downloads' },
-    { href: 'map.html',     title: 'District & Tehsil Map', desc: 'Census, PSLM, labour force and household indicators by district, and the Mouza Census by tehsil' },
-    { href: 'poverty.html', title: 'Poverty & Wealth',  desc: 'Multidimensional poverty, relative wealth, population and night-lights' },
-    { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },
+    { href: 'map.html',     title: 'District & Tehsil Map', desc: 'Census, survey, poverty and satellite indicators by district, and the Mouza Census by tehsil' },
     { href: 'finance.html', title: 'GDP & Budget', desc: 'GDP by sector, input-output flows and the federal budget' },
+    { href: 'trade.html',   title: 'Trade Atlas',      desc: 'Every 8-digit product and trading partner, as a treemap' },
     { href: 'money.html',   title: 'Monetary & External',   desc: 'Inflation, interest rates, the rupee, the current account, remittances and the banks' },
+    { href: 'datasets/',    title: 'Data Catalogue', desc: 'Documented research datasets, source notes and downloads' },
     { href: 'query.html',   title: 'Query the Data',   desc: 'Run SQL against every table, in your browser — no signup' }
   ];
 

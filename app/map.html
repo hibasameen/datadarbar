@@ -31,16 +31,16 @@
   <!-- App -->
   <link rel="stylesheet" href="assets/css/styles.css" />
 <!-- SEO:START -->
-<title>Pakistan Census 2023 District Data &amp; Maps — Data Darbar</title>
-<meta name="description" content="Explore Pakistan&#x27;s district population, literacy and census indicators, alongside separately labelled survey estimates and tehsil rural facilities.">
+<title>Pakistan District Data &amp; Maps: Census, Poverty, Night-lights — Data Darbar</title>
+<meta name="description" content="Explore Pakistan&#x27;s district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil.">
 <link rel="canonical" href="https://darbar.adaad.org/map.html">
-<meta property="og:title" content="Pakistan Census 2023 District Data &amp; Maps — Data Darbar">
-<meta property="og:description" content="Explore Pakistan&#x27;s district population, literacy and census indicators, alongside separately labelled survey estimates and tehsil rural facilities.">
+<meta property="og:title" content="Pakistan District Data &amp; Maps: Census, Poverty, Night-lights — Data Darbar">
+<meta property="og:description" content="Explore Pakistan&#x27;s district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil.">
 <meta property="og:url" content="https://darbar.adaad.org/map.html">
-<meta name="twitter:title" content="Pakistan Census 2023 District Data &amp; Maps — Data Darbar">
-<meta name="twitter:description" content="Explore Pakistan&#x27;s district population, literacy and census indicators, alongside separately labelled survey estimates and tehsil rural facilities.">
+<meta name="twitter:title" content="Pakistan District Data &amp; Maps: Census, Poverty, Night-lights — Data Darbar">
+<meta name="twitter:description" content="Explore Pakistan&#x27;s district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil.">
 <meta property="og:site_name" content="Data Darbar">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/map.html#page", "url": "https://darbar.adaad.org/map.html", "name": "Pakistan Census 2023 District Data & Maps — Data Darbar", "description": "Explore Pakistan's district population, literacy and census indicators, alongside separately labelled survey estimates and tehsil rural facilities.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/map.html#page", "url": "https://darbar.adaad.org/map.html", "name": "Pakistan District Data & Maps: Census, Poverty, Night-lights — Data Darbar", "description": "Explore Pakistan's district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
 <!-- SEO:END -->
 </head>
 <body>
@@ -155,7 +155,7 @@
         </div>
 
         <!-- Year -->
-        <div class="panel panel-control">
+        <div class="panel panel-control" id="yearPanel">
           <label>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Year
@@ -164,6 +164,18 @@
             <button data-year="2017">2017</button>
             <button data-year="2023" class="active">2023</button>
             <button data-year="diff">Change</button>
+          </div>
+        </div>
+
+        <!-- Year slider: night-time lights only (June composites 2020–2026) -->
+        <div class="panel panel-control" id="povYearPanel" style="display:none">
+          <label for="povYearSlider">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Year
+          </label>
+          <div class="year-slider-wrap">
+            <input type="range" id="povYearSlider" min="0" max="6" step="1" value="6" />
+            <span class="year-value" id="povYearLabel">June 2026</span>
           </div>
         </div>
 

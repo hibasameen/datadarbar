@@ -101,10 +101,12 @@
     <p>Every figure is traceable to its published source, and the cleaned data behind the site is held in
       a queryable DuckDB + Parquet warehouse rather than locked inside PDFs.</p>
 
-    <h3>The five views</h3>
+    <h3>The four views</h3>
     <ul>
       <li><strong>District &amp; Tehsil Map</strong> — census, PSLM, labour-force, household and DHS health indicators
-        across the available district records (coverage varies by source), with a 2017 vs 2023 comparison, plus the Mouza Census 2020 at tehsil level.</li>
+        across the available district records (coverage varies by source), with a 2017 vs 2023 comparison; a multidimensional
+        poverty index built from household microdata at district level; satellite measures of relative wealth, population and
+        night-time lights at tehsil level; and the Mouza Census 2020 inventory of what rural villages actually have.</li>
       <li><strong>Trade Atlas</strong> — every 8-digit HS commodity as an Atlas-style treemap grouped by
         sector, with drill-down, top partners and change over time (2015–2024).</li>
       <li><strong>GDP &amp; Budget</strong> — GDP by sector and real growth, the 2015-16 input-output
@@ -112,11 +114,8 @@
       <li><strong>Monetary &amp; External</strong> — <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> series: the rupee since 1947, the policy
         rate since 1956, inflation, the interbank curve, reserves, the current account broken down to individual
         commodities, remittances by source, the money supply and bad loans.</li>
-      <li><strong>Poverty & Wealth</strong> — a multidimensional poverty index built from household
-        microdata, alongside satellite measures of relative wealth, population and night-time lights,
-        with district-level poverty estimates and tehsil-level satellite measures where available, alongside the Mouza Census inventory of what rural villages actually have.</li>
     </ul>
-    <p>A sixth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the five
+    <p>A fifth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the four
       views — to SQL in the browser, with nothing sent to a server. A <a href="dictionary.html">data dictionary</a>
       documents every table, column, unit and caveat.</p>
 
@@ -428,7 +427,7 @@
       Adding every series overstates the total by 42%. The site uses the fifteen-source partition that
       reconciles exactly to SBP's published total, and the build fails if it ever stops doing so.</p>
 
-    <h3><span class="dd-tag" style="background:#dceef0;color:#0f6e78">Poverty &amp; Wealth</span></h3>
+    <h3><span class="dd-tag" style="background:#dceef0;color:#0f6e78">Poverty &amp; Wealth</span> <small>(on the District &amp; Tehsil Map)</small></h3>
     <h4>Multidimensional Poverty Index (district)</h4>
     <p>An <strong>Alkire–Foster adjusted headcount</strong>, M<sub>0</sub> = H &times; A, computed directly
       from <strong>PSLM 2019-20 household microdata</strong> — from the joint distribution of deprivations

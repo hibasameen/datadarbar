@@ -57,11 +57,10 @@ DATASET_NAMES = {
 }
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
-    "map.html": ("Pakistan Census 2023 District Data & Maps — Data Darbar", "Explore Pakistan's district population, literacy and census indicators, alongside separately labelled survey estimates and tehsil rural facilities."),
+    "map.html": ("Pakistan District Data & Maps: Census, Poverty, Night-lights — Data Darbar", "Explore Pakistan's district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil."),
     "trade.html": ("Pakistan Exports & Imports by Product and Country — Data Darbar", "Explore Pakistan's imports and exports by 8-digit HS product, trading partner and fiscal year. Read source definitions and download the underlying trade data."),
     "finance.html": ("Pakistan GDP & Federal Budget Data — Data Darbar", "Explore Pakistan's GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data."),
     "money.html": ("Pakistan Inflation, Remittances & Monetary Data — Data Darbar", "Explore State Bank of Pakistan series on inflation, remittances, exchange rates, reserves, interest rates and banking, with source notes."),
-    "poverty.html": ("Pakistan Poverty, Wealth & Night-time Lights — Data Darbar", "Explore Pakistan's multidimensional poverty, relative wealth and night-time lights. Compare sources with their distinct definitions and limitations."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
     "dictionary.html": ("Pakistan Open Data Dictionary — Data Darbar", "Read field definitions, units, source coverage and limitations for Data Darbar's downloadable Pakistan research datasets."),
 }
@@ -129,7 +128,7 @@ def page(path, title, description, body, extra=None, heading=None):
 {metadata(f"{title} — {SITE_NAME}", description, path, extra, SHARE_TAGS)}
 <link rel="icon" href="/assets/img/favicon-32.png"><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"><link rel="stylesheet" href="/assets/css/research.css">
 </head><body><a class="skip" href="#main">Skip to content</a>
-<header><a class="brand" href="/"><img src="/assets/img/logo.svg" class="logo" alt=""><span class="lockup"><span class="title">{SITE_NAME}</span><small>{TAGLINE}</small></span></a><nav aria-label="Main"><a href="/">Home</a><a href="/districts/">District Profiles</a><a href="/datasets/">Data Catalogue</a><a href="/map.html">District &amp; Tehsil Map</a><a href="/poverty.html">Poverty &amp; Wealth</a><a href="/trade.html">Trade Atlas</a><a href="/finance.html">GDP &amp; Budget</a><a href="/money.html">Monetary &amp; External</a><a href="/query.html">Query the Data</a><a href="/about.html">About</a><a href="/methodology.html">Methodology</a></nav></header>
+<header><a class="brand" href="/"><img src="/assets/img/logo.svg" class="logo" alt=""><span class="lockup"><span class="title">{SITE_NAME}</span><small>{TAGLINE}</small></span></a><nav aria-label="Main"><a href="/">Home</a><a href="/map.html">District &amp; Tehsil Map</a><a href="/finance.html">GDP &amp; Budget</a><a href="/trade.html">Trade Atlas</a><a href="/money.html">Monetary &amp; External</a><a href="/datasets/">Data Catalogue</a><a href="/query.html">Query the Data</a><a href="/about.html">About</a><a href="/methodology.html">Methodology</a></nav></header>
 <main id="main"><p class="eyebrow">Pakistan · Data · Sources</p><h1>{ESC(heading or title)}</h1><p class="intro">{ESC(description)}</p>{body}</main>
 <footer><p>&copy; 2026 Hiba Sameen · Data: <a href="https://www.pbs.gov.pk/">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/">State Bank of Pakistan</a> · Code: <a href="https://opensource.org/licenses/MIT">MIT Licence</a> · Derived data: <a href="{LICENSE}">CC BY 4.0</a>. Original sources and limitations are identified on each page.</p><p><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor: Pakistan election results</a></p></footer>
 <script src="/assets/js/modals.js" defer></script><script src="/assets/js/analytics.js" defer></script></body></html>''')
@@ -201,7 +200,7 @@ def build():
     for file, (title, description) in BASE_PAGES.items():
         patch_metadata(APP / file, title, description, "/" if file == "index.html" else "/" + file)
     sitemap = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if p.name != "economy.html"]
+    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if p.name not in ("economy.html", "poverty.html")]
     for path in sorted(set(paths)):
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))

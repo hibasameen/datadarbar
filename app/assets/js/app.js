@@ -15,6 +15,10 @@ const TOPICS = {
   // rural-only (HIES) ones, so the default view of a district is not a rural
   // figure. See HIES_DISTRICT_COVERAGE.md.
   welfare:        { label: 'Household Welfare',         groups: ['pslmFies', 'hies'] },
+  // Poverty & Wealth was its own page until September 2026. The survey MPI is
+  // district-level; the three satellite layers are tehsil-level and switch the
+  // geography the same way the Mouza Census does. See INDICATOR_GROUPS.mpi.
+  poverty:        { label: 'Poverty & Wealth',          groups: ['mpi', 'rwi', 'satPop', 'nightlights'] },
   housing:        { label: 'Housing & Infrastructure',  groups: ['micsWash', 'pslmWash', 'hiesHousing', 'hiesWaste'] },
   ict:            { label: 'ICT & Digital',             groups: ['pslmDigital', 'hiesIct'] },
   // MICS groups lead the health, WASH and women topics because they are
@@ -28,6 +32,74 @@ const TOPICS = {
 };
 
 const INDICATOR_GROUPS = {
+  // ── POVERTY & WEALTH ─────────────────────────────────────────────────
+  // These four groups read window.DD_POV (data/poverty_data.js), loaded the
+  // first time one is chosen. `pov` names the DD_POV table; the rows are
+  // keyed like the geography they draw on (district key / tehsil dd_id), so
+  // unitRecord() resolves them through the same shims as everything else.
+  // Values live under the indicator key itself (no prefix), except night-lights
+  // radiance, which is a per-year object read at the slider year.
+  mpi: {
+    label: 'Multidimensional Poverty — PSLM 2019-20',
+    dataset: 'PSLM 2019-20 · Alkire–Foster',
+    pov: 'districts', geo: 'district', noYear: true, hasYears: false,
+    blurb: 'Adjusted headcount M₀ = H × A, computed from PSLM 2019-20 household microdata across two dimensions (education, living standards). Higher = poorer. 119 of 141 districts; the rest were not sampled.',
+    indicators: {
+      mpi:            'MPI (M₀ = H × A)',
+      H:              'Poverty Headcount H (%)',
+      A:              'Deprivation Intensity A (%)',
+      c_schooling:    'Deprived — Years of Schooling (%)',
+      c_attendance:   'Deprived — Child Attendance (%)',
+      c_electricity:  'Deprived — Electricity (%)',
+      c_cooking_fuel: 'Deprived — Cooking Fuel (%)',
+      c_sanitation:   'Deprived — Sanitation (%)',
+      c_water:        'Deprived — Drinking Water (%)',
+      c_housing:      'Deprived — Housing (%)',
+    },
+    dp: { mpi: 3 },
+    classed: true,
+    yearLabel: '2019-20',
+  },
+  rwi: {
+    label: 'Relative Wealth — Meta RWI',
+    dataset: 'Meta Relative Wealth Index · ~2.4 km grid',
+    pov: 'tehsils', geo: 'tehsil', noYear: true, hasYears: false,
+    blurb: 'Machine-learning wealth estimate built from satellite imagery, connectivity and night-lights, aggregated to tehsils and weighted by population. Higher = wealthier. Night-lights are one of its inputs, so the two layers are not independent.',
+    indicators: {
+      rwi:     'Relative Wealth Index',
+      rwi_pct: 'Relative Wealth (percentile)',
+    },
+    dp: { rwi: 2, rwi_pct: 0 },
+    diverging: ['rwi'],
+  },
+  satPop: {
+    label: 'Population — WorldPop 2020',
+    dataset: 'WorldPop 2020 (UN-adjusted) · 1 km',
+    pov: 'tehsils', geo: 'tehsil', noYear: true, hasYears: false,
+    blurb: 'Modelled population, zonal-summed to tehsils. Totals 220.7 million, matching the UN 2020 estimate for Pakistan.',
+    indicators: {
+      popdens: 'Population Density (per km²)',
+      pop:     'Population',
+    },
+    dp: { popdens: 0, pop: 0 },
+    classed: true,
+    yearLabel: '2020',
+  },
+  nightlights: {
+    label: 'Night-time Lights — VIIRS 2020–2026',
+    dataset: 'VIIRS DNB · June composites 2020–2026',
+    pov: 'tehsils', geo: 'tehsil', noYear: true, hasYears: false, povYears: true,
+    blurb: 'Satellite radiance as a proxy for economic activity and electrification. Background haze below 1 nW and persistent gas flares are filtered out; tehsils below one person per km² are withheld.',
+    indicators: {
+      density: 'Lights per km² (radiance)',
+      growth:  'Growth in Lights 2020→2026 (%)',
+    },
+    dp: { density: 2 },
+    classed: true,
+    diverging: ['growth'],
+    yearLabel: '2020→2026',
+  },
+
   mouza_electricity_energy: {
     label: "Electricity & energy",
     dataset: 'Mouza Census 2020',
@@ -683,6 +755,13 @@ const COLOR_RAMPS = {
   // Household Welfare
   pslmFies:         ['#fef6dc', '#8a6d0f'],
   hies:             ['#fef6dc', '#b8941a'],
+  // Poverty & Wealth — the ramps the former poverty page used, so a reader who
+  // knew that page finds the same colours here. Diverging indicators ignore
+  // these and use the shared red–cream–green scale.
+  mpi:              ['#fdf3e3', '#a8471c', '#6b1503'],
+  rwi:              ['#f4efe2', '#1a5632'],
+  satPop:           ['#eef2f7', '#3d6f9e', '#10243d'],
+  nightlights:      ['#fffbe6', '#d4a017', '#4a2c00'],
   // Housing & Infrastructure
   hiesHousing:      ['#fbe9e7', '#bf360c'],
   pslmWash:         ['#e0f2f1', '#004d40'],
@@ -783,19 +862,52 @@ const GEOGRAPHIES = {
     geo:  () => window.DD_GEO_T,
     rows: () => window.DD_POV_MOUZA || {},
     key:  p => p.dd_id || '',
-    name: p => ((window.DD_POV_MOUZA || {})[p.dd_id] || {}).name || '',
+    // Either tehsil payload carries the name; whichever has loaded answers.
+    name: p => (((window.DD_POV_MOUZA || {})[p.dd_id] || {}).name)
+            || ((((window.DD_POV || {}).tehsils || {})[p.dd_id] || {}).name) || '',
     prov: p => p.prov || '',
-    // 1 MB between them, and most visits never leave the district geography,
-    // so these load the first time a tehsil group is chosen and not before.
-    assets: ['data/tehsils_geo.js', 'data/mouza_data.js'],
+    // 600 KB, and most visits never leave the district geography, so this
+    // loads the first time a tehsil group is chosen and not before. The rows
+    // for a tehsil group come with the group (groupAssets), not the geography.
+    assets: ['data/tehsils_geo.js'],
   },
 };
+
+// Payloads a group needs beyond its geography. The Mouza Census and the
+// poverty layers are each about 0.5\u20130.9 MB, so neither loads until asked for.
+function groupAssets(group) {
+  const g = INDICATOR_GROUPS[group || currentGroup] || {};
+  if (g.pov) return ['data/poverty_data.js'];
+  if (g.flatKeys) return ['data/mouza_data.js'];
+  return [];
+}
+
+// The seven Karachi districts post-date the PSLM 2019-20 sample frame, so the
+// MPI has one city-wide record under 'karachi'. Show it on each, flagged.
+const KARACHI_DISTRICTS = new Set(['karachi central', 'karachi east', 'karachi south', 'karachi west', 'keamari', 'korangi', 'malir']);
+function povRows(group) {
+  const g = INDICATOR_GROUPS[group || currentGroup] || {};
+  return ((window.DD_POV || {})[g.pov]) || {};
+}
+function povRecord(p) {
+  const rows = povRows();
+  const key = G().key(p || {});
+  if (rows[key]) return rows[key];
+  if (geoKind() === 'district' && KARACHI_DISTRICTS.has(key)) return rows['karachi'];
+  return undefined;
+}
+function povIsCitywide(p) {
+  return geoKind() === 'district' && KARACHI_DISTRICTS.has(G().key(p || {})) && !povRows()[G().key(p || {})];
+}
 
 function geoKind(group) { return (INDICATOR_GROUPS[group || currentGroup] || {}).geo || 'district'; }
 function G() { return GEOGRAPHIES[geoKind()]; }
 function unitName(p) { return G().name(p || {}); }
 function unitProv(p) { return G().prov(p || {}); }
-function unitRecord(p) { return G().rows()[G().key(p || {})]; }
+function unitRecord(p) {
+  if ((INDICATOR_GROUPS[currentGroup] || {}).pov) return povRecord(p);
+  return G().rows()[G().key(p || {})];
+}
 
 const _assetsLoaded = new Set();
 function loadScriptOnce(src) {
@@ -811,6 +923,9 @@ function loadScriptOnce(src) {
 async function ensureGeography(kind) {
   for (const a of GEOGRAPHIES[kind].assets) await loadScriptOnce(a);
 }
+async function ensureGroupAssets() {
+  for (const a of groupAssets()) await loadScriptOnce(a);
+}
 
 // ── State ───────────────────────────────────────────────────────────────────
 
@@ -820,6 +935,8 @@ let currentTopic = 'demographics';
 let currentGroup = 'demographics';
 let currentIndicator = 'pop_total';
 let currentYear = '2023';
+// Night-lights year (June composites 2020–2026), separate from the census pair.
+let currentPovYear = '2026';
 let selectedDistrict = null;
 let isZoomedIn = false;
 let originalBounds = null;
@@ -864,6 +981,10 @@ const districtNameEl  = document.getElementById('districtName');
 const districtProvEl  = document.getElementById('districtProvince');
 const diagEl          = document.getElementById('diagnostics');
 const yearBtns        = document.querySelectorAll('.year-toggle button');
+const yearPanel       = document.getElementById('yearPanel');
+const povYearPanel    = document.getElementById('povYearPanel');
+const povYearSlider   = document.getElementById('povYearSlider');
+const povYearLabel    = document.getElementById('povYearLabel');
 const zoomBar         = document.getElementById('zoomBar');
 const zoomOutBtn      = document.getElementById('zoomOutBtn');
 const zoomDistName    = document.getElementById('zoomDistrictName');
@@ -875,15 +996,24 @@ function normName(s) {
   return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function fmt(v, pct) {
+function fmt(v, pct, dp) {
   if (v === null || v === undefined || (typeof v === 'number' && isNaN(v))) return '\u2014';
   const n = Number(v);
   if (isNaN(n)) return '\u2014';
   if (pct) return n.toFixed(1) + '%';
+  // An explicit decimal count wins: an MPI of 0.259 is not 0.3, and a
+  // population of 218,920 is not 218.9k.
+  if (dp !== undefined) return dp === 0 ? Math.round(n).toLocaleString('en-US') : n.toFixed(dp);
   if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
   if (Math.abs(n) >= 1e3) return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
   return n.toFixed(1);
 }
+// Decimal places a group declares for an indicator, if any.
+function indDp(indicator, group) {
+  const g = INDICATOR_GROUPS[group || currentGroup] || {};
+  return g.dp ? g.dp[indicator] : undefined;
+}
+function fmtInd(v, indicator) { return fmt(v, isPct(indicator), indDp(indicator)); }
 
 function isPct(indicator) {
   const label = INDICATOR_GROUPS[currentGroup]?.indicators?.[indicator] || '';
@@ -940,7 +1070,26 @@ function _surveyMetaPrefixes() {
   return [];
 }
 
+// Poverty-layer withholding. The MPI drops districts with fewer than 30
+// sampled households; night-lights drop tehsils below one person per km²,
+// where June snow or sand albedo, not activity, drives the radiance.
+function povWithheld(props) {
+  const g = INDICATOR_GROUPS[currentGroup] || {};
+  if (!g.pov) return false;
+  const row = unitRecord(props);
+  if (!row) return false;
+  if (currentGroup === 'mpi') return row.low_n === 1;
+  if (currentGroup === 'nightlights') return row.nl_lowc === 1;
+  return false;
+}
+function povWithheldNote() {
+  if (currentGroup === 'mpi') return 'Small sample (n&lt;30) — suppressed';
+  if (currentGroup === 'nightlights') return 'Uninhabited terrain — snow/sand albedo, not activity';
+  return '';
+}
+
 function isLowN(props) {
+  if ((INDICATOR_GROUPS[currentGroup] || {}).pov) return povWithheld(props);
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return false;
   const row = unitRecord(props);
@@ -950,6 +1099,10 @@ function isLowN(props) {
 }
 
 function getNObs(props) {
+  if ((INDICATOR_GROUPS[currentGroup] || {}).pov) {
+    const row = unitRecord(props);
+    return currentGroup === 'mpi' && row && row.n_obs != null ? row.n_obs : null;
+  }
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return null;
   const row = unitRecord(props);
@@ -964,6 +1117,11 @@ function getNObs(props) {
  * was NOT sampled (no n_obs key at all — distinct from low_n suppression).
  */
 function isNotSurveyed(props) {
+  if ((INDICATOR_GROUPS[currentGroup] || {}).pov) {
+    if (currentGroup !== 'mpi') return false;
+    const row = unitRecord(props);
+    return !row || row.mpi === undefined;
+  }
   const mps = _surveyMetaPrefixes();
   if (!mps.length) return false;  // census group, always covered
   const row = unitRecord(props);
@@ -1108,8 +1266,24 @@ function populateProvinceSelect() {
   });
 }
 
+// Night-lights are the one layer with a run of years rather than a census
+// pair, so they get a slider in place of the 2017/2023/Change buttons.
+function syncPovYearUI() {
+  const g = INDICATOR_GROUPS[currentGroup] || {};
+  const years = ((window.DD_POV || {}).meta || {}).years || [];
+  const show = !!g.povYears && currentIndicator === 'density' && years.length > 0;
+  if (povYearPanel) povYearPanel.style.display = show ? '' : 'none';
+  if (yearPanel) yearPanel.style.display = show ? 'none' : '';
+  if (!show || !povYearSlider) return;
+  if (!years.includes(+currentPovYear)) currentPovYear = String(years[years.length - 1]);
+  povYearSlider.min = 0; povYearSlider.max = years.length - 1;
+  povYearSlider.value = years.indexOf(+currentPovYear);
+  povYearLabel.textContent = 'June ' + currentPovYear;
+}
+
 function updateYearButtons() {
   const g = INDICATOR_GROUPS[currentGroup];
+  syncPovYearUI();
   if (g.noYear) {
     yearBtns.forEach(btn => { btn.disabled = true; btn.classList.remove('active'); });
     currentYear = '2017';
@@ -1130,10 +1304,29 @@ function updateYearButtons() {
 
 // ── GeoJSON layer ───────────────────────────────────────────────────────────
 
+// Poverty-layer value for one row: flat keys, except night-lights radiance,
+// which is a per-year object read at the slider year.
+function povValue(row, indicator, year) {
+  if (!row) return null;
+  let v;
+  if (currentGroup === 'nightlights' && indicator === 'density') {
+    v = row.nl ? row.nl[String(year || currentPovYear)] : undefined;
+  } else if (currentGroup === 'nightlights' && indicator === 'growth') {
+    v = row.nl_growth;
+  } else {
+    v = row[indicator];
+  }
+  return (v === null || v === undefined) ? null : Number(v);
+}
+
 function getVal(props) {
   const row = unitRecord(props);
   if (!row) return null;
   const g = INDICATOR_GROUPS[currentGroup];
+  if (g && g.pov) {
+    if (povWithheld(props)) return null;
+    return povValue(row, currentIndicator);
+  }
   // Flat payloads (the Mouza Census) key straight off the indicator, and carry
   // their own coverage flag: a polygon outside the frame is missing, not zero.
   if (g && g.flatKeys) {
@@ -1157,10 +1350,10 @@ function getTooltipContent(props) {
   const indicatorLabel = g.indicators[currentIndicator] || '';
 
   let valStr;
-  if (currentYear === 'diff') {
+  if (currentYear === 'diff' && !g.pov) {
     valStr = fmtDiff(v, pct);
   } else {
-    valStr = fmt(v, pct);
+    valStr = fmt(v, pct, indDp(currentIndicator));
   }
 
   let lowNNote = '';
@@ -1171,12 +1364,17 @@ function getTooltipContent(props) {
     valStr = '—';
   } else if (isLowN(props)) {
     const nObs = getNObs(props);
-    lowNNote = `<span class="tooltip-lown">⚠ Small sample (n=${nObs ?? '?'})</span>`;
+    lowNNote = (g.pov && currentGroup !== 'mpi')
+      ? `<span class="tooltip-lown">⚠ ${povWithheldNote()}</span>`
+      : `<span class="tooltip-lown">⚠ Small sample (n=${nObs ?? '?'})</span>`;
     valStr = '—';
   } else {
     const nObs = getNObs(props);
     if (nObs !== null) {
       lowNNote = `<span class="tooltip-nobs">n=${nObs}</span>`;
+    }
+    if (g.pov && povIsCitywide(props)) {
+      lowNNote += `<span class="tooltip-lown">Karachi city-wide figure</span>`;
     }
   }
 
@@ -1285,6 +1483,7 @@ async function buildLayer() {
 // no longer on the map.
 async function syncGeography() {
   const kind = geoKind();
+  await ensureGroupAssets();
   if (districtLayer && unitLayers[kind] === districtLayer) return false;
   selectedDistrict = null;
   isZoomedIn = false;
@@ -1311,7 +1510,14 @@ function syncUnitCopy() {
 
 // ── Colorize ────────────────────────────────────────────────────────────────
 
+// Which quantile class a value falls in (0 … breaks.length-2)
+function classOf(v, breaks) {
+  for (let i = 1; i < breaks.length; i++) if (v <= breaks[i]) return i - 1;
+  return breaks.length - 2;
+}
+
 function colorize() {
+  syncPovYearUI();
   const provFilter = provinceSelect.value;
   const values = [];
 
@@ -1347,7 +1553,9 @@ function colorize() {
     return;
   }
 
-  const isDiff = currentYear === 'diff';
+  const g0 = INDICATOR_GROUPS[currentGroup] || {};
+  const isDiff = currentYear === 'diff' && !g0.pov;
+  const isDiverging = Array.isArray(g0.diverging) && g0.diverging.includes(currentIndicator);
   let scale, breaks;
   const ramp = COLOR_RAMPS[currentGroup] || ['#e6f4ec', '#145228'];
 
@@ -1362,6 +1570,23 @@ function colorize() {
     const hi = inverted ? worse  : better;  // color for positive values
     scale = chroma.scale([lo, '#fafafa', hi]).domain([-absMax, 0, absMax]);
     breaks = [-absMax, -absMax / 2, 0, absMax / 2, absMax];
+  } else if (isDiverging) {
+    // Signed levels (relative wealth, growth in lights): red below zero, green
+    // above. The domain clips to the 95th percentile of |value| because a
+    // handful of tehsils grew by >10,000% from a near-dark 2020 baseline, and
+    // the raw maximum would flatten the entire map to the midpoint.
+    const abs = values.map(Math.abs).sort((a, b) => a - b);
+    const absMax = abs[Math.floor(abs.length * 0.95)] || abs[abs.length - 1] || 1;
+    scale = chroma.scale(['#a8331a', '#f4efe2', '#1a5632']).domain([-absMax, 0, absMax]);
+    breaks = [-absMax, -absMax / 2, 0, absMax / 2, absMax];
+  } else if (g0.classed) {
+    // Classed quantiles rather than a linear ramp: lights and population
+    // density are heavily right-skewed (Karachi is ~250x the median tehsil),
+    // and a linear domain from min to max washes almost every unit out to the
+    // lightest colour. Equal-count classes keep the map readable.
+    breaks = chroma.limits(values, 'q', 5);
+    const classColors = chroma.scale(ramp).colors(breaks.length - 1);
+    scale = v => chroma(classColors[classOf(v, breaks)]);
   } else {
     breaks = chroma.limits(values, 'q', 5);
     scale = chroma.scale(ramp).domain([breaks[0], breaks[breaks.length - 1]]);
@@ -1429,23 +1654,30 @@ function colorize() {
 function renderLegend(breaks, scale, isDiff) {
   const g = INDICATOR_GROUPS[currentGroup];
   const pct = isPct(currentIndicator);
-  const yearLabel = currentYear === 'diff' ? 'Change 2017\u21922023' : currentYear;
+  const dp = indDp(currentIndicator);
+  let yearLabel = currentYear === 'diff' ? 'Change 2017→2023' : currentYear;
+  if (g.pov) yearLabel = (g.povYears && currentIndicator === 'density') ? 'June ' + currentPovYear : '';
+  const symmetric = isDiff || (Array.isArray(g.diverging) && g.diverging.includes(currentIndicator));
 
   let html = `<div class="legend-title">${g.indicators[currentIndicator]}<span>${yearLabel}</span></div>`;
   html += '<div class="legend-scale">';
-  const n = isDiff ? 5 : Math.min(breaks.length - 1, 5);
+  const n = symmetric ? 5 : Math.min(breaks.length - 1, 5);
   for (let i = 0; i < n; i++) {
-    const mid = isDiff
+    const mid = symmetric
       ? breaks[0] + (breaks[breaks.length - 1] - breaks[0]) * (i + 0.5) / n
       : (breaks[i] + (breaks[i + 1] || breaks[i])) / 2;
     html += `<span style="background:${scale(mid).hex()}"></span>`;
   }
   html += '</div>';
-  html += `<div class="legend-labels"><span>${fmt(breaks[0], pct)}</span><span>${fmt(breaks[breaks.length - 1], pct)}</span></div>`;
+  html += `<div class="legend-labels"><span>${fmt(breaks[0], pct, dp)}</span><span>${fmt(breaks[breaks.length - 1], pct, dp)}</span></div>`;
   // Add legend entries for survey groups
   if (_surveyMetaPrefixes().length) {
     html += '<div class="legend-lown"><span class="legend-lown-swatch"></span> Small sample (n&lt;30) — suppressed</div>';
     html += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> Not sampled in this survey</div>';
+  }
+  if (g.pov) {
+    if (povWithheldNote()) html += `<div class="legend-lown"><span class="legend-lown-swatch"></span> ${povWithheldNote()}</div>`;
+    if (currentGroup === 'mpi') html += '<div class="legend-lown"><span class="legend-nosurv-swatch"></span> Not sampled by PSLM 2019-20</div>';
   }
   legendDiv.innerHTML = html;
 }
@@ -1465,6 +1697,7 @@ function showDistrictDetail(props) {
   // Flat payloads have none of the survey furniture below — no sample frame,
   // no borrowed geography, no 2017/2023 pair, no census quick-stats.
   if (g.flatKeys) { renderFlatDetail(g, row); return; }
+  if (g.pov) { renderPovDetail(g, props, row); return; }
   let html = '';
 
   // Check if district was not surveyed for this group
@@ -1565,6 +1798,43 @@ function renderFlatDetail(g, row) {
   document.getElementById('sidebar').classList.add('has-district');
 }
 
+// Poverty layers: the group's indicators for this unit, then what the row is
+// made of — sample size and rank for the MPI, the run of Junes for lights.
+function renderPovDetail(g, props, row) {
+  let html = '';
+  const withheld = povWithheld(props);
+  const missing = currentGroup === 'mpi' && (!row || row.mpi === undefined);
+  if (missing) {
+    html += '<div class="stat stat-notice">Not sampled by PSLM 2019-20, so no MPI can be computed for this district.</div>';
+  } else if (povIsCitywide(props)) {
+    html += '<div class="stat stat-notice">Karachi city-wide. The PSLM 2019-20 sample frame predates Karachi’s split into seven districts, so the same figure covers all seven. The sample size shown is the city’s.</div>';
+  }
+  for (const [ind, label] of Object.entries(g.indicators)) {
+    const v = (withheld || missing) ? null : povValue(row, ind);
+    const on = ind === currentIndicator ? ' stat-active' : '';
+    html += `<div class="stat${on}"><span>${label}</span><strong>${fmt(v, isPctLabel(label), indDp(ind))}</strong></div>`;
+  }
+  if (currentGroup === 'mpi' && row && row.rank && !withheld) {
+    html += `<p class="stat-note">Rank ${row.rank} of ${((window.DD_POV || {}).meta || {}).n_districts_mpi || 119} districts by MPI (1 = poorest). Sample: ${Number(row.n_obs || 0).toLocaleString('en-US')} households.</p>`;
+  }
+  if (currentGroup === 'nightlights' && row && row.nl && Object.keys(row.nl).length && !withheld) {
+    const ys = ((window.DD_POV || {}).meta || {}).years || Object.keys(row.nl).map(Number);
+    const vs = ys.map(y => row.nl[String(y)] || 0), mx = Math.max(...vs, 0.0001);
+    html += '<p class="stat-note">Lights per km², June of each year:</p><div class="spark">';
+    ys.forEach((y, i) => {
+      html += `<div class="spark-bar" title="${y}: ${vs[i].toFixed(2)}"><div style="height:${Math.max(2, vs[i] / mx * 46)}px"></div><span>${String(y).slice(2)}</span></div>`;
+    });
+    html += '</div>';
+  }
+  if (withheld) html += `<p class="stat-note">${povWithheldNote().replace('&lt;', '<')} — values withheld for this ${G().unit}.</p>`;
+  if (geoKind() === 'tehsil' && row && row.dk) {
+    html += `<p class="stat-note">${row.dk.replace(/\b\w/g, c => c.toUpperCase())} district</p>`;
+  }
+  html += `<p class="stat-note">${g.blurb || ''}</p>`;
+  statsDiv.innerHTML = html;
+  document.getElementById('sidebar').classList.add('has-district');
+}
+
 function quickStat(row, prefix, ind, label, pct = false) {
   const v = row[`${prefix}_2023_${ind}`] ?? row[`${prefix}_2017_${ind}`];
   return `<div class="stat stat-quick"><span>${label}</span><strong>${fmt(v, pct)}</strong></div>`;
@@ -1595,6 +1865,22 @@ function prepareDownload() {
     if (!matchesProvince(provFilter, prov)) return;
     const row = unitRecord(p) || {};
     const entry = { [G().unit]: dist, province: prov };
+    if (g.pov) {
+      if (geoKind() === 'tehsil') entry.district = row.dk || '';
+      const withheld = povWithheld(p);
+      for (const ind of Object.keys(g.indicators)) {
+        if (currentGroup === 'nightlights' && ind === 'density') {
+          const ys = ((window.DD_POV || {}).meta || {}).years || [];
+          for (const y of ys) entry[`density_${y}`] = withheld ? '' : (povValue(row, ind, y) ?? '');
+        } else {
+          entry[ind] = withheld ? '' : (povValue(row, ind) ?? '');
+        }
+      }
+      if (currentGroup === 'mpi') { entry.n_obs = row.n_obs ?? ''; entry.withheld_small_sample = withheld ? 1 : 0; }
+      if (currentGroup === 'nightlights') entry.withheld_uninhabited = withheld ? 1 : 0;
+      rows.push(entry);
+      return;
+    }
     for (const ind of Object.keys(g.indicators)) {
       if (g.noYear) {
         entry[ind] = row[`${g.prefix}_${ind}`] ?? '';
@@ -1611,7 +1897,7 @@ function prepareDownload() {
   const csv = [header.join(',')].concat(rows.map(r => header.map(h => r[h]).join(','))).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   downloadBtn.href = URL.createObjectURL(blob);
-  downloadBtn.download = `data_darbar_${currentGroup}_${currentYear}.csv`;
+  downloadBtn.download = g.pov ? `data_darbar_${currentGroup}.csv` : `data_darbar_${currentGroup}_${currentYear}.csv`;
 }
 
 // ── Search ──────────────────────────────────────────────────────────────────
@@ -1652,6 +1938,12 @@ function wireEvents() {
     colorize();
   });
   provinceSelect.addEventListener('change', colorize);
+  if (povYearSlider) povYearSlider.addEventListener('input', () => {
+    const years = ((window.DD_POV || {}).meta || {}).years || [];
+    currentPovYear = String(years[+povYearSlider.value] ?? currentPovYear);
+    povYearLabel.textContent = 'June ' + currentPovYear;
+    colorize();
+  });
   yearBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.disabled) return;
@@ -1744,13 +2036,16 @@ function updateSummaryBar() {
     if (values.length) {
       const pct = isPct(currentIndicator);
       const indLabel = g.indicators[currentIndicator] || '';
+      // Poverty layers are all levels or indices except the population count.
       const isAvgType = /\b(avg|average|mean|median|score|per\b)/i.test(indLabel) ||
-                        /\b(avg|mean|median)/.test(currentIndicator);
+                        /\b(avg|mean|median)/.test(currentIndicator) ||
+                        (g.pov && currentIndicator !== 'pop');
       if (pct || isAvgType) {
         const avg = values.reduce((a, b) => a + b, 0) / values.length;
+        const dp = indDp(currentIndicator);
         summIndValue.textContent = pct
           ? avg.toFixed(1) + '%'
-          : avg.toLocaleString('en-US', { maximumFractionDigits: 1 });
+          : (dp !== undefined ? fmt(avg, false, dp) : avg.toLocaleString('en-US', { maximumFractionDigits: 1 }));
       } else {
         const sum = values.reduce((a, b) => a + b, 0);
         summIndValue.textContent = sum >= 1e6
@@ -1763,7 +2058,10 @@ function updateSummaryBar() {
   }
   if (summYear) {
     const g2 = INDICATOR_GROUPS[currentGroup];
-    if (g2.noYear) {
+    if (g2.pov) {
+      summYear.textContent = (g2.povYears && currentIndicator === 'density') ? 'June ' + currentPovYear
+        : (g2.yearLabel || '—');
+    } else if (g2.noYear) {
       summYear.textContent = g2.label.match(/\d{4}/)?.[0] || '\u2014';
     } else if (currentYear === 'diff') {
       summYear.textContent = '\u0394 2017\u21922023';
@@ -1812,7 +2110,7 @@ function buildRankings() {
     let html = '';
     items.forEach((e, i) => {
       const rank = descending ? totalEntries - i : startRank + i;
-      const valStr = currentYear === 'diff' ? fmtDiff(e.v, pct) : fmt(e.v, pct);
+      const valStr = (currentYear === 'diff' && !g.pov) ? fmtDiff(e.v, pct) : fmt(e.v, pct, indDp(currentIndicator));
       html += `<div class="ranking-row" data-dist-key="${e.key}">` +
         `<span class="ranking-rank">${rank}</span>` +
         `<span class="ranking-name">${e.dist}</span>` +
@@ -1875,10 +2173,30 @@ function wireMobile() {
 
 // ── Init ────────────────────────────────────────────────────────────────────
 
+// ?topic=poverty&group=mpi&indicator=H opens the map on that view. The old
+// Poverty & Wealth page redirects here with ?topic=poverty, and Adaad links
+// to specific layers the same way. Unknown values fall back to the defaults.
+function applyUrlState() {
+  const q = new URLSearchParams(location.search);
+  const topic = q.get('topic'), group = q.get('group'), ind = q.get('indicator');
+  if (topic && TOPICS[topic]) {
+    currentTopic = topic;
+    currentGroup = TOPICS[topic].groups[0];
+    currentIndicator = Object.keys(INDICATOR_GROUPS[currentGroup].indicators)[0];
+  }
+  if (group && INDICATOR_GROUPS[group]) {
+    const t = Object.keys(TOPICS).find(k => TOPICS[k].groups.includes(group));
+    if (t) { currentTopic = t; currentGroup = group; currentIndicator = Object.keys(INDICATOR_GROUPS[group].indicators)[0]; }
+  }
+  if (ind && INDICATOR_GROUPS[currentGroup].indicators[ind]) currentIndicator = ind;
+}
+
 async function init() {
   wireMobile();
   initMap();
   await loadData();
+  applyUrlState();
+  await ensureGroupAssets();
   await buildLayer();
   syncUnitCopy();
   populateTopicSelect();
