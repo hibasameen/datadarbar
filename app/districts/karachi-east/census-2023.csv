@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Karachi East,Sindh,2023,Population,3921742.0,people,t1_2023_pop_total
+Karachi East,Sindh,2023,Male population,2084719.0,people,t1_2023_pop_male
+Karachi East,Sindh,2023,Female population,1836597.0,people,t1_2023_pop_female
+Karachi East,Sindh,2023,Transgender population,426.0,people,t1_2023_pop_transgender
+Karachi East,Sindh,2023,Area,139.0,km²,t1_2023_area_sq_km
+Karachi East,Sindh,2023,Population density,28213.97,people per km²,t1_2023_density_per_sq_km
+Karachi East,Sindh,2023,Urban population share,100.0,%,t1_2023_urban_proportion
+Karachi East,Sindh,2023,Average household size,5.9,people per household,t1_2023_avg_household_size
+Karachi East,Sindh,2023,"Literacy, ages 10+",80.07,%,t12_2023_literacy_ratio_all
+Karachi East,Sindh,2023,"Male literacy, ages 10+",81.31,%,t12_2023_literacy_ratio_male
+Karachi East,Sindh,2023,"Female literacy, ages 10+",78.65,%,t12_2023_literacy_ratio_female
+Karachi East,Sindh,2023,"Out-of-school children, ages 5–16",286039.0,children,t12_2023_out_of_school_5_16

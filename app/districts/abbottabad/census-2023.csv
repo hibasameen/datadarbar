@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Abbottabad,Khyber Pakhtunkhwa,2023,Population,1419072.0,people,t1_2023_pop_total
+Abbottabad,Khyber Pakhtunkhwa,2023,Male population,712218.0,people,t1_2023_pop_male
+Abbottabad,Khyber Pakhtunkhwa,2023,Female population,706750.0,people,t1_2023_pop_female
+Abbottabad,Khyber Pakhtunkhwa,2023,Transgender population,104.0,people,t1_2023_pop_transgender
+Abbottabad,Khyber Pakhtunkhwa,2023,Area,1967.0,km²,t1_2023_area_sq_km
+Abbottabad,Khyber Pakhtunkhwa,2023,Population density,721.44,people per km²,t1_2023_density_per_sq_km
+Abbottabad,Khyber Pakhtunkhwa,2023,Urban population share,23.42,%,t1_2023_urban_proportion
+Abbottabad,Khyber Pakhtunkhwa,2023,Average household size,5.9,people per household,t1_2023_avg_household_size
+Abbottabad,Khyber Pakhtunkhwa,2023,"Literacy, ages 10+",77.34,%,t12_2023_literacy_ratio_all
+Abbottabad,Khyber Pakhtunkhwa,2023,"Male literacy, ages 10+",86.2,%,t12_2023_literacy_ratio_male
+Abbottabad,Khyber Pakhtunkhwa,2023,"Female literacy, ages 10+",68.42,%,t12_2023_literacy_ratio_female
+Abbottabad,Khyber Pakhtunkhwa,2023,"Out-of-school children, ages 5–16",45412.0,children,t12_2023_out_of_school_5_16

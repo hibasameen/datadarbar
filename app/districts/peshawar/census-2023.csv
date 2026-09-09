@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Peshawar,Khyber Pakhtunkhwa,2023,Population,4758762.0,people,t1_2023_pop_total
+Peshawar,Khyber Pakhtunkhwa,2023,Male population,2425808.0,people,t1_2023_pop_male
+Peshawar,Khyber Pakhtunkhwa,2023,Female population,2332767.0,people,t1_2023_pop_female
+Peshawar,Khyber Pakhtunkhwa,2023,Transgender population,187.0,people,t1_2023_pop_transgender
+Peshawar,Khyber Pakhtunkhwa,2023,Area,1518.0,km²,t1_2023_area_sq_km
+Peshawar,Khyber Pakhtunkhwa,2023,Population density,3134.89,people per km²,t1_2023_density_per_sq_km
+Peshawar,Khyber Pakhtunkhwa,2023,Urban population share,39.99,%,t1_2023_urban_proportion
+Peshawar,Khyber Pakhtunkhwa,2023,Average household size,6.8,people per household,t1_2023_avg_household_size
+Peshawar,Khyber Pakhtunkhwa,2023,"Literacy, ages 10+",53.28,%,t12_2023_literacy_ratio_all
+Peshawar,Khyber Pakhtunkhwa,2023,"Male literacy, ages 10+",64.91,%,t12_2023_literacy_ratio_male
+Peshawar,Khyber Pakhtunkhwa,2023,"Female literacy, ages 10+",41.09,%,t12_2023_literacy_ratio_female
+Peshawar,Khyber Pakhtunkhwa,2023,"Out-of-school children, ages 5–16",519928.0,children,t12_2023_out_of_school_5_16

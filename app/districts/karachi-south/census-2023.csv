@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Karachi South,Sindh,2023,Population,2329764.0,people,t1_2023_pop_total
+Karachi South,Sindh,2023,Male population,1240860.0,people,t1_2023_pop_male
+Karachi South,Sindh,2023,Female population,1088520.0,people,t1_2023_pop_female
+Karachi South,Sindh,2023,Transgender population,384.0,people,t1_2023_pop_transgender
+Karachi South,Sindh,2023,Area,122.0,km²,t1_2023_area_sq_km
+Karachi South,Sindh,2023,Population density,19096.43,people per km²,t1_2023_density_per_sq_km
+Karachi South,Sindh,2023,Urban population share,100.0,%,t1_2023_urban_proportion
+Karachi South,Sindh,2023,Average household size,5.4,people per household,t1_2023_avg_household_size
+Karachi South,Sindh,2023,"Literacy, ages 10+",78.57,%,t12_2023_literacy_ratio_all
+Karachi South,Sindh,2023,"Male literacy, ages 10+",80.76,%,t12_2023_literacy_ratio_male
+Karachi South,Sindh,2023,"Female literacy, ages 10+",76.05,%,t12_2023_literacy_ratio_female
+Karachi South,Sindh,2023,"Out-of-school children, ages 5–16",155238.0,children,t12_2023_out_of_school_5_16

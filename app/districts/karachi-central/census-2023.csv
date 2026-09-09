@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Karachi Central,Sindh,2023,Population,3822325.0,people,t1_2023_pop_total
+Karachi Central,Sindh,2023,Male population,2019115.0,people,t1_2023_pop_male
+Karachi Central,Sindh,2023,Female population,1802647.0,people,t1_2023_pop_female
+Karachi Central,Sindh,2023,Transgender population,563.0,people,t1_2023_pop_transgender
+Karachi Central,Sindh,2023,Area,69.0,km²,t1_2023_area_sq_km
+Karachi Central,Sindh,2023,Population density,55396.01,people per km²,t1_2023_density_per_sq_km
+Karachi Central,Sindh,2023,Urban population share,100.0,%,t1_2023_urban_proportion
+Karachi Central,Sindh,2023,Average household size,5.8,people per household,t1_2023_avg_household_size
+Karachi Central,Sindh,2023,"Literacy, ages 10+",83.55,%,t12_2023_literacy_ratio_all
+Karachi Central,Sindh,2023,"Male literacy, ages 10+",83.82,%,t12_2023_literacy_ratio_male
+Karachi Central,Sindh,2023,"Female literacy, ages 10+",83.27,%,t12_2023_literacy_ratio_female
+Karachi Central,Sindh,2023,"Out-of-school children, ages 5–16",222825.0,children,t12_2023_out_of_school_5_16

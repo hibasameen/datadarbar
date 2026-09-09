@@ -1,0 +1,18 @@
+name: Search page checks
+on:
+  pull_request:
+  push:
+    branches: [main, 'seo/**']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build readable search pages
+        run: python3 scripts/build_seo.py
+      - name: Validate metadata and local links
+        run: python3 scripts/check_seo.py
+      - name: Check generated files are current
+        run: git diff --exit-code

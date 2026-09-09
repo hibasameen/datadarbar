@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://darbar.adaad.org/sitemap.xml

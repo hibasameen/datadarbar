@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Sukkur,Sindh,2023,Population,1639897.0,people,t1_2023_pop_total
+Sukkur,Sindh,2023,Male population,870094.0,people,t1_2023_pop_male
+Sukkur,Sindh,2023,Female population,769729.0,people,t1_2023_pop_female
+Sukkur,Sindh,2023,Transgender population,74.0,people,t1_2023_pop_transgender
+Sukkur,Sindh,2023,Area,5165.0,km²,t1_2023_area_sq_km
+Sukkur,Sindh,2023,Population density,317.5,people per km²,t1_2023_density_per_sq_km
+Sukkur,Sindh,2023,Urban population share,49.7,%,t1_2023_urban_proportion
+Sukkur,Sindh,2023,Average household size,6.1,people per household,t1_2023_avg_household_size
+Sukkur,Sindh,2023,"Literacy, ages 10+",58.26,%,t12_2023_literacy_ratio_all
+Sukkur,Sindh,2023,"Male literacy, ages 10+",68.1,%,t12_2023_literacy_ratio_male
+Sukkur,Sindh,2023,"Female literacy, ages 10+",47.2,%,t12_2023_literacy_ratio_female
+Sukkur,Sindh,2023,"Out-of-school children, ages 5–16",237270.0,children,t12_2023_out_of_school_5_16

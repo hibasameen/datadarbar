@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Lahore,Punjab,2023,Population,13004135.0,people,t1_2023_pop_total
+Lahore,Punjab,2023,Male population,6881801.0,people,t1_2023_pop_male
+Lahore,Punjab,2023,Female population,6118958.0,people,t1_2023_pop_female
+Lahore,Punjab,2023,Transgender population,3376.0,people,t1_2023_pop_transgender
+Lahore,Punjab,2023,Area,1772.0,km²,t1_2023_area_sq_km
+Lahore,Punjab,2023,Population density,7338.68,people per km²,t1_2023_density_per_sq_km
+Lahore,Punjab,2023,Urban population share,100.0,%,t1_2023_urban_proportion
+Lahore,Punjab,2023,Average household size,6.4,people per household,t1_2023_avg_household_size
+Lahore,Punjab,2023,"Literacy, ages 10+",79.62,%,t12_2023_literacy_ratio_all
+Lahore,Punjab,2023,"Male literacy, ages 10+",81.41,%,t12_2023_literacy_ratio_male
+Lahore,Punjab,2023,"Female literacy, ages 10+",77.59,%,t12_2023_literacy_ratio_female
+Lahore,Punjab,2023,"Out-of-school children, ages 5–16",718199.0,children,t12_2023_out_of_school_5_16

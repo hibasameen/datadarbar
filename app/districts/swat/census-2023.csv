@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Swat,Khyber Pakhtunkhwa,2023,Population,2687384.0,people,t1_2023_pop_total
+Swat,Khyber Pakhtunkhwa,2023,Male population,1375358.0,people,t1_2023_pop_male
+Swat,Khyber Pakhtunkhwa,2023,Female population,1311939.0,people,t1_2023_pop_female
+Swat,Khyber Pakhtunkhwa,2023,Transgender population,87.0,people,t1_2023_pop_transgender
+Swat,Khyber Pakhtunkhwa,2023,Area,5337.0,km²,t1_2023_area_sq_km
+Swat,Khyber Pakhtunkhwa,2023,Population density,503.54,people per km²,t1_2023_density_per_sq_km
+Swat,Khyber Pakhtunkhwa,2023,Urban population share,29.56,%,t1_2023_urban_proportion
+Swat,Khyber Pakhtunkhwa,2023,Average household size,7.0,people per household,t1_2023_avg_household_size
+Swat,Khyber Pakhtunkhwa,2023,"Literacy, ages 10+",48.13,%,t12_2023_literacy_ratio_all
+Swat,Khyber Pakhtunkhwa,2023,"Male literacy, ages 10+",61.83,%,t12_2023_literacy_ratio_male
+Swat,Khyber Pakhtunkhwa,2023,"Female literacy, ages 10+",33.95,%,t12_2023_literacy_ratio_female
+Swat,Khyber Pakhtunkhwa,2023,"Out-of-school children, ages 5–16",294320.0,children,t12_2023_out_of_school_5_16

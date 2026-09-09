@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Mardan,Khyber Pakhtunkhwa,2023,Population,2744898.0,people,t1_2023_pop_total
+Mardan,Khyber Pakhtunkhwa,2023,Male population,1408776.0,people,t1_2023_pop_male
+Mardan,Khyber Pakhtunkhwa,2023,Female population,1336069.0,people,t1_2023_pop_female
+Mardan,Khyber Pakhtunkhwa,2023,Transgender population,53.0,people,t1_2023_pop_transgender
+Mardan,Khyber Pakhtunkhwa,2023,Area,1632.0,km²,t1_2023_area_sq_km
+Mardan,Khyber Pakhtunkhwa,2023,Population density,1681.92,people per km²,t1_2023_density_per_sq_km
+Mardan,Khyber Pakhtunkhwa,2023,Urban population share,16.52,%,t1_2023_urban_proportion
+Mardan,Khyber Pakhtunkhwa,2023,Average household size,6.8,people per household,t1_2023_avg_household_size
+Mardan,Khyber Pakhtunkhwa,2023,"Literacy, ages 10+",55.79,%,t12_2023_literacy_ratio_all
+Mardan,Khyber Pakhtunkhwa,2023,"Male literacy, ages 10+",68.31,%,t12_2023_literacy_ratio_male
+Mardan,Khyber Pakhtunkhwa,2023,"Female literacy, ages 10+",42.66,%,t12_2023_literacy_ratio_female
+Mardan,Khyber Pakhtunkhwa,2023,"Out-of-school children, ages 5–16",230969.0,children,t12_2023_out_of_school_5_16

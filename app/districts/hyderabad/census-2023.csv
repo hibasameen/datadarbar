@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Hyderabad,Sindh,2023,Population,2432540.0,people,t1_2023_pop_total
+Hyderabad,Sindh,2023,Male population,1289279.0,people,t1_2023_pop_male
+Hyderabad,Sindh,2023,Female population,1143090.0,people,t1_2023_pop_female
+Hyderabad,Sindh,2023,Transgender population,171.0,people,t1_2023_pop_transgender
+Hyderabad,Sindh,2023,Area,993.0,km²,t1_2023_area_sq_km
+Hyderabad,Sindh,2023,Population density,2449.69,people per km²,t1_2023_density_per_sq_km
+Hyderabad,Sindh,2023,Urban population share,83.14,%,t1_2023_urban_proportion
+Hyderabad,Sindh,2023,Average household size,5.4,people per household,t1_2023_avg_household_size
+Hyderabad,Sindh,2023,"Literacy, ages 10+",67.21,%,t12_2023_literacy_ratio_all
+Hyderabad,Sindh,2023,"Male literacy, ages 10+",70.86,%,t12_2023_literacy_ratio_male
+Hyderabad,Sindh,2023,"Female literacy, ages 10+",63.08,%,t12_2023_literacy_ratio_female
+Hyderabad,Sindh,2023,"Out-of-school children, ages 5–16",211452.0,children,t12_2023_out_of_school_5_16

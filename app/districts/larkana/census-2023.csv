@@ -1,0 +1,13 @@
+district,province,year,indicator,value,unit,source_field
+Larkana,Sindh,2023,Population,1784453.0,people,t1_2023_pop_total
+Larkana,Sindh,2023,Male population,932604.0,people,t1_2023_pop_male
+Larkana,Sindh,2023,Female population,851732.0,people,t1_2023_pop_female
+Larkana,Sindh,2023,Transgender population,117.0,people,t1_2023_pop_transgender
+Larkana,Sindh,2023,Area,1948.0,km²,t1_2023_area_sq_km
+Larkana,Sindh,2023,Population density,916.04,people per km²,t1_2023_density_per_sq_km
+Larkana,Sindh,2023,Urban population share,44.73,%,t1_2023_urban_proportion
+Larkana,Sindh,2023,Average household size,5.5,people per household,t1_2023_avg_household_size
+Larkana,Sindh,2023,"Literacy, ages 10+",55.58,%,t12_2023_literacy_ratio_all
+Larkana,Sindh,2023,"Male literacy, ages 10+",65.34,%,t12_2023_literacy_ratio_male
+Larkana,Sindh,2023,"Female literacy, ages 10+",44.96,%,t12_2023_literacy_ratio_female
+Larkana,Sindh,2023,"Out-of-school children, ages 5–16",252953.0,children,t12_2023_out_of_school_5_16

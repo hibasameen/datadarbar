@@ -1,0 +1,314 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- SEO:START -->
+<title>Data Darbar methodology and sources — Data Darbar</title>
+<meta name="description" content="Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.">
+<link rel="canonical" href="https://darbar.adaad.org/methodology.html">
+<meta property="og:title" content="Data Darbar methodology and sources — Data Darbar">
+<meta property="og:description" content="Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.">
+<meta property="og:url" content="https://darbar.adaad.org/methodology.html">
+<meta name="twitter:title" content="Data Darbar methodology and sources — Data Darbar">
+<meta name="twitter:description" content="Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/methodology.html#page", "url": "https://darbar.adaad.org/methodology.html", "name": "Data Darbar methodology and sources — Data Darbar", "description": "Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<!-- SEO:END -->
+<link rel="icon" href="/assets/img/favicon-32.png"><link rel="stylesheet" href="/assets/css/research.css">
+</head><body><a class="skip" href="#main">Skip to content</a>
+<header><a class="brand" href="/">Data Darbar <small>by Adaad</small></a><nav aria-label="Main"><a href="/map.html">Map</a><a href="/districts/">Districts</a><a href="/datasets/">Datasets</a><a href="/about.html">About</a><a href="/methodology.html">Methods</a></nav></header>
+<main id="main"><p class="eyebrow">Pakistan · Data · Sources</p><h1>Data Darbar methodology and sources</h1><p class="intro">Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.</p><div class="method-content">
+    <p>Data Darbar is built from a reproducible pipeline: raw PBS and Finance Division publications
+      (PDF tables parsed programmatically, CSV releases and survey microdata) and State Bank series fetched
+      from its API are cleaned and normalised
+      into a <strong>DuckDB + Parquet</strong> warehouse, then exported as the compact data files the site
+      loads. The notes below cover each view in turn.</p>
+
+    <h2><span class="dd-tag" style="background:#e4f0e8;color:#1e6b3e">District &amp; Tehsil Map</span></h2>
+
+    <h3>District-name matching &amp; crosswalk</h3>
+    <p>A core challenge in Pakistani administrative data is inconsistent district naming — the same place
+      appears as "D.G. Khan", "Dera Ghazi Khan" or "DG Khan" across publications. Names are lowercased,
+      stripped of punctuation and mapped through a manually curated crosswalk of name variants to a single
+      canonical name that matches the GeoJSON boundary file (e.g. "Abbotabad" → "Abbottabad",
+      "Naushero Feroze" → "Naushahro Firoz").</p>
+
+    <h3>Multi-district aggregation</h3>
+    <p>Several districts are reported at sub-district level but appear as one polygon in the boundaries.
+      These are aggregated automatically: <strong>Kohistan</strong> (Upper + Lower) and
+      <strong>Chitral</strong> (Upper + Lower). Count indicators are summed; rate indicators (literacy,
+      unemployment) are recomputed from aggregated numerator and denominator counts rather than averaging
+      percentages, which would be incorrect.</p>
+    <h3>Karachi, and districts younger than the surveys</h3>
+    <p><strong>Karachi</strong> was previously aggregated into one polygon but is now shown as its seven
+      separate districts — Karachi Central, East, South, West, Korangi, Malir and Keamari. That creates a
+      mismatch with sources whose geography predates the split, and two rules handle it. Both publish the
+      geography that was actually measured and label it, rather than discarding real data or implying a
+      district estimate the source never made.</p>
+    <ul>
+      <li><strong>Karachi city-wide.</strong> The PDHS 2017-18 sampling frame predates the split, so the
+        survey carries a single Karachi category (1,016 women in the family-planning module). This is
+        carried across all seven districts flagged <code>karachi_citywide</code>. Without it, roughly 20
+        million people would have no health indicators at all — and until this build they did, because the
+        single "Karachi" row silently failed to match any of the seven keys.</li>
+      <li><strong>Keamari and Karachi West, 2017 vs 2023.</strong> Keamari did not exist at the 2017
+        census, and Karachi West's 2017 population of 3.91 million covers the area that is now both
+        districts. Differencing that against Karachi West's 2023 figure alone produced an apparent loss of
+        1.23 million people and 559&nbsp;km² — which was the largest population decline anywhere on the
+        site, and was purely the boundary moving. Census 2023 does measure the two separately and those
+        figures stand; only the 2017 row and the change are treated as belonging to the combined area, so
+        both districts now show <strong>+21.5%</strong> and carry a boundary-change note. The 2017 figure
+        is one number displayed on both, so the two 2017 columns must not be added together.</li>
+      <li><strong>Keamari inherits from Karachi West.</strong> Keamari was carved out of Karachi West in
+        2020 and appears in Census 2023 with 2.07 million people, but in none of the survey frames — PSLM
+        2019-20, both Labour Force Surveys and HIES 2024-25 all predate it or still count it as part of
+        Karachi West. It is the only district on the site with a census population and no survey data
+        whatsoever. Survey families it has nothing of its own for are filled from Karachi West and flagged
+        <code>&lt;source&gt;_inherited_from</code>. Its census figures are untouched, because the census
+        does count it separately.</li>
+    </ul>
+    <p>In both cases sample sizes travel unchanged and describe the parent geography — the city, or Karachi
+      West — which is what the flags are there to signal. The pipeline also checks every incoming row
+      against the boundary file and reports any that fail to match, so this class of silent loss surfaces
+      at build time rather than as an unexplained gap on the map.</p>
+
+    <h3>Choropleth &amp; change</h3>
+    <p>Values are mapped to fill colours using quantile breaks (5 classes) via
+      <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>, so each class
+      holds roughly the same number of districts — useful for skewed distributions. The "Change" view uses
+      a diverging scale centred at zero (red = decline, green = growth) and computes a simple difference
+      <code>2023 − 2017</code>, expressed in percentage points for rate indicators.</p>
+
+    <h3>Survey adjustments (LFS &amp; HIES)</h3>
+    <p>The Labour Force Survey and HIES are designed to be representative at the <em>provincial</em>, not
+      district, level. Two adjustments are applied: a minimum sample-size filter (districts with
+      <em>n</em> &lt; 30 observations are suppressed and flagged), and post-stratification of survey weights
+      to Census 2023 population totals (a sex-ratio reweighting for LFS microdata; a population calibration
+      factor for HIES households). These improve plausibility but do not remove the limits of provincial
+      surveys at fine geographies — district survey estimates should be read as approximate.</p>
+
+    <h3>Why HIES 2024-25 figures are labelled "rural only"</h3>
+    <p>This is the single most important caveat on the household panels, so it is worth stating plainly.
+      HIES 2024-25 <strong>does not record which district an urban household lives in</strong>. In PBS's
+      own words, "for urban domain, each administrative <em>division</em> for all four provinces has been
+      considered as an independent stratum", while the rural domain uses "each administrative
+      <em>district</em> in Punjab, Sindh and Khyber Pakhtunkhwa and each administrative <em>division</em>
+      in Balochistan". We verified this directly in the microdata: all 941 urban sampling units carry a
+      district code of zero, against 1,212 rural units that carry a real one. There are 127 rural district
+      strata and 31 urban <em>division</em> strata.</p>
+    <p>The consequence is that <strong>every HIES district figure on this site covers rural households
+      only</strong> — 19,163 of the 30,123 sampled households. The 10,960 urban households, 39% of the
+      weighted population, cannot be assigned to a district by any method, and no crosswalk can recover
+      what was never recorded. Districts with no rural sample at all — Lahore, most of Karachi, urban
+      Islamabad — therefore carry no HIES figures rather than a guessed one.</p>
+    <p>This matters most where it is least obvious. Because urban households are better off almost
+      everywhere, a rural-only figure understates district welfare systematically, and by more in more
+      urban districts. Reconstructing whole-district values using Census 2023 urban shares suggests
+      rural-only per-capita consumption is understated by around 8% in the median district but by
+      roughly 100% in Hyderabad and Karachi West. On a 89-district consumption ranking, the typical
+      district moves about 9 places once urban households are restored, and Hyderabad moves 60.
+      <strong>HIES district figures are a sound description of rural conditions and should not be read as
+      district totals.</strong></p>
+
+    <h3>Food insecurity: two different series</h3>
+    <p>Two food-insecurity measures appear on the site and they are not interchangeable.</p>
+    <ul>
+      <li><strong>Food Security — PSLM 2019-20 (whole district)</strong> is the series to quote for a
+        district. PSLM is a <em>district-level</em> survey round: it codes urban households by district, so
+        the figure covers urban and rural together. These are PBS's own published estimates, which follow
+        FAO's FIES methodology (a Rasch item-response model), covering 111 districts including all of
+        Karachi, which HIES cannot reach at all.</li>
+      <li><strong>Consumption &amp; Food Security — HIES 2024-25 (rural only)</strong> is five years more
+        recent but rural-only, and is computed here as a raw FIES score of 4 or more out of 8 rather than
+        by the Rasch model. Recomputing the PSLM series the same way reproduces PBS's district ranking
+        closely (Spearman 0.91 across 112 districts) but sits about a third lower in level. So the two
+        numbers should be compared for <em>pattern</em>, never for <em>level</em>.</li>
+    </ul>
+    <p>The same principle orders the other panels: where a whole-district PSLM series and a rural-only HIES
+      series measure the same thing — piped water, sanitation, mobile and internet access — PSLM is listed
+      first and HIES is offered as the more recent rural supplement. Piped water is a good illustration of
+      why: in Hyderabad the whole-district PSLM figure is 68%, while the rural-only HIES figure is 23%.</p>
+
+    <h3>Health &amp; demographic indicators (PDHS 2017-18)</h3>
+    <p>The five health layers — Family Planning, Fertility &amp; Child Survival, Maternal Health, Child
+      Immunisation and Child Nutrition — are computed from the <strong>Pakistan Demographic and Health Survey
+      (PDHS) 2017-18</strong> microdata, published by the <a href="https://www.nips.org.pk/" target="_blank"
+      rel="noopener">National Institute of Population Studies (NIPS)</a>, using the survey's sampling weights.
+      District estimates are validated against the published national PDHS figures — e.g. contraceptive
+      prevalence 33.7% (published 34.2%), modern method 24.7% (25.0%), unmet need 18.4% (17.3%), stunting
+      37.2% (37.6%), full immunisation 66.0% (66%).</p>
+    <p><strong>Important caveat:</strong> the PDHS is designed to be representative at the national, provincial
+      and regional level, <em>not</em> the district level (about 15,000 women across ~130 districts), so
+      district figures are <em>indicative</em>. Each layer carries its own denominator and unweighted sample
+      size, and the same n&lt;30 suppression rule applies — so reliable coverage varies sharply by indicator:
+      family planning and fertility are estimable in ~122 of 133 sampled districts, maternal health in ~98,
+      child nutrition in ~47, and child immunisation in only ~16 (the 12–23-month denominator is very small
+      per district). Suppressed districts are greyed out with their sample size shown in the tooltip.
+      Gilgit-Baltistan and Azad Jammu &amp; Kashmir — excluded from the national weight — use the survey's
+      combined weight, so their within-district estimates are valid; the PDHS is what now fills the 17 AJK/GB
+      districts the PBS census tables don't cover, giving at least some data for all 141 districts.</p>
+
+    <h2><span class="dd-tag" style="background:#f6ecd0;color:#a67c0a">Trade Atlas</span></h2>
+
+    <h3>Source &amp; parsing</h3>
+    <p>Imports and exports come from PBS
+      <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">External Trade
+      Statistics</a> at the <strong>8-digit HS</strong> commodity level (roughly 1,050 distinct products per
+      direction). The published PDFs are converted with <code>pdftotext -layout</code> and parsed with a
+      stateful reader that pops trailing value columns, repairs HS codes whose leading zeros were dropped and
+      became glued to the commodity name, and re-joins long product names that wrapped onto a second line and
+      pushed their totals down. Each year is validated against the printed <code>GRAND TOTAL</code>:
+      reconstructed exports reconcile to 100% and imports to 93–100% of the published total.</p>
+
+    <h3>Sector grouping &amp; the treemap</h3>
+    <p>Every 8-digit line is assigned to its <strong>HS section</strong> (the 21 top-level groupings —
+      textiles, mineral fuels, vegetable products, machinery, and so on) and its 2-digit chapter. The Atlas
+      treemap follows the logic of Harvard's Atlas of Economic Complexity: area is proportional to trade
+      value and colour encodes the HS section, so the composition of what Pakistan buys and sells is legible
+      at a glance. Clicking a sector zooms to its chapters and products; a breadcrumb tracks the drill-down.
+      Values are the customs values as published (nominal Pakistan Rupees), not inflation- or exchange-rate
+      adjusted, and represent recorded formal trade only.</p>
+    <p><strong>Gap years.</strong> PBS did not publish 8-digit data for exports 2017-18 or imports 2018-19 and
+      2019-20. Exports 2017-18 are filled from UN Comtrade (Pakistan's calendar-2018 exports, shown at
+      HS-section level only, valued in Rs at the fiscal-year average rate); the two import gaps are filled at
+      the total level only from the Pakistan Economic Survey (Pakistan stopped reporting to UN Comtrade after
+      2018, so no commodity breakdown is available). These years are flagged in the source note.</p>
+
+    <h2><span class="dd-tag" style="background:#f3dedb;color:#b23b2c">GDP &amp; Budget</span></h2>
+
+    <h3>National accounts (GDP by sector &amp; growth)</h3>
+    <p>GDP is taken from the national accounts on the <strong>2015-16 base year</strong>. The "economy by
+      sector" view shows value added by the standard sector split (agriculture, industry, services and their
+      sub-sectors); "real GDP growth" is the year-on-year change in constant-price GDP. Long historical
+      series are shown where PBS publishes a consistent constant-price series; a rebasing (e.g. from the older
+      2005-06 base) introduces a level break, so series are presented on the latest base rather than spliced.</p>
+
+    <h3>Input-output flows (2015-16)</h3>
+    <p>The chord view is built from the PBS <strong>2015-16 supply-use / input-output table</strong>. The
+      published matrix (68 industries) is aggregated to 12 broad sectors, and inter-industry flows are drawn
+      as directed ribbons from supplying to using sector. Table values are published in Rupees <em>million</em>
+      and are converted to billions (÷1,000) for display. The snapshot is structural — it shows how much of
+      each sector's output is used as intermediate input by every other sector in that year — and is not a
+      time series.</p>
+
+    <h3>Federal budget treemap</h3>
+    <p><strong>Receipts</strong> are built from the Finance Division's <strong>Explanatory Memorandum on
+      Federal Receipts</strong> — the most granular receipts source — for every year <strong>2009-10 to
+      2026-27</strong>. The memorandum classifies each receipt by Pakistan's NAM chart-of-accounts codes
+      (B = tax, C = non-tax), which give a clean hierarchy: Tax Revenue splits into Direct Taxes (Income Tax)
+      and Indirect Taxes (Customs, Sales Tax, Federal Excise), and Non-Tax Revenue into Income from Property,
+      Receipts from Civil Administration, Miscellaneous Receipts and Levies &amp; Fees. The own-year budget
+      estimate is the last numeric column. Because table numbering and which leaves carry codes vary across
+      the 18 years, each parent's captured leaves are reconciled to its printed control subtotal and any gap
+      is placed in an explicit "Other …" child — so every node sums exactly to the published Tax Revenue,
+      Non-Tax Revenue and total-revenue figures.</p>
+    <p><strong>Expenditure</strong> is the current expenditure by function from the <strong>"Budget in
+      Brief"</strong> (debt servicing, defence, running of civil government, subsidies &amp; grants, etc.),
+      broken into detailed sub-items. Both sides are rendered as a treemap where area is proportional to the
+      Rupee amount; a toggle switches between Expenditure and Receipts and a slider moves across budget years.
+      All figures are nominal budget estimates as published; presentation of some line items changes across
+      years, so cross-year comparison of a single narrow item should be read with the source in mind.</p>
+
+    <h2><span class="dd-tag" style="background:#ece4f2;color:#7a5195">Monetary &amp; External</span></h2>
+
+    <h3>Source &amp; extraction</h3>
+    <p>Every series comes from the State Bank's <a href="https://easydata.sbp.org.pk/" target="_blank"
+      rel="noopener">EasyData</a> portal through its REST API, one request per series with full history.
+      The portal serves 226 datasets and about 23,000 series; the warehouse holds a curated 1,336 of them
+      (the headline and "core" tiers of a published selection file), with the full catalogue indexed so
+      any other series can be added. Fetching is checkpointed and rate-limited (SBP's binding cap is
+      250 requests an hour), and two flavours of malformed JSON in the portal's responses — raw control
+      characters and unescaped quotes inside strings — are repaired before parsing. The page itself ships
+      only the ~50 series it draws, as a plain script file, so it loads instantly and works offline.</p>
+
+    <h3>Fiscal years, partial years and scales</h3>
+    <p>Monthly flows are summed to Pakistan's July–June fiscal year. The newest year is nearly always
+      partial, so the year picker defaults to the last <em>complete</em> year and labels partial ones with
+      their month count; a one-month "year" shown beside a twelve-month one reads as a collapse that never
+      happened. The rupee chart uses a log scale by default: on a series that runs from 3 to 280 per dollar
+      only a log axis shows equal percentage moves as equal distances. Daily KIBOR is thinned to month-end
+      for the chart (the SQL console keeps every day).</p>
+
+    <h3>The current-account treemap</h3>
+    <p>"Dollars in" and "dollars out" are the credit and debit sides of the BPM6 current account — goods,
+      services, primary income and secondary income — drawn to scale, so the deficit is the extra width
+      of the right-hand box. The build refuses to publish unless credits minus debits equals SBP's
+      reported current-account balance to the dollar, every year. Clicking a box subdivides it in place, inside its own area, so the two sides and the balance stay on screen while you drill; the sub-boxes are drawn as shares of the parent's headline figure. The breakdowns:
+      services by type and transfers by kind come straight from the BPM6 tables; remittances by source use
+      the country-wise table; goods use SBP's export receipts and import payments by commodity; income paid
+      abroad splits into repatriated profits by sector and a residual (interest and other investment
+      income) equal to the primary-income debit less the repatriation table.</p>
+    <p>Two of those tables have no published hierarchy: the 147 commodity series and the 50 sector series
+      are listed in document order with no level marker, yet many are sub-totals of their neighbours
+      (Transport Group ⊃ Road Motor Vehicles ⊃ CKD ⊃ Motor Cars; Power ⊃ Thermal, Hydel, Coal). Summing
+      everything overstates goods and repatriation totals by up to 28%. The build recovers the tree
+      arithmetically — a series is a parent when the top-level items after it sum to it in every fiscal
+      year — and checks the result against the published totals. The commodity tables are on a
+      "through banks" basis; the balance-of-payments figure deducts freight and adds other flows, so the
+      zoomed header shows both numbers rather than rescaling tiles to force them to match.</p>
+
+    <h3>Remittances</h3>
+    <p>SBP's country series are nested: U.A.E. already contains Dubai, Abu Dhabi and Sharjah; "Other GCC"
+      contains Bahrain, Kuwait, Oman and Qatar; "ten European countries" contains Belgium through Sweden.
+      Adding every series overstates the total by 42%. The site uses the fifteen-source partition that
+      reconciles exactly to SBP's published total, and the build fails if it ever stops doing so.</p>
+
+    <h2><span class="dd-tag" style="background:#dceef0;color:#0f6e78">Poverty &amp; Wealth</span></h2>
+    <h3>Multidimensional Poverty Index (district)</h3>
+    <p>An <strong>Alkire–Foster adjusted headcount</strong>, M<sub>0</sub> = H &times; A, computed directly
+      from <strong>PSLM 2019-20 household microdata</strong> — from the joint distribution of deprivations
+      across households, not from district averages. Two equally weighted dimensions: <em>education</em>
+      (years of schooling; child school attendance, ¼ each) and <em>living standards</em> (electricity,
+      cooking fuel, sanitation, drinking water, housing materials, 1/10 each). The poverty cutoff is
+      k = 1/3, the global-MPI standard, and estimates are person-weighted using PSLM survey weights.
+      The health dimension is deliberately omitted: MPI health indicators require DHS microdata that
+      cannot be linked to PSLM households, so this is best read as a <em>living-conditions</em> MPI.
+      It covers 119 of 141 districts — the rest were not sampled by PSLM. The national aggregate
+      (M<sub>0</sub> = 0.222, headcount 39.2%) sits on top of the official Pakistan MPI headcount.</p>
+
+    <h3>Satellite layers (tehsil)</h3>
+    <p><strong>Relative Wealth Index</strong> is Meta's machine-learning estimate on a ~2.4 km grid,
+      aggregated to tehsils as a population-weighted mean. <strong>Population</strong> is WorldPop 2020
+      (UN-adjusted, 1 km), zonal-summed; it totals 220.7 million, matching the UN estimate.
+      <strong>Night-time lights</strong> are VIIRS DNB June composites for 2020–2026. Two corrections
+      matter and are applied: a <strong>1 nW background floor</strong> (over half the raw radiance total
+      is diffuse haze from airglow and moonlit snow or sand), and a persistent-<strong>gas-flare</strong>
+      mask. Tehsils below one person per km² are flagged and withheld, because over empty terrain the
+      signal measures surface albedo rather than activity. Note that night-lights are themselves an
+      <em>input</em> to the Relative Wealth Index, so those two layers are not independent of each other;
+      the survey-based MPI is the one independent benchmark.</p>
+
+    <h3>Rural facilities (tehsil)</h3>
+    <p>PBS's <strong>Mouza Census 2020</strong>, a hundred-per-cent count of 48,738 revenue villages
+      carried out with the provincial revenue departments. For each mouza an enumerator records what
+      exists in it — a girls' primary school, a basic health unit, a metalled street, mains
+      electricity — so every figure here is a <em>share of mouzas</em>, not of people. A mouza of
+      12,000 counts the same as a mouza of 300, and the frame is rural by construction: cities are
+      not revenue villages, so urban Karachi and the city tehsils sit outside it entirely.</p>
+    <p>PBS does not publish the denominator, and its own indicator blocks disagree about how many
+      mouzas answered — only 33 of 544 enumerated tehsils give a single consistent base. Each block
+      is therefore divided by its own row sum, and where the blocks diverge by more than 5% the
+      detail panel says so. PBS enumerates 595 tehsils against the boundary file's 553, mostly
+      because it carries sub-tehsils created after the polygons were drawn, so those are pooled into
+      the unit they were carved from; the crosswalk is published alongside the code. Azad Jammu and
+      Kashmir and Gilgit-Baltistan were not enumerated in this round. Neither were Mand and Tump in
+      Kech or Kallag in Panjgur, though every neighbouring sub-tehsil reports normally.</p>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li>Survey-based district indicators (PSLM, LFS, HIES) are sample estimates and carry sampling error,
+        especially in smaller districts.</li>
+      <li>The MPI omits the health dimension and reflects 2019-20 conditions; the Relative Wealth Index is
+        modelled rather than measured, and is benchmarked against a pooled India–Pakistan baseline.</li>
+      <li>Night-time lights proxy activity and electrification, not GDP; June-only monthly composites carry
+        more year-to-year noise than annual products and a seasonal signature.</li>
+      <li>Trade figures are nominal recorded customs values and exclude informal/unrecorded trade; leading-zero
+        and name-wrap repairs in PDF parsing are validated in aggregate but individual rare lines may vary.</li>
+      <li>National accounts and budget figures are nominal unless stated; base-year rebasing and changes in
+        budget presentation create breaks that are not spliced away.</li>
+      <li>The input-output snapshot is a single year (2015-16) and structural, not a trend.</li>
+      <li><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank</a> series are taken as published: the BPM6 monthly balance of payments begins in July
+        2013, the commodity breakdowns in July 2013 and repatriation by sector in July 2007, so the
+        treemap's drill-downs cover a shorter span than the headline series. Goods breakdowns are
+        payments-basis (through banks) and will not match PBS customs figures on the Trade Atlas.</li>
+      <li>Census figures retain the vintage of the downloaded source tables; consult the cited PBS release before treating them as the latest revision.</li>
+    </ul>
+  </div></main>
+<footer><p>Hiba Sameen · <a href="https://adaad.org/">Adaad</a> · <a href="https://aiwan.adaad.org/elections/">Pakistan election results</a></p><p>Derived data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Original sources and limitations are identified on each page.</p></footer>
+<script src="/assets/js/modals.js" defer></script><script src="/assets/js/analytics.js" defer></script></body></html>
