@@ -120,22 +120,45 @@ def patch_metadata(file, title, description, path):
     file.write_text(text)
 
 
+# The site chrome, as index.html and dictionary.html carry it: the same header,
+# Data ▾ dropdown (nav.js), mobile menu and footer, with root-absolute paths so
+# a page two directories deep resolves them. nav.js marks the current entry.
+HEADER = f'''<header class="site-header">
+  <a class="header-brand" href="/"><img src="/assets/img/logo.svg" class="header-logo" alt="{SITE_NAME}"/><span class="header-text"><span class="header-title">{SITE_NAME}</span><span class="header-tagline">{TAGLINE}</span></span></a>
+  <nav class="header-nav"><a href="/" class="header-link">Home</a><div data-dd-nav></div><a href="/about.html" class="header-link">About</a><a href="/methodology.html" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="header-link">SBP ↗</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-controls="mobileNav" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</header>
+<nav id="mobileNav" class="mobile-nav hidden"><a href="/" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="/about.html" class="mobile-nav-link">About</a><a href="/methodology.html" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="mobile-nav-link">SBP ↗</a></nav>'''
+FOOTER = f'''<footer class="site-footer"><span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="{LICENSE}" target="_blank" rel="noopener">CC BY 4.0</a></span><span data-research-links><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor</a></span></footer>'''
+
+
 def page(path, title, description, body, extra=None, heading=None):
     target = APP / path.strip("/") / "index.html" if path.endswith("/") else APP / path.strip("/")
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0c3a1e">
+    target.write_text(f'''<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0c3a1e"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/css/research.css"/>
 {metadata(f"{title} — {SITE_NAME}", description, path, extra, SHARE_TAGS)}
-<link rel="icon" href="/assets/img/favicon-32.png"><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"><link rel="stylesheet" href="/assets/css/research.css">
-</head><body><a class="skip" href="#main">Skip to content</a>
-<header><a class="brand" href="/"><img src="/assets/img/logo.svg" class="logo" alt=""><span class="lockup"><span class="title">{SITE_NAME}</span><small>{TAGLINE}</small></span></a><nav aria-label="Main"><a href="/">Home</a><a href="/map.html">District &amp; Tehsil Map</a><a href="/finance.html">GDP &amp; Budget</a><a href="/trade.html">Trade Atlas</a><a href="/money.html">Monetary &amp; External</a><a href="/datasets/">Data Catalogue</a><a href="/query.html">Query the Data</a><a href="/about.html">About</a><a href="/methodology.html">Methodology</a></nav></header>
-<main id="main"><p class="eyebrow">Pakistan · Data · Sources</p><h1>{ESC(heading or title)}</h1><p class="intro">{ESC(description)}</p>{body}</main>
-<footer><p>&copy; 2026 Hiba Sameen · Data: <a href="https://www.pbs.gov.pk/">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/">State Bank of Pakistan</a> · Code: <a href="https://opensource.org/licenses/MIT">MIT Licence</a> · Derived data: <a href="{LICENSE}">CC BY 4.0</a>. Original sources and limitations are identified on each page.</p><p><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor: Pakistan election results</a></p></footer>
-<script src="/assets/js/modals.js" defer></script><script src="/assets/js/analytics.js" defer></script></body></html>''')
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+{HEADER}
+<main id="main" class="wrap">
+<div class="hero"><h1>{ESC(heading or title)}</h1><p>{ESC(description)}</p></div>
+{body}
+</main>
+{FOOTER}
+<script src="/assets/js/nav.js"></script>
+<script src="/assets/js/modals.js"></script>
+<script src="/assets/js/analytics.js"></script>
+</body></html>''')
 
 
 def table(headers, rows, caption):
-    return '<div class="table-wrap" role="region" tabindex="0" aria-label="' + ESC(caption, quote=True) + '"><table><caption>' + ESC(caption) + '</caption><thead><tr>' + ''.join('<th scope="col">' + ESC(h) + '</th>' for h in headers) + '</tr></thead><tbody>' + ''.join('<tr>' + ''.join('<td>' + ESC(str(v)) + '</td>' for v in row) + '</tr>' for row in rows) + '</tbody></table></div>'
+    return '<div class="table-scroll" role="region" tabindex="0" aria-label="' + ESC(caption, quote=True) + '"><table class="cols"><caption>' + ESC(caption) + '</caption><thead><tr>' + ''.join('<th scope="col">' + ESC(h) + '</th>' for h in headers) + '</tr></thead><tbody>' + ''.join('<tr>' + ''.join('<td>' + ESC(str(v)) + '</td>' for v in row) + '</tr>' for row in rows) + '</tbody></table></div>'
 
 
 def modal_content(variable):
