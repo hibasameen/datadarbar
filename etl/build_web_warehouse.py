@@ -655,6 +655,40 @@ def build(src: Path) -> None:
     )
 
     register(
+        "school_access_tehsil",
+        "Distance to the nearest government school by sex and level, and school counts, one row per tehsil (498 of 553 ADM3 polygons).",
+        "The tehsil version of school_access_district, by the same method: population-weighted median straight-line "
+        "km (Lambert conformal conic, 1 km WorldPop 2020 cells) to the nearest school of that sex and level in the "
+        "cell's own REGION network — a tehsil's residents can use the next tehsil's schools, so its distance is not a "
+        "function of its own school count. gap_*_km = girls − boys (positive = girls further). *_over5km_pct is the "
+        "population share more than 5 km away. *_schools count schools whose point falls in the polygon. "
+        "coverage_pct is the share of the polygon's population that lay inside the analysed region; rows under 50% "
+        "(slivers of the merged districts and of AJK's other districts inside a neighbouring district polygon) are "
+        "dropped, so 498 tehsils carry data and 55 do not. The 553 polygons are the Mouza Census ADM3 frame "
+        "(mouza_crosswalk.dd_id) rather than PBS's 2023 tehsils. Read coord_tier before comparing across provinces: "
+        "Punjab's positions are geocoded (half at settlement precision, the rest at markaz or tehsil centroids), so "
+        "Punjab tehsil values are a district-scale picture, not a local one. Sindh networks are by name designation; "
+        "the designated gap is an upper bound (see school_access_district's mixed and attendance columns). "
+        "This is the table the map's Education → Distance to School layer draws.",
+        {
+            "dd_id": "ADM3 identifier — joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id", "tehsil": "tehsil name in the ADM3 frame", "district_key": "Data Darbar district key",
+            "region": "analysis region", "coord_tier": "coverage grade of the region's positions (A to C)",
+            "pop": "population of the analysed cells (WorldPop 2020)", "coverage_pct": "share of the polygon's population analysed",
+            "girls_primary_km": "median km to nearest girls' school, any level", "boys_primary_km": "as girls_, boys", "gap_primary_km": "girls − boys, any level",
+            "girls_middle_km": "median km to nearest girls' middle-or-above school", "boys_middle_km": "as girls_, boys", "gap_middle_km": "girls − boys, middle",
+            "girls_high_km": "median km to nearest girls' high-or-above school", "boys_high_km": "as girls_, boys", "gap_high_km": "girls − boys, high",
+            "girls_middle_over5km_pct": "population more than 5 km from a girls' middle-plus school, %", "boys_middle_over5km_pct": "as girls_, boys",
+            "girls_primary_schools": "girls' schools (any level) inside the polygon", "boys_primary_schools": "as girls_, boys",
+            "girls_middle_schools": "girls' middle-plus schools inside the polygon", "boys_middle_schools": "as girls_, boys",
+            "girls_high_schools": "girls' high-plus schools inside the polygon", "boys_high_schools": "as girls_, boys",
+            "girls_share_middle_pct": "girls' share of middle-plus schools inside the polygon, %", "release": "release tag",
+        },
+        "Adaad school layer (schools_pk) × WorldPop 2020 × Data Darbar ADM3 polygons",
+        f"SELECT * FROM read_csv_auto('{(sc_dir / 'school_access_tehsil.csv').as_posix()}') ORDER BY region, district_key, dd_id",
+        unit="km, per cent",
+    )
+
+    register(
         "school_distance_stats",
         "Distance-to-school distributions by region and district, sex and school level (primary, middle-plus, high-plus).",
         "One row per geography × sex × level. geography_type = 'region' rows are the seven analysis regions; "
@@ -1107,6 +1141,14 @@ SCHOOL_EXAMPLES = [
              "FROM school_validation_district\n"
              "WHERE status = 'matched' AND ratio_midplus_G < 0.9\n"
              "ORDER BY ratio_midplus_G;")},
+    {"title": "Tehsils where girls are furthest from a middle school",
+     "sql": ("-- Distances depend on the whole region's network, not the tehsil's own\n"
+             "-- schools; Punjab rows are geocoded, so compare them at district scale.\n"
+             "SELECT tehsil, district_key, region, girls_middle_km, boys_middle_km, gap_middle_km,\n"
+             "       girls_middle_schools, girls_middle_over5km_pct\n"
+             "FROM school_access_tehsil\n"
+             "WHERE coord_tier = 'A'   -- GPS-quality positions only\n"
+             "ORDER BY girls_middle_km DESC LIMIT 25;")},
     {"title": "Sindh multilateration: solved positions that disagree with the RSU pin",
      "sql": ("-- 24% of RSU pins sit more than 300 m from the position solved from SELD's own\n"
              "-- distance checker; the table keeps both so the choice can be audited.\n"

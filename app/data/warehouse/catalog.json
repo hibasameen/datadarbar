@@ -2467,6 +2467,148 @@
    ]
   },
   {
+   "name": "school_access_tehsil",
+   "file": "school_access_tehsil.parquet",
+   "bytes": 33340,
+   "rows": 498,
+   "description": "Distance to the nearest government school by sex and level, and school counts, one row per tehsil (498 of 553 ADM3 polygons).",
+   "notes": "The tehsil version of school_access_district, by the same method: population-weighted median straight-line km (Lambert conformal conic, 1 km WorldPop 2020 cells) to the nearest school of that sex and level in the cell's own REGION network \u2014 a tehsil's residents can use the next tehsil's schools, so its distance is not a function of its own school count. gap_*_km = girls \u2212 boys (positive = girls further). *_over5km_pct is the population share more than 5 km away. *_schools count schools whose point falls in the polygon. coverage_pct is the share of the polygon's population that lay inside the analysed region; rows under 50% (slivers of the merged districts and of AJK's other districts inside a neighbouring district polygon) are dropped, so 498 tehsils carry data and 55 do not. The 553 polygons are the Mouza Census ADM3 frame (mouza_crosswalk.dd_id) rather than PBS's 2023 tehsils. Read coord_tier before comparing across provinces: Punjab's positions are geocoded (half at settlement precision, the rest at markaz or tehsil centroids), so Punjab tehsil values are a district-scale picture, not a local one. Sindh networks are by name designation; the designated gap is an upper bound (see school_access_district's mixed and attendance columns). This is the table the map's Education \u2192 Distance to School layer draws.",
+   "unit": "km, per cent",
+   "source": "Adaad school layer (schools_pk) \u00d7 WorldPop 2020 \u00d7 Data Darbar ADM3 polygons",
+   "columns": [
+    {
+     "name": "dd_id",
+     "type": "VARCHAR",
+     "description": "ADM3 identifier \u2014 joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil name in the ADM3 frame"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar district key"
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "analysis region"
+    },
+    {
+     "name": "coord_tier",
+     "type": "VARCHAR",
+     "description": "coverage grade of the region's positions (A to C)"
+    },
+    {
+     "name": "pop",
+     "type": "BIGINT",
+     "description": "population of the analysed cells (WorldPop 2020)"
+    },
+    {
+     "name": "coverage_pct",
+     "type": "DOUBLE",
+     "description": "share of the polygon's population analysed"
+    },
+    {
+     "name": "girls_primary_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' school, any level"
+    },
+    {
+     "name": "boys_primary_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "gap_primary_km",
+     "type": "DOUBLE",
+     "description": "girls \u2212 boys, any level"
+    },
+    {
+     "name": "girls_middle_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' middle-or-above school"
+    },
+    {
+     "name": "boys_middle_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "gap_middle_km",
+     "type": "DOUBLE",
+     "description": "girls \u2212 boys, middle"
+    },
+    {
+     "name": "girls_high_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' high-or-above school"
+    },
+    {
+     "name": "boys_high_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "gap_high_km",
+     "type": "DOUBLE",
+     "description": "girls \u2212 boys, high"
+    },
+    {
+     "name": "girls_middle_over5km_pct",
+     "type": "DOUBLE",
+     "description": "population more than 5 km from a girls' middle-plus school, %"
+    },
+    {
+     "name": "boys_middle_over5km_pct",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_primary_schools",
+     "type": "BIGINT",
+     "description": "girls' schools (any level) inside the polygon"
+    },
+    {
+     "name": "boys_primary_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_middle_schools",
+     "type": "BIGINT",
+     "description": "girls' middle-plus schools inside the polygon"
+    },
+    {
+     "name": "boys_middle_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_high_schools",
+     "type": "BIGINT",
+     "description": "girls' high-plus schools inside the polygon"
+    },
+    {
+     "name": "boys_high_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_share_middle_pct",
+     "type": "DOUBLE",
+     "description": "girls' share of middle-plus schools inside the polygon, %"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
    "name": "school_distance_stats",
    "file": "school_distance_stats.parquet",
    "bytes": 22568,
@@ -3637,6 +3779,10 @@
   {
    "title": "Does the Mouza Census agree? Districts where the layer fails its floor test",
    "sql": "-- ratio < 1 means fewer schools in the layer than villages reporting one:\n-- schools are missing or misclassified. Sindh's girls-v-boys flag fires by\n-- construction (see the notes); read the girls' ratio itself.\nSELECT region, mouza_district, ratio_midplus_G, ratio_midplus_B, ratio_high_G, flag\nFROM school_validation_district\nWHERE status = 'matched' AND ratio_midplus_G < 0.9\nORDER BY ratio_midplus_G;"
+  },
+  {
+   "title": "Tehsils where girls are furthest from a middle school",
+   "sql": "-- Distances depend on the whole region's network, not the tehsil's own\n-- schools; Punjab rows are geocoded, so compare them at district scale.\nSELECT tehsil, district_key, region, girls_middle_km, boys_middle_km, gap_middle_km,\n       girls_middle_schools, girls_middle_over5km_pct\nFROM school_access_tehsil\nWHERE coord_tier = 'A'   -- GPS-quality positions only\nORDER BY girls_middle_km DESC LIMIT 25;"
   },
   {
    "title": "Sindh multilateration: solved positions that disagree with the RSU pin",

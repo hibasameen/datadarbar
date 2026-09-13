@@ -8,7 +8,7 @@ const DATA_PATH    = 'data/districts.json';
 // Topic → ordered list of dataset group keys
 const TOPICS = {
   demographics:   { label: 'Demographics',              groups: ['demographics', 'urbanRural'] },
-  education:      { label: 'Education',                 groups: ['literacy', 'censusSchooling', 'education', 'pslmEducation'] },
+  education:      { label: 'Education',                 groups: ['literacy', 'censusSchooling', 'education', 'pslmEducation', 'schoolAccess'] },
   employment:     { label: 'Employment',                groups: ['employment', 'pslmEmployment', 'lfs', 'lfs25'] },
   economic:       { label: 'Economic Activity',         groups: ['econCensus'] },
   // Within each topic, whole-district (PSLM) series are listed before
@@ -98,6 +98,39 @@ const INDICATOR_GROUPS = {
     classed: true,
     diverging: ['growth'],
     yearLabel: '2020→2026',
+  },
+
+  // School access is tehsil-level like the satellite layers, but its rows come
+  // from the school layer released with Adaad's "How far is the girls' school?"
+  // (etl/schools/, warehouse table school_access_tehsil); build_map_payload.py
+  // writes them into DD_POV.schools.
+  schoolAccess: {
+    label: 'Distance to School \u2014 Girls\u2019 and Boys\u2019 Government Schools',
+    dataset: 'Adaad school layer 2026-09 \u00b7 WorldPop 2020 \u00b7 1 km',
+    pov: 'schools', geo: 'tehsil', noYear: true, hasYears: false,
+    blurb: 'Population-weighted median straight-line distance from every populated 1 km cell to the nearest government school of that sex and level, from the 118,673 positioned schools in Adaad\u2019s school layer. Networks are by name designation (GG/GB); in Sindh most designated boys\u2019 schools are officially mixed and enrol girls, so the Sindh gap is an upper bound. Punjab positions are geocoded (half at settlement precision, the rest at markaz or tehsil centroids), so read Punjab tehsils as a district-scale picture. No data for the ex-FATA merged districts or eight of AJK\u2019s ten districts, whose departments publish no locations. Distances are straight-line, not road.',
+    indicators: {
+      girls_middle_km:          'Nearest girls\u2019 middle school (km)',
+      boys_middle_km:           'Nearest boys\u2019 middle school (km)',
+      gap_middle_km:            'Girls\u2019 minus boys\u2019 distance, middle (km)',
+      girls_middle_over5km_pct: 'Population over 5 km from a girls\u2019 middle school (%)',
+      boys_middle_over5km_pct:  'Population over 5 km from a boys\u2019 middle school (%)',
+      girls_high_km:            'Nearest girls\u2019 high school (km)',
+      boys_high_km:             'Nearest boys\u2019 high school (km)',
+      gap_high_km:              'Girls\u2019 minus boys\u2019 distance, high (km)',
+      girls_primary_km:         'Nearest girls\u2019 school, any level (km)',
+      boys_primary_km:          'Nearest boys\u2019 school, any level (km)',
+      gap_primary_km:           'Girls\u2019 minus boys\u2019 distance, any level (km)',
+      girls_middle_schools:     'Girls\u2019 middle-or-above schools',
+      boys_middle_schools:      'Boys\u2019 middle-or-above schools',
+      girls_share_middle_pct:   'Girls\u2019 share of middle-or-above schools (%)',
+    },
+    dp: { girls_middle_km: 1, boys_middle_km: 1, gap_middle_km: 1, girls_high_km: 1, boys_high_km: 1, gap_high_km: 1,
+          girls_primary_km: 1, boys_primary_km: 1, gap_primary_km: 1, girls_middle_over5km_pct: 0, boys_middle_over5km_pct: 0,
+          girls_middle_schools: 0, boys_middle_schools: 0, girls_share_middle_pct: 0 },
+    classed: true,
+    diverging: ['gap_middle_km', 'gap_high_km', 'gap_primary_km'],
+    yearLabel: '2026',
   },
 
   mouza_electricity_energy: {
@@ -762,6 +795,8 @@ const COLOR_RAMPS = {
   rwi:              ['#f4efe2', '#1a5632'],
   satPop:           ['#eef2f7', '#3d6f9e', '#10243d'],
   nightlights:      ['#fffbe6', '#d4a017', '#4a2c00'],
+  // School access: darker = further from a school
+  schoolAccess:     ['#fef6dc', '#b8941a', '#5a3b06'],
   // Housing & Infrastructure
   hiesHousing:      ['#fbe9e7', '#bf360c'],
   pslmWash:         ['#e0f2f1', '#004d40'],
@@ -793,6 +828,9 @@ const COLOR_RAMPS = {
 // Indicators where an INCREASE is bad (red) and a DECREASE is good (green).
 // All other indicators default to: increase = good (green), decrease = bad (red).
 const HIGHER_IS_WORSE = new Set([
+  // School access: further is worse; a positive gap means girls travel further
+  'girls_middle_km', 'boys_middle_km', 'gap_middle_km', 'girls_high_km', 'boys_high_km', 'gap_high_km',
+  'girls_primary_km', 'boys_primary_km', 'gap_primary_km', 'girls_middle_over5km_pct', 'boys_middle_over5km_pct',
   // Demographics
   'sex_ratio',            // gender imbalance
   'avg_household_size',   // overcrowding
@@ -1577,7 +1615,11 @@ function colorize() {
     // the raw maximum would flatten the entire map to the midpoint.
     const abs = values.map(Math.abs).sort((a, b) => a - b);
     const absMax = abs[Math.floor(abs.length * 0.95)] || abs[abs.length - 1] || 1;
-    scale = chroma.scale(['#a8331a', '#f4efe2', '#1a5632']).domain([-absMax, 0, absMax]);
+    // A signed indicator where positive is worse (girls further than boys)
+    // swaps the ends so red still means worse.
+    const divColors = HIGHER_IS_WORSE.has(currentIndicator)
+      ? ['#1a5632', '#f4efe2', '#a8331a'] : ['#a8331a', '#f4efe2', '#1a5632'];
+    scale = chroma.scale(divColors).domain([-absMax, 0, absMax]);
     breaks = [-absMax, -absMax / 2, 0, absMax / 2, absMax];
   } else if (g0.classed) {
     // Classed quantiles rather than a linear ramp: lights and population

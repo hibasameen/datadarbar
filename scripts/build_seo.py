@@ -53,6 +53,7 @@ DATASET_NAMES = {
     "sbp_series_catalog": "State Bank of Pakistan series catalogue",
     "schools_pk": "Pakistan government schools with positions and provenance",
     "school_access_district": "Pakistan district distance to the nearest girls' and boys' school",
+    "school_access_tehsil": "Pakistan tehsil distance to the nearest girls' and boys' school",
     "school_distance_stats": "Pakistan distance-to-school distributions by sex and level",
     "school_layer_coverage": "Pakistan school layer coverage ledger",
     "school_validation_district": "Pakistan school layer validation against the Mouza Census, by district",

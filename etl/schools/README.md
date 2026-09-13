@@ -7,8 +7,8 @@ those positions, the coverage ledger, and the external-validity tests against
 the Mouza Census 2020. `build_web_warehouse.py` reads them into the public
 warehouse as `schools_pk`, `school_access_district`, `school_distance_stats`,
 `school_layer_coverage`, `school_validation_district`,
-`school_validation_tehsil`, `school_validation_summary` and
-`census_enrolment_5_16_by_sex`.
+`school_validation_tehsil`, `school_validation_summary`,
+`census_enrolment_5_16_by_sex` and `school_access_tehsil`.
 
 The journal's copy of the same tables, frozen on the issue date, is at
 adaad.org/datasets/. This folder is the canonical, updatable version: when a
@@ -27,6 +27,7 @@ districts), a new release tag goes on every row and the old files stay in git.
 | `school_validation_tehsil.csv` | 403 | the count floors by tehsil (Sindh, Punjab, Balochistan, GB) |
 | `school_validation_summary.csv` | 18 | rank agreement between the layer's district distances and the villages' reports |
 | `census_enrolment_5_16_by_sex.csv` | 130 | Census 2023 Table 13(b) on the 2017 district frame |
+| `school_access_tehsil.csv` | 498 | the district distance measure recomputed on Data Darbar's 553 ADM3 polygons; feeds the map's Education → Distance to School layer |
 
 ## How the school table was built
 
@@ -61,6 +62,22 @@ Upper Chitral into Chitral, the three Kohistans, Duki into Loralai, Chaman into
 Killa Abdullah, Surab into Kalat, Kot Addu into Muzaffargarh, and so on).
 `district_key_boundary` is the polygon the point falls in. They differ for
 3,532 rows: border villages, and the Punjab rows placed at a tehsil centroid.
+
+## The tehsil layer on the map
+
+`build_tehsil_access.py` recomputes the piece's distance measure on the same
+1 km grid, then aggregates it to the 553 ADM3 polygons the Mouza Census layers
+use instead of the 147 districts. The district aggregates it writes alongside
+reproduce `school_distance_stats` to within 0.001 km, which is the check that
+the two runs are the same method. A tehsil keeps its row only when at least
+half of its population lay inside the analysed region: the 55 polygons dropped
+are the merged districts, AJK's other eight districts, and the slivers of those
+that a neighbouring district polygon happens to cover. `build_map_payload.py`
+writes the wide table (`school_access_tehsil.csv`) and injects it as the
+`schools` table of `window.DD_POV` in `app/data/poverty_data.js`, which the
+map's `schoolAccess` group reads through the same `pov` mechanism as the
+satellite layers. Re-running it replaces the table; nothing else in that file
+changes.
 
 ## What the validation tests can and cannot say
 
@@ -118,9 +135,17 @@ python3 etl/schools/validate_released_layer.py /tmp/rel/schools_pk_2026-09.csv.g
     <rerun-2026-09/filled_designation> <mc2020_mouza_level.csv.gz> /tmp/rel/validation
 python3 etl/schools/prepare_release.py --rerun <rerun-2026-09> --validation /tmp/rel/validation \
     --schools /tmp/rel/schools_pk_2026-09.csv.gz --darbar app/data/districts.json --out /tmp/rel/release
+python3 etl/schools/build_tehsil_access.py --schools etl/schools/schools_pk_2026-09.csv.gz \
+    --pop <raw_data/geospatial/pak_ppp_2020_1km_Aggregated_UNadj.tif> \
+    --districts app/data/pakistan_districts_province_boundries.geojson \
+    --tehsils app/data/tehsils_geo.js --out /tmp/rel/tehsil
+python3 etl/schools/build_map_payload.py --stats /tmp/rel/tehsil/tehsil_distance_stats.csv \
+    --counts /tmp/rel/tehsil/tehsil_school_counts.csv --pov app/data/poverty_data.js \
+    --out etl/schools/school_access_tehsil.csv
 python3 etl/build_web_warehouse.py
 ```
 
 The first three scripts need the Adaad working folder (the per-province
-registers, the analysis rerun and the Mouza Census microdata); the fourth
-needs only this folder.
+registers, the analysis rerun and the Mouza Census microdata); the tehsil pair
+needs only this folder plus the WorldPop raster (rasterio, geopandas, scipy);
+the warehouse build needs only this folder.
