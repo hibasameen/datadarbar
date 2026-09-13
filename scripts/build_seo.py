@@ -60,6 +60,8 @@ DATASET_NAMES = {
     "school_validation_tehsil": "Pakistan school layer validation against the Mouza Census, by tehsil",
     "school_validation_summary": "Pakistan school layer validation scorecard",
     "census_enrolment_5_16_by_sex": "Pakistan district enrolment aged 5–16 by sex, Census 2023",
+    "health_access_tehsil": "Pakistan tehsil travel time to the nearest health facility",
+    "health_access_district": "Pakistan district travel time to the nearest health facility",
     "tehsil_nightlights": "Pakistan tehsil night-time lights",
     "tehsil_satellite": "Pakistan tehsil wealth, population and satellite indicators",
     "trade_hs8": "Pakistan imports and exports by HS8 product and country",

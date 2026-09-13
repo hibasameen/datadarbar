@@ -388,6 +388,225 @@
    ]
   },
   {
+   "name": "health_access_district",
+   "file": "health_access_district.parquet",
+   "bytes": 11793,
+   "rows": 147,
+   "description": "Travel time to the nearest health facility by district (147): population-weighted medians and means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
+   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality \u2014 so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. *_popw_median is the population-weighted median (the piece's headline measure: 22 minutes motorised, 128 walking nationally); *_median the unweighted median of cells. Shares were fractions in the piece's file and are per cent here. Join mpi_districts on district_key for the poverty gradient (Spearman 0.76 between MPI and motorised time; the poorest MPI quintile is 47 minutes from care motorised against 5 for the least poor). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1.",
+   "unit": "minutes; per cent",
+   "source": "Malaria Atlas Project accessibility surfaces (Weiss et al. 2020, Nature Medicine 26: motorised 2019, walking-only 2020), clipped to Pakistan; WorldPop 2020 UN-adjusted 1 km population; Data Darbar boundaries. Built for Adaad's September 2026 issue.",
+   "columns": [
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar district key \u2014 joins district_indicators, mpi_districts, school_access_district"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district name"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or territory"
+    },
+    {
+     "name": "merged_district",
+     "type": "BIGINT",
+     "description": "1 for the seven ex-FATA merged districts"
+    },
+    {
+     "name": "n_px",
+     "type": "BIGINT",
+     "description": "valid 1 km cells"
+    },
+    {
+     "name": "pop_2020",
+     "type": "BIGINT",
+     "description": "WorldPop 2020 population on those cells"
+    },
+    {
+     "name": "mot_mean",
+     "type": "DOUBLE",
+     "description": "motorised minutes, unweighted mean of cells"
+    },
+    {
+     "name": "mot_median",
+     "type": "DOUBLE",
+     "description": "motorised minutes, unweighted median of cells"
+    },
+    {
+     "name": "mot_popw_mean",
+     "type": "DOUBLE",
+     "description": "motorised minutes, population-weighted mean"
+    },
+    {
+     "name": "mot_popw_median",
+     "type": "DOUBLE",
+     "description": "motorised minutes, population-weighted median"
+    },
+    {
+     "name": "wal_mean",
+     "type": "DOUBLE",
+     "description": "walking minutes, unweighted mean"
+    },
+    {
+     "name": "wal_median",
+     "type": "DOUBLE",
+     "description": "walking minutes, unweighted median"
+    },
+    {
+     "name": "wal_popw_mean",
+     "type": "DOUBLE",
+     "description": "walking minutes, population-weighted mean"
+    },
+    {
+     "name": "wal_popw_median",
+     "type": "DOUBLE",
+     "description": "walking minutes, population-weighted median"
+    },
+    {
+     "name": "mot_pct_pop_gt30",
+     "type": "DOUBLE",
+     "description": "% of people more than 30 motorised minutes from care"
+    },
+    {
+     "name": "mot_pct_pop_gt60",
+     "type": "DOUBLE",
+     "description": "% more than 60 motorised minutes"
+    },
+    {
+     "name": "mot_pct_pop_gt120",
+     "type": "DOUBLE",
+     "description": "% more than 120 motorised minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt30",
+     "type": "DOUBLE",
+     "description": "% more than 30 walking minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt60",
+     "type": "DOUBLE",
+     "description": "% more than 60 walking minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt120",
+     "type": "DOUBLE",
+     "description": "% more than 120 walking minutes"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "health_access_tehsil",
+   "file": "health_access_tehsil.parquet",
+   "bytes": 26806,
+   "rows": 553,
+   "description": "Travel time to the nearest health facility by tehsil (553 ADM3 polygons): population-weighted means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
+   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality \u2014 so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. mot_/wal_ = motorised / walking-only surface; *_mean is the unweighted mean of valid cells, *_popw_mean the population-weighted mean; *_pct_pop_gtN the share of people more than N minutes away. Manora Cantonment has no valid cells: its blanks are missing estimates, not zero. The tehsil grid holds 1,175,119 cells and 219.6 million people, 4,671 cells fewer than the district build because the two boundary files rasterise differently, so tehsil rows do not recombine exactly to health_access_district (22.10 v 22.13 minutes nationally). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1. This is the table the map's Health \u2192 Travel Time to Care (tehsil) layer draws.",
+   "unit": "minutes; per cent",
+   "source": "Malaria Atlas Project accessibility surfaces (Weiss et al. 2020, Nature Medicine 26: motorised 2019, walking-only 2020), clipped to Pakistan; WorldPop 2020 UN-adjusted 1 km population; Data Darbar boundaries. Built for Adaad's September 2026 issue.",
+   "columns": [
+    {
+     "name": "dd_id",
+     "type": "VARCHAR",
+     "description": "ADM3 identifier \u2014 joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id, school_access_tehsil.dd_id"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil name"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar district key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or territory"
+    },
+    {
+     "name": "merged_district",
+     "type": "BIGINT",
+     "description": "1 for the seven ex-FATA merged districts"
+    },
+    {
+     "name": "n_px",
+     "type": "BIGINT",
+     "description": "valid 1 km cells"
+    },
+    {
+     "name": "pop_2020",
+     "type": "DOUBLE",
+     "description": "WorldPop 2020 population on those cells"
+    },
+    {
+     "name": "mot_mean",
+     "type": "DOUBLE",
+     "description": "motorised minutes, unweighted mean of cells"
+    },
+    {
+     "name": "mot_popw_mean",
+     "type": "DOUBLE",
+     "description": "motorised minutes, population-weighted mean"
+    },
+    {
+     "name": "wal_mean",
+     "type": "DOUBLE",
+     "description": "walking minutes, unweighted mean of cells"
+    },
+    {
+     "name": "wal_popw_mean",
+     "type": "DOUBLE",
+     "description": "walking minutes, population-weighted mean"
+    },
+    {
+     "name": "mot_pct_pop_gt30",
+     "type": "DOUBLE",
+     "description": "% of people more than 30 motorised minutes from care"
+    },
+    {
+     "name": "mot_pct_pop_gt60",
+     "type": "DOUBLE",
+     "description": "% more than 60 motorised minutes"
+    },
+    {
+     "name": "mot_pct_pop_gt120",
+     "type": "DOUBLE",
+     "description": "% more than 120 motorised minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt30",
+     "type": "DOUBLE",
+     "description": "% more than 30 walking minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt60",
+     "type": "DOUBLE",
+     "description": "% more than 60 walking minutes"
+    },
+    {
+     "name": "wal_pct_pop_gt120",
+     "type": "DOUBLE",
+     "description": "% more than 120 walking minutes"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
    "name": "lsm_qim",
    "file": "lsm_qim.parquet",
    "bytes": 3354,
@@ -2204,20 +2423,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RLS_POLSALE_M",
-     "name": "POL (Energy Products) Sales by Sector",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2013-07",
-     "upto": "2026-05"
-    },
-    {
      "code": "TS_GP_RS_QGDP1516_Q",
      "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
      "subject": "Real Sector",
      "series": 8,
      "since": "2015-09",
      "upto": "2026-03"
+    },
+    {
+     "code": "TS_GP_RLS_POLSALE_M",
+     "name": "POL (Energy Products) Sales by Sector",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2013-07",
+     "upto": "2026-05"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",
@@ -3787,6 +4006,14 @@
   {
    "title": "Sindh multilateration: solved positions that disagree with the RSU pin",
    "sql": "-- 24% of RSU pins sit more than 300 m from the position solved from SELD's own\n-- distance checker; the table keeps both so the choice can be audited.\nSELECT district, name, level, coord_method, coord_resid_m, pin_vs_solved_m, lat, lng\nFROM schools_pk\nWHERE province = 'Sindh' AND pin_vs_solved_m > 5000\nORDER BY pin_vs_solved_m DESC LIMIT 25;"
+  },
+  {
+   "title": "Travel time to care by poverty quintile",
+   "sql": "-- Districts grouped into MPI quintiles, weighted by population: the poorest\n-- fifth is nine times further from care than the least poor.\nWITH q AS (\n  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n  WHERE m.low_n = 0)\nSELECT mpi_quintile, count(*) AS districts,\n       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\nFROM q GROUP BY 1 ORDER BY 1;"
+  },
+  {
+   "title": "Tehsils where most people are over an hour from care even with a vehicle",
+   "sql": "SELECT tehsil, district_key, province, pop_2020, mot_popw_mean, mot_pct_pop_gt60, wal_pct_pop_gt120\nFROM health_access_tehsil\nWHERE mot_pct_pop_gt60 > 50\nORDER BY pop_2020 DESC LIMIT 25;"
   },
   {
    "title": "Find a State Bank series by name",

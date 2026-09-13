@@ -24,7 +24,7 @@ const TOPICS = {
   // MICS groups lead the health, WASH and women topics because they are
   // district-representative where the DHS groups are not. See the note above
   // INDICATOR_GROUPS.micsMaternal.
-  health:         { label: 'Health',                    groups: ['micsMaternal', 'micsChildHealth', 'micsNutrition', 'pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition'] },
+  health:         { label: 'Health',                    groups: ['micsMaternal', 'micsChildHealth', 'micsNutrition', 'pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition', 'healthAccessDistrict', 'healthAccess'] },
   women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
   children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
   ruralFacilities: { label: 'Rural Facilities \u2014 Mouza Census 2020',
@@ -131,6 +131,51 @@ const INDICATOR_GROUPS = {
     classed: true,
     diverging: ['gap_middle_km', 'gap_high_km', 'gap_primary_km'],
     yearLabel: '2026',
+  },
+
+  // Travel time to the nearest health facility, from Adaad's "The unequal
+  // road to care" (etl/health_access/; warehouse tables health_access_district
+  // and health_access_tehsil). build_map_payload.py there writes the rows into
+  // DD_POV.health_districts and DD_POV.health_tehsils.
+  healthAccessDistrict: {
+    label: 'Travel Time to Care \u2014 by District',
+    dataset: 'Malaria Atlas accessibility surfaces \u00b7 WorldPop 2020 \u00b7 1 km',
+    pov: 'health_districts', geo: 'district', noYear: true, hasYears: false,
+    blurb: 'Modelled travel time from every populated 1 km cell to the nearest mapped health facility (OpenStreetMap and Google Maps hospitals and clinics, public and private together), on the Malaria Atlas motorised (2019) and walking-only (2020) friction surfaces, weighted by WorldPop 2020. Medians and means are population-weighted; the shares are of people beyond 30, 60 or 120 minutes. The surfaces know nothing about staffing, opening hours or quality, and WorldPop understates Gilgit-Baltistan by about a third, so the north\u2019s headcounts are low. Frozen with Adaad\u2019s September 2026 issue.',
+    indicators: {
+      mot_popw_median:    'Travel time to care, motorised \u2014 median (min)',
+      wal_popw_median:    'Travel time to care, walking \u2014 median (min)',
+      mot_pct_pop_gt60:   'Population over 60 min from care, motorised (%)',
+      wal_pct_pop_gt60:   'Population over 60 min from care, walking (%)',
+      mot_pct_pop_gt30:   'Population over 30 min, motorised (%)',
+      mot_pct_pop_gt120:  'Population over 2 hours, motorised (%)',
+      wal_pct_pop_gt120:  'Population over 2 hours, walking (%)',
+      mot_popw_mean:      'Travel time, motorised \u2014 mean (min)',
+      wal_popw_mean:      'Travel time, walking \u2014 mean (min)',
+    },
+    dp: { mot_popw_median: 0, wal_popw_median: 0, mot_popw_mean: 0, wal_popw_mean: 0, mot_pct_pop_gt60: 0, wal_pct_pop_gt60: 0, mot_pct_pop_gt30: 0, mot_pct_pop_gt120: 0, wal_pct_pop_gt120: 0 },
+    classed: true,
+    yearLabel: '2019\u201320',
+  },
+  healthAccess: {
+    label: 'Travel Time to Care \u2014 by Tehsil',
+    dataset: 'Malaria Atlas accessibility surfaces \u00b7 WorldPop 2020 \u00b7 1 km',
+    pov: 'health_tehsils', geo: 'tehsil', noYear: true, hasYears: false,
+    blurb: 'The district measure on the 553 tehsil polygons: population-weighted mean travel time from every populated 1 km cell to the nearest mapped health facility (OpenStreetMap and Google Maps, public and private), on the Malaria Atlas motorised (2019) and walking-only (2020) surfaces, and the share of people beyond 30, 60 or 120 minutes. Facilities are mapped points, not a register of working services; a tehsil\u2019s people can use the next tehsil\u2019s facility, so the number is not a function of its own facilities. Manora Cantonment has no valid cells and is blank. WorldPop understates Gilgit-Baltistan by about a third. Frozen with Adaad\u2019s September 2026 issue.',
+    indicators: {
+      mot_popw_mean:      'Travel time to care, motorised (min)',
+      wal_popw_mean:      'Travel time to care, walking (min)',
+      mot_pct_pop_gt60:   'Population over 60 min from care, motorised (%)',
+      wal_pct_pop_gt60:   'Population over 60 min from care, walking (%)',
+      mot_pct_pop_gt30:   'Population over 30 min, motorised (%)',
+      mot_pct_pop_gt120:  'Population over 2 hours, motorised (%)',
+      wal_pct_pop_gt120:  'Population over 2 hours, walking (%)',
+      mot_mean:           'Motorised, unweighted mean of cells (min)',
+      wal_mean:           'Walking, unweighted mean of cells (min)',
+    },
+    dp: { mot_popw_mean: 0, wal_popw_mean: 0, mot_mean: 0, wal_mean: 0, mot_pct_pop_gt60: 0, wal_pct_pop_gt60: 0, mot_pct_pop_gt30: 0, mot_pct_pop_gt120: 0, wal_pct_pop_gt120: 0 },
+    classed: true,
+    yearLabel: '2019\u201320',
   },
 
   mouza_electricity_energy: {
@@ -797,6 +842,9 @@ const COLOR_RAMPS = {
   nightlights:      ['#fffbe6', '#d4a017', '#4a2c00'],
   // School access: darker = further from a school
   schoolAccess:     ['#fef6dc', '#b8941a', '#5a3b06'],
+  // Travel time to care: darker = longer
+  healthAccessDistrict: ['#fdf3e3', '#c2410c', '#5c1a06'],
+  healthAccess:     ['#fdf3e3', '#c2410c', '#5c1a06'],
   // Housing & Infrastructure
   hiesHousing:      ['#fbe9e7', '#bf360c'],
   pslmWash:         ['#e0f2f1', '#004d40'],
@@ -831,6 +879,9 @@ const HIGHER_IS_WORSE = new Set([
   // School access: further is worse; a positive gap means girls travel further
   'girls_middle_km', 'boys_middle_km', 'gap_middle_km', 'girls_high_km', 'boys_high_km', 'gap_high_km',
   'girls_primary_km', 'boys_primary_km', 'gap_primary_km', 'girls_middle_over5km_pct', 'boys_middle_over5km_pct',
+  // Travel time to care: longer is worse
+  'mot_popw_median', 'wal_popw_median', 'mot_popw_mean', 'wal_popw_mean', 'mot_mean', 'wal_mean',
+  'mot_pct_pop_gt30', 'mot_pct_pop_gt60', 'mot_pct_pop_gt120', 'wal_pct_pop_gt30', 'wal_pct_pop_gt60', 'wal_pct_pop_gt120',
   // Demographics
   'sex_ratio',            // gender imbalance
   'avg_household_size',   // overcrowding

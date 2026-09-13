@@ -828,6 +828,69 @@ def build(src: Path) -> None:
     )
     EXAMPLES.extend(SCHOOL_EXAMPLES)
 
+    # ── 2c. travel time to care (Adaad, "The unequal road to care") ──────────
+    print("health access…")
+    ha_dir = REPO / "etl" / "health_access"
+    HA_SOURCE = ("Malaria Atlas Project accessibility surfaces (Weiss et al. 2020, Nature Medicine 26: motorised 2019, "
+                 "walking-only 2020), clipped to Pakistan; WorldPop 2020 UN-adjusted 1 km population; Data Darbar boundaries. "
+                 "Built for Adaad's September 2026 issue.")
+    HA_NOTE = ("Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the "
+               "least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap "
+               "and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening "
+               "hours or quality — so this measures geographic access to a mapped point, not to a working service. Motorised "
+               "assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts "
+               "Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are "
+               "understated. Thresholds are strictly greater than 30, 60 or 120 minutes. ")
+    register(
+        "health_access_tehsil",
+        "Travel time to the nearest health facility by tehsil (553 ADM3 polygons): population-weighted means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
+        HA_NOTE + "mot_/wal_ = motorised / walking-only surface; *_mean is the unweighted mean of valid cells, *_popw_mean the "
+        "population-weighted mean; *_pct_pop_gtN the share of people more than N minutes away. Manora Cantonment has no valid "
+        "cells: its blanks are missing estimates, not zero. The tehsil grid holds 1,175,119 cells and 219.6 million people, "
+        "4,671 cells fewer than the district build because the two boundary files rasterise differently, so tehsil rows do "
+        "not recombine exactly to health_access_district (22.10 v 22.13 minutes nationally). The seven ex-FATA merged "
+        "districts are Khyber Pakhtunkhwa and carry merged_district = 1. This is the table the map's Health → Travel Time "
+        "to Care (tehsil) layer draws.",
+        {
+            "dd_id": "ADM3 identifier — joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id, school_access_tehsil.dd_id",
+            "tehsil": "tehsil name", "district_key": "Data Darbar district key", "province": "province or territory",
+            "merged_district": "1 for the seven ex-FATA merged districts", "n_px": "valid 1 km cells", "pop_2020": "WorldPop 2020 population on those cells",
+            "mot_mean": "motorised minutes, unweighted mean of cells", "mot_popw_mean": "motorised minutes, population-weighted mean",
+            "wal_mean": "walking minutes, unweighted mean of cells", "wal_popw_mean": "walking minutes, population-weighted mean",
+            "mot_pct_pop_gt30": "% of people more than 30 motorised minutes from care", "mot_pct_pop_gt60": "% more than 60 motorised minutes",
+            "mot_pct_pop_gt120": "% more than 120 motorised minutes", "wal_pct_pop_gt30": "% more than 30 walking minutes",
+            "wal_pct_pop_gt60": "% more than 60 walking minutes", "wal_pct_pop_gt120": "% more than 120 walking minutes", "release": "release tag",
+        },
+        HA_SOURCE,
+        f"SELECT * FROM read_csv_auto('{(ha_dir / 'travel_time_tehsils_2026-09.csv').as_posix()}') ORDER BY province, district_key, tehsil",
+        unit="minutes; per cent",
+    )
+    register(
+        "health_access_district",
+        "Travel time to the nearest health facility by district (147): population-weighted medians and means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
+        HA_NOTE + "*_popw_median is the population-weighted median (the piece's headline measure: 22 minutes motorised, 128 walking "
+        "nationally); *_median the unweighted median of cells. Shares were fractions in the piece's file and are per cent here. "
+        "Join mpi_districts on district_key for the poverty gradient (Spearman 0.76 between MPI and motorised time; the "
+        "poorest MPI quintile is 47 minutes from care motorised against 5 for the least poor). The seven ex-FATA merged "
+        "districts are Khyber Pakhtunkhwa and carry merged_district = 1.",
+        {
+            "district_key": "Data Darbar district key — joins district_indicators, mpi_districts, school_access_district", "district": "district name",
+            "province": "province or territory", "merged_district": "1 for the seven ex-FATA merged districts", "n_px": "valid 1 km cells",
+            "pop_2020": "WorldPop 2020 population on those cells",
+            "mot_mean": "motorised minutes, unweighted mean of cells", "mot_median": "motorised minutes, unweighted median of cells",
+            "mot_popw_mean": "motorised minutes, population-weighted mean", "mot_popw_median": "motorised minutes, population-weighted median",
+            "wal_mean": "walking minutes, unweighted mean", "wal_median": "walking minutes, unweighted median",
+            "wal_popw_mean": "walking minutes, population-weighted mean", "wal_popw_median": "walking minutes, population-weighted median",
+            "mot_pct_pop_gt30": "% of people more than 30 motorised minutes from care", "mot_pct_pop_gt60": "% more than 60 motorised minutes",
+            "mot_pct_pop_gt120": "% more than 120 motorised minutes", "wal_pct_pop_gt30": "% more than 30 walking minutes",
+            "wal_pct_pop_gt60": "% more than 60 walking minutes", "wal_pct_pop_gt120": "% more than 120 walking minutes", "release": "release tag",
+        },
+        HA_SOURCE,
+        f"SELECT * FROM read_csv_auto('{(ha_dir / 'travel_time_districts_2026-09.csv').as_posix()}') ORDER BY province, district",
+        unit="minutes; per cent",
+    )
+    EXAMPLES.extend(HEALTH_EXAMPLES)
+
     # ── 3. macro tables lifted from the desktop warehouse ────────────────────
     print("macro…")
     t = (src / "trade_hs8.parquet").as_posix()
@@ -1158,6 +1221,27 @@ SCHOOL_EXAMPLES = [
              "ORDER BY pin_vs_solved_m DESC LIMIT 25;")},
 ]
 
+
+HEALTH_EXAMPLES = [
+    {"title": "Travel time to care by poverty quintile",
+     "sql": ("-- Districts in fifths by MPI (equal numbers of districts), each fifth weighted by\n"
+             "-- population. The piece's 47 v 5 minutes uses population quintiles and medians;\n"
+             "-- the gradient is the same either way.\n"
+             "WITH q AS (\n"
+             "  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n"
+             "  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n"
+             "  WHERE m.low_n = 0)\n"
+             "SELECT mpi_quintile, count(*) AS districts,\n"
+             "       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n"
+             "       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n"
+             "       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\n"
+             "FROM q GROUP BY 1 ORDER BY 1;")},
+    {"title": "Tehsils where most people are over an hour from care even with a vehicle",
+     "sql": ("SELECT tehsil, district_key, province, pop_2020, mot_popw_mean, mot_pct_pop_gt60, wal_pct_pop_gt120\n"
+             "FROM health_access_tehsil\n"
+             "WHERE mot_pct_pop_gt60 > 50\n"
+             "ORDER BY pop_2020 DESC LIMIT 25;")},
+]
 
 # The State Bank tables are long: one row per series x date, and the series are
 # identified by name in sbp_series_catalog. Every example therefore starts from
