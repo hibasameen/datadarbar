@@ -62,6 +62,193 @@
    ]
   },
   {
+   "name": "census_enrolment_5_16_by_sex",
+   "file": "census_enrolment_5_16_by_sex.parquet",
+   "bytes": 22611,
+   "rows": 130,
+   "description": "Census 2023 Table 13(b): population and enrolment aged 5\u201316 by sex and rural/urban, one row per district on the 2017 boundary frame.",
+   "notes": "Successor districts are summed into their 2017 parents (constituents lists them), so rates are on the same frame as school_access_district; 130 rows. *_in_school_pct = enrolled \u00f7 population aged 5\u201316. *_never and *_out_of_school follow PBS's definitions (never attended; never attended plus dropped out). This is the age-matched outcome the piece uses; Table 12's all-ages complement runs about 0.7 points higher.",
+   "unit": "persons; per cent",
+   "source": "PBS Population and Housing Census 2023, district Table 13(b), via github.com/fahad-mirza/pakistan_census_2023_tables",
+   "columns": [
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district (parent frame)"
+    },
+    {
+     "name": "girls_pop_5_16",
+     "type": "DOUBLE",
+     "description": "girls pop, ages 5\u201316"
+    },
+    {
+     "name": "girls_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "girls enrolled, ages 5\u201316"
+    },
+    {
+     "name": "girls_never_5_16",
+     "type": "DOUBLE",
+     "description": "girls never, ages 5\u201316"
+    },
+    {
+     "name": "boys_pop_5_16",
+     "type": "DOUBLE",
+     "description": "boys pop, ages 5\u201316"
+    },
+    {
+     "name": "boys_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "boys enrolled, ages 5\u201316"
+    },
+    {
+     "name": "boys_never_5_16",
+     "type": "DOUBLE",
+     "description": "boys never, ages 5\u201316"
+    },
+    {
+     "name": "girls_rural_pop_5_16",
+     "type": "DOUBLE",
+     "description": "girls rural pop, ages 5\u201316"
+    },
+    {
+     "name": "girls_rural_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "girls rural enrolled, ages 5\u201316"
+    },
+    {
+     "name": "girls_rural_never_5_16",
+     "type": "DOUBLE",
+     "description": "girls rural never, ages 5\u201316"
+    },
+    {
+     "name": "boys_rural_pop_5_16",
+     "type": "DOUBLE",
+     "description": "boys rural pop, ages 5\u201316"
+    },
+    {
+     "name": "boys_rural_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "boys rural enrolled, ages 5\u201316"
+    },
+    {
+     "name": "boys_rural_never_5_16",
+     "type": "DOUBLE",
+     "description": "boys rural never, ages 5\u201316"
+    },
+    {
+     "name": "girls_urban_pop_5_16",
+     "type": "DOUBLE",
+     "description": "girls urban pop, ages 5\u201316"
+    },
+    {
+     "name": "girls_urban_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "girls urban enrolled, ages 5\u201316"
+    },
+    {
+     "name": "girls_urban_never_5_16",
+     "type": "DOUBLE",
+     "description": "girls urban never, ages 5\u201316"
+    },
+    {
+     "name": "boys_urban_pop_5_16",
+     "type": "DOUBLE",
+     "description": "boys urban pop, ages 5\u201316"
+    },
+    {
+     "name": "boys_urban_enrolled_5_16",
+     "type": "DOUBLE",
+     "description": "boys urban enrolled, ages 5\u201316"
+    },
+    {
+     "name": "boys_urban_never_5_16",
+     "type": "DOUBLE",
+     "description": "boys urban never, ages 5\u201316"
+    },
+    {
+     "name": "girls_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "girls out of school, ages 5\u201316"
+    },
+    {
+     "name": "boys_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "boys out of school, ages 5\u201316"
+    },
+    {
+     "name": "girls_rural_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "girls rural out of school, ages 5\u201316"
+    },
+    {
+     "name": "boys_rural_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "boys rural out of school, ages 5\u201316"
+    },
+    {
+     "name": "girls_urban_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "girls urban out of school, ages 5\u201316"
+    },
+    {
+     "name": "boys_urban_out_of_school_5_16",
+     "type": "DOUBLE",
+     "description": "boys urban out of school, ages 5\u201316"
+    },
+    {
+     "name": "constituents",
+     "type": "VARCHAR",
+     "description": "census districts summed into the row"
+    },
+    {
+     "name": "girls_in_school_pct",
+     "type": "DOUBLE",
+     "description": "girls enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "boys_in_school_pct",
+     "type": "DOUBLE",
+     "description": "boys enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "girls_rural_in_school_pct",
+     "type": "DOUBLE",
+     "description": "girls rural enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "boys_rural_in_school_pct",
+     "type": "DOUBLE",
+     "description": "boys rural enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "girls_urban_in_school_pct",
+     "type": "DOUBLE",
+     "description": "girls urban enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "boys_urban_in_school_pct",
+     "type": "DOUBLE",
+     "description": "boys urban enrolled \u00f7 population 5\u201316, %"
+    },
+    {
+     "name": "enrol_gap_pp",
+     "type": "DOUBLE",
+     "description": "boys_in_school_pct \u2212 girls_in_school_pct"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar key"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
    "bytes": 167771,
@@ -2017,14 +2204,6 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RS_QGDP1516_Q",
-     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2015-09",
-     "upto": "2026-03"
-    },
-    {
      "code": "TS_GP_RLS_POLSALE_M",
      "name": "POL (Energy Products) Sales by Sector",
      "subject": "Real Sector",
@@ -2033,12 +2212,1209 @@
      "upto": "2026-05"
     },
     {
+     "code": "TS_GP_RS_QGDP1516_Q",
+     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2015-09",
+     "upto": "2026-03"
+    },
+    {
      "code": "TS_GP_RLS_PAKGDP15_Y",
      "name": "Gross Domestic Product of Pakistan at constant basic prices of 2015-16",
      "subject": "Real Sector",
      "series": 6,
      "since": "2000-06",
      "upto": "2026-06"
+    }
+   ]
+  },
+  {
+   "name": "school_access_district",
+   "file": "school_access_district.parquet",
+   "bytes": 30428,
+   "rows": 132,
+   "description": "Distance to the nearest government school by sex, enrolment by sex, and school counts, one row per district (132).",
+   "notes": "all_km, boys_km, girls_km are POPULATION-WEIGHTED MEDIAN straight-line distances (Lambert conformal conic, km) from every populated 1 km cell to the nearest school of that network; *_min are walking minutes on the Malaria Atlas friction surface. gap_km = girls_km \u2212 boys_km (positive = girls further). Networks are by name designation; for Sindh the same medians under the attendance and girls-or-mixed definitions are in girls_km_attend / girls_km_mixed (the designation gap of 0.8 km falls to zero under attendance). tt_caveat flags districts where the friction surface is unreliable (GB) or mountain/desert cells make minutes an upper bound. *_in_school_pct_5_16 are Census 2023 Table 13(b) enrolment rates (enrolled / population aged 5\u201316) with successor districts summed into parents, so 123 of the 132 rows carry them. living_standards_deprivation_pslm is the (censored) MPI component; material_deprivation_pslm is an uncensored index from PSLM 2019-20 (no toilet, no flush, no piped water, food insecurity). *_n_schools count schools whose POINT falls in the district polygon (the basis of the piece's Figure 1); schools_listed / _with_coords / _in_analysis count rows by the SOURCE's district. The two bases differ where geocoded points cross a boundary. Distances depend on the whole network, not the district's own schools, so a district with few schools can still be close to the next district's.",
+   "unit": "km, walking minutes, per cent",
+   "source": "Adaad school layer (schools_pk) \u00d7 WorldPop 2020 \u00d7 Malaria Atlas friction surface; PBS Census 2023 Table 13(b); PSLM 2019-20",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "analysis region"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar district key"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "display name"
+    },
+    {
+     "name": "all_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest school, either sex"
+    },
+    {
+     "name": "boys_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest boys' school"
+    },
+    {
+     "name": "girls_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' school"
+    },
+    {
+     "name": "gap_km",
+     "type": "DOUBLE",
+     "description": "girls_km \u2212 boys_km"
+    },
+    {
+     "name": "all_min",
+     "type": "DOUBLE",
+     "description": "median walking minutes, any school"
+    },
+    {
+     "name": "boys_min",
+     "type": "DOUBLE",
+     "description": "median walking minutes, boys' school"
+    },
+    {
+     "name": "girls_min",
+     "type": "DOUBLE",
+     "description": "median walking minutes, girls' school"
+    },
+    {
+     "name": "gap_min",
+     "type": "DOUBLE",
+     "description": "girls_min \u2212 boys_min"
+    },
+    {
+     "name": "tt_caveat",
+     "type": "VARCHAR",
+     "description": "travel-time caveat, if any"
+    },
+    {
+     "name": "girls_in_school_pct_5_16",
+     "type": "DOUBLE",
+     "description": "Census 2023 Table 13(b): girls 5\u201316 enrolled / girls 5\u201316, %"
+    },
+    {
+     "name": "boys_in_school_pct_5_16",
+     "type": "DOUBLE",
+     "description": "Census 2023 Table 13(b): boys 5\u201316 enrolled / boys 5\u201316, %"
+    },
+    {
+     "name": "enrol_gap_pp_boys_minus_girls",
+     "type": "DOUBLE",
+     "description": "boys_in_school_pct_5_16 \u2212 girls_in_school_pct_5_16, percentage points"
+    },
+    {
+     "name": "living_standards_deprivation_pslm",
+     "type": "DOUBLE",
+     "description": "MPI living-standards deprivation share (censored), PSLM 2019-20"
+    },
+    {
+     "name": "material_deprivation_pslm",
+     "type": "DOUBLE",
+     "description": "uncensored material deprivation index, PSLM 2019-20"
+    },
+    {
+     "name": "schools_listed",
+     "type": "BIGINT",
+     "description": "rows in schools_pk whose source district is this district"
+    },
+    {
+     "name": "schools_with_coords",
+     "type": "BIGINT",
+     "description": "of which positioned"
+    },
+    {
+     "name": "schools_in_analysis",
+     "type": "BIGINT",
+     "description": "of which in the analysis"
+    },
+    {
+     "name": "boys_high_median_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "boys_middle_median_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "boys_primary_median_km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_high_median_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' high-or-above school"
+    },
+    {
+     "name": "girls_middle_median_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' middle-or-above school"
+    },
+    {
+     "name": "girls_primary_median_km",
+     "type": "DOUBLE",
+     "description": "median km to nearest girls' school, any level"
+    },
+    {
+     "name": "boys_high_share_over_5km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "boys_middle_share_over_5km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "boys_primary_share_over_5km",
+     "type": "DOUBLE",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_high_share_over_5km",
+     "type": "DOUBLE",
+     "description": "share more than 5 km from a girls' high-plus school"
+    },
+    {
+     "name": "girls_middle_share_over_5km",
+     "type": "DOUBLE",
+     "description": "share more than 5 km from a girls' middle-plus school"
+    },
+    {
+     "name": "girls_primary_share_over_5km",
+     "type": "DOUBLE",
+     "description": "share of population more than 5 km from a girls' school, any level"
+    },
+    {
+     "name": "girls_primary_n_schools",
+     "type": "BIGINT",
+     "description": "girls' schools (any level) whose point is inside the district polygon"
+    },
+    {
+     "name": "boys_primary_n_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_middle_n_schools",
+     "type": "BIGINT",
+     "description": "girls' middle-plus schools inside the polygon (Figure 1)"
+    },
+    {
+     "name": "boys_middle_n_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_high_n_schools",
+     "type": "BIGINT",
+     "description": "girls' high-plus schools inside the polygon"
+    },
+    {
+     "name": "boys_high_n_schools",
+     "type": "BIGINT",
+     "description": "as girls_, boys"
+    },
+    {
+     "name": "girls_km_mixed",
+     "type": "DOUBLE",
+     "description": "Sindh only: girls_km when Mixed schools join the girls' network"
+    },
+    {
+     "name": "boys_km_mixed",
+     "type": "DOUBLE",
+     "description": "Sindh only: boys_km, boys-or-mixed"
+    },
+    {
+     "name": "gap_km_mixed",
+     "type": "DOUBLE",
+     "description": "Sindh only: gap under the mixed definition"
+    },
+    {
+     "name": "girls_km_attend",
+     "type": "DOUBLE",
+     "description": "Sindh only: girls_km when any school enrolling girls counts"
+    },
+    {
+     "name": "boys_km_attend",
+     "type": "DOUBLE",
+     "description": "Sindh only: boys_km by attendance"
+    },
+    {
+     "name": "gap_km_attend",
+     "type": "DOUBLE",
+     "description": "Sindh only: gap under the attendance definition"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "school_distance_stats",
+   "file": "school_distance_stats.parquet",
+   "bytes": 22568,
+   "rows": 832,
+   "description": "Distance-to-school distributions by region and district, sex and school level (primary, middle-plus, high-plus).",
+   "notes": "One row per geography \u00d7 sex \u00d7 level. geography_type = 'region' rows are the seven analysis regions; 'district' rows carry district_key. mean_km and median_km are population-weighted over 1 km cells; share_over_2km/5km/10km are population shares beyond that straight-line distance. network_schools is the size of the REGION's network for that sex and level \u2014 the same number repeats on every district row of a region, because a district's residents can use the next district's schools. Per-district school counts are in school_access_district. tier and sector repeat the coverage ledger's grade and the 'government schools only' scope.",
+   "unit": "km, population shares",
+   "source": "Adaad school layer \u00d7 WorldPop 2020",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "analysis region"
+    },
+    {
+     "name": "geography_type",
+     "type": "VARCHAR",
+     "description": "region | district"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar key for district rows"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "girls | boys"
+    },
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "primary (any school) | middle (middle-plus) | high (high-plus)"
+    },
+    {
+     "name": "network_schools",
+     "type": "BIGINT",
+     "description": "schools in the region's network for this sex and level"
+    },
+    {
+     "name": "pop",
+     "type": "BIGINT",
+     "description": "population of the geography (WorldPop 2020 sum)"
+    },
+    {
+     "name": "mean_km",
+     "type": "DOUBLE",
+     "description": "population-weighted mean km"
+    },
+    {
+     "name": "median_km",
+     "type": "DOUBLE",
+     "description": "population-weighted median km"
+    },
+    {
+     "name": "share_over_2km",
+     "type": "DOUBLE",
+     "description": "population share more than 2 km away"
+    },
+    {
+     "name": "share_over_5km",
+     "type": "DOUBLE",
+     "description": "more than 5 km"
+    },
+    {
+     "name": "share_over_10km",
+     "type": "DOUBLE",
+     "description": "more than 10 km"
+    },
+    {
+     "name": "tier",
+     "type": "VARCHAR",
+     "description": "coverage grade"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "scope"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "school_layer_coverage",
+   "file": "school_layer_coverage.parquet",
+   "bytes": 4730,
+   "rows": 9,
+   "description": "Coverage ledger: how many government schools each region lists, how many the layer positions, and where the positions come from.",
+   "notes": "schools_known_to_exist is the department's own count (roster or annual census); schools_in_analysis is what the piece used; rows_in_schools_pk / rows_with_coords / rows_in_analysis are the same counts read back from the released table, so any difference is visible here (Sindh: 39,745 functional positioned schools, 39,741 with a sex designation). Two rows carry no positions at all: the ex-FATA merged districts (6,394 schools per KP's annual census, no public locations) and eight of AJK's ten districts (no public list). Islamabad's ~420 is the size of the federal network, not a roster count. quality_tier grades positional quality, not completeness: Punjab is 95% geocoded but only half of it at settlement precision.",
+   "unit": null,
+   "source": "Adaad, coverage ledger of the school layer, September 2026",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "region"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "which schools the row covers"
+    },
+    {
+     "name": "schools_in_analysis",
+     "type": "BIGINT",
+     "description": "schools the piece used"
+    },
+    {
+     "name": "schools_known_to_exist",
+     "type": "VARCHAR",
+     "description": "schools the department lists"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "register"
+    },
+    {
+     "name": "gps_origin",
+     "type": "VARCHAR",
+     "description": "how positions were obtained"
+    },
+    {
+     "name": "quality_tier",
+     "type": "VARCHAR",
+     "description": "A (GPS at source) to C (partial geocoding)"
+    },
+    {
+     "name": "coverage_note",
+     "type": "VARCHAR",
+     "description": "caveats"
+    },
+    {
+     "name": "mapped",
+     "type": "VARCHAR",
+     "description": "yes | partial | no"
+    },
+    {
+     "name": "schools_pk_region",
+     "type": "VARCHAR",
+     "description": "region label in schools_pk"
+    },
+    {
+     "name": "rows_in_schools_pk",
+     "type": "BIGINT",
+     "description": "rows in the released table"
+    },
+    {
+     "name": "rows_with_coords",
+     "type": "BIGINT",
+     "description": "of which positioned"
+    },
+    {
+     "name": "rows_in_analysis",
+     "type": "BIGINT",
+     "description": "of which in the analysis"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "school_validation_district",
+   "file": "school_validation_district.parquet",
+   "bytes": 46945,
+   "rows": 147,
+   "description": "External-validity test of the school layer against the Mouza Census 2020, one row per mouza district (147): count floors and village-reported distances.",
+   "notes": "The Mouza Census asked every rural mouza whether an institution for boys and one for girls exists at each level and, if not, how far the nearest is. It is sector-blind and counts villages, so it cannot audit the layer line by line; it puts a FLOOR under the count (a village with one has at least one) and gives an INDEPENDENT distance. ratio_* = schools in the layer \u00f7 mouzas reporting an institution of that sex and level: well under 1 means schools are missing or misclassified; above 1 is expected. The floor test is diagnostic only where private and co-educational provision is scarce \u2014 at primary level in Punjab a low ratio is private schools, and in Sindh 'girls undercounted relative to boys' fires by construction because designated boys' schools include the Mixed majority. status = 'absent from harvest' marks the 15 mouza districts the layer does not cover (7 merged districts, 8 AJK). village_* columns are means and medians of the villages' reported km; model_* are the layer's population-weighted medians and shares; *_gap_* are girls minus boys. Compare ranks and signs, not levels: village distances are unweighted, by road, any sector. Run on the released table (in_analysis rows), so these figures describe schools_pk, not the raw registers.",
+   "unit": null,
+   "source": "PBS Mouza Census 2020 microdata (Form-11 Part IV) \u00d7 schools_pk \u00d7 school_distance_stats",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "region"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar key"
+    },
+    {
+     "name": "mouza_district",
+     "type": "VARCHAR",
+     "description": "district(s) as PBS names them (successors joined with +)"
+    },
+    {
+     "name": "layer_district",
+     "type": "VARCHAR",
+     "description": "district name in the layer"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "matched | absent from harvest | harvest only (no mouza rows: the layer has schools but PBS enumerated no rural mouza there, e.g. Karachi's urban districts)"
+    },
+    {
+     "name": "rural_mouzas",
+     "type": "DOUBLE",
+     "description": "rural mouzas in the district"
+    },
+    {
+     "name": "flag",
+     "type": "VARCHAR",
+     "description": "test outcomes: boys/girls middle-plus or primary under half; girls undercounted relative to boys"
+    },
+    {
+     "name": "mouzas_with_B_primary",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' primary institution"
+    },
+    {
+     "name": "mouzas_with_B_middle",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' middle institution"
+    },
+    {
+     "name": "mouzas_with_B_high",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' high institution"
+    },
+    {
+     "name": "mouzas_with_G_primary",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' primary institution"
+    },
+    {
+     "name": "mouzas_with_G_middle",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' middle institution"
+    },
+    {
+     "name": "mouzas_with_G_high",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' high institution"
+    },
+    {
+     "name": "coll_B_high",
+     "type": "BIGINT",
+     "description": "boys' high schools in the layer"
+    },
+    {
+     "name": "coll_B_middle",
+     "type": "BIGINT",
+     "description": "boys' middle schools in the layer"
+    },
+    {
+     "name": "coll_B_primary",
+     "type": "BIGINT",
+     "description": "boys' primary schools in the layer"
+    },
+    {
+     "name": "coll_G_high",
+     "type": "BIGINT",
+     "description": "girls' high schools in the layer"
+    },
+    {
+     "name": "coll_G_middle",
+     "type": "BIGINT",
+     "description": "girls' middle schools in the layer"
+    },
+    {
+     "name": "coll_G_primary",
+     "type": "BIGINT",
+     "description": "girls' primary schools in the layer"
+    },
+    {
+     "name": "coll_midplus_B",
+     "type": "BIGINT",
+     "description": "boys' middle-plus schools in the layer"
+    },
+    {
+     "name": "ratio_midplus_B",
+     "type": "DOUBLE",
+     "description": "boys' midplus ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_high_B",
+     "type": "DOUBLE",
+     "description": "boys' high ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_primary_B",
+     "type": "DOUBLE",
+     "description": "boys' primary ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "coll_midplus_G",
+     "type": "BIGINT",
+     "description": "girls' middle-plus schools in the layer"
+    },
+    {
+     "name": "ratio_midplus_G",
+     "type": "DOUBLE",
+     "description": "girls' midplus ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_high_G",
+     "type": "DOUBLE",
+     "description": "girls' high ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_primary_G",
+     "type": "DOUBLE",
+     "description": "girls' primary ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "girls_to_boys_ratio_midplus",
+     "type": "DOUBLE",
+     "description": "ratio_midplus_G \u00f7 ratio_midplus_B"
+    },
+    {
+     "name": "village_mean_km_B_primary",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' primary institution, mean"
+    },
+    {
+     "name": "village_mean_km_B_middle",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' middle institution, mean"
+    },
+    {
+     "name": "village_mean_km_B_high",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' high institution, mean"
+    },
+    {
+     "name": "village_mean_km_G_primary",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' primary institution, mean"
+    },
+    {
+     "name": "village_mean_km_G_middle",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' middle institution, mean"
+    },
+    {
+     "name": "village_mean_km_G_high",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' high institution, mean"
+    },
+    {
+     "name": "village_median_km_B_primary",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' primary institution, median"
+    },
+    {
+     "name": "village_median_km_B_middle",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' middle institution, median"
+    },
+    {
+     "name": "village_median_km_B_high",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest boys' high institution, median"
+    },
+    {
+     "name": "village_median_km_G_primary",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' primary institution, median"
+    },
+    {
+     "name": "village_median_km_G_middle",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' middle institution, median"
+    },
+    {
+     "name": "village_median_km_G_high",
+     "type": "DOUBLE",
+     "description": "villages' reported km to nearest girls' high institution, median"
+    },
+    {
+     "name": "village_share_over_5km_B_primary",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a boys' primary institution"
+    },
+    {
+     "name": "village_share_over_5km_B_middle",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a boys' middle institution"
+    },
+    {
+     "name": "village_share_over_5km_B_high",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a boys' high institution"
+    },
+    {
+     "name": "village_share_over_5km_G_primary",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a girls' primary institution"
+    },
+    {
+     "name": "village_share_over_5km_G_middle",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a girls' middle institution"
+    },
+    {
+     "name": "village_share_over_5km_G_high",
+     "type": "DOUBLE",
+     "description": "share of villages more than 5 km from a girls' high institution"
+    },
+    {
+     "name": "model_median_km_boys_high_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for boys, high-plus"
+    },
+    {
+     "name": "model_median_km_boys_middle_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for boys, middle-plus"
+    },
+    {
+     "name": "model_median_km_boys_primary_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for boys, primary-plus"
+    },
+    {
+     "name": "model_median_km_girls_high_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for girls, high-plus"
+    },
+    {
+     "name": "model_median_km_girls_middle_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for girls, middle-plus"
+    },
+    {
+     "name": "model_median_km_girls_primary_plus",
+     "type": "DOUBLE",
+     "description": "layer: median km for girls, primary-plus"
+    },
+    {
+     "name": "model_share_over_5km_boys_high_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for boys, high-plus"
+    },
+    {
+     "name": "model_share_over_5km_boys_middle_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for boys, middle-plus"
+    },
+    {
+     "name": "model_share_over_5km_boys_primary_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for boys, primary-plus"
+    },
+    {
+     "name": "model_share_over_5km_girls_high_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for girls, high-plus"
+    },
+    {
+     "name": "model_share_over_5km_girls_middle_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for girls, middle-plus"
+    },
+    {
+     "name": "model_share_over_5km_girls_primary_plus",
+     "type": "DOUBLE",
+     "description": "layer: share over 5km for girls, primary-plus"
+    },
+    {
+     "name": "village_gap_km_primary",
+     "type": "DOUBLE",
+     "description": "village mean km, girls \u2212 boys, primary"
+    },
+    {
+     "name": "model_gap_km_primary",
+     "type": "DOUBLE",
+     "description": "layer median km, girls \u2212 boys, primary"
+    },
+    {
+     "name": "village_gap_share5_primary",
+     "type": "DOUBLE",
+     "description": "village share beyond 5 km, girls \u2212 boys, primary"
+    },
+    {
+     "name": "model_gap_share5_primary",
+     "type": "DOUBLE",
+     "description": "layer share beyond 5 km, girls \u2212 boys, primary"
+    },
+    {
+     "name": "village_gap_km_middle",
+     "type": "DOUBLE",
+     "description": "village mean km, girls \u2212 boys, middle"
+    },
+    {
+     "name": "model_gap_km_middle",
+     "type": "DOUBLE",
+     "description": "layer median km, girls \u2212 boys, middle"
+    },
+    {
+     "name": "village_gap_share5_middle",
+     "type": "DOUBLE",
+     "description": "village share beyond 5 km, girls \u2212 boys, middle"
+    },
+    {
+     "name": "model_gap_share5_middle",
+     "type": "DOUBLE",
+     "description": "layer share beyond 5 km, girls \u2212 boys, middle"
+    },
+    {
+     "name": "village_gap_km_high",
+     "type": "DOUBLE",
+     "description": "village mean km, girls \u2212 boys, high"
+    },
+    {
+     "name": "model_gap_km_high",
+     "type": "DOUBLE",
+     "description": "layer median km, girls \u2212 boys, high"
+    },
+    {
+     "name": "village_gap_share5_high",
+     "type": "DOUBLE",
+     "description": "village share beyond 5 km, girls \u2212 boys, high"
+    },
+    {
+     "name": "model_gap_share5_high",
+     "type": "DOUBLE",
+     "description": "layer share beyond 5 km, girls \u2212 boys, high"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "school_validation_summary",
+   "file": "school_validation_summary.parquet",
+   "bytes": 2130,
+   "rows": 18,
+   "description": "Rank agreement between the layer's district distances and the villages' own reports, by region and level.",
+   "notes": "Spearman rank correlations across matched districts between the layer's population-weighted median distance to the nearest girls' school and the villages' reported distance (rank_corr_level_girls), between the two shares beyond 5 km (rank_corr_share5_girls), and between the two girls-minus-boys gaps (rank_corr_gap); sign_agree_gap is the share of districts where both sources agree on the SIGN of the gap. Read it as a scorecard: the ordering of districts by how far girls are from school is confirmed (0.65\u20130.77 nationally at middle and high level); the ordering by the SIZE of the gap is confirmed at primary and middle and only weakly at high level (Balochistan 0.05); the sign of Punjab's gap is not supported (0.31\u20130.57), because both sources put it within a kilometre of zero. GB has seven districts \u2014 treat its rows as indicative.",
+   "unit": null,
+   "source": "PBS Mouza Census 2020 microdata \u00d7 school_distance_stats",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "All or region"
+    },
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "primary | middle | high"
+    },
+    {
+     "name": "n",
+     "type": "BIGINT",
+     "description": "districts compared"
+    },
+    {
+     "name": "rank_corr_level_girls",
+     "type": "DOUBLE",
+     "description": "Spearman, girls' median km: layer v villages"
+    },
+    {
+     "name": "rank_corr_share5_girls",
+     "type": "DOUBLE",
+     "description": "Spearman, share beyond 5 km"
+    },
+    {
+     "name": "rank_corr_gap",
+     "type": "DOUBLE",
+     "description": "Spearman, girls \u2212 boys km gap"
+    },
+    {
+     "name": "sign_agree_gap",
+     "type": "DOUBLE",
+     "description": "share of districts agreeing on the gap's sign"
+    },
+    {
+     "name": "rank_corr_gap_share5",
+     "type": "DOUBLE",
+     "description": "Spearman, girls \u2212 boys share beyond 5 km"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "school_validation_tehsil",
+   "file": "school_validation_tehsil.parquet",
+   "bytes": 27210,
+   "rows": 403,
+   "description": "The same count-floor test by tehsil, for the provinces whose registers carry a tehsil (Sindh, Punjab, Balochistan, GB).",
+   "notes": "Locates holes inside districts. 'absent from harvest' here is mostly a NAME mismatch rather than a hole: PBS enumerates sub-tehsils the registers do not carry (88 of Balochistan's 139), and the Karachi sub-divisions do not exist in the SELD roster. Sindh matches 104 of its 110 rural talukas. Read flags with the same caveats as school_validation_district, and with min_m = 5 mouzas rather than 10.",
+   "unit": null,
+   "source": "PBS Mouza Census 2020 microdata \u00d7 schools_pk",
+   "columns": [
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "region"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar key"
+    },
+    {
+     "name": "tehsil_key",
+     "type": "VARCHAR",
+     "description": "normalised tehsil name used to match"
+    },
+    {
+     "name": "mouza_tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil as PBS names it"
+    },
+    {
+     "name": "layer_tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil as the register names it"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "matched | absent from harvest"
+    },
+    {
+     "name": "rural_mouzas",
+     "type": "DOUBLE",
+     "description": "rural mouzas"
+    },
+    {
+     "name": "flag",
+     "type": "VARCHAR",
+     "description": "test outcomes"
+    },
+    {
+     "name": "mouzas_with_B_primary",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' primary institution"
+    },
+    {
+     "name": "mouzas_with_B_middle",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' middle institution"
+    },
+    {
+     "name": "mouzas_with_B_high",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a boys' high institution"
+    },
+    {
+     "name": "mouzas_with_G_primary",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' primary institution"
+    },
+    {
+     "name": "mouzas_with_G_middle",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' middle institution"
+    },
+    {
+     "name": "mouzas_with_G_high",
+     "type": "DOUBLE",
+     "description": "mouzas reporting a girls' high institution"
+    },
+    {
+     "name": "coll_B_high",
+     "type": "BIGINT",
+     "description": "boys' high schools in the layer"
+    },
+    {
+     "name": "coll_B_middle",
+     "type": "BIGINT",
+     "description": "boys' middle schools in the layer"
+    },
+    {
+     "name": "coll_B_primary",
+     "type": "BIGINT",
+     "description": "boys' primary schools in the layer"
+    },
+    {
+     "name": "coll_G_high",
+     "type": "BIGINT",
+     "description": "girls' high schools in the layer"
+    },
+    {
+     "name": "coll_G_middle",
+     "type": "BIGINT",
+     "description": "girls' middle schools in the layer"
+    },
+    {
+     "name": "coll_G_primary",
+     "type": "BIGINT",
+     "description": "girls' primary schools in the layer"
+    },
+    {
+     "name": "coll_midplus_B",
+     "type": "BIGINT",
+     "description": "boys' middle-plus schools in the layer"
+    },
+    {
+     "name": "ratio_midplus_B",
+     "type": "DOUBLE",
+     "description": "boys' midplus ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_high_B",
+     "type": "DOUBLE",
+     "description": "boys' high ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_primary_B",
+     "type": "DOUBLE",
+     "description": "boys' primary ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "coll_midplus_G",
+     "type": "BIGINT",
+     "description": "girls' middle-plus schools in the layer"
+    },
+    {
+     "name": "ratio_midplus_G",
+     "type": "DOUBLE",
+     "description": "girls' midplus ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_high_G",
+     "type": "DOUBLE",
+     "description": "girls' high ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "ratio_primary_G",
+     "type": "DOUBLE",
+     "description": "girls' primary ratio: layer \u00f7 mouza floor"
+    },
+    {
+     "name": "girls_to_boys_ratio_midplus",
+     "type": "DOUBLE",
+     "description": "ratio_midplus_G \u00f7 ratio_midplus_B"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "schools_pk",
+   "file": "schools_pk.parquet",
+   "bytes": 2990512,
+   "rows": 125317,
+   "description": "Government schools of Pakistan with positions and provenance, one row per listed school (release 2026-09).",
+   "notes": "READ coord_method AND coord_precision BEFORE USING lat/lng. Only 82,000 of the 121,000 positioned rows are school-level fixes (GPS at source in Balochistan and KP, RSU pins or positions multilaterated from SELD checker distances in Sindh); 20,000 Punjab, GB and AJK rows sit at the named SETTLEMENT, 8,000 Punjab rows at the MARKAZ (school-cluster) centroid and 9,800 Punjab rows at the TEHSIL centroid \u2014 those last two are useless for anything finer than a district. coord_tier is the region's overall grade from the coverage ledger (A to C). in_analysis marks the 118,673 rows that entered Adaad's distance analysis; analysis_note says why the rest did not (no position, closed, sex not stated, not government). gender is the school's name DESIGNATION (GG/GB, Boys/Girls); in Sindh most designated boys' schools are officially Mixed and enrol girls \u2014 gender_official carries SEMIS's Boys/Girls/Mixed field and boys_/girls_enrolled the roster's enrolment, so the girls' network can be redefined by attendance. level is the source's own label and level_std collapses it to primary/middle/high; middle_plus and high_plus are the analysis's classes. Coverage: settled KP only (the seven ex-FATA merged districts have no public locations), two of AJK's ten districts, 78 federal schools in Islamabad; see school_layer_coverage. district_key is the source's district mapped to Data Darbar's 147-district frame (successor districts folded into their parent); district_key_boundary is the polygon the point falls in, which is what per-district counts in the piece use \u2014 they differ for 3,500 rows. Every position in this table is either published by a provincial education department (Balochistan, KP, and Sindh's pins), solved from distances the Sindh department's own public distance checker returns, or geocoded from a settlement name in a public roster. The table adds nothing a department has not put online: no staff names, no contact details. Released under CC BY 4.0 as a compilation; the underlying records remain the departments'.",
+   "unit": null,
+   "source": "Provincial school registers: SED Balochistan open-data portal; Sindh SELD Institution Checker and Distance Checker with RSU district GIS pins; KP Education Monitoring Authority school locator and the JSiMS mirror of KP EMIS; Punjab School Information System; GB EMIS; Mirpur and Kotli exam boards; OpenStreetMap for Islamabad. Compiled for Adaad, September 2026.",
+   "columns": [
+    {
+     "name": "row_id",
+     "type": "INTEGER",
+     "description": "row number in this release (stable within a release only)"
+    },
+    {
+     "name": "school_id",
+     "type": "VARCHAR",
+     "description": "the source's own code: EMIS (Balochistan, KP, Punjab), SEMIS (Sindh), GB EMIS school code; blank for AJK and Islamabad"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or territory"
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "analysis region as the piece labels it (KP (settled), AJK (Mirpur+Kotli), Islamabad (ICT))"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district as the source writes it"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar district key of the source district (successors folded into parents) \u2014 joins district_indicators, mpi_districts, school_access_district"
+    },
+    {
+     "name": "district_key_boundary",
+     "type": "VARCHAR",
+     "description": "Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil or taluka as the source writes it; blank for KP, AJK, Islamabad"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "school name as listed"
+    },
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "level as the source labels it"
+    },
+    {
+     "name": "level_std",
+     "type": "VARCHAR",
+     "description": "primary | middle | high | other (Elementary \u2192 middle; Secondary, Higher Secondary, H.Sec. \u2192 high; Mosque \u2192 primary)"
+    },
+    {
+     "name": "primary_plus",
+     "type": "BOOLEAN",
+     "description": "true for every school (any level serves the primary class)"
+    },
+    {
+     "name": "middle_plus",
+     "type": "BOOLEAN",
+     "description": "middle level or above"
+    },
+    {
+     "name": "high_plus",
+     "type": "BOOLEAN",
+     "description": "high or higher-secondary level"
+    },
+    {
+     "name": "gender",
+     "type": "VARCHAR",
+     "description": "name designation: Boys | Girls | Unknown"
+    },
+    {
+     "name": "gender_official",
+     "type": "VARCHAR",
+     "description": "Sindh only: SEMIS gender field Boys | Girls | Mixed"
+    },
+    {
+     "name": "boys_enrolled",
+     "type": "INTEGER",
+     "description": "Sindh only: boys enrolled per the SELD roster"
+    },
+    {
+     "name": "girls_enrolled",
+     "type": "INTEGER",
+     "description": "Sindh only: girls enrolled per the SELD roster"
+    },
+    {
+     "name": "enrolment_total",
+     "type": "INTEGER",
+     "description": "total enrolment where the source gives it (Balochistan, Sindh)"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "source status: Functional | Viable Closed | Closed | Non-Viable (Sindh); Open | Closed | Inaccessible (KP, non-primary only)"
+    },
+    {
+     "name": "functional",
+     "type": "BOOLEAN",
+     "description": "false where the source marks the school closed or inaccessible; NULL where the source carries no status"
+    },
+    {
+     "name": "lat",
+     "type": "DOUBLE",
+     "description": "latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "lng",
+     "type": "DOUBLE",
+     "description": "longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "has_coords",
+     "type": "BOOLEAN",
+     "description": "lat and lng present"
+    },
+    {
+     "name": "coord_method",
+     "type": "VARCHAR",
+     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL"
+    },
+    {
+     "name": "coord_precision",
+     "type": "VARCHAR",
+     "description": "what the position identifies: school | settlement | cluster | markaz | tehsil | none"
+    },
+    {
+     "name": "coord_tier",
+     "type": "VARCHAR",
+     "description": "region grade from the coverage ledger: A, A-, B, B-, C"
+    },
+    {
+     "name": "coord_resid_m",
+     "type": "DOUBLE",
+     "description": "Sindh only: RMS residual, metres, of the multilateration solve"
+    },
+    {
+     "name": "pin_vs_solved_m",
+     "type": "DOUBLE",
+     "description": "Sindh only: distance, metres, between the RSU pin and the solved position (NULL when no pin)"
+    },
+    {
+     "name": "geocode_match",
+     "type": "VARCHAR",
+     "description": "the geocoder's or checker's own match class, kept verbatim"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "register the row comes from"
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": "portal"
+    },
+    {
+     "name": "source_vintage",
+     "type": "VARCHAR",
+     "description": "when the register was read"
+    },
+    {
+     "name": "in_analysis",
+     "type": "BOOLEAN",
+     "description": "entered Adaad's distance analysis (functional, positioned, sex designated, government)"
+    },
+    {
+     "name": "analysis_sex",
+     "type": "VARCHAR",
+     "description": "network the school belongs to in the analysis: G | B"
+    },
+    {
+     "name": "analysis_note",
+     "type": "VARCHAR",
+     "description": "why in_analysis is false"
+    },
+    {
+     "name": "release",
+     "type": "VARCHAR",
+     "description": "release tag of this table"
     }
    ]
   },
@@ -2241,6 +3617,30 @@
   {
    "title": "Rural electrification, worst tehsils (Mouza Census)",
    "sql": "-- Shares are of MOUZAS, not people. Aggregate to the polygon first:\n-- several PBS tehsils can share one boundary.\nSELECT x.dd_name AS tehsil, m.province,\n       sum(m.\"ElectrictiyAvailability_NoneMouzas\") AS no_electricity,\n       sum(m.\"ElectrictiyAvailability_AllMouzas\"\n         + m.\"ElectrictiyAvailability_MostlyMouzas\"\n         + m.\"ElectrictiyAvailability_SomeMouzas\"\n         + m.\"ElectrictiyAvailability_NoneMouzas\") AS base,\n       round(100.0 * sum(m.\"ElectrictiyAvailability_NoneMouzas\")\n             / nullif(sum(m.\"ElectrictiyAvailability_AllMouzas\"\n               + m.\"ElectrictiyAvailability_MostlyMouzas\"\n               + m.\"ElectrictiyAvailability_SomeMouzas\"\n               + m.\"ElectrictiyAvailability_NoneMouzas\"), 0), 1) AS pct_dark\nFROM mouza_tehsil m\nJOIN mouza_crosswalk x USING (tehsil_code)\nWHERE m.TotalMauzaCount > 0\nGROUP BY 1, 2 HAVING base >= 50\nORDER BY pct_dark DESC LIMIT 20;"
+  },
+  {
+   "title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
+   "sql": "-- Count by the polygon the point falls in (district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
+  },
+  {
+   "title": "How precise are the positions, by province?",
+   "sql": "-- Never map Punjab's tehsil-centroid rows as if they were GPS fixes.\nSELECT province, coord_precision, count(*) AS schools,\n       round(100.0 * count(*) / sum(count(*)) OVER (PARTITION BY province), 1) AS pct\nFROM schools_pk\nGROUP BY 1, 2 ORDER BY province, schools DESC;"
+  },
+  {
+   "title": "Sindh: designated boys' schools that enrol girls",
+   "sql": "-- In Sindh the name says GB (boys) but SEMIS calls most of them Mixed and the\n-- roster shows girls enrolled. This is why the piece reports the Sindh gap\n-- under three network definitions.\nSELECT district, count(*) AS boys_designated,\n       count(*) FILTER (gender_official = 'Mixed') AS officially_mixed,\n       count(*) FILTER (girls_enrolled > 0) AS enrolling_girls,\n       sum(girls_enrolled) AS girls_in_them\nFROM schools_pk\nWHERE province = 'Sindh' AND gender = 'Boys' AND functional AND middle_plus\nGROUP BY 1 ORDER BY girls_in_them DESC;"
+  },
+  {
+   "title": "Where girls are furthest from a middle school, and how many are in school",
+   "sql": "SELECT district, region, girls_middle_median_km, boys_middle_median_km, gap_km,\n       girls_in_school_pct_5_16, boys_in_school_pct_5_16, tt_caveat\nFROM school_access_district\nORDER BY girls_middle_median_km DESC LIMIT 20;"
+  },
+  {
+   "title": "Does the Mouza Census agree? Districts where the layer fails its floor test",
+   "sql": "-- ratio < 1 means fewer schools in the layer than villages reporting one:\n-- schools are missing or misclassified. Sindh's girls-v-boys flag fires by\n-- construction (see the notes); read the girls' ratio itself.\nSELECT region, mouza_district, ratio_midplus_G, ratio_midplus_B, ratio_high_G, flag\nFROM school_validation_district\nWHERE status = 'matched' AND ratio_midplus_G < 0.9\nORDER BY ratio_midplus_G;"
+  },
+  {
+   "title": "Sindh multilateration: solved positions that disagree with the RSU pin",
+   "sql": "-- 24% of RSU pins sit more than 300 m from the position solved from SELD's own\n-- distance checker; the table keeps both so the choice can be audited.\nSELECT district, name, level, coord_method, coord_resid_m, pin_vs_solved_m, lat, lng\nFROM schools_pk\nWHERE province = 'Sindh' AND pin_vs_solved_m > 5000\nORDER BY pin_vs_solved_m DESC LIMIT 25;"
   },
   {
    "title": "Find a State Bank series by name",

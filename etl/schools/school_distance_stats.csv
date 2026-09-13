@@ -1,0 +1,833 @@
+region,geography_type,district_key,sex,level,network_schools,pop,mean_km,median_km,share_over_2km,share_over_5km,share_over_10km,tier,sector,release
+AJK (Mirpur+Kotli),region,,girls,primary,377,1016786,1.701,1.514,0.3288,0.0108,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,girls,primary,377,313137,1.771,1.527,0.3533,0.0214,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,girls,primary,377,703649,1.671,1.506,0.3178,0.0061,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),region,,boys,primary,386,1016786,1.705,1.465,0.3179,0.0106,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,boys,primary,386,313137,1.921,1.679,0.4018,0.0152,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,boys,primary,386,703649,1.609,1.39,0.2805,0.0086,0.0,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),region,,girls,middle,164,1016786,2.206,2.006,0.502,0.0352,0.0011,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,girls,middle,164,313137,2.162,1.929,0.4794,0.0429,0.0006,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,girls,middle,164,703649,2.226,2.024,0.512,0.0317,0.0013,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),region,,boys,middle,130,1016786,2.372,2.148,0.5559,0.0456,0.0012,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,boys,middle,130,313137,2.273,2.057,0.5191,0.0415,0.0006,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,boys,middle,130,703649,2.416,2.237,0.5724,0.0475,0.0015,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),region,,girls,high,83,1016786,2.787,2.561,0.6577,0.0915,0.0011,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,girls,high,83,313137,2.468,2.285,0.6085,0.0525,0.0006,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,girls,high,83,703649,2.929,2.714,0.6796,0.1089,0.0013,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),region,,boys,high,70,1016786,3.027,2.733,0.6808,0.1468,0.0014,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,mirpur,boys,high,70,313137,2.724,2.335,0.6205,0.1055,0.0006,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+AJK (Mirpur+Kotli),district,kotli,boys,high,70,703649,3.163,2.82,0.7076,0.1652,0.0017,"C: 2 of 10 districts, geocoded 58%",government schools only,2026-09
+Balochistan,region,,girls,primary,3932,8053780,6.519,3.041,0.6053,0.3829,0.2115,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,girls,primary,3932,389514,6.062,3.375,0.662,0.4026,0.2273,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,girls,primary,3932,139730,1.247,0.996,0.1006,0.0135,0.009,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,girls,primary,3932,112862,8.617,5.437,0.8598,0.5357,0.2699,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,girls,primary,3932,147234,18.43,13.83,0.8839,0.7703,0.6171,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,girls,primary,3932,123732,3.37,2.419,0.5708,0.2186,0.048,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,girls,primary,3932,128886,17.717,13.911,0.9281,0.8015,0.6249,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,girls,primary,3932,226779,11.456,9.622,0.8984,0.7437,0.4816,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,girls,primary,3932,123126,16.604,13.811,0.9632,0.8707,0.6371,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,girls,primary,3932,209335,8.434,5.845,0.8333,0.5545,0.2787,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,girls,primary,3932,92343,3.78,2.626,0.5772,0.2606,0.0665,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,girls,primary,3932,388634,1.687,1.334,0.3063,0.0421,0.0,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,girls,primary,3932,133144,4.342,3.554,0.743,0.3368,0.069,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,girls,primary,3932,241777,5.642,4.565,0.7365,0.4681,0.1757,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,girls,primary,3932,292210,6.838,3.655,0.6629,0.4149,0.2179,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,girls,primary,3932,505489,5.254,2.453,0.5474,0.35,0.1782,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,girls,primary,3932,105193,10.886,9.87,0.8599,0.6925,0.4958,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,girls,primary,3932,304673,5.947,4.573,0.7506,0.4658,0.2096,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,girls,primary,3932,512982,10.713,6.649,0.7734,0.5753,0.3624,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,girls,primary,3932,237910,7.428,4.34,0.7307,0.4559,0.2492,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,girls,primary,3932,387791,5.768,2.529,0.5828,0.3424,0.1999,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,girls,primary,3932,194031,3.064,2.067,0.5087,0.2066,0.0308,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,girls,primary,3932,167297,9.197,7.857,0.8806,0.6703,0.3922,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,girls,primary,3932,296871,3.388,2.293,0.5706,0.236,0.0432,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,girls,primary,3932,121330,4.215,3.261,0.6887,0.3272,0.0671,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,girls,primary,3932,288188,9.085,5.625,0.6609,0.5231,0.3571,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,girls,primary,3932,510347,3.192,1.898,0.4816,0.1931,0.0576,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,girls,primary,3932,943617,1.32,0.693,0.1462,0.0496,0.0142,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,girls,primary,3932,236445,6.269,3.882,0.6736,0.426,0.2083,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,girls,primary,3932,144630,22.853,19.672,0.9473,0.8797,0.7585,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,girls,primary,3932,248454,11.175,8.1,0.8745,0.6474,0.429,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,girls,primary,3932,99226,4.136,3.419,0.672,0.3424,0.0586,A: GPS at source,government schools only,2026-09
+Balochistan,region,,boys,primary,9048,8053780,3.861,1.778,0.4661,0.2306,0.0936,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,boys,primary,9048,389514,2.565,1.465,0.3967,0.15,0.0333,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,boys,primary,9048,139730,0.831,0.791,0.0139,0.0,0.0,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,boys,primary,9048,112862,5.446,2.919,0.6308,0.334,0.1911,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,boys,primary,9048,147234,10.833,6.894,0.79,0.5951,0.3778,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,boys,primary,9048,123732,2.218,1.559,0.4116,0.1057,0.001,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,boys,primary,9048,128886,9.262,6.835,0.8748,0.6241,0.3463,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,boys,primary,9048,226779,9.112,6.215,0.7876,0.568,0.3459,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,boys,primary,9048,123126,6.019,2.685,0.578,0.3728,0.2155,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,boys,primary,9048,209335,6.033,3.875,0.7504,0.3985,0.1385,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,boys,primary,9048,92343,3.147,2.046,0.5074,0.2355,0.0313,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,boys,primary,9048,388634,0.956,0.802,0.0695,0.0004,0.0,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,boys,primary,9048,133144,2.883,2.304,0.5661,0.159,0.0066,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,boys,primary,9048,241777,2.93,1.86,0.4781,0.1924,0.0322,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,boys,primary,9048,292210,4.251,2.324,0.5495,0.2622,0.1075,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,boys,primary,9048,505489,4.019,2.085,0.5107,0.2737,0.1092,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,boys,primary,9048,105193,6.238,5.386,0.7502,0.5227,0.2175,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,boys,primary,9048,304673,3.257,2.327,0.5602,0.2124,0.0398,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,boys,primary,9048,512982,5.487,3.266,0.6442,0.3713,0.1607,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,boys,primary,9048,237910,4.74,3.211,0.6651,0.3332,0.1039,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,boys,primary,9048,387791,2.596,1.658,0.4308,0.1354,0.0251,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,boys,primary,9048,194031,1.822,1.34,0.3132,0.059,0.0013,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,boys,primary,9048,167297,4.318,3.517,0.7136,0.3407,0.0646,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,boys,primary,9048,296871,2.072,1.396,0.3694,0.0808,0.0038,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,boys,primary,9048,121330,3.637,2.805,0.6359,0.2703,0.0325,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,boys,primary,9048,288188,6.803,3.939,0.6361,0.4385,0.2551,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,boys,primary,9048,510347,1.51,1.066,0.2328,0.0369,0.0006,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,boys,primary,9048,943617,0.965,0.592,0.101,0.0215,0.0019,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,boys,primary,9048,236445,4.082,2.096,0.5149,0.2607,0.1078,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,boys,primary,9048,144630,16.592,13.484,0.9261,0.8094,0.6176,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,boys,primary,9048,248454,4.791,3.571,0.7219,0.3578,0.109,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,boys,primary,9048,99226,2.81,2.115,0.5164,0.1731,0.0111,A: GPS at source,government schools only,2026-09
+Balochistan,region,,girls,middle,1156,8053780,10.405,5.681,0.7325,0.53,0.3573,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,girls,middle,1156,389514,9.39,6.901,0.7978,0.5725,0.3817,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,girls,middle,1156,139730,2.672,2.35,0.5777,0.0592,0.0161,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,girls,middle,1156,112862,19.051,12.748,0.9662,0.8487,0.6047,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,girls,middle,1156,147234,25.16,18.182,0.9351,0.8275,0.6852,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,girls,middle,1156,123732,6.09,4.744,0.8306,0.4746,0.1792,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,girls,middle,1156,128886,26.728,21.572,0.9708,0.9166,0.8035,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,girls,middle,1156,226779,15.917,15.289,0.9455,0.8448,0.68,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,girls,middle,1156,123126,18.802,15.917,0.9659,0.8957,0.7411,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,girls,middle,1156,209335,16.205,13.859,0.9101,0.7666,0.6001,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,girls,middle,1156,92343,6.615,4.238,0.7057,0.4581,0.2571,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,girls,middle,1156,388634,3.632,3.044,0.6646,0.248,0.0341,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,girls,middle,1156,133144,9.272,7.765,0.8921,0.6653,0.3893,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,girls,middle,1156,241777,7.355,6.452,0.8095,0.5841,0.2953,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,girls,middle,1156,292210,10.209,6.761,0.7845,0.5785,0.3792,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,girls,middle,1156,505489,8.081,4.133,0.6658,0.455,0.2932,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,girls,middle,1156,105193,16.364,16.602,0.93,0.813,0.6953,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,girls,middle,1156,304673,9.294,8.248,0.8786,0.6903,0.4071,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,girls,middle,1156,512982,15.278,11.834,0.8915,0.7458,0.5627,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,girls,middle,1156,237910,13.882,8.983,0.8529,0.673,0.4651,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,girls,middle,1156,387791,10.734,5.622,0.7438,0.5285,0.3489,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,girls,middle,1156,194031,4.662,3.487,0.6768,0.3615,0.116,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,girls,middle,1156,167297,17.165,15.852,0.9427,0.8333,0.6763,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,girls,middle,1156,296871,7.051,5.48,0.8457,0.5322,0.2803,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,girls,middle,1156,121330,6.534,5.414,0.806,0.5296,0.2359,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,girls,middle,1156,288188,16.631,12.708,0.7529,0.647,0.5414,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,girls,middle,1156,510347,5.175,3.218,0.6629,0.3404,0.1609,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,girls,middle,1156,943617,1.577,0.83,0.177,0.0613,0.0215,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,girls,middle,1156,236445,8.658,5.772,0.7627,0.5425,0.344,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,girls,middle,1156,144630,33.244,30.681,0.9727,0.9246,0.8567,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,girls,middle,1156,248454,21.935,22.487,0.9437,0.8481,0.7328,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,girls,middle,1156,99226,5.516,4.633,0.7651,0.4741,0.1626,A: GPS at source,government schools only,2026-09
+Balochistan,region,,boys,middle,1673,8053780,6.519,3.717,0.6838,0.4115,0.2068,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,boys,middle,1673,389514,5.439,3.156,0.6517,0.3728,0.1985,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,boys,middle,1673,139730,2.086,1.906,0.4778,0.0072,0.0,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,boys,middle,1673,112862,9.031,6.66,0.8993,0.6206,0.3306,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,boys,middle,1673,147234,15.941,10.978,0.8854,0.7143,0.5301,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,boys,middle,1673,123732,4.944,4.39,0.8297,0.4341,0.0727,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,boys,middle,1673,128886,18.507,15.258,0.9544,0.846,0.6748,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,boys,middle,1673,226779,10.885,8.743,0.8833,0.7001,0.4406,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,boys,middle,1673,123126,8.109,5.496,0.7727,0.5273,0.3091,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,boys,middle,1673,209335,9.527,7.14,0.8839,0.6427,0.3599,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,boys,middle,1673,92343,4.535,3.275,0.6837,0.3471,0.0949,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,boys,middle,1673,388634,2.37,2.068,0.5125,0.0704,0.0021,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,boys,middle,1673,133144,5.643,4.983,0.8308,0.4981,0.1506,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,boys,middle,1673,241777,5.902,4.803,0.7642,0.487,0.1933,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,boys,middle,1673,292210,7.041,4.697,0.7655,0.4757,0.2201,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,boys,middle,1673,505489,5.56,2.964,0.6134,0.3661,0.1817,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,boys,middle,1673,105193,11.965,12.089,0.888,0.7218,0.5655,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,boys,middle,1673,304673,5.511,4.909,0.8141,0.4919,0.1179,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,boys,middle,1673,512982,10.624,8.306,0.9167,0.7052,0.4153,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,boys,middle,1673,237910,7.14,4.962,0.7913,0.4969,0.241,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,boys,middle,1673,387791,5.802,3.608,0.7124,0.3896,0.1694,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,boys,middle,1673,194031,3.597,2.806,0.6488,0.2362,0.0388,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,boys,middle,1673,167297,9.29,7.255,0.9016,0.6543,0.3463,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,boys,middle,1673,296871,4.403,3.488,0.7438,0.3378,0.075,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,boys,middle,1673,121330,6.025,4.856,0.7999,0.4867,0.1905,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,boys,middle,1673,288188,9.958,7.01,0.7383,0.5827,0.3939,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,boys,middle,1673,510347,3.388,2.443,0.5891,0.1882,0.0559,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,boys,middle,1673,943617,1.524,0.986,0.1749,0.0469,0.0131,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,boys,middle,1673,236445,6.07,4.254,0.7351,0.4443,0.202,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,boys,middle,1673,144630,22.797,18.531,0.9612,0.8856,0.7539,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,boys,middle,1673,248454,8.085,6.25,0.8814,0.6079,0.2795,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,boys,middle,1673,99226,4.773,4.011,0.7688,0.4039,0.0797,A: GPS at source,government schools only,2026-09
+Balochistan,region,,girls,high,489,8053780,15.088,8.742,0.8047,0.6349,0.4644,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,girls,high,489,389514,13.489,8.811,0.8499,0.6265,0.4593,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,girls,high,489,139730,4.838,4.272,0.868,0.3812,0.0485,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,girls,high,489,112862,19.243,13.084,0.9723,0.8593,0.6152,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,girls,high,489,147234,29.224,23.203,0.958,0.8889,0.775,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,girls,high,489,123732,8.383,7.663,0.9142,0.6986,0.3349,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,girls,high,489,128886,42.972,35.382,0.9801,0.9412,0.8676,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,girls,high,489,226779,18.499,18.213,0.9605,0.8963,0.7623,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,girls,high,489,123126,21.02,17.693,0.9738,0.909,0.7749,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,girls,high,489,209335,23.234,21.189,0.9419,0.8742,0.7668,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,girls,high,489,92343,7.742,5.294,0.7817,0.5224,0.3005,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,girls,high,489,388634,5.183,4.231,0.7433,0.4264,0.1112,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,girls,high,489,133144,12.573,12.286,0.9387,0.8019,0.6034,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,girls,high,489,241777,8.882,7.805,0.8749,0.6748,0.374,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,girls,high,489,292210,13.996,10.55,0.8503,0.6709,0.5129,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,girls,high,489,505489,9.161,5.416,0.7222,0.5193,0.3362,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,girls,high,489,105193,41.823,42.458,1.0,1.0,0.9985,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,girls,high,489,304673,12.395,11.527,0.9262,0.7856,0.5607,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,girls,high,489,512982,37.825,37.442,0.9956,0.9772,0.9514,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,girls,high,489,237910,20.485,14.244,0.914,0.7674,0.6051,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,girls,high,489,387791,17.244,8.659,0.8465,0.6248,0.4588,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,girls,high,489,194031,8.221,6.295,0.7928,0.5724,0.3476,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,girls,high,489,167297,18.795,18.049,0.9599,0.8725,0.7457,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,girls,high,489,296871,9.119,8.023,0.9401,0.7174,0.3654,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,girls,high,489,121330,10.255,8.93,0.8966,0.7027,0.4501,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,girls,high,489,288188,22.128,20.066,0.7723,0.6674,0.6013,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,girls,high,489,510347,7.092,5.443,0.8325,0.5378,0.241,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,girls,high,489,943617,2.016,1.054,0.2573,0.0855,0.0307,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,girls,high,489,236445,10.546,7.55,0.8041,0.6092,0.4291,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,girls,high,489,144630,37.307,34.936,0.9817,0.9434,0.8716,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,girls,high,489,248454,28.833,26.765,0.9616,0.9,0.7962,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,girls,high,489,99226,8.396,7.454,0.8539,0.6319,0.3621,A: GPS at source,government schools only,2026-09
+Balochistan,region,,boys,high,785,8053780,10.953,5.614,0.7687,0.5318,0.335,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa abdullah,boys,high,785,389514,7.305,4.983,0.7578,0.4994,0.2821,A: GPS at source,government schools only,2026-09
+Balochistan,district,sohbatpur,boys,high,785,139730,2.82,2.6,0.6665,0.0736,0.0078,A: GPS at source,government schools only,2026-09
+Balochistan,district,sherani,boys,high,785,112862,12.514,10.024,0.9607,0.8069,0.502,A: GPS at source,government schools only,2026-09
+Balochistan,district,awaran,boys,high,785,147234,23.111,14.509,0.9105,0.7657,0.605,A: GPS at source,government schools only,2026-09
+Balochistan,district,barkhan,boys,high,785,123732,6.385,5.542,0.8861,0.5609,0.1667,A: GPS at source,government schools only,2026-09
+Balochistan,district,chaghi,boys,high,785,128886,24.029,21.326,0.9699,0.9054,0.7952,A: GPS at source,government schools only,2026-09
+Balochistan,district,dera bugti,boys,high,785,226779,12.049,10.043,0.9156,0.7605,0.5027,A: GPS at source,government schools only,2026-09
+Balochistan,district,kohlu,boys,high,785,123126,9.372,6.982,0.8528,0.5972,0.3781,A: GPS at source,government schools only,2026-09
+Balochistan,district,gwadar,boys,high,785,209335,13.627,11.677,0.9221,0.7949,0.5815,A: GPS at source,government schools only,2026-09
+Balochistan,district,harnai,boys,high,785,92343,5.475,4.28,0.7382,0.4468,0.1481,A: GPS at source,government schools only,2026-09
+Balochistan,district,jaffarabad,boys,high,785,388634,3.507,3.11,0.6799,0.2425,0.01,A: GPS at source,government schools only,2026-09
+Balochistan,district,jhal magsi,boys,high,785,133144,7.73,7.202,0.8892,0.6474,0.3311,A: GPS at source,government schools only,2026-09
+Balochistan,district,kachhi,boys,high,785,241777,7.287,6.275,0.8214,0.5821,0.2761,A: GPS at source,government schools only,2026-09
+Balochistan,district,kalat,boys,high,785,292210,8.661,6.386,0.8367,0.5796,0.3301,A: GPS at source,government schools only,2026-09
+Balochistan,district,kech,boys,high,785,505489,7.233,4.015,0.7145,0.4421,0.2703,A: GPS at source,government schools only,2026-09
+Balochistan,district,kharan,boys,high,785,105193,33.26,34.152,1.0,1.0,0.9866,A: GPS at source,government schools only,2026-09
+Balochistan,district,loralai,boys,high,785,304673,8.462,7.335,0.8976,0.6678,0.3514,A: GPS at source,government schools only,2026-09
+Balochistan,district,khuzdar,boys,high,785,512982,43.996,43.916,0.9986,0.9944,0.9771,A: GPS at source,government schools only,2026-09
+Balochistan,district,killa saifullah,boys,high,785,237910,9.449,6.85,0.8517,0.6099,0.356,A: GPS at source,government schools only,2026-09
+Balochistan,district,lasbela,boys,high,785,387791,10.024,5.217,0.7949,0.5138,0.2948,A: GPS at source,government schools only,2026-09
+Balochistan,district,mastung,boys,high,785,194031,5.389,4.304,0.7824,0.4385,0.1462,A: GPS at source,government schools only,2026-09
+Balochistan,district,musakhail,boys,high,785,167297,12.331,10.652,0.9427,0.7908,0.5343,A: GPS at source,government schools only,2026-09
+Balochistan,district,nasirabad,boys,high,785,296871,5.564,4.723,0.8365,0.4702,0.1249,A: GPS at source,government schools only,2026-09
+Balochistan,district,nushki,boys,high,785,121330,7.933,6.587,0.884,0.638,0.2996,A: GPS at source,government schools only,2026-09
+Balochistan,district,panjgur,boys,high,785,288188,13.411,9.378,0.7693,0.6275,0.4846,A: GPS at source,government schools only,2026-09
+Balochistan,district,pishin,boys,high,785,510347,4.777,3.395,0.7307,0.3269,0.1144,A: GPS at source,government schools only,2026-09
+Balochistan,district,quetta,boys,high,785,943617,2.01,1.218,0.274,0.0695,0.0213,A: GPS at source,government schools only,2026-09
+Balochistan,district,sibi,boys,high,785,236445,8.734,6.28,0.8038,0.5717,0.3611,A: GPS at source,government schools only,2026-09
+Balochistan,district,washuk,boys,high,785,144630,26.28,21.971,0.9747,0.9135,0.8069,A: GPS at source,government schools only,2026-09
+Balochistan,district,zhob,boys,high,785,248454,14.407,11.895,0.9334,0.7852,0.568,A: GPS at source,government schools only,2026-09
+Balochistan,district,ziarat,boys,high,785,99226,5.383,4.854,0.8234,0.4816,0.1078,A: GPS at source,government schools only,2026-09
+Gilgit-Baltistan,region,,girls,primary,469,1066723,7.821,5.117,0.7927,0.5084,0.2525,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,girls,primary,469,114489,6.831,5.534,0.8579,0.5476,0.2233,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,girls,primary,469,265215,7.521,5.007,0.7828,0.5013,0.2319,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,girls,primary,469,164199,8.226,7.093,0.9194,0.6755,0.3224,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,girls,primary,469,103884,7.305,3.477,0.6843,0.3833,0.1991,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,girls,primary,469,154014,8.858,5.818,0.847,0.5649,0.2912,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,girls,primary,469,128781,4.952,3.276,0.6491,0.3602,0.1415,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,girls,primary,469,136141,10.684,4.264,0.7613,0.4596,0.3345,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,region,,boys,primary,886,1066723,6.634,3.909,0.731,0.4146,0.2016,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,boys,primary,886,114489,5.901,4.85,0.8065,0.4872,0.1631,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,boys,primary,886,265215,6.022,3.398,0.6997,0.3536,0.1802,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,boys,primary,886,164199,6.56,5.32,0.8479,0.5243,0.2251,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,boys,primary,886,103884,5.497,2.242,0.548,0.2586,0.131,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,boys,primary,886,154014,7.276,4.548,0.7837,0.4618,0.2473,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,boys,primary,886,128781,4.342,2.901,0.6272,0.3096,0.1022,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,boys,primary,886,136141,10.843,5.133,0.7655,0.5053,0.3439,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,region,,girls,middle,241,1066723,9.207,6.18,0.8361,0.58,0.3186,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,girls,middle,241,114489,8.572,6.89,0.8964,0.6446,0.3269,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,girls,middle,241,265215,9.128,6.191,0.8261,0.5883,0.3089,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,girls,middle,241,164199,9.419,8.261,0.9367,0.7411,0.4047,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,girls,middle,241,103884,8.258,4.058,0.7437,0.4283,0.2491,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,girls,middle,241,154014,10.187,7.254,0.8846,0.6469,0.3663,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,girls,middle,241,128781,5.263,3.52,0.7156,0.3775,0.1479,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,girls,middle,241,136141,12.986,6.286,0.8129,0.5469,0.3872,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,region,,boys,middle,365,1066723,7.689,5.049,0.797,0.504,0.2516,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,boys,middle,365,114489,6.826,5.754,0.8737,0.5685,0.2253,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,boys,middle,365,265215,6.95,4.455,0.7727,0.454,0.2092,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,boys,middle,365,164199,8.906,7.742,0.9242,0.7072,0.3738,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,boys,middle,365,103884,6.043,2.744,0.6202,0.3023,0.1408,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,boys,middle,365,154014,7.88,5.309,0.8395,0.528,0.2615,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,boys,middle,365,128781,5.357,3.498,0.712,0.3798,0.1625,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,boys,middle,365,136141,11.637,6.055,0.7939,0.5463,0.3665,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,region,,girls,high,121,1066723,15.4,9.076,0.8797,0.6861,0.47,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,girls,high,121,114489,18.0,10.698,0.9322,0.7653,0.526,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,girls,high,121,265215,12.089,7.217,0.8687,0.6484,0.3729,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,girls,high,121,164199,33.821,30.893,0.9947,0.9785,0.9337,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,girls,high,121,103884,11.707,6.227,0.8162,0.563,0.3754,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,girls,high,121,154014,11.44,8.847,0.9144,0.7309,0.4437,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,girls,high,121,128781,6.476,4.901,0.7646,0.4917,0.2179,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,girls,high,121,136141,13.189,6.706,0.8365,0.5676,0.3933,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,region,,boys,high,190,1066723,8.543,5.845,0.8371,0.5619,0.2893,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,astor,boys,high,190,114489,8.02,7.02,0.9206,0.6728,0.3024,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,skardu,boys,high,190,265215,8.411,5.583,0.8397,0.5503,0.2737,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,diamir,boys,high,190,164199,9.222,8.117,0.9317,0.7301,0.3959,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghanchi,boys,high,190,103884,6.651,3.203,0.6802,0.3356,0.1499,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,ghizer,boys,high,190,154014,8.092,5.662,0.8598,0.561,0.267,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,gilgit,boys,high,190,128781,6.021,4.168,0.7605,0.4435,0.1906,B: geocoded 94.6%,government schools only,2026-09
+Gilgit-Baltistan,district,hunza nagar,boys,high,190,136141,12.76,7.085,0.8144,0.5738,0.405,B: geocoded 94.6%,government schools only,2026-09
+Islamabad (ICT),region,,girls,primary,50,1898938,3.651,2.593,0.5955,0.2358,0.0722,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),district,islamabad,girls,primary,50,1898938,3.651,2.593,0.5955,0.2358,0.0722,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),region,,boys,primary,28,1898938,3.571,2.773,0.6216,0.2458,0.0465,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),district,islamabad,boys,primary,28,1898938,3.571,2.773,0.6216,0.2458,0.0465,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),region,,girls,middle,50,1898938,3.651,2.593,0.5955,0.2358,0.0722,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),district,islamabad,girls,middle,50,1898938,3.651,2.593,0.5955,0.2358,0.0722,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),region,,boys,middle,28,1898938,3.571,2.773,0.6216,0.2458,0.0465,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),district,islamabad,boys,middle,28,1898938,3.571,2.773,0.6216,0.2458,0.0465,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),region,,girls,high,27,1898938,4.58,3.109,0.649,0.3475,0.1282,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+Islamabad (ICT),district,islamabad,girls,high,27,1898938,4.58,3.109,0.649,0.3475,0.1282,"C: partial directory (OSM), ~1/3 of FDE network",government schools only,2026-09
+KP (settled),region,,girls,primary,10841,31426746,1.454,0.862,0.1724,0.0403,0.0124,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,girls,primary,10841,1245440,1.056,0.555,0.1006,0.0329,0.0102,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,girls,primary,10841,504317,1.904,1.553,0.3748,0.0348,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,girls,primary,10841,1815608,0.7,0.604,0.0155,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,girls,primary,10841,2517689,0.735,0.624,0.039,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,girls,primary,10841,3670699,0.91,0.686,0.0766,0.0117,0.0012,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,girls,primary,10841,1438518,0.759,0.688,0.0132,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,girls,primary,10841,554758,1.948,1.128,0.2944,0.0999,0.0074,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,girls,primary,10841,1465189,1.04,0.86,0.1015,0.0051,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,girls,primary,10841,869679,1.352,1.177,0.2058,0.001,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,girls,primary,10841,560178,4.429,2.413,0.5742,0.2586,0.0849,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,girls,primary,10841,1560434,2.479,1.48,0.3834,0.0864,0.0295,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,girls,primary,10841,1219078,1.018,0.873,0.0896,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,girls,primary,10841,755786,1.779,1.243,0.2954,0.059,0.0038,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,girls,primary,10841,1172733,2.166,1.394,0.3687,0.1097,0.0091,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,girls,primary,10841,822101,4.744,2.953,0.6319,0.2982,0.1265,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,girls,primary,10841,830050,1.784,1.435,0.3247,0.0335,0.0076,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,girls,primary,10841,1416230,0.897,0.73,0.0598,0.0028,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,girls,primary,10841,728598,0.907,0.721,0.0803,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,girls,primary,10841,1748755,1.455,0.809,0.1213,0.0428,0.0175,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,girls,primary,10841,798140,1.533,1.335,0.2746,0.004,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,girls,primary,10841,1800186,0.947,0.787,0.0807,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,girls,primary,10841,2183284,1.671,0.954,0.1801,0.0587,0.0227,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,girls,primary,10841,448853,2.755,1.568,0.3705,0.0934,0.0541,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,girls,primary,10841,301275,1.528,1.337,0.2572,0.0012,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,girls,primary,10841,999171,2.489,1.39,0.357,0.123,0.0454,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),region,,boys,primary,16620,31426746,1.16,0.707,0.11,0.0285,0.0096,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,boys,primary,16620,1245440,0.891,0.515,0.0752,0.0213,0.0076,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,boys,primary,16620,504317,1.433,1.151,0.233,0.0091,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,boys,primary,16620,1815608,0.632,0.547,0.0122,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,boys,primary,16620,2517689,0.603,0.513,0.0186,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,boys,primary,16620,3670699,0.792,0.589,0.0506,0.0106,0.0007,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,boys,primary,16620,1438518,0.694,0.639,0.0042,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,boys,primary,16620,554758,1.447,0.658,0.1714,0.072,0.0164,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,boys,primary,16620,1465189,0.887,0.779,0.058,0.0002,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,boys,primary,16620,869679,0.911,0.775,0.0514,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,boys,primary,16620,560178,2.816,1.588,0.4133,0.1475,0.0478,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,boys,primary,16620,1560434,1.97,1.147,0.2681,0.0436,0.0264,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,boys,primary,16620,1219078,0.822,0.743,0.0287,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,boys,primary,16620,755786,1.33,0.993,0.1812,0.0237,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,boys,primary,16620,1172733,1.906,1.188,0.3112,0.0844,0.0072,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,boys,primary,16620,822101,3.984,2.15,0.5215,0.253,0.1121,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,boys,primary,16620,830050,1.305,1.043,0.1587,0.0129,0.0074,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,boys,primary,16620,1416230,0.704,0.6,0.023,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,boys,primary,16620,728598,0.78,0.624,0.0413,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,boys,primary,16620,1748755,1.131,0.651,0.0783,0.0356,0.0131,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,boys,primary,16620,798140,1.006,0.793,0.0971,0.0046,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,boys,primary,16620,1800186,0.787,0.623,0.0497,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,boys,primary,16620,2183284,1.315,0.775,0.1293,0.0441,0.014,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,boys,primary,16620,448853,2.646,1.372,0.3115,0.0965,0.0565,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,boys,primary,16620,301275,0.904,0.823,0.048,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,boys,primary,16620,999171,1.817,0.887,0.21,0.0919,0.0285,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),region,,girls,middle,2268,31426746,2.724,1.533,0.3804,0.1206,0.0412,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,girls,middle,2268,1245440,2.137,1.1,0.2907,0.0897,0.0413,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,girls,middle,2268,504317,4.125,3.491,0.7191,0.3224,0.0519,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,girls,middle,2268,1815608,1.344,1.213,0.178,0.0011,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,girls,middle,2268,2517689,1.203,1.051,0.1223,0.0079,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,girls,middle,2268,3670699,1.533,1.083,0.2102,0.0423,0.0038,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,girls,middle,2268,1438518,1.413,1.312,0.1876,0.0011,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,girls,middle,2268,554758,4.532,2.781,0.6228,0.2897,0.1253,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,girls,middle,2268,1465189,1.743,1.392,0.3082,0.024,0.0018,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,girls,middle,2268,869679,2.219,1.959,0.4876,0.0465,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,girls,middle,2268,560178,6.476,4.099,0.7636,0.4216,0.1665,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,girls,middle,2268,1560434,4.348,2.794,0.6018,0.31,0.0877,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,girls,middle,2268,1219078,1.602,1.33,0.2815,0.0127,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,girls,middle,2268,755786,3.395,2.641,0.6269,0.2036,0.0335,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,girls,middle,2268,1172733,3.479,2.253,0.5537,0.2366,0.057,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,girls,middle,2268,822101,13.862,10.784,0.9133,0.7426,0.5257,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,girls,middle,2268,830050,3.349,2.552,0.6129,0.1965,0.0373,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,girls,middle,2268,1416230,1.553,1.301,0.246,0.0169,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,girls,middle,2268,728598,1.463,1.208,0.2151,0.005,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,girls,middle,2268,1748755,2.548,1.569,0.3498,0.0723,0.0348,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,girls,middle,2268,798140,3.075,2.643,0.6603,0.1586,0.0074,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,girls,middle,2268,1800186,1.411,1.232,0.2066,0.0008,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,girls,middle,2268,2183284,3.089,1.837,0.4619,0.1473,0.0569,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,girls,middle,2268,448853,4.762,3.288,0.7144,0.2965,0.081,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,girls,middle,2268,301275,5.248,5.355,0.8978,0.5421,0.0129,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,girls,middle,2268,999171,4.373,2.72,0.6283,0.2622,0.1152,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),region,,boys,middle,3309,31426746,1.921,1.32,0.276,0.0525,0.0169,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,boys,middle,3309,1245440,1.548,1.082,0.2219,0.0369,0.0099,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,boys,middle,3309,504317,2.335,2.016,0.5074,0.0573,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,boys,middle,3309,1815608,1.13,1.039,0.0894,0.0003,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,boys,middle,3309,2517689,1.176,1.055,0.1196,0.002,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,boys,middle,3309,3670699,1.319,1.05,0.1638,0.0162,0.0011,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,boys,middle,3309,1438518,1.259,1.175,0.1363,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,boys,middle,3309,554758,2.807,1.62,0.386,0.1458,0.0689,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,boys,middle,3309,1465189,1.438,1.241,0.2135,0.006,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,boys,middle,3309,869679,1.496,1.374,0.2484,0.0018,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,boys,middle,3309,560178,4.306,2.756,0.6479,0.2559,0.0842,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,boys,middle,3309,1560434,2.994,1.995,0.4984,0.1327,0.0312,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,boys,middle,3309,1219078,1.423,1.318,0.2072,0.0006,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,boys,middle,3309,755786,2.188,1.803,0.4335,0.0556,0.003,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,boys,middle,3309,1172733,2.624,1.98,0.4984,0.1282,0.0125,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,boys,middle,3309,822101,6.125,3.723,0.715,0.3969,0.1869,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,boys,middle,3309,830050,2.265,1.916,0.4753,0.0499,0.0091,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,boys,middle,3309,1416230,1.311,1.175,0.1605,0.0049,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,boys,middle,3309,728598,1.342,1.181,0.1804,0.0008,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,boys,middle,3309,1748755,2.027,1.302,0.2403,0.0539,0.0232,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,boys,middle,3309,798140,1.808,1.506,0.337,0.0235,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,boys,middle,3309,1800186,1.278,1.111,0.1699,0.0,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,boys,middle,3309,2183284,2.171,1.383,0.301,0.0729,0.0319,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,boys,middle,3309,448853,4.305,2.864,0.676,0.205,0.0827,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,boys,middle,3309,301275,1.831,1.678,0.3851,0.0059,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,boys,middle,3309,999171,2.831,1.764,0.4207,0.1352,0.0539,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),region,,girls,high,1156,31426746,3.804,2.104,0.5229,0.1981,0.0726,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,girls,high,1156,1245440,2.475,1.463,0.3784,0.0969,0.0427,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,girls,high,1156,504317,6.162,5.194,0.835,0.5138,0.1943,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,girls,high,1156,1815608,1.833,1.622,0.3708,0.0223,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,girls,high,1156,2517689,1.472,1.306,0.2209,0.0122,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,girls,high,1156,3670699,2.082,1.479,0.3489,0.0856,0.0046,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,girls,high,1156,1438518,1.981,1.703,0.4001,0.0357,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,girls,high,1156,554758,5.789,4.571,0.7882,0.4501,0.1561,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,girls,high,1156,1465189,2.223,1.875,0.4721,0.0394,0.0023,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,girls,high,1156,869679,3.133,2.821,0.6713,0.1757,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,girls,high,1156,560178,9.25,6.166,0.8606,0.5954,0.2944,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,girls,high,1156,1560434,5.31,3.835,0.6983,0.4056,0.1451,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,girls,high,1156,1219078,2.214,1.798,0.4436,0.0666,0.0005,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,girls,high,1156,755786,4.376,3.522,0.749,0.3353,0.0677,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,girls,high,1156,1172733,4.659,3.677,0.7027,0.3913,0.0991,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,girls,high,1156,822101,22.114,21.117,0.9844,0.9492,0.8594,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,girls,high,1156,830050,5.462,4.073,0.773,0.4089,0.1522,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,girls,high,1156,1416230,2.086,1.662,0.3807,0.0586,0.0073,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,girls,high,1156,728598,1.898,1.582,0.3665,0.0291,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,girls,high,1156,1748755,4.024,2.235,0.5624,0.1606,0.0606,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,girls,high,1156,798140,4.631,4.029,0.8154,0.3709,0.059,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,girls,high,1156,1800186,1.828,1.548,0.35,0.0235,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,girls,high,1156,2183284,4.124,2.497,0.6002,0.2354,0.0824,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,girls,high,1156,448853,6.427,5.127,0.8469,0.5133,0.145,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,girls,high,1156,301275,7.303,7.385,0.9732,0.8028,0.1384,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,girls,high,1156,999171,6.533,3.521,0.7351,0.3594,0.1803,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),region,,boys,high,1938,31426746,2.415,1.664,0.3961,0.0825,0.0254,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,bannu,boys,high,1938,1245440,2.052,1.392,0.3146,0.0729,0.0185,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,hangu,boys,high,1938,504317,2.734,2.506,0.6395,0.088,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,charsadda,boys,high,1938,1815608,1.364,1.258,0.1923,0.0006,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mardan,boys,high,1938,2517689,1.406,1.276,0.2006,0.009,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,peshawar,boys,high,1938,3670699,1.58,1.25,0.2338,0.0268,0.0029,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,abbottabad,boys,high,1938,1438518,1.679,1.617,0.3473,0.0006,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,batagram,boys,high,1938,554758,3.419,2.021,0.5125,0.1712,0.0893,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,nowshera,boys,high,1938,1465189,1.73,1.453,0.3144,0.0155,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,buner,boys,high,1938,869679,1.918,1.742,0.4101,0.0147,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,chitral,boys,high,1938,560178,4.815,3.311,0.7279,0.3055,0.1022,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,dera ismail khan,boys,high,1938,1560434,4.047,2.702,0.6158,0.2659,0.0611,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,haripur,boys,high,1938,1219078,1.707,1.605,0.3392,0.0076,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,karak,boys,high,1938,755786,2.717,2.252,0.5614,0.0971,0.0113,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohat,boys,high,1938,1172733,3.263,2.388,0.5779,0.2001,0.0328,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,kohistan,boys,high,1938,822101,8.765,5.757,0.8441,0.5481,0.3176,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lakki marwat,boys,high,1938,830050,2.851,2.426,0.6157,0.1038,0.0112,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,lower dir,boys,high,1938,1416230,1.633,1.422,0.2931,0.0114,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,malakand,boys,high,1938,728598,1.687,1.517,0.3311,0.0027,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,mansehra,boys,high,1938,1748755,2.652,1.757,0.4139,0.0683,0.0317,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,shangla,boys,high,1938,798140,2.302,2.012,0.5027,0.0473,0.001,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swabi,boys,high,1938,1800186,1.555,1.334,0.2757,0.0029,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,swat,boys,high,1938,2183284,2.624,1.74,0.4304,0.098,0.0378,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tank,boys,high,1938,448853,5.197,3.807,0.7807,0.3614,0.0936,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,tor ghar,boys,high,1938,301275,3.017,2.633,0.6702,0.1527,0.0,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+KP (settled),district,upper dir,boys,high,1938,999171,3.297,2.215,0.5633,0.1608,0.0638,A: KPEMA official coordinates (Sep 2026),government schools only,2026-09
+Punjab,region,,girls,primary,19074,121944936,2.159,1.578,0.3727,0.0576,0.0093,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,girls,primary,19074,1620514,2.296,2.125,0.5445,0.0391,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,girls,primary,19074,10243124,1.658,1.532,0.3145,0.0041,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,girls,primary,19074,1728306,2.95,2.248,0.5684,0.1592,0.0188,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,girls,primary,19074,3464234,1.195,1.062,0.1295,0.0006,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,girls,primary,19074,1893385,1.557,1.408,0.2772,0.0011,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,girls,primary,19074,1381518,1.483,1.3,0.2429,0.0015,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,girls,primary,19074,1508263,3.121,2.742,0.6523,0.1856,0.0003,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,girls,primary,19074,2139960,2.215,1.833,0.457,0.0573,0.0029,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,girls,primary,19074,3108443,2.191,1.836,0.4526,0.0492,0.0037,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,girls,primary,19074,3410118,3.96,2.566,0.6081,0.2191,0.051,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,girls,primary,19074,4079083,4.89,2.173,0.5544,0.1744,0.07,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,girls,primary,19074,1790313,2.27,1.928,0.481,0.0609,0.0008,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,girls,primary,19074,2752600,3.862,2.531,0.6094,0.2265,0.0655,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,girls,primary,19074,9035186,1.437,1.268,0.2025,0.0084,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,girls,primary,19074,5663226,1.252,1.119,0.1526,0.0,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,girls,primary,19074,1471214,1.833,1.47,0.338,0.035,0.0017,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,girls,primary,19074,3869668,1.859,1.568,0.3617,0.0173,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,girls,primary,19074,3362935,2.841,2.248,0.5468,0.1516,0.0068,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,girls,primary,19074,1857983,2.174,1.623,0.3718,0.0779,0.0118,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,girls,primary,19074,1917170,2.08,1.738,0.4249,0.0444,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,girls,primary,19074,1758484,2.828,2.295,0.5769,0.1424,0.0047,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,girls,primary,19074,5222562,2.605,2.401,0.5943,0.0751,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,girls,primary,19074,4347472,2.458,1.992,0.4972,0.0964,0.0014,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,girls,primary,19074,1809651,1.874,1.633,0.3857,0.0134,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,girls,primary,19074,2002055,1.268,1.042,0.1462,0.01,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,girls,primary,19074,3678220,1.975,1.635,0.398,0.0332,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,girls,primary,19074,2143089,1.927,1.434,0.3308,0.0654,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,girls,primary,19074,5149413,2.912,1.86,0.4586,0.0845,0.0349,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,girls,primary,19074,1899300,4.394,2.631,0.6181,0.2497,0.0937,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,girls,primary,19074,5671180,1.575,1.338,0.2676,0.0116,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,girls,primary,19074,3036504,2.745,2.344,0.5707,0.1122,0.0076,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,girls,primary,19074,4445750,1.501,1.302,0.2412,0.003,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,girls,primary,19074,3866596,1.839,1.605,0.366,0.0154,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,girls,primary,19074,4468828,1.118,0.986,0.1018,0.001,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,girls,primary,19074,2690729,1.578,1.349,0.2647,0.0101,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,girls,primary,19074,3457867,1.774,1.345,0.2869,0.0474,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,region,,boys,primary,17221,121944936,2.224,1.717,0.4126,0.0551,0.0076,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,boys,primary,17221,1620514,2.588,2.286,0.5768,0.0899,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,boys,primary,17221,10243124,1.925,1.753,0.4078,0.0072,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,boys,primary,17221,1728306,2.648,2.157,0.5452,0.1144,0.0063,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,boys,primary,17221,3464234,1.458,1.322,0.2431,0.0002,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,boys,primary,17221,1893385,1.718,1.565,0.35,0.0024,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,boys,primary,17221,1381518,1.476,1.373,0.2413,0.0,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,boys,primary,17221,1508263,2.589,2.289,0.5728,0.096,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,boys,primary,17221,2139960,2.308,1.984,0.4966,0.0638,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,boys,primary,17221,3108443,2.633,2.247,0.5687,0.1065,0.0022,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,boys,primary,17221,3410118,3.916,2.376,0.5923,0.2144,0.0558,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,boys,primary,17221,4079083,5.019,2.492,0.6138,0.155,0.0709,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,boys,primary,17221,1790313,2.276,2.037,0.5106,0.0466,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,boys,primary,17221,2752600,2.985,2.217,0.558,0.1473,0.0305,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,boys,primary,17221,9035186,1.471,1.306,0.2123,0.0085,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,boys,primary,17221,5663226,1.514,1.379,0.2541,0.0028,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,boys,primary,17221,1471214,2.031,1.743,0.423,0.0371,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,boys,primary,17221,3869668,1.833,1.589,0.3515,0.0149,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,boys,primary,17221,3362935,3.392,2.878,0.6694,0.2146,0.0138,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,boys,primary,17221,1857983,2.073,1.686,0.3866,0.0597,0.0034,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,boys,primary,17221,1917170,2.124,1.88,0.4672,0.0333,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,boys,primary,17221,1758484,2.709,2.227,0.5675,0.1167,0.005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,boys,primary,17221,5222562,2.883,2.642,0.6709,0.1042,0.0032,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,boys,primary,17221,4347472,2.221,1.872,0.4613,0.0598,0.0001,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,boys,primary,17221,1809651,1.871,1.719,0.3923,0.0075,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,boys,primary,17221,2002055,1.499,1.321,0.2306,0.011,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,boys,primary,17221,3678220,1.956,1.657,0.392,0.0296,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,boys,primary,17221,2143089,1.784,1.432,0.3017,0.0367,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,boys,primary,17221,5149413,2.986,1.891,0.4672,0.0998,0.0358,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,boys,primary,17221,1899300,3.458,2.461,0.5988,0.1974,0.0402,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,boys,primary,17221,5671180,1.832,1.577,0.3665,0.0228,0.0001,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,boys,primary,17221,3036504,2.788,2.449,0.5999,0.1161,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,boys,primary,17221,4445750,1.668,1.487,0.3153,0.0061,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,boys,primary,17221,3866596,1.644,1.484,0.3063,0.0037,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,boys,primary,17221,4468828,1.437,1.259,0.2173,0.005,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,boys,primary,17221,2690729,1.696,1.514,0.3216,0.0057,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,boys,primary,17221,3457867,1.582,1.344,0.2648,0.0126,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,region,,girls,middle,8283,121944936,2.799,2.082,0.521,0.1168,0.0169,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,girls,middle,8283,1620514,3.619,3.163,0.7358,0.2473,0.011,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,girls,middle,8283,10243124,2.059,1.918,0.4511,0.0243,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,girls,middle,8283,1728306,3.922,3.138,0.7248,0.2633,0.0438,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,girls,middle,8283,3464234,1.625,1.443,0.2962,0.0074,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,girls,middle,8283,1893385,1.918,1.706,0.4065,0.0156,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,girls,middle,8283,1381518,2.173,1.934,0.4815,0.035,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,girls,middle,8283,1508263,3.737,3.324,0.7369,0.2694,0.01,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,girls,middle,8283,2139960,2.798,2.423,0.5857,0.1246,0.0081,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,girls,middle,8283,3108443,3.185,2.856,0.6688,0.1837,0.0044,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,girls,middle,8283,3410118,5.727,4.152,0.7803,0.413,0.1196,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,girls,middle,8283,4079083,5.695,3.023,0.6879,0.2625,0.079,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,girls,middle,8283,1790313,2.654,2.308,0.5859,0.099,0.0009,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,girls,middle,8283,2752600,5.085,3.786,0.7844,0.3289,0.0957,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,girls,middle,8283,9035186,1.67,1.448,0.2944,0.0194,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,girls,middle,8283,5663226,1.607,1.461,0.3072,0.0024,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,girls,middle,8283,1471214,2.245,1.819,0.4447,0.068,0.0019,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,girls,middle,8283,3869668,2.376,1.988,0.4971,0.0806,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,girls,middle,8283,3362935,3.316,2.618,0.6161,0.2053,0.026,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,girls,middle,8283,1857983,2.884,2.249,0.5689,0.1232,0.0239,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,girls,middle,8283,1917170,2.936,2.525,0.6221,0.1336,0.0121,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,girls,middle,8283,1758484,3.995,3.316,0.7353,0.2795,0.049,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,girls,middle,8283,5222562,3.396,3.274,0.7242,0.1894,0.0022,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,girls,middle,8283,4347472,3.683,3.221,0.7152,0.2494,0.0218,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,girls,middle,8283,1809651,2.809,2.477,0.6097,0.1262,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,girls,middle,8283,2002055,1.786,1.548,0.3311,0.0264,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,girls,middle,8283,3678220,2.471,2.152,0.5404,0.081,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,girls,middle,8283,2143089,2.774,2.156,0.5346,0.1355,0.0085,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,girls,middle,8283,5149413,3.677,2.552,0.6254,0.1626,0.0441,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,girls,middle,8283,1899300,6.211,4.185,0.7722,0.4249,0.1572,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,girls,middle,8283,5671180,1.989,1.693,0.4138,0.0321,0.0007,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,girls,middle,8283,3036504,3.256,2.947,0.6869,0.1765,0.0087,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,girls,middle,8283,4445750,1.887,1.618,0.3748,0.0246,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,girls,middle,8283,3866596,2.253,2.032,0.5082,0.0412,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,girls,middle,8283,4468828,1.565,1.409,0.2803,0.0014,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,girls,middle,8283,2690729,1.899,1.636,0.3833,0.025,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,girls,middle,8283,3457867,2.27,1.717,0.4249,0.0902,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,region,,boys,middle,7192,121944936,2.899,2.307,0.579,0.1185,0.0123,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,boys,middle,7192,1620514,3.546,3.056,0.7345,0.2044,0.0216,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,boys,middle,7192,10243124,2.546,2.248,0.5654,0.077,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,boys,middle,7192,1728306,3.422,2.934,0.7095,0.1952,0.0174,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,boys,middle,7192,3464234,1.823,1.696,0.3869,0.0025,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,boys,middle,7192,1893385,2.117,1.999,0.4999,0.0169,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,boys,middle,7192,1381518,2.22,2.065,0.5227,0.0256,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,boys,middle,7192,1508263,2.997,2.785,0.6759,0.1365,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,boys,middle,7192,2139960,2.686,2.301,0.5688,0.11,0.0056,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,boys,middle,7192,3108443,3.255,2.942,0.6915,0.1904,0.0025,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,boys,middle,7192,3410118,5.333,3.521,0.7536,0.3213,0.0843,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,boys,middle,7192,4079083,5.827,3.098,0.7241,0.239,0.0776,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,boys,middle,7192,1790313,2.62,2.393,0.6081,0.0745,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,boys,middle,7192,2752600,4.228,3.452,0.7577,0.2801,0.0615,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,boys,middle,7192,9035186,1.903,1.676,0.3918,0.0244,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,boys,middle,7192,5663226,1.883,1.73,0.4128,0.0117,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,boys,middle,7192,1471214,2.356,2.074,0.5185,0.0571,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,boys,middle,7192,3869668,2.432,2.163,0.5493,0.0573,0.0003,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,boys,middle,7192,3362935,3.534,3.043,0.6928,0.2259,0.0203,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,boys,middle,7192,1857983,2.948,2.547,0.639,0.1319,0.0051,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,boys,middle,7192,1917170,2.769,2.517,0.6207,0.1082,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,boys,middle,7192,1758484,3.239,2.828,0.6872,0.1794,0.0054,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,boys,middle,7192,5222562,4.576,4.407,0.8634,0.4196,0.0162,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,boys,middle,7192,4347472,3.341,2.854,0.6763,0.1872,0.0191,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,boys,middle,7192,1809651,2.921,2.76,0.6632,0.1153,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,boys,middle,7192,2002055,1.871,1.701,0.3854,0.0204,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,boys,middle,7192,3678220,2.425,2.156,0.5485,0.0651,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,boys,middle,7192,2143089,2.473,2.046,0.514,0.087,0.0012,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,boys,middle,7192,5149413,3.582,2.593,0.6451,0.1387,0.0382,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,boys,middle,7192,1899300,4.915,3.664,0.7583,0.3508,0.0945,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,boys,middle,7192,5671180,2.378,2.089,0.5285,0.062,0.0001,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,boys,middle,7192,3036504,3.476,3.215,0.7197,0.2295,0.0005,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,boys,middle,7192,4445750,2.069,1.86,0.4477,0.0308,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,boys,middle,7192,3866596,2.299,2.133,0.5388,0.0346,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,boys,middle,7192,4468828,1.963,1.781,0.4324,0.012,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,boys,middle,7192,2690729,2.331,2.076,0.5214,0.0548,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,boys,middle,7192,3457867,2.292,1.998,0.4996,0.0589,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,region,,girls,high,4120,121944936,3.865,2.896,0.6698,0.2528,0.0447,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,girls,high,4120,1620514,5.096,4.607,0.8375,0.4408,0.0865,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,girls,high,4120,10243124,2.832,2.552,0.6494,0.1076,0.0011,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,girls,high,4120,1728306,5.936,5.088,0.8628,0.5084,0.1333,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,girls,high,4120,3464234,1.925,1.733,0.4091,0.0171,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,girls,high,4120,1893385,2.3,2.03,0.509,0.0534,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,girls,high,4120,1381518,3.215,2.861,0.6813,0.184,0.0045,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,girls,high,4120,1508263,4.776,4.12,0.7842,0.4047,0.0629,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,girls,high,4120,2139960,3.605,3.144,0.6801,0.2473,0.0212,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,girls,high,4120,3108443,4.229,3.98,0.7773,0.3625,0.0165,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,girls,high,4120,3410118,7.125,5.585,0.8403,0.5541,0.1853,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,girls,high,4120,4079083,7.072,4.24,0.7845,0.4261,0.1277,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,girls,high,4120,1790313,3.258,2.834,0.6922,0.185,0.0045,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,girls,high,4120,2752600,5.87,4.456,0.8351,0.4273,0.131,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,girls,high,4120,9035186,2.25,1.831,0.4446,0.0683,0.0052,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,girls,high,4120,5663226,2.078,1.95,0.4853,0.0234,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,girls,high,4120,1471214,2.862,2.417,0.5919,0.1465,0.003,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,girls,high,4120,3869668,3.059,2.66,0.6502,0.1609,0.0022,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,girls,high,4120,3362935,5.286,4.548,0.7935,0.4562,0.1247,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,girls,high,4120,1857983,3.775,3.112,0.7162,0.2269,0.0415,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,girls,high,4120,1917170,4.261,3.88,0.7646,0.3521,0.0288,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,girls,high,4120,1758484,5.11,4.495,0.8248,0.4424,0.0901,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,girls,high,4120,5222562,6.862,6.818,0.9308,0.7261,0.1694,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,girls,high,4120,4347472,5.391,4.962,0.8359,0.4963,0.0922,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,girls,high,4120,1809651,4.463,3.691,0.738,0.3532,0.0746,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,girls,high,4120,2002055,2.229,1.991,0.4977,0.0426,0.0004,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,girls,high,4120,3678220,3.855,3.432,0.7416,0.3067,0.0082,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,girls,high,4120,2143089,4.078,3.517,0.7434,0.3108,0.043,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,girls,high,4120,5149413,5.125,3.912,0.7811,0.3604,0.0806,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,girls,high,4120,1899300,7.197,5.311,0.8341,0.5257,0.205,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,girls,high,4120,5671180,2.535,2.221,0.5517,0.0886,0.0012,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,girls,high,4120,3036504,4.461,3.942,0.7865,0.3721,0.0403,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,girls,high,4120,4445750,2.523,2.092,0.5243,0.1037,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,girls,high,4120,3866596,3.315,2.934,0.6921,0.1824,0.01,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,girls,high,4120,4468828,2.034,1.844,0.4445,0.0218,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,girls,high,4120,2690729,2.873,2.504,0.6173,0.146,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,girls,high,4120,3457867,3.309,2.616,0.6383,0.2063,0.0199,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,region,,boys,high,4269,121944936,3.834,2.983,0.6974,0.231,0.0447,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chiniot,boys,high,4269,1620514,4.47,3.873,0.807,0.3405,0.0596,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lahore,boys,high,4269,10243124,3.692,3.313,0.7525,0.2595,0.0077,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bhakkar,boys,high,4269,1728306,4.853,4.303,0.8143,0.4203,0.0575,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujrat,boys,high,4269,3464234,2.168,1.982,0.493,0.0205,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mandi bahauddin,boys,high,4269,1893385,2.685,2.429,0.614,0.0952,0.0002,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,hafizabad,boys,high,4269,1381518,2.897,2.617,0.6511,0.1158,0.0045,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khushab,boys,high,4269,1508263,3.94,3.535,0.7603,0.303,0.0069,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,attock,boys,high,4269,2139960,3.209,2.807,0.6587,0.1828,0.0101,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhang,boys,high,4269,3108443,4.247,3.881,0.7809,0.3555,0.0247,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalnagar,boys,high,4269,3410118,6.786,4.668,0.8193,0.4688,0.1828,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,bahawalpur,boys,high,4269,4079083,6.961,4.318,0.8152,0.4165,0.1003,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,chakwal,boys,high,4269,1790313,3.0,2.672,0.6634,0.1423,0.0016,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,dera ghazi khan,boys,high,4269,2752600,5.301,4.013,0.8154,0.3716,0.112,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,faisalabad,boys,high,4269,9035186,2.414,2.176,0.5574,0.0564,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,gujranwala,boys,high,4269,5663226,2.372,2.154,0.5533,0.0409,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,jhelum,boys,high,4269,1471214,2.643,2.332,0.5832,0.0944,0.0019,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,kasur,boys,high,4269,3869668,3.043,2.678,0.6566,0.1462,0.0053,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,khanewal,boys,high,4269,3362935,4.749,3.895,0.7747,0.3697,0.0886,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,layyah,boys,high,4269,1857983,3.563,3.142,0.731,0.2062,0.0199,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,lodhran,boys,high,4269,1917170,3.66,3.387,0.74,0.2487,0.0033,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,mianwali,boys,high,4269,1758484,4.086,3.668,0.7854,0.3028,0.0299,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,multan,boys,high,4269,5222562,8.91,9.402,0.9437,0.7781,0.4432,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,muzaffargarh,boys,high,4269,4347472,4.157,3.63,0.773,0.3041,0.0401,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,nankana sahib,boys,high,4269,1809651,3.972,3.554,0.7613,0.285,0.028,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,narowal,boys,high,4269,2002055,2.428,2.204,0.5622,0.0467,0.0004,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,okara,boys,high,4269,3678220,3.081,2.703,0.6692,0.1616,0.0013,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,pakpattan,boys,high,4269,2143089,3.077,2.716,0.6641,0.1457,0.0071,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rahim yar khan,boys,high,4269,5149413,4.462,3.326,0.7412,0.2679,0.0582,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rajanpur,boys,high,4269,1899300,5.492,4.372,0.7997,0.4327,0.1171,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,rawalpindi,boys,high,4269,5671180,2.672,2.41,0.6159,0.0858,0.0011,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sahiwal,boys,high,4269,3036504,4.781,4.483,0.8173,0.432,0.0521,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sargodha,boys,high,4269,4445750,2.549,2.276,0.5791,0.0764,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sheikhupura,boys,high,4269,3866596,3.677,3.321,0.7537,0.2322,0.0126,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,sialkot,boys,high,4269,4468828,2.538,2.255,0.5673,0.0759,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,toba tek singh,boys,high,4269,2690729,2.767,2.536,0.6385,0.0997,0.0,"B-: geocoded 95%, gap only",government schools only,2026-09
+Punjab,district,vehari,boys,high,4269,3457867,2.98,2.631,0.6526,0.1337,0.0027,"B-: geocoded 95%, gap only",government schools only,2026-09
+Sindh,region,,girls,primary,6544,47914088,2.08,1.194,0.2912,0.0767,0.0238,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,girls,primary,6544,1418338,1.696,1.341,0.316,0.0287,0.0018,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,girls,primary,6544,1745107,2.527,2.097,0.5235,0.0867,0.0097,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,girls,primary,6544,1768194,2.964,1.564,0.396,0.1274,0.059,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,girls,primary,6544,1587362,3.27,1.678,0.4269,0.127,0.0555,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,girls,primary,6544,2294763,0.884,0.548,0.102,0.0081,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,girls,primary,6544,1194313,2.07,1.68,0.4222,0.0659,0.0006,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,girls,primary,6544,1544628,1.618,1.397,0.3009,0.0136,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,girls,primary,6544,1029672,5.134,1.63,0.4374,0.2456,0.1731,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,girls,primary,6544,1480376,2.62,1.454,0.3345,0.1028,0.0488,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,girls,primary,6544,981032,2.273,1.684,0.4188,0.1043,0.0057,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,girls,primary,6544,2494574,2.68,1.292,0.2882,0.0843,0.039,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,girls,primary,6544,1564982,1.209,0.95,0.147,0.0114,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,girls,primary,6544,756976,1.788,1.388,0.3201,0.0415,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,girls,primary,6544,1730246,1.616,1.28,0.2737,0.0311,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,girls,primary,6544,2206224,2.986,1.793,0.4523,0.1447,0.0479,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,girls,primary,6544,1742784,1.662,1.269,0.2664,0.0323,0.0071,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,girls,primary,6544,1422097,2.208,0.976,0.2723,0.0836,0.0233,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,girls,primary,6544,788935,1.663,1.435,0.3154,0.0167,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,girls,primary,6544,674170,2.026,1.677,0.4176,0.0457,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,girls,primary,6544,1459801,3.948,3.375,0.7323,0.2805,0.0403,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,girls,primary,6544,876419,4.392,3.174,0.65,0.3291,0.0955,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,girls,primary,6544,840531,5.716,3.113,0.6769,0.3051,0.1324,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,girls,primary,6544,1040275,2.321,1.647,0.4119,0.1044,0.0137,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,girls,primary,6544,3186531,0.534,0.458,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,girls,primary,6544,2746407,0.971,0.872,0.0618,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,girls,primary,6544,2306781,0.871,0.626,0.0735,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,girls,primary,6544,302103,0.673,0.619,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,girls,primary,6544,2175436,2.092,0.961,0.1885,0.0907,0.0532,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,girls,primary,6544,1788449,0.912,0.787,0.0702,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,girls,primary,6544,2766582,2.306,1.549,0.396,0.1151,0.0141,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,region,,boys,primary,33197,47914088,0.972,0.595,0.0721,0.0176,0.0074,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,boys,primary,33197,1418338,0.71,0.595,0.0324,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,boys,primary,33197,1745107,0.805,0.688,0.0277,0.0048,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,boys,primary,33197,1768194,1.556,0.682,0.1321,0.0692,0.0335,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,boys,primary,33197,1587362,1.454,0.636,0.0832,0.0443,0.0294,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,boys,primary,33197,2294763,0.578,0.421,0.0293,0.0005,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,boys,primary,33197,1194313,0.769,0.655,0.0334,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,boys,primary,33197,1544628,0.69,0.63,0.0053,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,boys,primary,33197,1029672,1.904,0.963,0.2684,0.097,0.0252,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,boys,primary,33197,1480376,1.594,0.684,0.0994,0.0608,0.0382,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,boys,primary,33197,981032,0.935,0.615,0.103,0.0096,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,boys,primary,33197,2494574,1.387,0.575,0.0835,0.0359,0.0241,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,boys,primary,33197,1564982,0.635,0.523,0.0295,0.0001,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,boys,primary,33197,756976,0.875,0.62,0.0862,0.0075,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,boys,primary,33197,1730246,0.675,0.527,0.0429,0.0019,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,boys,primary,33197,2206224,1.046,0.637,0.0824,0.0316,0.0088,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,boys,primary,33197,1742784,0.798,0.56,0.0581,0.0111,0.0019,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,boys,primary,33197,1422097,0.964,0.568,0.0907,0.0205,0.0058,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,boys,primary,33197,788935,0.725,0.653,0.0112,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,boys,primary,33197,674170,0.716,0.64,0.0165,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,boys,primary,33197,1459801,1.434,1.264,0.2142,0.0092,0.002,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,boys,primary,33197,876419,1.811,1.173,0.2869,0.0647,0.0115,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,boys,primary,33197,840531,2.967,0.999,0.2587,0.1084,0.0733,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,boys,primary,33197,1040275,0.909,0.71,0.0727,0.0051,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,boys,primary,33197,3186531,0.375,0.363,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,boys,primary,33197,2746407,0.708,0.602,0.0028,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,boys,primary,33197,2306781,0.805,0.595,0.0451,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,boys,primary,33197,302103,0.388,0.315,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,boys,primary,33197,2175436,0.851,0.607,0.0838,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,boys,primary,33197,1788449,0.558,0.5,0.005,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,boys,primary,33197,2766582,1.112,0.776,0.1328,0.0203,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,region,,girls,middle,1609,47914088,3.596,1.998,0.4999,0.2166,0.0669,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,girls,middle,1609,1418338,3.198,2.699,0.5975,0.2094,0.0174,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,girls,middle,1609,1745107,5.513,5.049,0.8549,0.5048,0.103,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,girls,middle,1609,1768194,4.887,3.055,0.6771,0.2779,0.1098,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,girls,middle,1609,1587362,6.515,3.698,0.7273,0.3637,0.1612,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,girls,middle,1609,2294763,1.433,0.818,0.2265,0.0472,0.002,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,girls,middle,1609,1194313,3.94,3.478,0.708,0.2992,0.0391,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,girls,middle,1609,1544628,3.229,2.737,0.6296,0.2134,0.0095,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,girls,middle,1609,1029672,7.019,3.174,0.6402,0.3666,0.2237,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,girls,middle,1609,1480376,5.09,3.256,0.6793,0.308,0.0945,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,girls,middle,1609,981032,3.963,3.339,0.6769,0.327,0.039,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,girls,middle,1609,2494574,4.216,2.528,0.6062,0.1772,0.051,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,girls,middle,1609,1564982,2.079,1.573,0.3992,0.0718,0.0008,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,girls,middle,1609,756976,3.115,2.772,0.6483,0.1871,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,girls,middle,1609,1730246,2.908,2.614,0.6169,0.1466,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,girls,middle,1609,2206224,5.181,3.813,0.72,0.375,0.1011,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,girls,middle,1609,1742784,3.721,3.15,0.6912,0.2498,0.0349,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,girls,middle,1609,1422097,3.486,1.602,0.4319,0.1947,0.0679,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,girls,middle,1609,788935,3.198,2.692,0.6414,0.1888,0.0047,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,girls,middle,1609,674170,4.409,3.787,0.764,0.371,0.0535,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,girls,middle,1609,1459801,11.334,10.471,0.9506,0.822,0.5278,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,girls,middle,1609,876419,6.691,5.912,0.8048,0.569,0.2194,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,girls,middle,1609,840531,10.054,7.239,0.8928,0.6621,0.3403,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,girls,middle,1609,1040275,4.812,3.98,0.7586,0.3873,0.0989,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,girls,middle,1609,3186531,0.573,0.503,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,girls,middle,1609,2746407,1.113,0.937,0.1444,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,girls,middle,1609,2306781,0.91,0.764,0.0735,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,girls,middle,1609,302103,0.943,0.855,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,girls,middle,1609,2175436,2.51,1.492,0.3265,0.1035,0.056,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,girls,middle,1609,1788449,1.153,0.919,0.1575,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,girls,middle,1609,2766582,2.66,1.83,0.4621,0.1491,0.0193,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,region,,boys,middle,5385,47914088,1.873,1.183,0.2821,0.0542,0.0148,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,boys,middle,5385,1418338,1.787,1.488,0.3462,0.0348,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,boys,middle,5385,1745107,2.54,2.165,0.5422,0.0775,0.0075,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,boys,middle,5385,1768194,3.042,1.756,0.4318,0.1209,0.0613,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,boys,middle,5385,1587362,2.426,1.378,0.3149,0.0643,0.0355,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,boys,middle,5385,2294763,0.94,0.699,0.0962,0.0061,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,boys,middle,5385,1194313,2.142,1.836,0.4499,0.0539,0.0014,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,boys,middle,5385,1544628,1.706,1.554,0.3545,0.0048,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,boys,middle,5385,1029672,3.709,1.935,0.4882,0.2197,0.0845,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,boys,middle,5385,1480376,3.426,1.729,0.4317,0.1228,0.0729,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,boys,middle,5385,981032,1.914,1.458,0.3374,0.0645,0.0012,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,boys,middle,5385,2494574,2.374,1.336,0.2882,0.0657,0.0304,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,boys,middle,5385,1564982,1.346,1.08,0.2184,0.009,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,boys,middle,5385,756976,1.657,1.432,0.2848,0.0214,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,boys,middle,5385,1730246,1.418,1.194,0.2117,0.0134,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,boys,middle,5385,2206224,2.578,1.814,0.4492,0.0896,0.0318,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,boys,middle,5385,1742784,1.656,1.352,0.2707,0.0289,0.0032,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,boys,middle,5385,1422097,2.138,1.15,0.251,0.072,0.0228,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,boys,middle,5385,788935,1.624,1.505,0.307,0.0064,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,boys,middle,5385,674170,1.843,1.679,0.3894,0.0146,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,boys,middle,5385,1459801,3.049,2.742,0.6663,0.1325,0.0082,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,boys,middle,5385,876419,3.629,2.932,0.661,0.2416,0.0424,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,boys,middle,5385,840531,5.361,3.333,0.7295,0.2923,0.1077,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,boys,middle,5385,1040275,2.071,1.754,0.422,0.0519,0.0009,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,boys,middle,5385,3186531,0.458,0.426,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,boys,middle,5385,2746407,0.836,0.714,0.0096,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,boys,middle,5385,2306781,0.91,0.655,0.0827,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,boys,middle,5385,302103,0.606,0.572,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,boys,middle,5385,2175436,1.296,0.872,0.1515,0.0389,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,boys,middle,5385,1788449,0.786,0.655,0.0323,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,boys,middle,5385,2766582,1.809,1.27,0.3122,0.061,0.0027,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,region,,girls,high,627,47914088,5.569,2.814,0.5871,0.3455,0.1446,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,girls,high,627,1418338,4.298,3.859,0.7106,0.3724,0.0427,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,girls,high,627,1745107,9.037,8.042,0.9177,0.7376,0.3632,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,girls,high,627,1768194,7.706,4.333,0.763,0.4293,0.1982,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,girls,high,627,1587362,10.329,8.041,0.8922,0.6993,0.3913,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,girls,high,627,2294763,2.159,1.031,0.3039,0.1312,0.014,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,girls,high,627,1194313,6.894,5.931,0.8246,0.5696,0.23,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,girls,high,627,1544628,4.763,4.532,0.781,0.447,0.0534,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,girls,high,627,1029672,9.074,4.914,0.7312,0.4966,0.3206,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,girls,high,627,1480376,6.671,4.984,0.7949,0.4994,0.1642,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,girls,high,627,981032,6.217,5.377,0.7702,0.5238,0.2055,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,girls,high,627,2494574,6.449,3.993,0.7554,0.3921,0.124,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,girls,high,627,1564982,3.355,2.781,0.6155,0.2234,0.0267,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,girls,high,627,756976,3.985,3.579,0.7549,0.3076,0.0085,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,girls,high,627,1730246,4.758,4.228,0.7881,0.4102,0.0716,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,girls,high,627,2206224,8.006,5.643,0.8103,0.5479,0.2762,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,girls,high,627,1742784,5.393,4.732,0.8072,0.4688,0.115,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,girls,high,627,1422097,4.464,2.304,0.5746,0.2579,0.1021,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,girls,high,627,788935,4.448,3.989,0.7902,0.3696,0.0466,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,girls,high,627,674170,5.836,4.857,0.8298,0.4852,0.1668,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,girls,high,627,1459801,27.903,22.422,0.9831,0.9562,0.8698,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,girls,high,627,876419,11.218,8.893,0.8482,0.6909,0.4395,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,girls,high,627,840531,15.496,10.525,0.9408,0.8294,0.5355,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,girls,high,627,1040275,6.42,5.671,0.8639,0.5689,0.1749,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,girls,high,627,3186531,0.604,0.553,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,girls,high,627,2746407,1.129,0.955,0.1478,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,girls,high,627,2306781,0.929,0.77,0.0735,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,girls,high,627,302103,1.187,1.168,0.0739,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,girls,high,627,2175436,2.557,1.548,0.3422,0.1035,0.056,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,girls,high,627,1788449,1.332,1.087,0.2238,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,girls,high,627,2766582,3.581,2.443,0.5765,0.2295,0.0371,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,region,,boys,high,1679,47914088,2.922,1.809,0.4662,0.1469,0.0363,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shikarpur,boys,high,1679,1418338,2.856,2.569,0.6094,0.139,0.0014,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,badin,boys,high,1679,1745107,4.284,3.646,0.7742,0.3085,0.0484,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,dadu,boys,high,1679,1768194,4.265,2.566,0.6108,0.2136,0.0923,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,ghotki,boys,high,1679,1587362,4.534,3.051,0.705,0.2284,0.0674,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,hyderabad,boys,high,1679,2294763,1.487,0.978,0.2433,0.0411,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jacobabad,boys,high,1679,1194313,3.415,3.038,0.6812,0.2295,0.0102,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,mirpurkhas,boys,high,1679,1544628,2.811,2.667,0.6342,0.1144,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,jamshoro,boys,high,1679,1029672,5.372,2.926,0.6331,0.3146,0.1632,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kambar shahdadkot,boys,high,1679,1480376,4.545,2.754,0.6421,0.229,0.0844,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,kashmore,boys,high,1679,981032,3.281,2.453,0.5986,0.2072,0.0307,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,khairpur,boys,high,1679,2494574,3.649,2.167,0.5383,0.1129,0.0425,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,larkana,boys,high,1679,1564982,2.165,1.899,0.4767,0.0515,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,matiari,boys,high,1679,756976,2.418,2.226,0.5657,0.0494,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,naushehro feroze,boys,high,1679,1730246,2.719,2.435,0.6174,0.0992,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sanghar,boys,high,1679,2206224,4.063,3.104,0.6818,0.2372,0.052,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,shaheed benazirabad,boys,high,1679,1742784,3.113,2.698,0.6486,0.155,0.0125,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sukkur,boys,high,1679,1422097,3.184,1.828,0.4644,0.1483,0.0343,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando allah yar,boys,high,1679,788935,2.42,2.234,0.556,0.0618,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tando muhammad khan,boys,high,1679,674170,2.939,2.571,0.637,0.1435,0.0064,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,tharparkar,boys,high,1679,1459801,7.476,6.577,0.9081,0.6533,0.2544,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,thatta,boys,high,1679,876419,5.405,4.488,0.7782,0.4498,0.1208,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,sajawal,boys,high,1679,840531,7.617,4.817,0.8469,0.4819,0.1901,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,umerkot,boys,high,1679,1040275,3.714,3.035,0.703,0.2326,0.0462,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi central,boys,high,1679,3186531,0.495,0.463,0.0,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi east,boys,high,1679,2746407,0.956,0.884,0.0732,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi south,boys,high,1679,2306781,1.13,0.891,0.1174,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,karachi west,boys,high,1679,302103,0.905,0.812,0.1037,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,keamari,boys,high,1679,2175436,1.574,1.092,0.1794,0.055,0.0097,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,korangi,boys,high,1679,1788449,0.887,0.74,0.0845,0.0,0.0,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
+Sindh,district,malir,boys,high,1679,2766582,2.383,1.636,0.4106,0.1147,0.0167,"A: SELD roster, positions from SELD distance checker (Sep 2026)",government schools only,2026-09
