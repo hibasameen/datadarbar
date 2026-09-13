@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-03",
+ "generated": "2026-09-13",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -64,8 +64,8 @@
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 167889,
-   "rows": 45741,
+   "bytes": 167771,
+   "rows": 45748,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead.",
    "unit": null,
@@ -141,8 +141,8 @@
   {
    "name": "file_catalog",
    "file": "file_catalog.parquet",
-   "bytes": 10443,
-   "rows": 263,
+   "bytes": 11910,
+   "rows": 322,
    "description": "Index of every source file collected for the warehouse, with its upstream URL.",
    "notes": "parsed_into_db = FALSE means the file is catalogued but its contents are not in any table here (mostly scanned PDFs). Use this to check coverage before concluding data is missing.",
    "unit": null,
@@ -2017,20 +2017,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RLS_POLSALE_M",
-     "name": "POL (Energy Products) Sales by Sector",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2013-07",
-     "upto": "2026-05"
-    },
-    {
      "code": "TS_GP_RS_QGDP1516_Q",
      "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
      "subject": "Real Sector",
      "series": 8,
      "since": "2015-09",
      "upto": "2026-03"
+    },
+    {
+     "code": "TS_GP_RLS_POLSALE_M",
+     "name": "POL (Energy Products) Sales by Sector",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2013-07",
+     "upto": "2026-05"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",
