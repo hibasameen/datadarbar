@@ -591,9 +591,10 @@ def _parse_edu_hierarchical_format(fpath, prefix):
             break
 
     current_district = None
+    current_raw = None
     in_all_localities = False
     in_all_sexes = False
-    got = set()
+    got = set()   # raw census districts already read, not crosswalked keys
 
     for line in raw_lines[data_start:]:
         # Parse with csv.reader to handle quoted fields like " 11,151,025 "
@@ -601,10 +602,17 @@ def _parse_edu_hierarchical_format(fpath, prefix):
         first = (parsed[0] or "").strip()
         first_upper = first.upper()
 
-        # District header
+        # District header. Track the RAW census district as well as its
+        # crosswalked key: five post-2017 splits (Chitral, Kohistan, Kalat,
+        # Killa Abdullah, Loralai) map two or three census districts onto one
+        # key, and each successor's block must be read and summed. Keying
+        # `got` on the crosswalked name skipped every successor after the
+        # first, so until 13 Sep 2026 t_edu_2023_* for those five districts
+        # was one successor's count over a combined-district population.
         if first_upper.endswith("DISTRICT") or first_upper.endswith("PROTECTED AREA"):
             name = re.sub(r"\s+(DISTRICT|PROTECTED AREA)\s*$", "", first, flags=re.I).strip()
-            current_district = apply_crosswalk(norm(name))
+            current_raw = norm(name)
+            current_district = apply_crosswalk(current_raw)
             in_all_localities = False
             in_all_sexes = False
             continue
@@ -612,11 +620,12 @@ def _parse_edu_hierarchical_format(fpath, prefix):
         # Tehsil/taluka = stop
         if any(kw in first_upper for kw in ("TEHSIL", "TALUKA", "SUB-DIVISION", "SUB DIVISION")):
             current_district = None
+            current_raw = None
             in_all_localities = False
             in_all_sexes = False
             continue
 
-        if not current_district or current_district in got:
+        if not current_district or current_raw in got:
             continue
 
         # Track locality/sex context
@@ -647,7 +656,9 @@ def _parse_edu_hierarchical_format(fpath, prefix):
             graduate = (grad2 or 0) + (grad4 or 0) if (grad2 is not None or grad4 is not None) else None
             masters_above = (masters or 0) + (mphil or 0) if (masters is not None or mphil is not None) else None
 
-            out[current_district] = {
+            # Summed, not assigned: a second successor of a split district
+            # adds to the first (counts only; percentages are derived later).
+            accumulate(out, current_district, {
                 f"{prefix}total":         _g(1),
                 f"{prefix}never_attended":_g(2),
                 f"{prefix}below_primary": _g(3),
@@ -657,8 +668,8 @@ def _parse_edu_hierarchical_format(fpath, prefix):
                 f"{prefix}intermediate":  _g(7),
                 f"{prefix}graduate":      graduate,
                 f"{prefix}masters_above": masters_above,
-            }
-            got.add(current_district)
+            })
+            got.add(current_raw)
             in_all_sexes = False
 
     return out
@@ -688,6 +699,43 @@ def load_education_2023_raw(raw_dir):
             accumulate(out, key, vals)
         print(f"    {fpath.name}: {len(parsed)} districts")
     return out
+
+def compute_education_pcts(vals, year):
+    """Derive t_edu_<year>_pct_* from the t_edu_<year>_* counts in `vals`, in place.
+
+    Shared by the full build and by etl/rebuild_education_2023.py, so a
+    re-parse of one year's Table 13 derives its percentages the same way.
+    """
+    prefix = f"t_edu_{year}_"
+    total = vals.get(f"{prefix}total")
+    if not total or total <= 0:
+        return
+    levels = ("below_primary", "primary", "middle", "matric",
+              "intermediate", "graduate", "masters_above")
+    for level in levels:
+        count = vals.get(f"{prefix}{level}")
+        if count is not None:
+            vals[f"{prefix}pct_{level}"] = round(count / total * 100, 2)
+    # % never attended: the explicit count if the table gives one, else the
+    # residual total - sum(levels), and only when that residual is more than
+    # rounding noise (>5%).
+    never = vals.get(f"{prefix}never_attended")
+    if never is not None:
+        vals[f"{prefix}pct_never_attended"] = round(never / total * 100, 2)
+    else:
+        attended_sum = sum(vals.get(f"{prefix}{lvl}", 0) or 0 for lvl in levels)
+        residual = total - attended_sum
+        if attended_sum > 0 and residual / total > 0.05:
+            vals[f"{prefix}pct_never_attended"] = round(residual / total * 100, 2)
+    matric_plus = sum(filter(None, [
+        vals.get(f"{prefix}matric"),
+        vals.get(f"{prefix}intermediate"),
+        vals.get(f"{prefix}graduate"),
+        vals.get(f"{prefix}masters_above"),
+    ]))
+    if matric_plus > 0:
+        vals[f"{prefix}pct_matric_plus"] = round(matric_plus / total * 100, 2)
+
 
 def load_employment_table_clean(path, year):
     """Load employment from a clean combined CSV (2017 format: one row per district)."""
@@ -3321,37 +3369,7 @@ def main():
     # ── Compute education percentages from raw counts ──────────────────
     for key, vals in data.items():
         for year in ("2017", "2023"):
-            total = vals.get(f"t_edu_{year}_total")
-            if total and total > 0:
-                for level in ("below_primary", "primary", "middle", "matric",
-                              "intermediate", "graduate", "masters_above"):
-                    count = vals.get(f"t_edu_{year}_{level}")
-                    if count is not None:
-                        vals[f"t_edu_{year}_pct_{level}"] = round(count / total * 100, 2)
-                # Compute % never attended
-                # If we have an explicit never_attended count, use it
-                never = vals.get(f"t_edu_{year}_never_attended")
-                if never is not None:
-                    vals[f"t_edu_{year}_pct_never_attended"] = round(never / total * 100, 2)
-                else:
-                    # Residual method: total - sum(levels) = never attended
-                    attended_sum = sum(vals.get(f"t_edu_{year}_{lvl}", 0) or 0
-                                       for lvl in ("below_primary", "primary", "middle", "matric",
-                                                   "intermediate", "graduate", "masters_above"))
-                    residual = total - attended_sum
-                    # Only use residual if it's a significant portion (>5%) — otherwise
-                    # it's just rounding noise
-                    if attended_sum > 0 and residual / total > 0.05:
-                        vals[f"t_edu_{year}_pct_never_attended"] = round(residual / total * 100, 2)
-                # Compute % matric or above
-                matric_plus = sum(filter(None, [
-                    vals.get(f"t_edu_{year}_matric"),
-                    vals.get(f"t_edu_{year}_intermediate"),
-                    vals.get(f"t_edu_{year}_graduate"),
-                    vals.get(f"t_edu_{year}_masters_above"),
-                ]))
-                if matric_plus > 0:
-                    vals[f"t_edu_{year}_pct_matric_plus"] = round(matric_plus / total * 100, 2)
+            compute_education_pcts(vals, year)
 
     # ── Recompute urban proportion from T5 for merged districts ─────────
     for key, vals in data.items():

@@ -14,7 +14,8 @@ THE PARSE TRAP. In `table_12_districts_combined_with_headers.csv` the geography
 names are not a column. They sit as rows inside `indicator` ("BADIN DISTRICT",
 "MATLI TALUKA"), heading the block of indicator rows beneath them. Read naively
 the file looks like it holds five districts — the five source PDFs. Forward-
-filling the geography header down its block recovers 135.
+filling the geography header down its block recovers 135. Malakand heads its
+block as "MALAKAND PROTECTED AREA", so a header test on DISTRICT alone loses it.
 
 THE MEASURE. The census publishes enrolment as counts by level plus an explicit
 out-of-school count for ages 5-16, and no 5-16 population denominator. So the
@@ -26,6 +27,16 @@ rate here is
 Primary through matric is the 5-16 span; intermediate and above sit past 16 and
 are excluded. This is close to, but not the same as, PSLM's "currently
 attending, ages 5-16" — do not expect the two series to agree in level.
+
+SPLIT DISTRICTS. The boundary file predates five district splits, and the
+crosswalk folds the successors back into their parents (Lower + Upper Chitral
+-> chitral; the three Kohistans -> kohistan; Kalat + Surab -> kalat; Killa
+Abdullah + Chaman -> killa abdullah; Loralai + Duki -> loralai). Their counts
+must be SUMMED before the rate is taken. Until 13 Sep 2026 the pivot below took
+the FIRST successor's row, so "killa abdullah" carried Chaman's figures and
+"loralai" carried Duki's, while the Table 1 population in the same record was
+the combined district. Counts are additive across successors; the rate is
+recomputed from the summed counts, never averaged.
 
 NO 2017 COUNTERPART. Census 2017's district tables are mother tongue (11),
 literacy by age (12), literacy by sex (13) and educational attainment of the
@@ -62,6 +73,7 @@ INDICATORS = {
     "Enrolment Matric", "Enrolment Intermidiate", "Enrolment Graduation above",
     "Never to School (all)", "Drop Out (5 - 16)", "Never to School (5-16)",
     "Out of School Children (5-16)",
+    "Primary Completed",   # present in some conversions of the same table
 }
 # Primary through matric spans ages 5-16; intermediate and above sit past it.
 SCHOOL_AGE = ["Enrolment Primary", "Enrolment Middle", "Enrolment Matric"]
@@ -70,19 +82,38 @@ SCHOOL_AGE = ["Enrolment Primary", "Enrolment Middle", "Enrolment Matric"]
 def load_long(census_dir: Path) -> pd.DataFrame:
     """Table 12 as one row per geography x indicator, with the sex splits."""
     d = pd.read_csv(census_dir / TABLE)
+    # A geography header is any row that is not a known indicator. It cannot
+    # be tightened to rows ending in a geography word: the file has
+    # "SUB-DIVISION CITY", "DE-EXCLUDED AREA RAJANPUR" and the like, whose
+    # blocks would otherwise be summed into the district above them.
     d["geo"] = d.indicator.where(~d.indicator.isin(INDICATORS)).ffill()
-    dist = d[d.geo.str.contains(" DISTRICT$", na=False)
+    # Malakand is "MALAKAND PROTECTED AREA" in the census, not a DISTRICT row;
+    # matching on DISTRICT alone dropped it (129 districts instead of 130).
+    dist = d[d.geo.str.contains(r" (?:DISTRICT|PROTECTED AREA)$", na=False)
              & d.indicator.isin(INDICATORS)].copy()
-    dist["name"] = dist.geo.str.replace(" DISTRICT$", "", regex=True).str.title()
+    dist["name"] = dist.geo.str.replace(r" (?:DISTRICT|PROTECTED AREA)$", "", regex=True).str.title()
     # Reuse Data Darbar's own crosswalk so these keys match every other layer.
     dist["district_key"] = dist["name"].map(lambda s: apply_crosswalk(norm(s.lower())))
+    # The sex columns must be numeric for the summing pivot below; a text cell
+    # ("1,234", a blank) would otherwise make pandas drop the whole column.
+    for col in ("male", "female"):
+        dist[col] = pd.to_numeric(dist[col].astype(str).str.replace(",", "", regex=False)
+                                  .str.strip(), errors="coerce")
     return dist
 
 
 def build(census_dir: Path) -> dict[str, dict]:
     dist = load_long(census_dir)
+    # Every indicator used below is a count, so successors that share a
+    # district_key (see SPLIT DISTRICTS above) are summed. min_count=1 keeps a
+    # missing cell missing instead of turning it into 0.
     w = dist.pivot_table(index="district_key", columns="indicator",
-                         values=["male", "female"], aggfunc="first")
+                         values=["male", "female"], aggfunc="sum", min_count=1)
+    merged = dist.groupby("district_key")["name"].nunique()
+    merged = merged[merged > 1]
+    if len(merged):
+        print("  summed successor districts: "
+              + ", ".join(f"{k} ({n})" for k, n in merged.items()))
 
     def rate(sex):
         enr = sum(w[(sex, c)] for c in SCHOOL_AGE)
