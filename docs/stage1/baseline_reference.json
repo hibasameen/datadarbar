@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "baseline_id": "dd-stage1-2026-09-25-df174cf",
+  "scope_date": "2026-09-25",
+  "repository": {
+    "full_name": "hibasameen/datadarbar",
+    "observed_branch": "main",
+    "commit": "df174cf0e4c56db1162bb6c942db4c649dbd55c4",
+    "commit_timestamp_utc": "2026-09-13T23:54:14Z",
+    "root_tree_sha1": "7ddedd5fc079a270062fe5db15accee14b0b9926",
+    "app_tree_sha1": "1d16fa67c97a8cb414183c4143f7a397af3a99a0",
+    "working_branch": "stage1/scope-baseline-2026-09-25",
+    "working_branch_created": true,
+    "main_modified": false,
+    "baseline_commit_source": "GitHub branches/main API observed 2026-09-25; fixed commit: https://github.com/hibasameen/datadarbar/commit/df174cf0e4c56db1162bb6c942db4c649dbd55c4"
+  },
+  "data_tree_sha1": "2816d291cfdd7031b413329ffb26238c8cc2a431",
+  "warehouse_tree_sha1": "e4a0fbf546467b7204fdcf7d83d96452ac7f6639",
+  "catalog": {
+    "path": "app/data/warehouse/catalog.json",
+    "git_blob_sha1": "f2d841a6134ff0d22e9874f1977307cf2b1a17a1",
+    "bytes": 139732,
+    "sha256": null,
+    "status": "git_identity_only"
+  },
+  "coverage": {
+    "app_data_blobs": 39,
+    "parquet_files": 25,
+    "app_data_bytes": 23792952,
+    "all_app_data_file_identities_recorded_in_accompanying_package": true,
+    "full_repository_archive_downloaded": false,
+    "live_data_bytes_captured": false,
+    "deployed_data_matches_commit": null,
+    "local_raw_warehouse_available": false
+  },
+  "local_preservation": {
+    "uploads_copied_and_sha256_verified": 14,
+    "bytes": 13958343,
+    "published_to_this_branch": false
+  },
+  "verification": {
+    "app_data_tree_hash_recomputed": true,
+    "warehouse_tree_hash_recomputed": true,
+    "data_pipeline_executed": false,
+    "production_data_changed": false,
+    "numerical_quality_verified": false
+  },
+  "status": "reference_baseline_created_offline_archive_partial",
+  "notes": [
+    "Git blob hashes include the Git object header; they are not plain file SHA-1 or SHA-256.",
+    "This is a fixed repository reference, not a verified point-in-time copy of the deployed website.",
+    "Fourteen local uploads are preserved separately and are not assumed to be current production inputs.",
+    "See the accompanying capture package for the per-file index, source copies, checksum checks and capture utility."
+  ]
+}
