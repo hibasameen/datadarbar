@@ -45,7 +45,8 @@ window.DDWarehouse = (function () {
        names — so stamp the catalogue's build id onto every data URL. Without it a
        returning visitor can hold a stale table indefinitely behind a CDN cache. */
     function url(file, raw) {
-      var stamp = (!raw && catalog && catalog.generated) ? '?v=' + encodeURIComponent(catalog.generated) : '';
+      var revision = catalog && (catalog.revision || catalog.generated);
+      var stamp = (!raw && revision) ? '?v=' + encodeURIComponent(revision) : '';
       return base + file + stamp;
     }
 

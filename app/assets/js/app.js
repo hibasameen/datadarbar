@@ -1035,6 +1035,7 @@ const layerFills = new WeakMap();
 
 function highlightLayer(layer) {
   if (selectedDistrict && selectedDistrict !== layer) {
+    selectedDistrict.closeTooltip();
     const prev = layerFills.get(selectedDistrict);
     if (prev) selectedDistrict.setStyle({ weight: prev.weight || 1, color: prev.color || '#8a9480', fillColor: prev.fillColor, fillOpacity: prev.fillOpacity, dashArray: prev.dashArray || null });
   }
@@ -1611,6 +1612,9 @@ function colorize() {
   const values = [];
 
   districtLayer.eachLayer(l => {
+    // A search-opened tooltip may outlive a year/dataset change. Close it so
+    // the next hover uses the current value, just like the sidebar and legend.
+    l.closeTooltip();
     const p = l.feature.properties || {};
     const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;

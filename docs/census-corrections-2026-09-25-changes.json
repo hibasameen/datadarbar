@@ -1,0 +1,1850 @@
+[
+  {
+    "district": "chitral",
+    "field": "t1_2023_pop_transgender",
+    "before": 0.0,
+    "after": null,
+    "action": "updated"
+  },
+  {
+    "district": "chitral",
+    "field": "t1_diff_pop_transgender",
+    "before": -22.0,
+    "after": null,
+    "action": "removed"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_below_primary",
+    "before": null,
+    "after": 187666,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_graduate",
+    "before": 18758.0,
+    "after": 32807,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_intermediate",
+    "before": 23574.0,
+    "after": 59504,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_masters_above",
+    "before": 387.0,
+    "after": 9912,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_matric",
+    "before": null,
+    "after": 77551,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_middle",
+    "before": 59504.0,
+    "after": 60422,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_never_attended",
+    "before": 77551.0,
+    "after": 908928,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": null,
+    "after": 12.67,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_graduate",
+    "before": 1.27,
+    "after": 2.21,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": 1.59,
+    "after": 4.02,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_masters_above",
+    "before": 0.03,
+    "after": 0.67,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_matric",
+    "before": null,
+    "after": 5.24,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 2.88,
+    "after": 12.14,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_middle",
+    "before": 4.02,
+    "after": 4.08,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 5.24,
+    "after": 61.37,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_pct_primary",
+    "before": null,
+    "after": 9.54,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_2023_primary",
+    "before": null,
+    "after": 141277,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_below_primary",
+    "before": null,
+    "after": -6979.0,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_graduate",
+    "before": -5142.0,
+    "after": 8907.0,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_intermediate",
+    "before": -19625.0,
+    "after": 16305.0,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_masters_above",
+    "before": -8977.0,
+    "after": 548.0,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_matric",
+    "before": null,
+    "after": 7148.0,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_middle",
+    "before": -3060.0,
+    "after": -2142.0,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_never_attended",
+    "before": -738753.0,
+    "after": 92624.0,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": null,
+    "after": -1.45,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_graduate",
+    "before": -0.46,
+    "after": 0.48,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": -1.54,
+    "after": 0.89,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_masters_above",
+    "before": -0.65,
+    "after": -0.01,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_matric",
+    "before": null,
+    "after": 0.13,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -7.77,
+    "after": 1.49,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_middle",
+    "before": -0.52,
+    "after": -0.46,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -53.98,
+    "after": 2.15,
+    "action": "updated"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_pct_primary",
+    "before": null,
+    "after": -1.77,
+    "action": "added"
+  },
+  {
+    "district": "ghotki",
+    "field": "t_edu_diff_primary",
+    "before": null,
+    "after": -14577.0,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_below_primary",
+    "before": null,
+    "after": 283264,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_intermediate",
+    "before": null,
+    "after": 172571,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_matric",
+    "before": 172571.0,
+    "after": 233513,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_middle",
+    "before": null,
+    "after": 181987,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_never_attended",
+    "before": 181987.0,
+    "after": 728044,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": null,
+    "after": 13.79,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": null,
+    "after": 8.4,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_matric",
+    "before": 8.4,
+    "after": 11.37,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 18.17,
+    "after": 29.53,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_middle",
+    "before": null,
+    "after": 8.86,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 8.86,
+    "after": 35.44,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_pct_primary",
+    "before": 11.37,
+    "after": 11.84,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_2023_primary",
+    "before": 233513.0,
+    "after": 243120,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_below_primary",
+    "before": null,
+    "after": 9509.0,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 22125.0,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_matric",
+    "before": -41591.0,
+    "after": 19351.0,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_middle",
+    "before": null,
+    "after": 13909.0,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_never_attended",
+    "before": -509843.0,
+    "after": 36214.0,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": null,
+    "after": -0.37,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": 0.62,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_matric",
+    "before": -2.68,
+    "after": 0.29,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -10.44,
+    "after": 0.92,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_middle",
+    "before": null,
+    "after": 0.16,
+    "action": "added"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -26.94,
+    "after": -0.36,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_pct_primary",
+    "before": -0.9,
+    "after": -0.43,
+    "action": "updated"
+  },
+  {
+    "district": "hyderabad",
+    "field": "t_edu_diff_primary",
+    "before": -3625.0,
+    "after": 5982.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_below_primary",
+    "before": -42467.0,
+    "after": 30520.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_intermediate",
+    "before": -20425.0,
+    "after": 64556.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_matric",
+    "before": -23084.0,
+    "after": 110651.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_middle",
+    "before": -161692.0,
+    "after": 27373.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_never_attended",
+    "before": -157466.0,
+    "after": 428489.0,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -4.0316,
+    "after": -2.2513,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_graduate",
+    "before": 0.1377,
+    "after": 0.1404,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": 1.53,
+    "after": 0.6308,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_masters_above",
+    "before": 0.0216,
+    "after": 0.0214,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_matric",
+    "before": -2.8135,
+    "after": 0.4635,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -4.1042,
+    "after": 1.2561,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_middle",
+    "before": -1.21,
+    "after": -1.5503,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -10.2487,
+    "after": 4.0386,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_pct_primary",
+    "before": -1.2477,
+    "after": -2.0155,
+    "action": "updated"
+  },
+  {
+    "district": "karachi west",
+    "field": "t_edu_diff_primary",
+    "before": 37381.0,
+    "after": 5919.0,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_below_primary",
+    "before": 189065.0,
+    "after": 262052,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_intermediate",
+    "before": null,
+    "after": 84981,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_matric",
+    "before": 84981.0,
+    "after": 218716,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_middle",
+    "before": null,
+    "after": 189065,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_never_attended",
+    "before": 187254.0,
+    "after": 773209,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": 10.6,
+    "after": 14.69,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": null,
+    "after": 4.76,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_matric",
+    "before": 4.76,
+    "after": 12.26,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 7.28,
+    "after": 19.55,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_middle",
+    "before": null,
+    "after": 10.6,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 10.5,
+    "after": 43.35,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_pct_primary",
+    "before": 12.26,
+    "after": 10.5,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_2023_primary",
+    "before": 218716.0,
+    "after": 187254,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_below_primary",
+    "before": -42467.0,
+    "after": 30520.0,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 64556.0,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_matric",
+    "before": -23084.0,
+    "after": 110651.0,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_middle",
+    "before": null,
+    "after": 27373.0,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_never_attended",
+    "before": -157466.0,
+    "after": 428489.0,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -4.0316,
+    "after": -2.2513,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_graduate",
+    "before": 0.1377,
+    "after": 0.1404,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": 0.6308,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_masters_above",
+    "before": 0.0216,
+    "after": 0.0214,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_matric",
+    "before": -2.8135,
+    "after": 0.4635,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -4.1042,
+    "after": 1.2561,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_middle",
+    "before": null,
+    "after": -1.5503,
+    "action": "added"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -10.2487,
+    "after": 4.0386,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_pct_primary",
+    "before": -1.2477,
+    "after": -2.0155,
+    "action": "updated"
+  },
+  {
+    "district": "keamari",
+    "field": "t_edu_diff_primary",
+    "before": 37381.0,
+    "after": 5919.0,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_2023_matric",
+    "before": null,
+    "after": 144115,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_2023_middle",
+    "before": 144115.0,
+    "after": 111134,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_2023_pct_matric",
+    "before": null,
+    "after": 6.78,
+    "action": "added"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 9.77,
+    "after": 16.55,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_2023_pct_middle",
+    "before": 6.78,
+    "after": 5.23,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_diff_matric",
+    "before": null,
+    "after": 5576.0,
+    "action": "added"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_diff_middle",
+    "before": 32710.0,
+    "after": -271.0,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_diff_pct_matric",
+    "before": null,
+    "after": -0.08,
+    "action": "added"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -5.4,
+    "after": 1.38,
+    "action": "updated"
+  },
+  {
+    "district": "khairpur",
+    "field": "t_edu_diff_pct_middle",
+    "before": 1.26,
+    "after": -0.29,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_below_primary",
+    "before": 64135.0,
+    "after": 192781,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_intermediate",
+    "before": null,
+    "after": 67287,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_matric",
+    "before": 67287.0,
+    "after": 85661,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_middle",
+    "before": null,
+    "after": 64135,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_never_attended",
+    "before": 131245.0,
+    "after": 798192,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": 4.6,
+    "after": 13.82,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": null,
+    "after": 4.82,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_matric",
+    "before": 4.82,
+    "after": 6.14,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 8.58,
+    "after": 14.72,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_middle",
+    "before": null,
+    "after": 4.6,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 9.41,
+    "after": 57.21,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_pct_primary",
+    "before": 6.14,
+    "after": 9.41,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_2023_primary",
+    "before": 85661.0,
+    "after": 131245,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_below_primary",
+    "before": -103198.0,
+    "after": 25448.0,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 14044.0,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_matric",
+    "before": -15484.0,
+    "after": 2890.0,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_middle",
+    "before": null,
+    "after": 2481.0,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_never_attended",
+    "before": -610855.0,
+    "after": 56092.0,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -8.5,
+    "after": 0.72,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": 0.65,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_matric",
+    "before": -1.66,
+    "after": -0.34,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -5.43,
+    "after": 0.71,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_middle",
+    "before": null,
+    "after": -0.23,
+    "action": "added"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -48.67,
+    "after": -0.87,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_pct_primary",
+    "before": -3.7,
+    "after": -0.43,
+    "action": "updated"
+  },
+  {
+    "district": "mirpurkhas",
+    "field": "t_edu_diff_primary",
+    "before": -40068.0,
+    "after": 5516.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_below_primary",
+    "before": 82342.0,
+    "after": 251910,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_graduate",
+    "before": 14007.0,
+    "after": 44148,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_intermediate",
+    "before": 10231.0,
+    "after": 82342,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_masters_above",
+    "before": 629.0,
+    "after": 14636,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_matric",
+    "before": null,
+    "after": 111719,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_middle",
+    "before": 33917.0,
+    "after": 89330,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_never_attended",
+    "before": null,
+    "after": 681210,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": 5.62,
+    "after": 17.19,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_graduate",
+    "before": 0.96,
+    "after": 3.01,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": 0.7,
+    "after": 5.62,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_masters_above",
+    "before": 0.04,
+    "after": 1.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_matric",
+    "before": null,
+    "after": 7.62,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 1.7,
+    "after": 17.25,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_middle",
+    "before": 2.31,
+    "after": 6.1,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 90.37,
+    "after": 46.49,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_pct_primary",
+    "before": null,
+    "after": 12.71,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_2023_primary",
+    "before": null,
+    "after": 186324,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_below_primary",
+    "before": -152472.0,
+    "after": 17096.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_graduate",
+    "before": -19698.0,
+    "after": 10443.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_intermediate",
+    "before": -58343.0,
+    "after": 13768.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_masters_above",
+    "before": -15156.0,
+    "after": -1149.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_matric",
+    "before": null,
+    "after": 2387.0,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_middle",
+    "before": -49874.0,
+    "after": 5539.0,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_never_attended",
+    "before": null,
+    "after": 53200.0,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -11.51,
+    "after": 0.06,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_graduate",
+    "before": -1.5,
+    "after": 0.55,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": -4.3,
+    "after": 0.62,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_masters_above",
+    "before": -1.11,
+    "after": -0.15,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_matric",
+    "before": null,
+    "after": -0.35,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -14.89,
+    "after": 0.66,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_middle",
+    "before": -3.8,
+    "after": -0.01,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": 44.56,
+    "after": 0.68,
+    "action": "updated"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_pct_primary",
+    "before": null,
+    "after": -1.43,
+    "action": "added"
+  },
+  {
+    "district": "naushehro feroze",
+    "field": "t_edu_diff_primary",
+    "before": null,
+    "after": -7541.0,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_below_primary",
+    "before": 2.0,
+    "after": 71685,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_diploma_certificate",
+    "before": null,
+    "after": 216,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_graduate",
+    "before": null,
+    "after": 4395,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_intermediate",
+    "before": null,
+    "after": 8325,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_masters_above",
+    "before": null,
+    "after": 2736,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_matric",
+    "before": 2.0,
+    "after": 23031,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_middle",
+    "before": 1.0,
+    "after": 34995,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_never_attended",
+    "before": 43.0,
+    "after": 362389,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_below_primary",
+    "before": 4.0,
+    "after": 12.93,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_graduate",
+    "before": null,
+    "after": 0.79,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_intermediate",
+    "before": null,
+    "after": 1.5,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_masters_above",
+    "before": null,
+    "after": 0.49,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_matric",
+    "before": 4.0,
+    "after": 4.15,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_matric_plus",
+    "before": 4.0,
+    "after": 6.94,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_middle",
+    "before": 2.0,
+    "after": 6.31,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_never_attended",
+    "before": 86.0,
+    "after": 65.37,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_pct_primary",
+    "before": 4.0,
+    "after": 8.09,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_primary",
+    "before": 2.0,
+    "after": 44866,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_2017_total",
+    "before": 50.0,
+    "after": 554377,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_below_primary",
+    "before": 75250.0,
+    "after": 3567.0,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_graduate",
+    "before": null,
+    "after": 1003.0,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 1880.0,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_masters_above",
+    "before": null,
+    "after": 1651.0,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_matric",
+    "before": 22336.0,
+    "after": -693.0,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_middle",
+    "before": 38396.0,
+    "after": 3402.0,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_never_attended",
+    "before": 523206.0,
+    "after": 160860.0,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": 6.22,
+    "after": -2.71,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_graduate",
+    "before": null,
+    "after": -0.06,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": -0.11,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_masters_above",
+    "before": null,
+    "after": 0.11,
+    "action": "added"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_matric",
+    "before": -0.97,
+    "after": -1.12,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": 1.75,
+    "after": -1.19,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_middle",
+    "before": 3.21,
+    "after": -1.1,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -14.94,
+    "after": 5.69,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_pct_primary",
+    "before": 3.3,
+    "after": -0.79,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_primary",
+    "before": 53782.0,
+    "after": 8918.0,
+    "action": "updated"
+  },
+  {
+    "district": "south waziristan agency",
+    "field": "t_edu_diff_total",
+    "before": 736343.0,
+    "after": 182016.0,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_below_primary",
+    "before": 20716.0,
+    "after": 77222,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_intermediate",
+    "before": null,
+    "after": 19490,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_matric",
+    "before": 19490.0,
+    "after": 26394,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_middle",
+    "before": null,
+    "after": 20716,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_never_attended",
+    "before": 61165.0,
+    "after": 688719,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": 2.27,
+    "after": 8.47,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": null,
+    "after": 2.14,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_matric",
+    "before": 2.14,
+    "after": 2.9,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 3.87,
+    "after": 6.77,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_middle",
+    "before": null,
+    "after": 2.27,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 6.71,
+    "after": 75.56,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_pct_primary",
+    "before": 2.9,
+    "after": 6.71,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_2023_primary",
+    "before": 26394.0,
+    "after": 61165,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_below_primary",
+    "before": -64368.0,
+    "after": -7862.0,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 2834.0,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_matric",
+    "before": -6016.0,
+    "after": 888.0,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_middle",
+    "before": null,
+    "after": -2255.0,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_never_attended",
+    "before": -542768.0,
+    "after": 84786.0,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -7.93,
+    "after": -1.73,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": 0.14,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_matric",
+    "before": -0.92,
+    "after": -0.16,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -2.84,
+    "after": 0.06,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_middle",
+    "before": null,
+    "after": -0.48,
+    "action": "added"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -65.7,
+    "after": 3.15,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_pct_primary",
+    "before": -4.87,
+    "after": -1.06,
+    "action": "updated"
+  },
+  {
+    "district": "thatta",
+    "field": "t_edu_diff_primary",
+    "before": -38412.0,
+    "after": -3641.0,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_below_primary",
+    "before": 33421.0,
+    "after": 139914,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_intermediate",
+    "before": null,
+    "after": 32345,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_matric",
+    "before": 32345.0,
+    "after": 36666,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_middle",
+    "before": null,
+    "after": 33421,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_never_attended",
+    "before": 81287.0,
+    "after": 596174,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_below_primary",
+    "before": 3.53,
+    "after": 14.79,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_intermediate",
+    "before": null,
+    "after": 3.42,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_matric",
+    "before": 3.42,
+    "after": 3.88,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_matric_plus",
+    "before": 6.01,
+    "after": 9.88,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_middle",
+    "before": null,
+    "after": 3.53,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_never_attended",
+    "before": 8.59,
+    "after": 63.02,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_pct_primary",
+    "before": 3.88,
+    "after": 8.59,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_2023_primary",
+    "before": 36666.0,
+    "after": 81287,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_below_primary",
+    "before": -89846.0,
+    "after": 16647.0,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_intermediate",
+    "before": null,
+    "after": 5830.0,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_matric",
+    "before": -5326.0,
+    "after": -1005.0,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_middle",
+    "before": null,
+    "after": 1065.0,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_never_attended",
+    "before": -490670.0,
+    "after": 24217.0,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_below_primary",
+    "before": -10.32,
+    "after": 0.94,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_intermediate",
+    "before": null,
+    "after": 0.44,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_matric",
+    "before": -0.81,
+    "after": -0.35,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_matric_plus",
+    "before": -3.23,
+    "after": 0.64,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_middle",
+    "before": null,
+    "after": -0.11,
+    "action": "added"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_never_attended",
+    "before": -55.67,
+    "after": -1.24,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_pct_primary",
+    "before": -4.98,
+    "after": -0.27,
+    "action": "updated"
+  },
+  {
+    "district": "umerkot",
+    "field": "t_edu_diff_primary",
+    "before": -42218.0,
+    "after": 2403.0,
+    "action": "updated"
+  }
+]

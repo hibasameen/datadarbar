@@ -223,7 +223,7 @@ def load_dd_pov(path: Path) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-def build(src: Path) -> None:
+def build(src: Path, district_only: bool = False) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
     tables: list[dict] = []
@@ -314,7 +314,9 @@ def build(src: Path) -> None:
         "was split after Census 2017 (see the *_boundary_change provenance rows) both "
         "halves carry the SAME 2017 figure for the combined pre-split area, so summing a "
         "2017 count across all districts overstates the total. Filter those rows out, or "
-        "sum the 2023 year instead.",
+        "sum the 2023 year instead. Census education source corrections dated 2026-09-25 "
+        "use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. "
+        "Missing source counts are unavailable, not zero.",
         {
             "district_key": "normalised join key used across Data Darbar",
             "district": "display name",
@@ -335,6 +337,21 @@ def build(src: Path) -> None:
     )
     if unknown:
         print(f"    ({len(unknown)} fields had no app.js label, e.g. {sorted(unknown)[:3]})")
+
+    if district_only:
+        import hashlib
+        catalog_path = OUT / "catalog.json"
+        catalog = json.loads(catalog_path.read_text())
+        if sum(t["name"] == "district_indicators" for t in catalog["tables"]) != 1:
+            raise ValueError("Expected one district table in the existing catalogue")
+        catalog["tables"] = [tables[0] if t["name"] == "district_indicators" else t for t in catalog["tables"]]
+        digest = hashlib.sha256((OUT / "district_indicators.parquet").read_bytes()).hexdigest()[:12]
+        catalog["generated"] = _today()
+        catalog["revision"] = f"{_today()}-census-{digest}"
+        catalog_path.write_text(json.dumps(catalog, indent=1) + "\n")
+        con.close()
+        print("Updated the district table and catalogue; other warehouse tables retained")
+        return
 
     # ── 2. poverty: district MPI + tehsil satellite ──────────────────────────
     print("poverty…")
@@ -1300,7 +1317,8 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
+    ap.add_argument("--only", choices=["district_indicators"], help="rebuild only the website district panel")
     a = ap.parse_args()
-    if not (a.src / "trade_hs8.parquet").exists():
+    if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
-    build(a.src)
+    build(a.src, district_only=bool(a.only))

@@ -39,6 +39,7 @@ const cst = n => balanced(src.indexOf('const ' + n)) + ';';
 
 const body = [
   cst('INDICATOR_GROUPS'), cst('TOPICS'), cst('SURVEY_META_PREFIX'),
+  cst('GEOGRAPHIES'), fn('geoKind'), fn('G'), fn('unitName'), fn('unitProv'), fn('unitRecord'),
   fn('normName'), fn('_surveyMetaPrefixes'), fn('isNotSurveyed'), fn('dataKey'),
   fn('diffKey'), fn('isPctLabel'), fn('fmt'), fn('fmtDiff'), fn('quickStat'),
   fn('quickStatRaw'), fn('showDistrictDetail'),

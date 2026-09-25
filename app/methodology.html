@@ -81,6 +81,19 @@
       against the boundary file and reports any that fail to match, so this class of silent loss surfaces
       at build time rather than as an unexplained gap on the map.</p>
 
+    <h3>Census corrections — 25 September 2026</h3>
+    <p>Original PBS tables were checked to correct educational attainment in Ghotki, Hyderabad,
+      Keamari, Khairpur, Mirpur Khas, Naushahro Feroze, Thatta and Umer Kot (2023), and South
+      Waziristan (2017). South Waziristan's population aged five and above is 554,377; the earlier
+      extract incorrectly used 50. Counts, percentages and their changes now use the corrected rows.
+      Sources: <a href="https://www.pbs.gov.pk/censusarchive/" target="_blank" rel="noopener">PBS 2017 Table 15</a>
+      and <a href="https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_sindh_districts.pdf" target="_blank" rel="noopener">PBS 2023 Table 13, Sindh</a>.</p>
+    <p>Education percentages use each education table's population aged five and above.
+      For the shared Keamari/Karachi West comparison, education counts and denominators are summed
+      before calculating rates. Chitral's 2023 transgender count is unavailable: the source prints
+      dashes for both Upper and Lower Chitral, which are preserved as missing rather than zero.
+      These corrections do not resolve all historical district-boundary differences.</p>
+
     <h3>Choropleth &amp; change</h3>
     <p>Values are mapped to fill colours using quantile breaks (5 classes) via
       <a href="https://gka.github.io/chroma.js/" target="_blank" rel="noopener">Chroma.js</a>, so each class

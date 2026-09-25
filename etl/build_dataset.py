@@ -3397,6 +3397,11 @@ def main():
     # the boundary change showing as real change.
     _fix_boundary_change_pairs(data)
 
+    # Preserve reviewed original-PDF corrections across legacy-source rebuilds.
+    # Also recomputes dependent education rates and the shared Karachi change.
+    from census_corrections import apply_verified_census_corrections
+    apply_verified_census_corrections(data)
+
     # ── Add GeoJSON metadata & match report ──────────────────────────────
     matched, unmatched_csv, unmatched_geo = 0, [], []
 

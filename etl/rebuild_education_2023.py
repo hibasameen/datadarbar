@@ -31,6 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_dataset import (PBS, compute_education_pcts,  # noqa: E402
                            load_education_2023_raw, _BOUNDARY_PAIRS, _MERGED_DISTRICTS)
+from census_corrections import apply_verified_census_corrections, changes
 
 PREFIX = "t_edu_2023_"
 DEFAULT_RAW = PBS / "Census 2023" / "census2023_all_tables" / "table_13"
@@ -50,6 +51,8 @@ def main() -> None:
 
     parsed = load_education_2023_raw(args.raw)
     districts = json.loads(args.districts.read_text())
+    import copy
+    original = copy.deepcopy(districts)
 
     changed, orphans = [], []
     for key, counts in parsed.items():
@@ -63,7 +66,7 @@ def main() -> None:
         if key in _BOUNDARY_PAIRS or key in _BOUNDARY_PAIRS.values():
             # Keamari / Karachi West difference against a shared 2017 area
             # (_fix_boundary_change_pairs); that needs the full build.
-            print(f"  {key}: counts changed but this district is a boundary pair — run build_dataset.py")
+            print(f"  {key}: retaining boundary-pair counts until the verified corrections below")
             continue
         before_total = rec.get(f"{PREFIX}total")
         # Drop the old counts and derived percentages for this year, then
@@ -91,6 +94,8 @@ def main() -> None:
         print(f"  {len(orphans)} parsed keys have no entry in districts.json: "
               + ", ".join(sorted(orphans)))
 
+    apply_verified_census_corrections(districts)
+    print(f"  After verified PDF corrections: {len(changes(original, districts))} changed fields")
     if args.dry_run:
         return
     args.districts.write_text(json.dumps(districts, indent=2) + "\n")

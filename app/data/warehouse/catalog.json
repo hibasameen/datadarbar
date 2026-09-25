@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-13",
+ "generated": "2026-09-25",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -251,10 +251,10 @@
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 167771,
-   "rows": 45748,
+   "bytes": 167765,
+   "rows": 45829,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
-   "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead.",
+   "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead. Census education source corrections dated 2026-09-25 use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. Missing source counts are unavailable, not zero.",
    "unit": null,
    "source": "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
    "columns": [
@@ -4027,5 +4027,6 @@
    "title": "Where remittances come from, FY2024-25",
    "sql": "-- The country series are hierarchical (U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, 'ten European Countries'\n-- contains Belgium..Sweden). Summing all of them overstates the total by 42%;\n-- these fifteen add up exactly to SBP's published figure.\nSELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n       round(sum(o.value)) AS mn_usd\nFROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\nWHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n  AND replace(c.series_name, 'Workers'' remittances received from ', '') IN (\n    'Saudi Arabia', 'U.A.E.', 'U.K.', 'U.S.A.',\n    'Other GCC Countries excluding Saudi Arabia & U.A.E.', 'ten European Countries',\n    'Norway', 'Switzerland', 'Australia', 'Canada', 'Japan', 'Malaysia',\n    'South Africa', 'South Korea', 'Other Countries')\nGROUP BY 1 ORDER BY mn_usd DESC;"
   }
- ]
+ ],
+ "revision": "2026-09-25-census-b46b2c08db1e"
 }
