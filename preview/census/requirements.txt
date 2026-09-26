@@ -1,0 +1,2 @@
+# Geometry output is sensitive to the Shapely/GEOS version; see preview_build.json.
+shapely==2.0.5

@@ -1,0 +1,30 @@
+{
+  "preview": "local_preview/census/index.html",
+  "release_id": "geography-8cee002c8d474fd6",
+  "preview_manifest_sha256": "f48afdc16ff0dbc793b865394c60d59f6e874951c8e12425a8a8477d1b3769e5",
+  "python_build_tests_passed": 13,
+  "javascript_data_and_dom_tests_passed": 12,
+  "independent_build_byte_identical": true,
+  "deterministic_files": 298,
+  "source_geography_release_verified": true,
+  "public_app_files_unchanged": true,
+  "published": false,
+  "comparison_areas": 127,
+  "observations": 4572,
+  "source_pdfs": 280,
+  "illustrative_shaded_areas": 121,
+  "boundary_extents_withheld": 6,
+  "polygon_certification": false,
+  "education_change_enabled": false,
+  "repaired_input_shapes": [
+    "Bannu",
+    "Lakki Marwat",
+    "Dera Ismail Khan",
+    "Tank",
+    "Kohat",
+    "Peshawar",
+    "Sibi"
+  ],
+  "visual_browser_check": "not_completed",
+  "browser_and_loopback_server_blocker": "Automatic approval review failed with an authentication error (401); actions were not executed."
+}

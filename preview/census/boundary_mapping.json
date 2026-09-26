@@ -1,0 +1,1280 @@
+{
+  "schema": "census-preview-boundaries-v1",
+  "geometry_sha256": "e0800ea3358d3398f8d170ef97479bacbfc5d3f04f5c566d116681a0f7586ccf",
+  "scope": "Explicit display mapping only; statistical crosswalk approval does not certify polygons.",
+  "areas": [
+    {
+      "comparison_id": "DDG-0001",
+      "comparison_name": "Bannu + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Bannu"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0002",
+      "comparison_name": "Lakki Marwat + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Lakki Marwat"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0003",
+      "comparison_name": "Dera Ismail Khan + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Dera Ismail Khan"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0004",
+      "comparison_name": "Tank + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Tank"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0005",
+      "comparison_name": "Abbottabad",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Abbottabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0006",
+      "comparison_name": "Batagram",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Batagram"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0007",
+      "comparison_name": "Haripur",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Haripur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0008",
+      "comparison_name": "Mansehra",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Mansehra"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0009",
+      "comparison_name": "Torghar",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Tor Ghar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0010",
+      "comparison_name": "Kohistan (Upper + Lower + Kolai Palas)",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Kohistan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0011",
+      "comparison_name": "Hangu",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Hangu"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0012",
+      "comparison_name": "Karak",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Karak"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0013",
+      "comparison_name": "Kohat + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Kohat"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0014",
+      "comparison_name": "Mardan",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Mardan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0015",
+      "comparison_name": "Swabi",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Swabi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0016",
+      "comparison_name": "Charsadda",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Charsadda"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0017",
+      "comparison_name": "Nowshera",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Nowshera"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0018",
+      "comparison_name": "Peshawar + former frontier region",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Peshawar"
+      ],
+      "map_status": "unverified_frontier_extent",
+      "note": "Former frontier regions are not separately identified in the map file. Their inclusion in this district outline cannot be verified; the outline is hatched and population shading is withheld."
+    },
+    {
+      "comparison_id": "DDG-0019",
+      "comparison_name": "Buner",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Buner"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0020",
+      "comparison_name": "Chitral (Lower + Upper)",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Chitral"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0021",
+      "comparison_name": "Shangla",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Shangla"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0022",
+      "comparison_name": "Swat",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Swat"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0023",
+      "comparison_name": "Lower Dir",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Lower Dir"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0024",
+      "comparison_name": "Upper Dir",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Upper Dir"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0025",
+      "comparison_name": "Malakand Protected Area",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Malakand"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0026",
+      "comparison_name": "Khyber",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Khyber Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0027",
+      "comparison_name": "Kurram",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Kurram Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0028",
+      "comparison_name": "Mohmand",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Mohmand Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0029",
+      "comparison_name": "North Waziristan",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "North Waziristan Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0030",
+      "comparison_name": "Orakzai",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Orakzai Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0031",
+      "comparison_name": "South Waziristan",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "South Waziristan Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0032",
+      "comparison_name": "Bajaur",
+      "province": "Khyber Pakhtunkhwa",
+      "polygon_names": [
+        "Bajaur Agency"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0033",
+      "comparison_name": "Attock",
+      "province": "Punjab",
+      "polygon_names": [
+        "Attock"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0034",
+      "comparison_name": "Chakwal",
+      "province": "Punjab",
+      "polygon_names": [
+        "Chakwal"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0035",
+      "comparison_name": "Jhelum",
+      "province": "Punjab",
+      "polygon_names": [
+        "Jhelum"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0036",
+      "comparison_name": "Rawalpindi",
+      "province": "Punjab",
+      "polygon_names": [
+        "Rawalpindi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0037",
+      "comparison_name": "Bhakkar",
+      "province": "Punjab",
+      "polygon_names": [
+        "Bhakkar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0038",
+      "comparison_name": "Khushab",
+      "province": "Punjab",
+      "polygon_names": [
+        "Khushab"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0039",
+      "comparison_name": "Sargodha",
+      "province": "Punjab",
+      "polygon_names": [
+        "Sargodha"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0040",
+      "comparison_name": "Mianwali",
+      "province": "Punjab",
+      "polygon_names": [
+        "Mianwali"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0041",
+      "comparison_name": "Gujranwala",
+      "province": "Punjab",
+      "polygon_names": [
+        "Gujranwala"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0042",
+      "comparison_name": "Gujrat",
+      "province": "Punjab",
+      "polygon_names": [
+        "Gujrat"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0043",
+      "comparison_name": "Hafizabad",
+      "province": "Punjab",
+      "polygon_names": [
+        "Hafizabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0044",
+      "comparison_name": "Mandi Bahauddin",
+      "province": "Punjab",
+      "polygon_names": [
+        "Mandi Bahauddin"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0045",
+      "comparison_name": "Narowal",
+      "province": "Punjab",
+      "polygon_names": [
+        "Narowal"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0046",
+      "comparison_name": "Sialkot",
+      "province": "Punjab",
+      "polygon_names": [
+        "Sialkot"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0047",
+      "comparison_name": "Lahore",
+      "province": "Punjab",
+      "polygon_names": [
+        "Lahore"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0048",
+      "comparison_name": "Kasur",
+      "province": "Punjab",
+      "polygon_names": [
+        "Kasur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0049",
+      "comparison_name": "Nankana Sahib",
+      "province": "Punjab",
+      "polygon_names": [
+        "Nankana Sahib"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0050",
+      "comparison_name": "Sheikhupura",
+      "province": "Punjab",
+      "polygon_names": [
+        "Sheikhupura"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0051",
+      "comparison_name": "Faisalabad",
+      "province": "Punjab",
+      "polygon_names": [
+        "Faisalabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0052",
+      "comparison_name": "Chiniot",
+      "province": "Punjab",
+      "polygon_names": [
+        "Chiniot"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0055",
+      "comparison_name": "Sahiwal",
+      "province": "Punjab",
+      "polygon_names": [
+        "Sahiwal"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0056",
+      "comparison_name": "Okara",
+      "province": "Punjab",
+      "polygon_names": [
+        "Okara"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0057",
+      "comparison_name": "Pakpattan",
+      "province": "Punjab",
+      "polygon_names": [
+        "Pakpattan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0058",
+      "comparison_name": "Bahawalnagar",
+      "province": "Punjab",
+      "polygon_names": [
+        "Bahawalnagar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0059",
+      "comparison_name": "Bahawalpur",
+      "province": "Punjab",
+      "polygon_names": [
+        "Bahawalpur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0060",
+      "comparison_name": "Rahim Yar Khan",
+      "province": "Punjab",
+      "polygon_names": [
+        "Rahim Yar Khan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0061",
+      "comparison_name": "Dera Ghazi Khan",
+      "province": "Punjab",
+      "polygon_names": [
+        "Dera Ghazi Khan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0062",
+      "comparison_name": "Rajanpur",
+      "province": "Punjab",
+      "polygon_names": [
+        "Rajanpur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0063",
+      "comparison_name": "Layyah",
+      "province": "Punjab",
+      "polygon_names": [
+        "Layyah"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0064",
+      "comparison_name": "Muzaffargarh",
+      "province": "Punjab",
+      "polygon_names": [
+        "Muzaffargarh"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0065",
+      "comparison_name": "Multan",
+      "province": "Punjab",
+      "polygon_names": [
+        "Multan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0066",
+      "comparison_name": "Khanewal",
+      "province": "Punjab",
+      "polygon_names": [
+        "Khanewal"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0067",
+      "comparison_name": "Lodhran",
+      "province": "Punjab",
+      "polygon_names": [
+        "Lodhran"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0068",
+      "comparison_name": "Vehari",
+      "province": "Punjab",
+      "polygon_names": [
+        "Vehari"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0069",
+      "comparison_name": "Jacobabad",
+      "province": "Sindh",
+      "polygon_names": [
+        "Jacobabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0070",
+      "comparison_name": "Kashmor",
+      "province": "Sindh",
+      "polygon_names": [
+        "Kashmore"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0071",
+      "comparison_name": "Kambar Shahdad Kot",
+      "province": "Sindh",
+      "polygon_names": [
+        "Kambar-Shahdadkot"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0072",
+      "comparison_name": "Larkana",
+      "province": "Sindh",
+      "polygon_names": [
+        "Larkana"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0073",
+      "comparison_name": "Shikarpur",
+      "province": "Sindh",
+      "polygon_names": [
+        "Shikarpur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0074",
+      "comparison_name": "Ghotki",
+      "province": "Sindh",
+      "polygon_names": [
+        "Ghotki"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0075",
+      "comparison_name": "Khairpur",
+      "province": "Sindh",
+      "polygon_names": [
+        "Khairpur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0076",
+      "comparison_name": "Sukkur",
+      "province": "Sindh",
+      "polygon_names": [
+        "Sukkur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0077",
+      "comparison_name": "Badin",
+      "province": "Sindh",
+      "polygon_names": [
+        "Badin"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0078",
+      "comparison_name": "Dadu",
+      "province": "Sindh",
+      "polygon_names": [
+        "Dadu"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0079",
+      "comparison_name": "Hyderabad",
+      "province": "Sindh",
+      "polygon_names": [
+        "Hyderabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0080",
+      "comparison_name": "Jamshoro",
+      "province": "Sindh",
+      "polygon_names": [
+        "Jamshoro"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0081",
+      "comparison_name": "Matiari",
+      "province": "Sindh",
+      "polygon_names": [
+        "Matiari"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0082",
+      "comparison_name": "Sujawal",
+      "province": "Sindh",
+      "polygon_names": [
+        "Sajawal"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0083",
+      "comparison_name": "Tando Allahyar",
+      "province": "Sindh",
+      "polygon_names": [
+        "Tando Allah Yar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0084",
+      "comparison_name": "Tando Muhammad Khan",
+      "province": "Sindh",
+      "polygon_names": [
+        "Tando Muhammad Khan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0085",
+      "comparison_name": "Thatta",
+      "province": "Sindh",
+      "polygon_names": [
+        "Thatta"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0086",
+      "comparison_name": "Karachi Central",
+      "province": "Sindh",
+      "polygon_names": [
+        "Karachi Central"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0087",
+      "comparison_name": "Karachi East",
+      "province": "Sindh",
+      "polygon_names": [
+        "Karachi East"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0088",
+      "comparison_name": "Karachi South",
+      "province": "Sindh",
+      "polygon_names": [
+        "Karachi South"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0089",
+      "comparison_name": "Karachi West + Keamari",
+      "province": "Sindh",
+      "polygon_names": [
+        "Karachi West",
+        "Keamari"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0090",
+      "comparison_name": "Korangi",
+      "province": "Sindh",
+      "polygon_names": [
+        "Korangi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0091",
+      "comparison_name": "Malir",
+      "province": "Sindh",
+      "polygon_names": [
+        "Malir"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0092",
+      "comparison_name": "Mirpur Khas",
+      "province": "Sindh",
+      "polygon_names": [
+        "Mirpurkhas"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0093",
+      "comparison_name": "Tharparkar",
+      "province": "Sindh",
+      "polygon_names": [
+        "Tharparkar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0094",
+      "comparison_name": "Umer Kot",
+      "province": "Sindh",
+      "polygon_names": [
+        "Umerkot"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0095",
+      "comparison_name": "Sanghar",
+      "province": "Sindh",
+      "polygon_names": [
+        "Sanghar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0096",
+      "comparison_name": "Naushahro Feroze",
+      "province": "Sindh",
+      "polygon_names": [
+        "Naushehro Feroze"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0097",
+      "comparison_name": "Shaheed Benazirabad",
+      "province": "Sindh",
+      "polygon_names": [
+        "Shaheed Benazirabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0098",
+      "comparison_name": "Awaran",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Awaran"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0099",
+      "comparison_name": "Kalat + Surab",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Kalat"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0100",
+      "comparison_name": "Kharan",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Kharan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0101",
+      "comparison_name": "Khuzdar",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Khuzdar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0102",
+      "comparison_name": "Lasbela",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Lasbela"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0103",
+      "comparison_name": "Mastung",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Mastung"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0104",
+      "comparison_name": "Washuk",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Washuk"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0105",
+      "comparison_name": "Gwadar",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Gwadar"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0106",
+      "comparison_name": "Kech",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Kech"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0107",
+      "comparison_name": "Panjgur",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Panjgur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0108",
+      "comparison_name": "Jaffarabad",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Jaffarabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0109",
+      "comparison_name": "Jhal Magsi",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Jhal Magsi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0112",
+      "comparison_name": "Sohbatpur",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Sohbatpur"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0113",
+      "comparison_name": "Chagai",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Chaghi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0114",
+      "comparison_name": "Killa Abdullah + Chaman",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Killa Abdullah"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0115",
+      "comparison_name": "Nushki",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Nushki"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0116",
+      "comparison_name": "Pishin",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Pishin"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0117",
+      "comparison_name": "Quetta",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Quetta"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0118",
+      "comparison_name": "Dera Bugti",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Dera Bugti"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0119",
+      "comparison_name": "Harnai",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Harnai"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0120",
+      "comparison_name": "Kohlu",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Kohlu"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0121",
+      "comparison_name": "Sibi",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Sibi"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0122",
+      "comparison_name": "Ziarat",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Ziarat"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0123",
+      "comparison_name": "Barkhan",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Barkhan"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0124",
+      "comparison_name": "Killa Saifullah",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Killa Saifullah"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0125",
+      "comparison_name": "Loralai + Duki",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Loralai"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0126",
+      "comparison_name": "Musakhel",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Musakhail"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0127",
+      "comparison_name": "Sherani",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Sherani"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0128",
+      "comparison_name": "Zhob",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Zhob"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0129",
+      "comparison_name": "Islamabad",
+      "province": "Islamabad Capital Territory",
+      "polygon_names": [
+        "Islamabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0130",
+      "comparison_name": "Jhang + Toba Tek Singh",
+      "province": "Punjab",
+      "polygon_names": [
+        "Jhang",
+        "Toba Tek Singh"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    },
+    {
+      "comparison_id": "DDG-0131",
+      "comparison_name": "Kachhi + Nasirabad",
+      "province": "Balochistan",
+      "polygon_names": [
+        "Kachhi",
+        "Nasirabad"
+      ],
+      "map_status": "illustrative_outline",
+      "note": "Explicit name/roster match to the existing website boundary file; outline is illustrative, not census-boundary certified."
+    }
+  ]
+}

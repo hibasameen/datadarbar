@@ -1,0 +1,195 @@
+"""Read the individual-locality tables (31-34) into tidy observations.
+
+These differ from the unit tables in kind: a row is a *place* — a mauza, deh or
+urban locality — not a published administrative unit. Places nest inside
+revenue groupings that the tables print as subtotal rows, and those groupings
+are named differently by province:
+
+    Punjab, KP, Balochistan   district -> tehsil -> QH -> PC -> mauza
+    Sindh                     district -> taluka -> STC -> TC -> deh
+
+Every QH, PC, STC and TC row is a subtotal of its children. Summing a column
+without excluding them roughly triples the national population.
+"""
+import hashlib, re
+from read_workbook import (anchor, numbered_columns, header, txt, cell, unit_type,
+                           ADMIN, OTHER_UNIT)
+
+# Grouping levels, outermost first. The revenue hierarchy is not the same in
+# every province: KP's ex-FATA districts nest TRIBE and SECTION between the
+# tehsil and the village, and both KP and Balochistan use union councils in
+# places. Omitting them counts the same people three times or more — Bajaur's
+# mauza level over-counts by exactly 2.99x without TRIBE and SECTION.
+GROUPING = re.compile(r'\s(QH|PC|STC|TC|UC|TRIBE|SECTION)$')
+LEVEL_OF = {'TRIBE': 'tribe', 'SECTION': 'section', 'UC': 'union_council',
+            'QH': 'qanungo_halqa', 'PC': 'patwar_circle',
+            'STC': 'supervisory_tapedar_circle', 'TC': 'tapedar_circle'}
+# Which levels are "outer" (they reset the inner one) rather than the immediate
+# parent of a village.
+OUTER = {'tribe', 'union_council', 'qanungo_halqa', 'supervisory_tapedar_circle'}
+
+# The urban tables nest two census operational levels inside each named
+# locality: CHARGE NO nn and, under that, CIRCLE NO nn. Their numbers restart in
+# every locality, so "CIRCLE NO 01" is meaningless without its parents.
+CHARGE = re.compile(r'^CHARGE\s*N[O0]?\b')
+CIRCLE = re.compile(r'^CIRCLE\s*N[O0]?\b')
+
+
+def relabel_unsuffixed_groupings(recs, key):
+    """Reclassify subtotal rows that PBS published without a suffix.
+
+    Two shapes occur, and both are confirmed by arithmetic rather than inferred:
+
+    * a row whose value equals the sum of the run of villages beneath it —
+      Okara prints "CHAK NO 016/1-L" as a subtotal above the four mauzas that
+      add to exactly its 20,573;
+    * a row whose value equals the single row beneath it — Panjgur prints a bare
+      "GICHK" between GICHK SUB-TEHSIL and GICHK UC, all three 33,578, a chain
+      of single-child levels with no suffix on the middle one.
+
+    A row is only reclassified when the equality is exact, and never when it
+    carries a hadbast number, which marks it as a real village.
+    """
+    n = len(recs)
+    for i, r in enumerate(recs):
+        if r['level'] != 'mauza' or r['hadbast'] or not r.get(key):
+            continue
+        # single-child chain: identical to whatever follows
+        if i + 1 < n and recs[i + 1].get(key) == r[key]:
+            r['level'] = 'unnamed_grouping'
+            r['relabelled'] = True
+            continue
+        # subtotal of the run of villages that follows
+        run, j = [], i + 1
+        while j < n and recs[j]['level'] == 'mauza' and recs[j]['hadbast']:
+            run.append(recs[j]); j += 1
+        if len(run) >= 2 and abs(sum(x.get(key) or 0 for x in run) - r[key]) < 0.5:
+            r['level'] = 'patwar_circle'
+            r['relabelled'] = True
+            r['patwar_circle'] = r['name']
+            for x in run:
+                x['patwar_circle'] = r['name']
+                x['parent_id'] = r['own_id']
+    return recs
+
+
+def place_id(province, path, name, hadbast, seq):
+    """A stable identifier for a place, independent of which table it came from.
+
+    Tables 31 and 32 describe the same villages — population and housing — but
+    do not have the same row counts, so a row-position identifier cannot join
+    them. The id is built from the place's position in the hierarchy instead,
+    with a sequence number to separate the handful of same-named siblings.
+    """
+    parts = [province] + [p or '' for p in path] + [name or '', hadbast or '', str(seq)]
+    h = hashlib.sha256('\u241f'.join(parts).encode()).hexdigest()[:16]
+    return f'DDL-{h}'
+
+
+def read(rows, province, table, merges=()):
+    a = anchor(rows)
+    if a is None:
+        raise ValueError(f'table {table}: no column-number row')
+    stub, data_cols = numbered_columns(rows, a)
+    cols = header(rows, a, stub, merges, data_cols)
+    urban = table in ('33', '34')
+    # In the rural tables column 2 holds the hadbast / deh number, which is an
+    # identifier rather than a measurement.
+    id_col = data_cols[0] if not urban else None
+    measure_cols = [c for c in data_cols if c != id_col]
+    def ident(name, hadbast, path):
+        k = (tuple(path), name, hadbast)
+        seq = seen.get(k, 0)
+        seen[k] = seq + 1
+        return place_id(province, path, name, hadbast, seq)
+
+    district = subdist = qh = pc = None
+    locality = charge = None
+    own_override = None
+    # A grouping is identified by where it appears, not by its name. Dera Ismail
+    # Khan's Paharpur tehsil publishes two different patwar circles both called
+    # WANDA KHAN MOHD PC; keying children on the name merges them and their
+    # populations stop reconciling.
+    pc_id = qh_id = charge_id = None
+    seen = {}          # how many times this exact path+name has appeared
+    for i, r in enumerate(rows):
+        if i <= a:
+            continue
+        label = txt(r[stub]) if stub < len(r) else None
+        if not label:
+            continue
+        U = label.upper()
+        if U.isdigit() or U.startswith(('TABLE', 'NAME OF', 'HADBAST', 'URBAN LOCAL')):
+            continue
+        ut = unit_type(label) if (ADMIN.search(U) or OTHER_UNIT.search(U)) else None
+        if ut == 'district':
+            district, subdist, qh, pc = label, None, None, None
+            locality = charge = None
+            level = 'district'
+        elif ut:
+            subdist, qh, pc = label, None, None
+            locality = charge = None
+            level = 'sub_district'
+        else:
+            level = None
+        if level is None:
+            level = 'mauza'
+        if urban and level not in ('district', 'sub_district'):
+            if CHARGE.match(U):
+                charge_id = own_override = ident(label, None, [district, subdist, locality])
+                charge = label
+                level = 'charge'
+            elif CIRCLE.match(U):
+                level = 'circle'
+            else:
+                locality, charge = label, None
+                charge_id = None
+                level = 'locality'
+        g = GROUPING.search(U)
+        if g and not urban:
+            # Subtotal rows are emitted too, tagged with their level. They are
+            # published figures and useful for validation, but they must never
+            # be summed with their children: doing so roughly triples the
+            # national population.
+            kind = LEVEL_OF[g.group(1)]
+            if kind in OUTER:
+                # The id is computed before this row becomes the current
+                # grouping, so a grouping's own_id is exactly the parent_id its
+                # children carry.
+                qh_id = own_override = ident(label, None, [district, subdist])
+                qh, pc, pc_id = label, None, None
+            else:
+                pc_id = own_override = ident(label, None, [district, subdist, qh])
+                pc = label
+            level = kind
+        vals, miss = {}, []
+        for c in measure_cols:
+            if c >= len(r):
+                continue
+            v, kind = cell(r[c])
+            name = cols.get(c, f'col{c+1}')
+            if kind == 'number':
+                vals[name] = v
+            elif kind == 'dash':
+                miss.append(name)
+        if not vals and not miss:
+            own_override = None
+            continue
+        hadbast = None
+        if id_col is not None and id_col < len(r):
+            hv, hk = cell(r[id_col])
+            if hk in ('number', 'text'):
+                hadbast = str(hv).strip()
+        yield dict(province=province, table_id=table, district=district,
+                   sub_district=subdist, qanungo_halqa=qh, patwar_circle=pc,
+                   locality=locality if urban else label,
+                   charge=charge if urban and level != 'charge' else
+                          (label if level == 'charge' else None),
+                   name=label, level=level, hadbast=hadbast,
+                   parent_id=(charge_id if urban else pc_id or qh_id),
+                   own_id=own_override or ident(label, hadbast,
+                                [district, subdist, locality, charge] if urban
+                                else [district, subdist, qh, pc]),
+                   locality_type='urban' if urban else 'rural',
+                   missing=';'.join(miss), src_row=i + 1, **vals)
+        own_override = None

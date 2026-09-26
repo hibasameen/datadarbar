@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Census comparison · Data Darbar local preview</title>
+  <link rel="stylesheet" href="preview.css">
+  <script defer src="d3.v7.min.js"></script>
+  <script defer src="census-preview-data.js"></script>
+  <script defer src="preview.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><img src="logo.svg" alt=""><span>Data Darbar<small>Pakistan in numbers</small></span></a>
+    <div class="header-right"><a href="#methodology">Sources &amp; method</a><span class="preview-badge">Local preview</span></div>
+  </header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">THE CENSUS · 2017 → 2023</p><h1>Compare places on common ground.</h1><p>Explore 127 consistent comparison areas, with a source behind every figure.</p></div><a class="button secondary" href="downloads/panel.csv" download>Download full panel ↓</a></div>
+    <section class="summary" aria-label="Summary of filtered areas" aria-live="polite">
+      <div><span id="summary-label-2017">Population · 2017</span><strong id="summary-2017">—</strong></div>
+      <div><span id="summary-label-2023">Population · 2023</span><strong id="summary-2023">—</strong></div>
+      <div><span id="summary-label-change">Population change</span><strong id="summary-change">—</strong></div>
+      <div><span>Comparison areas in view</span><strong id="summary-areas">—</strong></div>
+    </section>
+    <p class="scope" id="scope-note"></p>
+    <section class="explorer" aria-label="Census explorer">
+      <aside class="controls" aria-label="Filters">
+        <p class="eyebrow">EXPLORE THE DATA</p>
+        <label for="search">Find an area</label><input id="search" type="search" placeholder="District or comparison area…" autocomplete="off">
+        <label for="module">Dataset</label><select id="module"><option value="population">Population</option><option value="education">Education · year snapshots</option></select>
+        <label for="indicator">Measure</label><select id="indicator"></select>
+        <label for="province">Province / territory</label><select id="province"><option value="ALL">All covered areas</option></select>
+        <fieldset><legend>View</legend><div class="segmented" id="year-controls"><button type="button" data-view="2017">2017</button><button type="button" data-view="2023">2023</button><button type="button" data-view="change">Change</button></div></fieldset>
+        <label for="change-unit" id="change-unit-label">Show change as</label><select id="change-unit"><option value="percent">Percent (%)</option><option value="absolute">Number of people</option></select>
+        <p class="control-note" id="measure-note"></p>
+        <button class="button secondary" id="reset" type="button">Reset filters</button>
+        <div class="legend"><h3 id="legend-title">Population</h3><div id="legend-swatches"></div><p><i class="hatch-swatch"></i>Boundary extent unverified</p><p><i class="context-swatch"></i>Outside this census release</p><p><i class="missing-swatch"></i>Missing source value</p></div>
+      </aside>
+      <div class="map-panel">
+        <div class="map-heading"><div><h2 id="map-title">Population · 2023</h2><p id="map-subtitle">Common statistical comparison areas</p></div><div class="map-buttons"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="map-reset">Fit view</button></div></div>
+        <svg id="map" viewBox="0 0 760 650" role="group" aria-label="Interactive map. Select a comparison area, or use the accessible table below."><defs><pattern id="incomplete" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(40)"><rect width="7" height="7" fill="#ede9df"></rect><line x1="0" y1="0" x2="0" y2="7" stroke="#a19a88" stroke-width="2"></line></pattern></defs><g id="map-content"></g></svg>
+        <div id="map-tooltip" role="status" hidden></div>
+        <p class="map-note"><strong>Illustrative outlines.</strong> These boundaries are not certified census polygons. Six areas with former frontier regions have unverified extents and are hatched. <a href="downloads/boundary_audit.csv" download>View boundary audit ↓</a></p>
+      </div>
+      <aside class="detail" id="area-detail" aria-label="Selected area details" aria-live="polite"></aside>
+    </section>
+    <section class="table-panel" aria-labelledby="table-title">
+      <div class="section-heading"><div><p class="eyebrow">EVERY AREA, COUNTED ONCE</p><h2 id="table-title">Compare the numbers</h2><p id="table-description"></p></div><button class="button" id="download-view" type="button">Download this view ↓</button></div>
+      <div class="table-scroll"><table id="results"><thead></thead><tbody></tbody></table></div>
+    </section>
+    <section id="methodology" class="methodology">
+      <div><p class="eyebrow">READ THE DATA WITH CONTEXT</p><h2>Sources &amp; method</h2><p>Counts come from the frozen, verified Pakistan Bureau of Statistics census release. Each area combines whole source units so the same statistical area can be followed in both years. Rates use summed counts and their own denominators.</p><p id="population-note"></p><p id="education-note"></p></div>
+      <div><h3>What the boundaries mean</h3><p>These are comparison areas, not a list of current administrative districts. Jhang + Toba Tek Singh and Kachhi + Nasirabad each appear once. Their individual historical allocations remain uncertain.</p><p>The existing map file supplies illustrative outlines. Combined outlines are dissolved and invalid shapes repaired for display only. The six areas with former frontier regions remain in all totals and downloads. The map file does not separately identify those regions, so their inclusion in the displayed outlines cannot be verified.</p><p>AJK, Gilgit-Baltistan and administrative units created after the census are outside this release.</p></div>
+      <div><h3>Download the evidence</h3><ul><li><a href="downloads/panel.csv" download>Full census panel (CSV)</a></li><li><a href="downloads/crosswalk.csv" download>Source units → comparison areas</a></li><li><a href="downloads/observation_lineage.csv" download>Source references for each observation</a></li><li><a href="downloads/indicator_dictionary.csv" download>Indicator definitions and limitations</a></li><li><a href="downloads/district_population_bridge.csv" download>Four districts: published population baselines</a></li><li><a href="downloads/boundary_audit.csv" download>Map matches and boundary gaps</a></li><li><a href="downloads/issues.csv" download>Unresolved source issues</a></li></ul><p class="release" id="release-note"></p></div>
+    </section>
+  </main>
+  <footer>Data Darbar · Local census preview · Public website unchanged</footer>
+  <noscript>This explorer requires JavaScript. The full panel remains available as <a href="downloads/panel.csv">a CSV download</a>.</noscript>
+</body>
+</html>

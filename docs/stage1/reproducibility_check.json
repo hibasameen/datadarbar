@@ -1,0 +1,18 @@
+{
+  "byte_identical_files": 14,
+  "current_code_fingerprint": "pass",
+  "excluded_files": {
+    "run.json": "Execution time and absolute output location are expected to differ"
+  },
+  "method": "Extracted the 325-file reproduction archive into a fresh directory, ran the offline builder using only that package, then checked the reference output against the independent rebuild.",
+  "output_integrity": "pass",
+  "package_sha256": "861e19e394220507f16276e871ede1550fe352c6cbd123a28b93ee1453dc9c07",
+  "regression_tests_passed": 18,
+  "release_id": "census-audit-07f818302704d872",
+  "result": "pass",
+  "runtime": {
+    "duckdb": "1.5.5",
+    "pdftotext": "pdftotext version 21.11.0",
+    "python": "3.11.5"
+  }
+}
