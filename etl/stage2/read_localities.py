@@ -21,10 +21,27 @@ from unit_aliases import apply as apply_alias
 # tehsil and the village, and both KP and Balochistan use union councils in
 # places. Omitting them counts the same people three times or more — Bajaur's
 # mauza level over-counts by exactly 2.99x without TRIBE and SECTION.
-GROUPING = re.compile(r'\s(QH|PC|STC|TC|UC|TRIBE|SECTION)$')
+# The tier word is not always the last thing on the line. Bajaur prints its
+# sections as "MAMUND SECTION-I (PART)", Khyber as "SECTION NO 1", and Karachi
+# West numbers its tapedar circles "MANGOPIR TC II", so a tier word may be
+# followed by a part number, a roman numeral or a (PART) qualifier. Anchoring at
+# the end of the line missed 42 such rows in 2023 — Bajaur's whole 595,702
+# over-count and Khyber's whole 26,429. 2017 has none at village level: its
+# hadbast numbers let the arithmetic rule catch the same rows instead.
+GROUPING = re.compile(r'(?:^|\s)(QH|PC|STC|TC|UC|TRIBE|SECTION|CIRCLE)'
+                      r'(?:[-\s]*(?:NO\.?\s*)?[0-9IVXL]+)?'
+                      r'(?:\s*\(PART\))?$')
 LEVEL_OF = {'TRIBE': 'tribe', 'SECTION': 'section', 'UC': 'union_council',
             'QH': 'qanungo_halqa', 'PC': 'patwar_circle',
-            'STC': 'supervisory_tapedar_circle', 'TC': 'tapedar_circle'}
+            'STC': 'supervisory_tapedar_circle', 'TC': 'tapedar_circle',
+            # Gwadar, alone in the country, nests a revenue circle between the
+            # union council and the village: NILNAT UC 16,172 contains CHAKLI,
+            # KAPUR and NILNAT CIRCLE, which add to exactly that, each above its
+            # own villages. Read as villages they double the UC. Named CIRCLE and
+            # not PC because that is the word Gwadar's own table uses, and
+            # distinct from the urban tables' CIRCLE NO nn, which is a census
+            # operational unit rather than a revenue one.
+            'CIRCLE': 'revenue_circle'}
 # Which levels are "outer" (they reset the inner one) rather than the immediate
 # parent of a village.
 OUTER = {'tribe', 'union_council', 'qanungo_halqa', 'supervisory_tapedar_circle'}

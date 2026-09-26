@@ -41,24 +41,56 @@ this project that a Sindh-specific naming convention has broken a rule that held
 
 ## The check that matters, and what it found
 
-**Do a district's mauzas sum to its published rural population?** For **121 of 130**
-districts, yes, within 1%.
+**Do a district's mauzas sum to its published rural population?** For **124 of 130**
+districts, yes, within 1%. The other six are not failures of our reading — see below.
 
-| Province | Districts reconciling |
-|---|---|
-| Punjab | 34 of 35 |
-| Khyber Pakhtunkhwa | 30 of 35 |
-| Balochistan | 32 of 34 |
-| Sindh | **25 of 25** |
-| Islamabad | 0 of 1 |
+| Province | Districts reconciling | Where PBS's own tables disagree |
+|---|---|---|
+| Punjab | 34 of 35 | 1 |
+| Khyber Pakhtunkhwa | 32 of 35 | 3 |
+| Balochistan | 33 of 34 | 1 |
+| Sindh | **25 of 25** | — |
+| Islamabad | 0 of 1 | 1 |
+
+**No district in either census year is flagged `hierarchy_unreliable` any more.**
 
 It began at 96 of 129. The gap closed once three more grouping levels were recognised,
 and again when the 2017 work on unsuffixed groupings was carried back into the shared
 reader.
 
-Only **45 of the 130 reconcile exactly**, against 123 of 129 in 2017. The 1% tolerance
-is doing far more work in 2023 than in 2017, and that difference is not yet explained.
-A district inside the tolerance is not evidence of an exact hierarchy here.
+### Two checks, because they answer different questions
+
+The comparison above is against **table 1**. `internal_closure.csv` compares a
+district's villages to the district row of **table 31 itself**. That second check is
+the one about our reading: it asks only whether the rows inside one table add up, so
+a failure cannot be blamed on another table. It now passes for **121 of 130 districts
+exactly and 130 of 130 within 1%**.
+
+The distinction matters here in a way it does not in 2017. Table 31's own district
+totals differ from table 1's rural population for **82 of 130 districts, by 346,346
+people**, where 2017's two tables agree for all 129. So measuring the village level
+against table 1 in 2023 mostly reports PBS's disagreement rather than ours — which is
+the whole explanation for the exactness gap this page previously flagged as
+unexplained: only 45 of 130 match table 1 to the person, while 121 match their own
+table's total.
+
+A district that satisfies the internal check but not table 1 is now labelled
+`source_tables_disagree`, and all six remaining cases are of that kind — five of them
+match table 31's district row **exactly**:
+
+| District | Table 1 rural | Table 31 district row | Villages sum to |
+|---|---:|---:|---:|
+| Rajanpur | 1,749,826 | 1,694,281 | 1,694,281 |
+| Quetta | 1,029,946 | 979,434 | 979,434 |
+| Upper Kohistan | 422,947 | 374,183 | 374,183 |
+| Kolai Palas Kohistan | 280,162 | 236,726 | 236,726 |
+| Lower Kohistan | 340,017 | 303,305 | 302,650 |
+| Islamabad | 1,254,991 | 1,240,244 | 1,240,244 |
+
+Nine districts are internally inexact but inside 1%, all **under**, the largest being
+Multan at −10,321. Multan's is a source omission of the same kind as 2017's Sahiwal:
+`QADIR PURRAWAN SHARQI PC` is printed twice at consecutive rows, both copies carrying
+10,321 and **neither listing any villages**.
 
 | District | Published rural | Mauza sum | Ratio |
 |---|---:|---:|---:|
@@ -96,37 +128,32 @@ The alias `MALAKAND PROTECTED AREA → MALAKAND DISTRICT` already existed and wa
 reviewed. Applying it in the locality reader adds Malakand as the 130th district and
 takes Lower Kohistan from +445% to −11%.
 
-### What remains
+### Two tiers were missed by name, not by arithmetic
 
-`rural_reconciliation.csv` carries the verdict per district. **Do not sum the mauza level in
-a district marked `hierarchy_unreliable`.** Nine remain:
+Bajaur's 45.9% over-count and Khyber's 2.5% were the same defect, and it was not an
+unsuffixed row at all: the rows say `SECTION`. Bajaur prints `MAMUND SECTION-I (PART)`
+and Khyber `SECTION NO 1`, and the suffix pattern was anchored at end-of-line, so a
+tier word followed by a part number or a `(PART)` qualifier never matched. 42 rows,
+accounting for Bajaur's whole 595,702 and Khyber's whole 26,429.
 
-| District | Excess | Share |
-|---|---:|---:|
-| Bajaur | 590,855 | +45.88% |
-| Kolai Palas Kohistan | −43,436 | −15.50% |
-| Upper Kohistan | −48,764 | −11.53% |
-| Gwadar | 16,172 | +11.07% |
-| Lower Kohistan | −37,367 | −10.99% |
-| Quetta | −50,512 | −4.90% |
-| Rajanpur | −55,545 | −3.17% |
-| Khyber | 26,273 | +2.50% |
-| Islamabad | −14,747 | −1.18% |
+2017 had the identical rows and reconciled anyway, because its hadbast numbers let the
+arithmetic rule catch them. That is worth stating plainly: **an arithmetic rule masked
+a vocabulary gap for a whole census year**, and the gap only became visible in the year
+where the arithmetic could not fire.
 
-Six of the nine are now **under**, which is a different defect from the over-counting
-this page is mostly about: villages absent or unread, which relabelling cannot create.
-Bajaur is the one large over-count left and its mechanism is understood but unfixed —
-its tiers agree with each other (district, tribes and tehsils all 1,283,113) while the
-village level runs 619,373 higher, which means unsuffixed `SECTION` rows read as
-villages. The run-based tests cannot catch them because *consecutive* unsuffixed
-groupings make every candidate run overshoot: the run past one section header takes in
-the next section's villages too. That needs a prefix-sum test rather than a whole-run
-one, and has not been attempted.
+Gwadar's 11.1% was a tier nobody else in the country uses. `NILNAT UC` reports 16,172
+while its children sum to 32,344 — exactly double — because it contains `CHAKLI CIRCLE`
+(6,931), `KAPUR CIRCLE` (3,996) and `NILNAT CIRCLE` (5,245), which add to precisely
+16,172, each printed above its own villages. `CIRCLE` appears in the rural tables of
+exactly one district in each census year. It is now a level, `revenue_circle`, kept
+distinct from the urban tables' `CIRCLE NO nn`, which is a census operational unit
+rather than a revenue one.
 
-The hadbast column is the reason 2023 is harder than 2017. It is populated for 99.8% of
-2017's village rows but only 0% of Sindh's, 34.8% of KP's and 64.6% of Balochistan's in
+The hadbast column is why 2023 was harder than 2017. It is populated for 99.8% of
+2017's village rows but 0% of Sindh's, 34.8% of KP's and 64.6% of Balochistan's in
 2023 — so the discriminator that separates a real village from an unsuffixed subtotal is
-largely unavailable, and the arithmetic has to carry the whole argument.
+largely unavailable, and the arithmetic has to carry the whole argument. Where a tier
+can be recognised by name instead, it should be.
 
 This was not caught by the internal checks. Patwar-circle closure passes at 99.6% and key
 uniqueness at 99.76% *while the KP mauza level over-counts by 47%*, because both tests only
@@ -204,7 +231,7 @@ does not state.
 
 It **is** a queryable register of 71,599 Pakistani places with population, literacy,
 educational attainment, religion, age structure, area and housing, nested inside tehsils
-that already carry polygons — **usable at mauza level in the 121 districts that reconcile**,
+that already carry polygons — **usable at mauza level in the 130 districts whose villages close against their own district row**,
 which covers Punjab and Sindh almost completely.
 
 It **is not** usable at mauza level in the 14 districts flagged

@@ -118,13 +118,47 @@ def main():
       SELECT count(*) comparisons,
              count(*) FILTER (WHERE abs(p.value-k.s) < 0.5) closing
       FROM (SELECT own_id AS parent_id, indicator, value FROM v
-            WHERE level='patwar_circle') p
+            WHERE level IN ('patwar_circle', 'revenue_circle')) p
       JOIN kids k USING (parent_id, indicator)""").fetchone()
 
-    # The decisive check: do a district's mauzas sum to its published rural
-    # population? Where they do not, the district's hierarchy contains levels
-    # PBS has not marked - in the ex-FATA districts these are named after tribes
-    # and areas, with no suffix, and the mauza level triples or worse.
+
+    # A district's villages against its OWN district row, in the same table. This
+    # is the check on our reading and nothing else: it asks only whether the rows
+    # inside one table add up, so a failure cannot be blamed on another table.
+    # The comparison against table 1 that follows answers a different question,
+    # and in 2023 it mostly answers PBS's question rather than ours - table 31's
+    # own district totals differ from table 1's rural population for 82 of 130
+    # districts, by 346,346 people, while 2017's agree for all 129. Reporting
+    # only the table 1 comparison credits our extraction with PBS's
+    # disagreements, in both directions.
+    internal = con.sql(f"""
+      WITH m AS (SELECT province_area, district, sum(value) mauza_sum FROM {P}
+                 WHERE table_id='31' AND level='mauza' AND NOT missing
+                   AND indicator LIKE '%POPULATION / ALL SEXES%' GROUP BY 1,2),
+           o AS (SELECT province_area, district, sum(value) own_total FROM {P}
+                 WHERE table_id='31' AND level='district' AND NOT missing
+                   AND indicator LIKE '%POPULATION / ALL SEXES%' GROUP BY 1,2)
+      SELECT o.province_area, o.district, own_total, mauza_sum,
+             mauza_sum - own_total AS excess,
+             CASE WHEN mauza_sum = own_total THEN 'exact'
+                  WHEN own_total > 0 AND abs(mauza_sum - own_total) <= 0.01*own_total
+                       THEN 'within_1pct' ELSE 'hierarchy_unreliable' END AS status
+      FROM o JOIN m USING (province_area, district)
+      ORDER BY abs(mauza_sum - own_total) DESC""").fetchall()
+    with open(out / 'internal_closure.csv', 'w', newline='') as fh:
+        w = csv.writer(fh)
+        w.writerow(['province_area', 'district', 'own_total', 'mauza_sum', 'excess', 'status'])
+        w.writerows(internal)
+    n_exact = sum(1 for r in internal if r[5] == 'exact')
+    n_ok = sum(1 for r in internal if r[5] != 'hierarchy_unreliable')
+
+    # The comparison against table 1. It answers two questions at once, so the
+    # status separates them: a district whose villages sum to this table's own
+    # district row but not to table 1's rural population is a disagreement
+    # between two PBS tables, not a hierarchy we have misread. In 2023 that is
+    # most of the residue - table 31's district totals differ from table 1 for 82
+    # of 130 districts, by 346,346 people - while in 2017 the two agree for all
+    # 129, so every 2017 failure really is ours.
     recon = []
     if a.unit_panel and pathlib.Path(a.unit_panel).exists():
         recon = con.sql(f"""
@@ -134,19 +168,27 @@ def main():
                p AS (SELECT province_area, district, sum(value) published_rural
                      FROM '{a.unit_panel}'
                      WHERE table_id='1' AND unit_type='district' AND locality='rural'
-                       AND indicator LIKE '%ALL SEXES%' AND NOT missing GROUP BY 1,2)
+                       AND indicator LIKE '%ALL SEXES%' AND NOT missing GROUP BY 1,2),
+               o AS (SELECT province_area, district, sum(value) own_total FROM {P}
+                     WHERE table_id='31' AND level='district' AND NOT missing
+                       AND indicator LIKE '%POPULATION / ALL SEXES%' GROUP BY 1,2)
           SELECT p.province_area, p.district, published_rural, mauza_sum,
                  mauza_sum - published_rural AS excess,
                  CASE WHEN published_rural > 0
                       THEN round(100.0*(mauza_sum-published_rural)/published_rural, 2) END AS pct,
                  CASE WHEN published_rural > 0
                        AND abs(mauza_sum-published_rural) <= 0.01*published_rural
-                      THEN 'reconciles' ELSE 'hierarchy_unreliable' END AS status
-          FROM p JOIN m USING (province_area, district) ORDER BY excess DESC""").fetchall()
+                      THEN 'reconciles'
+                      WHEN own_total > 0
+                       AND abs(mauza_sum-own_total) <= 0.01*own_total
+                      THEN 'source_tables_disagree'
+                      ELSE 'hierarchy_unreliable' END AS status, own_total
+          FROM p JOIN m USING (province_area, district)
+               LEFT JOIN o USING (province_area, district) ORDER BY excess DESC""").fetchall()
         with open(out / 'rural_reconciliation.csv', 'w', newline='') as fh:
             w = csv.writer(fh)
             w.writerow(['province_area', 'district', 'published_rural', 'mauza_sum',
-                        'excess', 'pct', 'status'])
+                        'excess', 'pct', 'status', 'own_total'])
             w.writerows(recon)
 
     # Population (31) and housing (32) describe the same villages, so they have
@@ -165,14 +207,18 @@ def main():
         for r in obs)
     ndup = sum(v - 1 for v in dup.values() if v > 1)
     nrelab = sum(1 for r in obs if r.get('relabelled'))
-    byprov = collections.defaultdict(lambda: [0, 0])
-    for prov, dist, pub, ms, exc, pct, st in recon:
+    byprov = collections.defaultdict(lambda: [0, 0, 0])
+    for prov, dist, pub, ms, exc, pct, st, own in recon:
         byprov[prov][0] += 1
         byprov[prov][1] += (st == 'reconciles')
+        byprov[prov][2] += (st == 'source_tables_disagree')
     rep = dict(observations=len(long), places=len(reg_rows), levels=dict(lv),
                relabelled_groupings=nrelab,
                table31_32_join=dict(in_31=jn[0], in_32=jn[1], joining=jn[2]),
-               rural_reconciliation={k: dict(districts=v[0], reconciling=v[1])
+               internal_closure=dict(districts=len(internal), exact=n_exact,
+                                    within_1pct=n_ok),
+               rural_reconciliation={k: dict(districts=v[0], reconciling=v[1],
+                                            source_tables_disagree=v[2])
                                      for k, v in sorted(byprov.items())},
                duplicate_keys=ndup, missing_cells=sum(1 for r in long if r['missing']),
                with_hadbast=sum(1 for r in reg_rows if r['hadbast']),
@@ -189,10 +235,13 @@ def main():
           + (f"  ({100*jn[2]/jn[0]:.1f}%)" if jn[0] else ""))
     print(f"patwar-circle closure  {closure[1]:,}/{closure[0]:,}"
           + (f"  ({100*closure[1]/closure[0]:.1f}%)" if closure[0] else ""))
+    print(f"internal closure  {n_exact:,}/{len(internal):,} districts exact, "
+          f"{n_ok:,} within 1%  (villages vs the same table's district row)")
     if recon:
         print("\nmauza sum vs published rural population, by province_area:")
-        for prov, (n, ok) in sorted(byprov.items()):
-            flag = '' if ok == n else '   <-- hierarchy unreliable'
+        for prov, (n, ok, dis) in sorted(byprov.items()):
+            flag = '' if ok == n else ('   <-- %d where PBS\'s own tables disagree' % dis
+                                       if ok + dis == n else '   <-- hierarchy unreliable')
             print(f"    {prov:22s} {ok:3d}/{n:3d} districts reconcile{flag}")
     for p in problems:
         print("  PROBLEM", p)

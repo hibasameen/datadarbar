@@ -351,9 +351,14 @@ A second census year, read by the same reader as 2023.
   remains, in what order, and the five decisions that block it.
 - [census2017_localities.md](census2017_localities.md) — the locality tier:
   2,505,703 observations, 46,692 mauzas. Patwar-circle closure 99.9% and
-  129 of 129 districts reconcile against their published rural population — 123 of
-  them exactly — against 121 of 130 for 2023. Nine 2023 districts are flagged
-  `hierarchy_unreliable`; six of the nine are under-counts rather than over.
+  129 of 129 districts reconcile against their published rural population, against
+  124 of 130 for 2023, and **no district in either year is flagged
+  `hierarchy_unreliable`**. A second check compares a district's villages to the
+  district row of the same table, which is the one that measures our reading rather
+  than PBS's consistency: 123 of 129 exact for 2017 and 121 of 130 for 2023, both
+  129/129 and 130/130 within 1%. The six 2023 districts that fail against table 1 are
+  labelled `source_tables_disagree` — table 31's own district totals differ from table
+  1's rural population for 82 of 130 districts, where 2017's agree for all 129.
 - [census2017_verification.md](census2017_verification.md) — checks against the
   second rendering and against independently published totals, plus
   reproducibility.

@@ -42,9 +42,11 @@ region, 20 in all; 2017 publishes one per table per district, about 540.
 
 | Check | Result |
 |---|---|
-| Patwar-circle closure — mauzas sum to their circle | **168,631 of 168,754 (99.9%)** |
+| Patwar-circle closure — mauzas sum to their circle | **167,776 of 167,899 (99.9%)** |
 | Table 23 ↔ 24 place join — the same villages in both | **44,618 of 45,769 (97.5%)** |
-| **Mauza sum vs published rural population** | **129 of 129 districts reconcile; 123 exactly** |
+| **Internal closure** — villages sum to the same table's district row | **123 of 129 exactly, 129 of 129 within 1%** |
+| **Mauza sum vs published rural population** | **129 of 129 districts reconcile** |
+| Districts flagged `hierarchy_unreliable` | **none** |
 
 ## The reconciliation: 129 of 129 districts
 
@@ -62,16 +64,34 @@ A district's mauzas should sum to the rural population its own table 1 publishes
 
 123 of the 129 reconcile *exactly*, to the person. The other six are **under** by
 between 0.01% and 0.89% — Sahiwal −12,374, South Waziristan −5,987, Bahawalnagar
-−1,484, Khuzdar −1,398, Gujrat −782, Pakpattan −199. An under-count means villages
-that are absent or unread, not a hierarchy misread, and no relabelling can close
-it. They stay inside the 1% tolerance the check applies.
+−1,484, Khuzdar −1,398, Gujrat −782, Pakpattan −199. These are villages PBS did not
+print, not a hierarchy we misread. Sahiwal is the clean case and accounts for its
+whole shortfall in one row: `JINNAH TOWN PC` reports 12,374 with **no village rows
+beneath it at all**. Nothing in our reading can recover a village the source omits,
+so these stay inside the 1% tolerance and are listed per district.
+
+### Two checks, because they answer different questions
+
+`internal_closure_2017.csv` compares a district's villages to the district row of
+the **same table**. That is the check on our reading: it asks only whether the rows
+inside one table add up, so a failure cannot be blamed on another table. In 2017 it
+gives the same verdict as the table 1 comparison, because table 23's district row
+agrees with table 1's rural population for all 129 districts, exactly.
+
+That agreement is a property of the 2017 release and not something to rely on. The
+2023 equivalents differ for 82 of 130 districts, by 346,346 people, so there the two
+checks genuinely diverge and only the internal one measures extraction quality. Both
+are now reported for both years, and a district that satisfies the internal check but
+not table 1 is labelled `source_tables_disagree` rather than `hierarchy_unreliable` —
+2017 has no districts in either category.
 
 The district count is 129, not 128, because Malakand now joins — see below. Five of
 the 135 districts in the panel are wholly urban and have no rural table to compare
 against; Kohistan's tables 23 and 24 are absent from the spreadsheet release, which
 `KNOWN_ABSENT` records.
 
-For comparison, 2023's equivalent reconciles 121 of 130.
+For comparison, 2023's equivalent reconciles 124 of 130, with the other six being
+cases where PBS's own two tables disagree rather than failures of extraction.
 
 ### A correction: the first version of this check was wrong
 
@@ -124,6 +144,21 @@ Three shapes:
   are qanungo halqas printed *inside* a patwar circle; `MANGOPIR TC II` is a town
   committee inside a sub-tehsil council. The suffix is there, but not where the
   reader looks for it.
+
+Two further tiers were being missed by name, and both are fixed in the vocabulary
+rather than by arithmetic:
+
+- **The tier word is not always last on the line.** Bajaur prints its sections as
+  `MAMUND SECTION-I (PART)` and Khyber as `SECTION NO 1`; Karachi West numbers its
+  tapedar circles `MANGOPIR TC II`. The suffix pattern was anchored at end-of-line,
+  so none matched. 2017 got away with it — its hadbast numbers let the arithmetic
+  rule catch the same 45 rows — but in 2023 the same rows are Bajaur's entire
+  595,702 over-count and Khyber's entire 26,429.
+- **Gwadar nests a revenue circle** between the union council and the village, alone
+  in the country: `NILNAT UC` 16,172 contains `CHAKLI CIRCLE`, `KAPUR CIRCLE` and
+  `NILNAT CIRCLE`, which add to exactly that, each above its own villages. Read as
+  villages they double the union council. The level is named `revenue_circle`, kept
+  distinct from the urban tables' `CIRCLE NO nn`, which is a census operational unit.
 
 `relabel_unsuffixed_groupings` recognised two shapes and missed all three, because
 both its tests walked downward looking for **numbered** villages. Here the children
