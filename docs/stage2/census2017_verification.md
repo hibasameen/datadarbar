@@ -128,9 +128,9 @@ series to every table and column.
 | | |
 |---|---:|
 | Comparisons | **67,318** |
-| Exact | **42,455** |
-| Differ | 6,994 |
-| No matching series | 17,869 |
+| Exact | **51,004** |
+| Differ | 11,285 |
+| No matching series | 5,029 |
 
 "Area" rather than "province" throughout: four of these six are provinces, FATA
 was a federal territory merged into Khyber Pakhtunkhwa in 2018, and Islamabad is
@@ -141,10 +141,21 @@ the federal capital territory.
 | Sindh | 9,308 | 488 | 336 |
 | Punjab | 9,083 | 509 | 540 |
 | FATA | 8,001 | **0** | 2,135 |
-| **Balochistan** | **7,470** | **138** | 233 |
+| Balochistan | 7,470 | 138 | 233 |
+| **Pakistan** | **6,277** | 7,025 | **248** |
+| **Islamabad** | **5,391** | **0** | **0** |
 | Khyber Pakhtunkhwa | 5,474 | 3,125 | 1,537 |
-| Pakistan | 3,119 | 2,734 | 7,697 |
-| Islamabad | 0 | 0 | 5,391 |
+
+Islamabad matches on every one of its 5,391 comparisons. Its workbooks reach the
+panel only through the archive page's HTML anchors — it publishes no per-district
+spreadsheets of the ordinary kind — so it was absent from the panel entirely until
+they were added, and the national comparison had to borrow its published figure to
+make up the difference. That borrowing now had to be removed, or Islamabad would
+be counted twice; Pakistan's unmatched comparisons fell from 7,697 to 248 as a
+result.
+
+Pakistan's 7,025 differences run in both directions, 3,257 high and 3,768 low, so
+they are not a coverage gap of the kind Balochistan's turned out to be.
 
 The check runs as one join rather than a query per row — 7 seconds instead of
 about a quarter of an hour, which matters because it is re-run after every

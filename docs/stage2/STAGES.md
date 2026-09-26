@@ -344,8 +344,8 @@ A second census year, read by the same reader as 2023.
   40 tables map onto 2023's 33.
 - [census2017_acquisition.md](census2017_acquisition.md) — 5,746 files, 643 MB,
   verified; capture `b14ca405905f8485`.
-- [census2017_extraction.md](census2017_extraction.md) — 3,362,716 observations,
-  134 districts, 667 units. Closure 335,754 of 335,840; all five areas
+- [census2017_extraction.md](census2017_extraction.md) — 3,376,869 observations,
+  135 districts, 669 units. Closure 339,011 of 339,097; all six areas
   reconcile exactly; 0.019% of rows flagged `series_ambiguous`.
 - [census2017_plan.md](census2017_plan.md) — **the plan to publication**: what
   remains, in what order, and the five decisions that block it.

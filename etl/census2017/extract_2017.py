@@ -43,6 +43,34 @@ from table_spec_2017 import SPEC_2017, KNOWN_ABSENT
 AREA = {'punjab': 'PUNJAB', 'sindh': 'SINDH', 'kp': 'KHYBER PAKHTUNKHWA',
         'balochistan': 'BALOCHISTAN', 'fata': 'FATA', 'islamabad': 'ISLAMABAD'}
 
+
+def district_workbooks(man, want):
+    """The workbooks that carry a district's own tables.
+
+    Islamabad's are filed under `xls_area` rather than `xlsx`, because they are
+    reached through the archive page's HTML anchors rather than its script index -
+    it publishes no per-district spreadsheets of the ordinary kind. They are
+    district workbooks all the same: Islamabad's table 1 names ISLAMABAD DISTRICT
+    and ISLAMABAD TEHSIL exactly as any other district's does. Excluding them left
+    the federal capital territory out of the panel entirely.
+    """
+    out = [f for f in man['files'] if f['kind'] == 'xlsx' and f['table'] in want]
+    out += [f for f in man['files'] if f['kind'] == 'xls_area'
+            and f.get('area') == 'ISLAMABAD' and f['table'] in want]
+    return out
+
+
+def area_of(f):
+    """The published area name for a workbook, from whichever field carries it."""
+    if f.get('area'):
+        return f['area']
+    return AREA.get((f.get('province') or '').lower(), (f.get('province') or '').upper())
+
+
+def dir_of(f):
+    """The capture's own name for the directory a workbook came from."""
+    return f.get('district') or f.get('area')
+
 FIELDS = ['census_year', 'province_area', 'table_id', 'district', 'unit', 'unit_type',
           'unit_source', 'locality', 'sex', 'indicator', 'col_label', 'value',
           'missing', 'src_row', 'src_col', 'src_file', 'layout']
@@ -106,7 +134,7 @@ def main():
     man = json.load(open(os.path.join(a.dir, 'retrieval_manifest.json')))
     want = set(a.tables.split(',')) if a.tables else set(SPEC_2017)
     want &= set(SPEC_2017)
-    files = [f for f in man['files'] if f['kind'] == 'xlsx' and f['table'] in want]
+    files = district_workbooks(man, want)
     # Ghotki's table 1 is named Table--0-GHO.xls, which the manifest could not
     # parse a number out of; it is table 1 and belongs in the extract.
     if '1' in want:
@@ -118,9 +146,7 @@ def main():
     # repaired, so it has to be built before anything else is read.
     roster = {}
     dir_to_district = {}
-    for f in man['files']:
-        if f['kind'] != 'xlsx' or f['table'] not in ('1', '?'):
-            continue
+    for f in district_workbooks(man, {'1', '?'}):
         rows, merges = load(os.path.join(a.dir, f['path']))
         lay = read_layout(rows, merges)
         if lay is not None:
@@ -136,7 +162,7 @@ def main():
         district, subs = units_in(rows, stub, ai)
         if district:
             roster[district] = sorted(subs)
-            dir_to_district[f['district']] = district
+            dir_to_district[dir_of(f)] = district
     print(f'roster: {len(roster)} districts, '
           f'{sum(len(v) for v in roster.values())} sub-district units', flush=True)
 
@@ -183,7 +209,7 @@ def main():
                     # checked afterwards by the same bound applied to recovered
                     # units: the file cannot hold more people than table 1 gives
                     # that district.
-                    district = dir_to_district.get(f.get('district'))
+                    district = dir_to_district.get(dir_of(f))
                     if district:
                         first = next((i for i in range(ai + 1, len(rows))
                                       if stub < len(rows[i]) and txt(rows[i][stub])), None)
@@ -217,7 +243,7 @@ def main():
                                         why='no header and column count did not match the reference'))
                     continue
             stats[kind] += 1
-            area = AREA.get((f.get('province') or '').lower(), (f.get('province') or '').upper())
+            area = area_of(f)
             try:
                 for o in read(rows, area, table, spec=SPEC_2017[table], layout=lay,
                               unit_at=unit_at):

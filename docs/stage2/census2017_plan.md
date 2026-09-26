@@ -50,11 +50,11 @@ circulation in the meantime.
 
 ## Workstream A — finish the extraction
 
-**5–8 days.** No dependencies. Can run in parallel with C.
+**4.5–7.5 days** (A1 done). No dependencies. Can run in parallel with C.
 
 | Task | Days | Notes |
 |---|---:|---|
-| A1. Islamabad | 0.5 | Its 39 anchor-listed workbooks are captured but never extracted; it is the sixth area and currently reads zero |
+| ~~A1. Islamabad~~ | done | Its 39 anchor-listed workbooks are now read as district workbooks. All 135 districts sum to 207,684,626, the published national total, and all six areas reconcile exactly |
 | A2. Locality tables 23–26 | 2–3 | Route through the existing locality reader as 2023's tables 31–34 were; ~46,000 mauzas expected |
 | A3. Table 2, urban locality list | 0.5 | A place list, not a unit table |
 | A4. Profile and declare the 16 undeclared tables | 2–3 | 18, 19, 21, 22, 28–36, 38–40 — all map to 2023 only `partial`, so they are worth having but not for the cross-year join |

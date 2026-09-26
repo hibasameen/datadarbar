@@ -129,7 +129,6 @@ def main():
     # seconds, which matters because this is re-run after every change.
     d.execute('CREATE TABLE area (table_id VARCHAR, area VARCHAR, indicator VARCHAR,'
               ' col_label VARCHAR, locality VARCHAR, sex VARCHAR, published DOUBLE)')
-    islamabad_rows = []
     for t in tables:
         obs = area_observations(a.capture, man, t)
         if not obs:
@@ -145,15 +144,8 @@ def main():
                 continue
             canon = cmap.get((t, lab), lab)
             batch.append((t, area, ind, canon, loc, sx, v))
-            if area == 'ISLAMABAD':
-                islamabad_rows.append((t, ind, canon, loc, sx, v))
         d.executemany('INSERT INTO area VALUES (?,?,?,?,?,?,?)', batch)
         print(f'  table {t:3s}  {len(batch):>6,} comparable series', flush=True)
-
-    d.execute('CREATE TABLE isb (table_id VARCHAR, indicator VARCHAR, col_label VARCHAR,'
-              ' locality VARCHAR, sex VARCHAR, published DOUBLE)')
-    if islamabad_rows:
-        d.executemany('INSERT INTO isb VALUES (?,?,?,?,?,?)', islamabad_rows)
 
     # A province_area is compared against its own districts. PAKISTAN is compared
     # against every district in the panel PLUS Islamabad's own published figure,
@@ -170,11 +162,8 @@ def main():
           FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
         )
         SELECT a.*,
-               CASE WHEN a.area='PAKISTAN'
-                    THEN nat.s + coalesce(isb.published, 0)
-                    ELSE prov.s END AS panel_sum,
-               CASE WHEN a.area='PAKISTAN' AND isb.published IS NULL THEN true
-                    ELSE false END AS islamabad_share_unknown
+               CASE WHEN a.area='PAKISTAN' THEN nat.s ELSE prov.s END AS panel_sum,
+               false AS islamabad_share_unknown
         FROM area a
         LEFT JOIN prov ON prov.table_id=a.table_id AND prov.province_area=a.area
              AND prov.locality=a.locality AND prov.sex=a.sex
@@ -183,11 +172,7 @@ def main():
         LEFT JOIN nat ON a.area='PAKISTAN' AND nat.table_id=a.table_id
              AND nat.locality=a.locality AND nat.sex=a.sex
              AND nat.indicator IS NOT DISTINCT FROM a.indicator
-             AND nat.col_label IS NOT DISTINCT FROM a.col_label
-        LEFT JOIN isb ON a.area='PAKISTAN' AND isb.table_id=a.table_id
-             AND isb.locality=a.locality AND isb.sex=a.sex
-             AND isb.indicator IS NOT DISTINCT FROM a.indicator
-             AND isb.col_label IS NOT DISTINCT FROM a.col_label""")
+             AND nat.col_label IS NOT DISTINCT FROM a.col_label""")
 
     rows = [dict(table_id=r[0], area=r[1], indicator=r[2], col_label=r[3],
                  locality=r[4], sex=r[5], published=r[6], panel_sum=r[7],
