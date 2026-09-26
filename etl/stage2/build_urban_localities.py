@@ -14,6 +14,53 @@ REGIONS = {'kp': 'KHYBER PAKHTUNKHWA', 'punjab': 'PUNJAB', 'sindh': 'SINDH',
 SIZE = re.compile(r'^[\d,]+\s*[-–]+\s*[\d,]+$|AND ABOVE|LESS THAN|UN-?INHABITED')
 
 
+def read_sheet(rows, an, stub, data_cols, cols, area, source):
+    """[dict] of named urban localities from one table-2 sheet.
+
+    Factored out so Census 2017 can call it: the table has the same shape in both
+    years - a district row, then a size-class row, then one row per named locality
+    with its parent tehsil in the second column - but 2023 publishes one workbook
+    per region and 2017 one per district. Two copies of this walk would drift, as
+    a duplicated vocabulary already did elsewhere in this pipeline.
+    """
+    out = []
+    district = size_class = None
+    for i, r in enumerate(rows):
+        if i <= an:
+            continue
+        t = txt(r[stub]) if stub < len(r) else None
+        if not t:
+            continue
+        U = t.upper()
+        if U.isdigit() or U.startswith(('TABLE', 'URBAN LOCALITIES')):
+            continue
+        if ADMIN.search(U) and unit_type(t) == 'district':
+            district, size_class = t, None
+            continue
+        if SIZE.search(U):
+            size_class = t
+            continue
+        vals, miss = {}, []
+        for c in data_cols:
+            if c >= len(r):
+                continue
+            v, kind = cell(r[c])
+            name = cols.get(c, f'col{c+1}')
+            if kind == 'text' and c == data_cols[0]:
+                vals['tehsil'] = v          # column 2 names the parent tehsil
+            elif kind == 'number':
+                vals[name] = v
+            elif kind == 'dash':
+                miss.append(name)
+        if not any(k for k in vals if k != 'tehsil'):
+            continue
+        out.append(dict(province_area=area, district=district,
+                        tehsil=vals.pop('tehsil', None), locality=t,
+                        size_class=size_class, missing=';'.join(miss),
+                        source_file=source, src_row=i + 1, **vals))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--src', required=True)
@@ -30,40 +77,8 @@ def main():
         an = anchor(rows)
         stub, data_cols = numbered_columns(rows, an)
         cols = header(rows, an, stub, merged_ranges(f), data_cols)
-        district = size_class = None
-        for i, r in enumerate(rows):
-            if i <= an:
-                continue
-            t = txt(r[stub]) if stub < len(r) else None
-            if not t:
-                continue
-            U = t.upper()
-            if U.isdigit() or U.startswith(('TABLE', 'URBAN LOCALITIES')):
-                continue
-            if ADMIN.search(U) and unit_type(t) == 'district':
-                district, size_class = t, None
-                continue
-            if SIZE.search(U):
-                size_class = t
-                continue
-            vals = {}
-            miss = []
-            for c in data_cols:
-                if c >= len(r):
-                    continue
-                v, kind = cell(r[c])
-                name = cols.get(c, f'col{c+1}')
-                if kind == 'text' and c == data_cols[0]:
-                    vals['tehsil'] = v          # column 2 names the parent tehsil
-                elif kind in ('number',):
-                    vals[name] = v
-                elif kind == 'dash':
-                    miss.append(name)
-            if not any(k for k in vals if k != 'tehsil'):
-                continue
-            rows_out.append(dict(province_area=prov, district=district, tehsil=vals.pop('tehsil', None),
-                                 locality=t, size_class=size_class, missing=';'.join(miss),
-                                 source_file=f.name, src_row=i + 1, **vals))
+        rows_out += read_sheet(rows, an, stub, data_cols, cols, prov, f.name)
+
     keys = ['province_area', 'district', 'tehsil', 'locality', 'size_class']
     extra = [k for k in dict.fromkeys(k for r in rows_out for k in r)
              if k not in keys + ['missing', 'source_file', 'src_row']]

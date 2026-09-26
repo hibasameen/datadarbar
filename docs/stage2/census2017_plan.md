@@ -50,13 +50,13 @@ circulation in the meantime.
 
 ## Workstream A — finish the extraction
 
-**2.5–5.5 days** (A1, A2 done). No dependencies. Can run in parallel with C.
+**2–5 days** (A1, A2, A3 done). No dependencies. Can run in parallel with C.
 
 | Task | Days | Notes |
 |---|---:|---|
 | ~~A1. Islamabad~~ | done | Its 39 anchor-listed workbooks are now read as district workbooks. All 135 districts sum to 207,684,626, the published national total, and all six areas reconcile exactly |
 | ~~A2. Locality tables 23–26~~ | done, with a caveat | 2,505,703 observations and 46,692 mauzas, through 2023's reader with one parameter added. Patwar-circle closure 99.9%. **But only 60 of 128 districts reconcile against published rural population** — the unsuffixed-subtotal problem 2023 solved and 2017 has not. See [census2017_localities.md](census2017_localities.md) |
-| A3. Table 2, urban locality list | 0.5 | A place list, not a unit table |
+| ~~A3. Table 2, urban locality list~~ | done | 589 named localities, 0 problems. Four areas sum exactly to their published urban population; table 2 is not expected to sum overall, as 2023's does not |
 | A4. Profile and declare the 16 undeclared tables | 2–3 | 18, 19, 21, 22, 28–36, 38–40 — all map to 2023 only `partial`, so they are worth having but not for the cross-year join |
 | A5. Kohistan's table 4 | 0.5 | No `All Ages` row under any spelling, where the other 133 districts have one; the last known coverage defect |
 | A7. Resolve the locality hierarchy over-count | 2–3 | New, from A2: 68 districts over-count because subtotal rows are read as places. 2023's fix was to name the levels PBS leaves unsuffixed |

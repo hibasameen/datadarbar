@@ -100,8 +100,48 @@ parsing failure. Two genuine problems remain: Dera Bugti's table 24 and Killa
 Saifullah's table 26 have no header block but do hold data, so their columns need
 recovering as the unit tables' did.
 
+## Table 2: named urban localities
+
+Built alongside, into the same directory. A row is a named town, cantonment or
+municipal committee with its parent tehsil — a place, not an administrative unit.
+
+| | |
+|---|---:|
+| Named urban localities | **589** |
+| With a parent tehsil | 588 |
+| Districts covered | 112 |
+| Empty workbooks (no urban localities to list) | 17 |
+| Problems | **0** |
+
+The row walk is 2023's `build_urban_localities.read_sheet` rather than a copy of
+it: the sheet has the same shape in both years, and a duplicated walk would drift
+as a duplicated vocabulary already did elsewhere in this pipeline.
+
+**220 of the 589 arrived with no district**, because table 2 sometimes omits its
+district row — the same defect the unit tables have. The name now comes from that
+district's own table 1, reached through the directory the capture recorded rather
+than from the filename, and districts covered went from 65 to 112. One locality
+remains unattributed: Malakand's BATKHELA MC.
+
+### Table 2 does not sum to the urban population, and should not be expected to
+
+Four areas' localities sum **exactly** to their published urban population —
+Balochistan, FATA, Islamabad and Khyber Pakhtunkhwa. Punjab is 2.08% short, which
+is precisely Okara's urban population of 842,564, whose table 2 has no header
+block. Sindh is 56% short.
+
+Sindh is not a defect. Karachi East lists three named localities against an urban
+population of 2,875,315, because table 2 lists *named* localities and Karachi's
+population is not organised into them — the district is itself the urban area.
+2023's build report says the same of its table 2: its rows "do not sum to
+anything". The four exact matches are the surprise here, not the two shortfalls.
+
 ## Reproduce
 
 ```bash
 python3 datadarbar/etl/census2017/build_localities_2017.py --dir raw_data/pbs/census2017_sources/2026-09-26 --out <dir> --unit-panel <panel>/panel_2017.parquet
+```
+
+```bash
+python3 datadarbar/etl/census2017/build_urban_localities_2017.py --dir raw_data/pbs/census2017_sources/2026-09-26 --out <dir>
 ```
