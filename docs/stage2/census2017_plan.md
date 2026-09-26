@@ -72,13 +72,18 @@ check finds a matching series for every comparable published figure.
 
 | Task | Days | Notes |
 |---|---:|---|
-| B1. The 46 district×table pairs that do not align against their PDF | 2 | Lahore's table 14 alone is 21% of the 30,768 apparent disagreements; each is a per-file alignment failure, not a PBS defect |
-| B2. The 49,835 rows never compared | 1 | Currently invisible to the reconciliation entirely |
-| B3. Khyber Pakhtunkhwa's 3,125 remaining differences | 1 | Traced to Kohistan's table 4 (A5), so may resolve with it |
-| B4. The 17,869 unmatched comparisons | 1 | Mostly Pakistan's and Islamabad's; A1 should take a large bite |
+| ~~B1. The district×table pairs that do not align against their PDF~~ | done | Two causes, both found in Lahore's table 14. The section's stub/data boundary is one column for the whole section and a wide value in the first data column started to the left of it, so `10 AND ABOVE  535,956` read as label `10 AND ABOVE5` and value `35,956`; the label then matched nothing and every later row in the block paired against the wrong one. And three PDFs carry each other's table 5 in a cycle — Rawalpindi's holds Rahim Yar Khan, Rahim Yar Khan's holds Rajanpur, Rajanpur's holds Rawalpindi — which is a PBS binding error, now detected from the section's own printed banner and recorded rather than compared. **Differences 30,768 → 3,461** |
+| ~~B2. The rows never compared~~ | done | The same boundary fix, plus banner rows no longer counted as failures: a unit, locality or sex heading carries no numbers, so there is nothing in the PDF for it to align to. **Unaligned 49,835 → 5,758**, with 65,947 label rows reported separately |
+| ~~B3/B4. The area verification~~ | mostly | The area workbooks list every area down one sheet and the block cut did not recognise a province label, so each area's block ran to the end and every other area's figures were read as its own — Pakistan's table 1 was compared against Punjab's 109,989,655 among twelve others. A series the panel already flags `series_ambiguous`, or one the workbook prints more than once, is now reported as ambiguous rather than as a difference. **Differs 16,327 → 8,189; exact 88,700 → 89,932; 3,114 ambiguous recorded; no matching series 6,030 → 5,994** |
 
 **Exit test:** no unexplained difference against an independently published
 figure. Every remaining one is recorded with a reason.
+
+**Not yet met.** 8,189 area differences and 5,994 series with no counterpart are
+still unexplained, as are 3,461 cell differences against the PDFs and 5,758
+unaligned rows. The residue is thin and spread — the worst district×table is now
+449 rows, against 6,551 before — and much of the unaligned sits in tables 29, 30
+and 32, whose category labels are bare numbers, which A4 already records.
 
 ## Workstream C — the geography register  ← critical path
 
