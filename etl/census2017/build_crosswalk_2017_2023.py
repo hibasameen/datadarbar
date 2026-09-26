@@ -114,6 +114,96 @@ def build_groups(d17, d23):
     return groups, by17, by23
 
 
+SUB_STRIP = (r'\b(TEHSIL|TALUKA|TALUKO|SUB-?TEHSIL|SUB-?DIVISION|TOWN|'
+             r'MUNICIPAL COMMITTEE|MC|CANTONMENT)\b')
+
+
+def sub_norm(name):
+    """A sub-district name reduced to what both censuses agree on.
+
+    The tier word goes: a unit published as a tehsil in 2017 is often a
+    sub-division in 2023 and the same place either way, so keeping the word
+    would split a pair that the population then proves identical.
+    """
+    s = re.sub(r'\(.*?\)', '', name.upper())
+    return re.sub(r'[^A-Z0-9]', '', re.sub(SUB_STRIP, '', s))
+
+
+def sub_units(con, panel, which):
+    """{district: [(unit, unit_type, population)]} for the sub-district units."""
+    if which == '2017':
+        sql = f"""SELECT district, unit, unit_type, sum(value) AS pop FROM '{panel}'
+                  WHERE table_id='1' AND unit_type <> 'district' AND locality='all'
+                    AND sex='all' AND value IS NOT NULL
+                    AND indicator LIKE '%POPULATION%2017%'
+                    AND col_label LIKE '%ALL SEXES%' GROUP BY 1,2,3"""
+    else:
+        sql = f"""SELECT district, unit, unit_type, sum(value) AS pop FROM '{panel}'
+                  WHERE table_id='1' AND unit_type <> 'district' AND locality='all'
+                    AND NOT missing AND indicator='POPULATION 2017' GROUP BY 1,2,3"""
+    out = collections.defaultdict(list)
+    for dist, unit, ut, pop in con.sql(sql).fetchall():
+        out[dist].append((unit, ut, pop or 0))
+    return out
+
+
+def sub_groups(groups, s17, s23):
+    """Resolve sub-district units inside each district group.
+
+    Three passes, recorded per pair, in the order their evidence is strongest:
+
+      name        the same name inside the same district group
+      population  a 2017 unit and a 2023 unit left over whose populations are
+                  identical, and uniquely so within the group. Dera Bugti's
+                  PHELAWAGH TEHSIL and QADIRABAD SUB-DIVISION are one place
+                  under two names and only the 28,054 says so.
+      restructured  everything still unmatched, plus any name pair whose
+                  populations disagree, collected into one group per district.
+                  Peshawar's five new tehsils came out of units that kept their
+                  names, so no pairing within them is safe to assert; the group
+                  balances as a whole and the correspondence inside it is left
+                  open rather than guessed.
+    """
+    rows = []
+    for relation, m17, m23 in groups:
+        a = [u for d in m17 for u in s17.get(d, [])]
+        b = [u for d in m23 for u in s23.get(d, [])]
+        gid = ' + '.join(sorted(m17)) or ' + '.join(sorted(m23))
+        by_a = {sub_norm(u): (u, t, p) for u, t, p in a}
+        by_b = {sub_norm(u): (u, t, p) for u, t, p in b}
+        paired, left_a, left_b = [], dict(by_a), dict(by_b)
+        for k in set(by_a) & set(by_b):
+            paired.append((by_a[k], by_b[k], 'name'))
+            left_a.pop(k); left_b.pop(k)
+        # population, but only where it is unambiguous on both sides
+        pa = collections.Counter(round(v[2]) for v in left_a.values())
+        pb = collections.Counter(round(v[2]) for v in left_b.values())
+        for k, v in list(left_a.items()):
+            n = round(v[2])
+            if n and pa[n] == 1 and pb[n] == 1:
+                kb = next(kk for kk, vv in left_b.items() if round(vv[2]) == n)
+                paired.append((v, left_b[kb], 'population'))
+                left_a.pop(k); left_b.pop(kb)
+        open_a = [v for v in left_a.values()]
+        open_b = [v for v in left_b.values()]
+        for ua, ub, how in paired:
+            if abs(ua[2] - ub[2]) >= 0.5:          # a name pair that does not balance
+                open_a.append(ua); open_b.append(ub)
+                continue
+            rows.append(dict(district_group=gid, relation='exact' if ua[0] == ub[0] else 'renamed',
+                             matched_by=how, units_2017=ua[0], units_2023=ub[0],
+                             population_2017=int(ua[2]), restated_2017=int(ub[2]),
+                             balances='yes'))
+        if open_a or open_b:
+            x, y = sum(u[2] for u in open_a), sum(u[2] for u in open_b)
+            rows.append(dict(district_group=gid, relation='restructured', matched_by='',
+                             units_2017=' + '.join(sorted(u[0] for u in open_a)),
+                             units_2023=' + '.join(sorted(u[0] for u in open_b)),
+                             population_2017=int(x), restated_2017=int(y),
+                             balances='yes' if abs(x - y) < 0.5 else 'no'))
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--panel17', required=True)
@@ -162,6 +252,20 @@ def main():
     (out / 'district_crosswalk_report.json').write_text(
         json.dumps(report, indent=1, sort_keys=True))
 
+    # ── sub-district ────────────────────────────────────────────────────────
+    srows = sub_groups(groups, sub_units(con, p17.as_posix(), '2017'),
+                       sub_units(con, a.panel23, '2023'))
+    srows.sort(key=lambda r: (r['relation'], r['district_group'], r['units_2017']))
+    with open(out / 'subdistrict_crosswalk_2017_2023.csv', 'w', newline='') as fh:
+        w = csv.DictWriter(fh, fieldnames=list(srows[0]))
+        w.writeheader(); w.writerows(srows)
+    stally = collections.Counter(r['relation'] for r in srows)
+    sbad = [r for r in srows if r['balances'] == 'no']
+    report['subdistrict'] = dict(groups=len(srows), relations=dict(stally),
+                                 unbalanced=len(sbad))
+    (out / 'district_crosswalk_report.json').write_text(
+        json.dumps(report, indent=1, sort_keys=True))
+
     print(f"2017 districts {len(by17)}   2023 districts {len(by23)}   groups {len(rows)}")
     for k, v in sorted(tally.items()):
         print(f"   {k:24s} {v}")
@@ -172,6 +276,13 @@ def main():
                   f"{r['population_2017']:,} vs {r['restated_2017']:,}")
     else:
         print("\nevery group balances against PBS's own restated 2017 population")
+
+    print(f"\nsub-district groups {len(srows)}")
+    for k, v in sorted(stally.items()):
+        print(f"   {k:24s} {v}")
+    print(f"   {'unbalanced':24s} {len(sbad)}")
+    for r in sbad[:8]:
+        print(f"     {r['district_group']}: {r['population_2017']:,} vs {r['restated_2017']:,}")
 
 
 if __name__ == '__main__':
