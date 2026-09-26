@@ -127,10 +127,10 @@ series to every table and column.
 
 | | |
 |---|---:|
-| Comparisons | **67,318** |
-| Exact | **51,004** |
-| Differ | 11,285 |
-| No matching series | 5,029 |
+| Comparisons | **111,057** |
+| Exact | **88,700** |
+| Differ | 16,327 |
+| No matching series | 6,030 |
 
 "Area" rather than "province" throughout: four of these six are provinces, FATA
 was a federal territory merged into Khyber Pakhtunkhwa in 2018, and Islamabad is
@@ -138,13 +138,16 @@ the federal capital territory.
 
 | Area | Exact | Differ | No match |
 |---|---:|---:|---:|
-| Sindh | 9,308 | 488 | 336 |
-| Punjab | 9,083 | 509 | 540 |
-| FATA | 8,001 | **0** | 2,135 |
-| Balochistan | 7,470 | 138 | 233 |
-| **Pakistan** | **6,277** | 7,025 | **248** |
-| **Islamabad** | **5,391** | **0** | **0** |
-| Khyber Pakhtunkhwa | 5,474 | 3,125 | 1,537 |
+| Sindh | 14,864 | 1,413 | 623 |
+| Punjab | 14,219 | 1,756 | 891 |
+| FATA | 14,012 | 745 | 2,147 |
+| Balochistan | 13,228 | 1,124 | 245 |
+| Khyber Pakhtunkhwa | 12,939 | 2,416 | 1,549 |
+| Pakistan | 11,986 | 8,183 | 563 |
+| Islamabad | 7,452 | 690 | 12 |
+
+The count rose from 67,318 because 35 tables now have an area workbook to compare
+rather than 19; exact matches rose from 51,004.
 
 Islamabad matches on every one of its 5,391 comparisons. Its workbooks reach the
 panel only through the archive page's HTML anchors — it publishes no per-district
@@ -202,17 +205,22 @@ which counts *rural* localities, and all three have a rural population of zero.
 
 Balochistan fell from 5,064 differences to **138**, which confirms the diagnosis.
 
-### Khyber Pakhtunkhwa is now the outlier
+### Khyber Pakhtunkhwa's shortfall: found and fixed
 
-KP barely moved (3,132 to 3,125) and is the remaining anomaly. It is short by
-784,711 on tables 4 and 27 — exactly Kohistan's population — and the cause is
-that **Kohistan's table 4 has no `All Ages` row under any spelling**, where the
-other 133 districts do. Kohistan has caused more trouble than any other district
-in this release; this is not yet diagnosed further.
+KP was short by 784,711 on tables 4 and 27 — exactly Kohistan's population.
+**Kohistan labels table 4's total row `ALL` where the other 134 districts write
+`All Ages`**, so its figures never joined that series. The gap is now zero.
 
-A smaller, general issue surfaced alongside it: **indicator labels vary in case
-between files** — `Below 1`/`BELOW 1`, `All Ages`/`ALL AGES`, and six such pairs
-in table 7. Column labels are canonicalised; indicators are not.
+Indicators are also canonicalised for case now, which they were not:
+`Below 1`/`BELOW 1`, `All Ages`/`ALL AGES`, six such pairs in table 7 — 101 groups
+merged in all. An indicator is a stub label, so unlike a column label it has no
+header prefix to lose and no risk of merging two columns that share a final word,
+and case can be folded outright.
+
+Folding them raised the flagged count in table 35 by 3,798, because variants that
+differed only in case were keeping otherwise-identical keys apart. Table 35 is
+already in the group needing task A8, so that is a known-bad table getting more
+honestly reported rather than a regression.
 
 ### The national comparison
 

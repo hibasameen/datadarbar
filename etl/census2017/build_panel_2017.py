@@ -24,7 +24,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / 'stage2'))
 
 import duckdb
-from normalise_2017 import canon_map, fix_unit, split_unit
+from normalise_2017 import canon_map, canon_indicator_map, fix_unit, split_unit
 from read_xls import load
 from read_workbook import anchor, numbered_columns
 
@@ -104,6 +104,27 @@ def main():
     d.executemany('INSERT INTO lmap VALUES (?,?,?)',
                   [(t, lab, canon) for (t, lab), canon in cmap.items()])
 
+    # --- the same treatment for indicators, which never had it ---
+    #
+    # An indicator is a stub label, so unlike a column label it has no header
+    # prefix to lose and no risk of merging two columns that share a final word.
+    # Case and punctuation variants are therefore folded outright: `Below 1` and
+    # `BELOW 1` are one series, and were two. Kohistan's `ALL` in table 4 needs an
+    # explicit alias, because the word itself differs from `All Ages`.
+    irows = d.execute("""
+        SELECT table_id, indicator, count(*) FROM raw
+        WHERE indicator IS NOT NULL GROUP BY 1, 2""").fetchall()
+    imap, imerged = canon_indicator_map({(t, i): n for t, i, n in irows})
+    d.execute('CREATE TABLE imap (table_id VARCHAR, raw VARCHAR, canon VARCHAR)')
+    d.executemany('INSERT INTO imap VALUES (?,?,?)',
+                  [(t, i, c) for (t, i), c in imap.items()])
+    with open(out / 'indicator_map.csv', 'w', newline='') as fh:
+        w = csv.writer(fh)
+        w.writerow(['table_id', 'raw_indicator', 'canonical_indicator'])
+        for (t, i), c in sorted(imap.items()):
+            if i != c:
+                w.writerow([t, i, c])
+
     # --- unit corrections: spelling, and the locality folded into Kohistan's name ---
     units = [r[0] for r in d.execute('SELECT DISTINCT unit FROM raw WHERE unit IS NOT NULL').fetchall()]
     urows, notes = [], []
@@ -149,7 +170,7 @@ def main():
              r.unit_type,
              coalesce(m.loc, r.locality)                   AS locality,
              r.sex,
-             r.indicator,
+             coalesce(im.canon, r.indicator)                AS indicator,
              coalesce(lm.canon, r.col_label)               AS col_label,
              TRY_CAST(r.value AS DOUBLE)                   AS value,
              r.missing = 'True'                            AS missing,
@@ -159,6 +180,7 @@ def main():
       LEFT JOIN umap dm  ON dm.raw = r.district
       LEFT JOIN reg      ON reg.unit = m.unit AND reg.province_area = r.province_area
       LEFT JOIN lmap lm  ON lm.table_id = r.table_id AND lm.raw = r.col_label
+      LEFT JOIN imap im  ON im.table_id = r.table_id AND im.raw = r.indicator
       ORDER BY r.table_id, district, unit, locality, sex, indicator, col_label,
                r.src_row, r.src_col""")
 
@@ -266,6 +288,7 @@ def main():
         no_district=d.execute('SELECT count(*) FROM panel WHERE district IS NULL').fetchone()[0],
         label_groups_merged=len(merged),
         label_groups_kept_distinct=len(kept),
+        indicator_groups_merged=len(imerged),
         ambiguous_unit_names=len(ambiguous),
         cells_masked_from_pdf=masked_n,
         tables_touched_by_ambiguity=ambiguous_tables,
@@ -354,6 +377,8 @@ def main():
                    unit_corrections=notes,
                    ambiguous_unit_names=[dict(province_area=p, unit=u, districts=n)
                                          for p, u, n in ambiguous],
+                   indicator_groups_merged=[dict(table_id=t, canonical=c, variants=v)
+                                            for t, c, v in imerged],
                    label_groups_merged=[dict(table_id=t, canonical=c, variants=v)
                                         for t, c, v in merged],
                    label_groups_kept_distinct=[dict(table_id=t, variants=v) for t, v in kept]),

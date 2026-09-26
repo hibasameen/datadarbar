@@ -95,6 +95,57 @@ LABEL_ALIAS = {
 }
 
 
+# Indicator wordings that differ in the word itself, so majority-by-spelling
+# cannot resolve them. Kohistan alone labels table 4's total row `ALL` where the
+# other 134 districts write `All Ages`, which left Khyber Pakhtunkhwa 784,711
+# short - exactly Kohistan's population - against its own published total.
+INDICATOR_ALIAS = {
+    ('4', 'ALL'): 'All Ages',
+    ('5', 'ALL'): 'All Ages',
+}
+
+
+def canon_indicator_map(observed):
+    """{(table, raw indicator): canonical indicator}, resolved by majority.
+
+    Indicators vary in case and punctuation between workbooks - `Below 1` and
+    `BELOW 1`, `All Ages` and `ALL AGES`, six such pairs in table 7 - and nothing
+    reconciled them, so one series became two. Column labels had this treatment
+    from the start; indicators did not.
+
+    Two spellings are the same indicator when they agree after case is folded and
+    non-alphanumerics are dropped. That is safe here in a way it would not be for
+    column labels, because an indicator is a stub label rather than a compound of
+    header rows: there is no prefix to lose and no risk of merging two columns
+    that merely share a final word.
+    """
+    groups = collections.defaultdict(dict)
+    for (table, raw), n in observed.items():
+        if raw is None:
+            continue
+        groups[(table, _key(raw))][raw] = n
+    out, merged = {}, []
+    for (table, key), variants in groups.items():
+        if not key:
+            continue
+        winner = max(variants.items(), key=lambda kv: (kv[1], -len(kv[0])))[0]
+        winner = INDICATOR_ALIAS.get((table, winner.upper()), winner)
+        for raw in variants:
+            out[(table, raw)] = winner
+        if len(variants) > 1:
+            merged.append((table, winner, sorted(variants, key=lambda r: -variants[r])))
+    # aliases that the majority rule cannot reach, because the word differs
+    for (table, raw), canon in list(out.items()):
+        alias = INDICATOR_ALIAS.get((table, canon.upper()))
+        if alias:
+            out[(table, raw)] = alias
+    for (table, up), canon in INDICATOR_ALIAS.items():
+        for (t, raw) in list(out):
+            if t == table and raw.upper() == up:
+                out[(t, raw)] = canon
+    return out, merged
+
+
 def canon_map(observed):
     """{(table, raw label): canonical label}, decided by co-occurrence.
 

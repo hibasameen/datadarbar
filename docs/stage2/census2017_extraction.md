@@ -21,8 +21,8 @@ artifacts after every change.
 | Districts | **135** — every one, including Islamabad and 13 FATA agencies and Frontier Regions |
 | District rows supplied where the workbook named none | 47 |
 | Sub-district units | 534 |
-| Series | 3,338 |
-| Flagged `series_ambiguous` | **105,980 (2.41%)**, in 19 of 35 tables |
+| Series | 2,764 |
+| Flagged `series_ambiguous` | **109,778 (2.50%)**, in 19 of 35 tables |
 | Tables entirely clean | **16** — tables 1, 3, 4, 5, 6, 7, 8, 10, 12, 14, 15, 21, 22, 28, 31, 40 |
 
 ## Verification
