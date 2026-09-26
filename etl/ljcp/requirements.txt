@@ -1,0 +1,8 @@
+# Validated runtime: Python 3.11. Table detection is version-sensitive.
+pdfplumber==0.9.0
+duckdb==1.5.5
+# Optional first-time OCR preparation (cached OCR rebuilds do not need these).
+# opencv-python==4.12.0.88
+# Pillow
+# numpy
+# System: pdftoppm (Poppler); macOS Swift + Vision for the included OCR adapter.

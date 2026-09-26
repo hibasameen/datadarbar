@@ -1,0 +1,5 @@
+# CSV/JSON, validation and downloading use the Python 3.10+ standard library.
+# Install this package for strongly typed Parquet output.
+pyarrow>=12
+# Alternative Parquet writer; works without PyArrow or pandas.
+duckdb>=1.0

@@ -85,6 +85,11 @@ To set up Pages for the first time: push the repo, go to **Settings → Pages**,
 
 ## Rebuild the data
 
+The local [weather-related event pipeline](etl/climate_events/README.md) collects
+GDACS Pakistan events, UNOSAT flood-exposure data and NDMA monsoon reports, and
+imports authorised EM-DAT exports. It builds separate local CSV/Parquet tables
+with provenance and quality checks; these are not yet part of the public website.
+
 ```bash
 cd etl
 python3 build_dataset.py      # → app/data/districts.json (District Map)

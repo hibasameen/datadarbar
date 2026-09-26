@@ -1,0 +1,55 @@
+2. FIRs REGISTERED IN SINDH PROVINCE (DAILY BASIS) (https://www.sindhpolice.gov.pk/storage/dsr/1444412755_691003c4829b3.pdf)
+citeturn81search13 [wordlim: 200] Crawled: 10 months ago; FIRs REGISTERED IN SINDH PROVINCE (DAILY BASIS) ... <th>07-11-2025</th>
+2. FIRs REGISTERED IN SINDH PROVINCE (DAILY BASIS)
+
+<table id="e1">
+<tr>
+<th>S. No.</th>
+<th>DISTRICT</th>
+<th colspan="2">Total Nos OF FIRs REGISERED</th>
+</tr>
+<tr>
+<th></th>
+<th></th>
+<th>07-11-2025</th>
+<th>01-01-2025 TO 07-11-2025</th>
+</tr>
+<tr><td>1</td><td>SOUTH KARACHI</td><td>18</td><td>6565</td></tr>
+<tr><td>2</td><td>CITY KARACHI</td><td>17</td><td>3736</td></tr>
+<tr><td>3</td><td>KEAMARI KARACHI</td><td>10</td><td>4984</td></tr>
+<tr><td>4</td><td>EAST KARACHI</td><td>28</td><td>13284</td></tr>
+<tr><td>5</td><td>MALIR KARACHI</td><td>26</td><td>8318</td></tr>
+<tr><td>6</td><td>KORANGI KARACHI</td><td>21</td><td>6812</td></tr>
+<tr><td>7</td><td>WEST KARACHI</td><td>22</td><td>6339</td></tr>
+<tr><td>8</td><td>CENTRAL KARACHI</td><td>38</td><td>10476</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>180</b></td><td><b>60514</b></td></tr>
+<tr><td>1</td><td>HYDERABAD</td><td>16</td><td>4993</td></tr>
+<tr><td>2</td><td>JAMSHORO</td><td>4</td><td>1641</td></tr>
+<tr><td>3</td><td>MATIARI</td><td>2</td><td>1126</td></tr>
+<tr><td>4</td><td>THATTA</td><td>8</td><td>1693</td></tr>
+<tr><td>5</td><td>SUJAWAL</td><td>5</td><td>1180</td></tr>
+<tr><td>6</td><td>BADIN</td><td>3</td><td>2340</td></tr>
+<tr><td>7</td><td>DADU</td><td>2</td><td>2471</td></tr>
+<tr><td>8</td><td>TANDO ALLAH YAR</td><td>4</td><td>1460</td></tr>
+<tr><td>9</td><td>TANDO M KHAN</td><td>2</td><td>1384</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>46</b></td><td><b>18288</b></td></tr>
+<tr><td>1</td><td>MIRPURKHAS</td><td>8</td><td>1516</td></tr>
+<tr><td>2</td><td>UMARKOT</td><td>3</td><td>894</td></tr>
+<tr><td>3</td><td>MITHI@ THARPARKAR</td><td>2</td><td>531</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>13</b></td><td><b>2941</b></td></tr>
+<tr><tr><td>1</td><td>SHAHEED BEANZIRABAD</td><td>11</td><td>2953</td></tr>
+<tr><td>2</td><td>SANGHAR</td><td>6</td><td>2338</td></tr>
+<tr><td>3</td><td>NAUSHERO FEROZ</td><td>6</td><td>2943</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>23</b></td><td><b>8234</b></td></tr>
+<tr><td>1</td><td>SUKKUR</td><td>10</td><td>3122</td></tr>
+<tr><td>2</td><td>GHOTKI</td><td>11</td><td>1950</td></tr>
+<tr><td>3</td><td>KHAIRPUR</td><td>9</td><td>3883</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>30</b></td><td><b>8955</b></td></tr>
+<tr><td>1</td><td>LARKANA</td><td>8</td><td>2331</td></tr>
+<tr><td>2</td><td>QAMBAR</td><td>5</td><td>1663</td></tr>
+<tr><td>3</td><td>SHIKARPUR</td><td>0</td><td>1528</td></tr>
+<tr><td>4</td><td>JACOBABAD</td><td>6</td><td>1485</td></tr>
+<tr><td>5</td><td>KASHMORE</td><td>0</td><td>784</td></tr>
+<tr><td><b>T O T A L</b></td><td></td><td><b>19</b></td><td><b>7791</b></td></tr>
+<tr><td><b>G R A N D  T O T A L</b></td><td></td><td><b>311</b></td><td><b>106723</b></td></tr>
+</table>

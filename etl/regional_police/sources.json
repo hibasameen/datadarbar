@@ -1,0 +1,272 @@
+[
+  {
+    "id": "ajk_2025",
+    "url": "https://pndajk.gov.pk/uploadfiles/downloads/Statistical Year Book 2025.pdf",
+    "title": "AJ&K Statistical Year Book  2025",
+    "file": "objects/ajk_2025.pdf",
+    "sha256": "5a5e1e8ed6a64d5de4494b83cb82ade380b4bbd393fc0c9def331c4c07743688",
+    "bytes": 11484834,
+    "retrieved_on": "2026-09-06",
+    "adapter": "ajk",
+    "edition_priority": 2025,
+    "pages": [
+      241,
+      242
+    ]
+  },
+  {
+    "id": "ajk_2024",
+    "url": "https://pndajk.gov.pk/uploadfiles/downloads/AJ&K Statistical Year Book 2024(1).pdf",
+    "title": "AJ&K Statistical Year Book  2024",
+    "file": "objects/ajk_2024.pdf",
+    "sha256": "643c94017b32b02ffc4914d1a67e6121d4238e7d7ad5d378f73df1f617359470",
+    "bytes": 10169664,
+    "retrieved_on": "2026-09-06",
+    "adapter": "ajk",
+    "edition_priority": 2024,
+    "pages": [
+      232,
+      233
+    ]
+  },
+  {
+    "id": "ajk_2022",
+    "url": "https://pndajk.gov.pk/uploadfiles/downloads/AJK Statistical Year Book 2022 .pdf",
+    "title": "AJ&K Statistical Year Book  2022",
+    "file": "objects/ajk_2022.pdf",
+    "sha256": "ffb2b51c44da6e714b39d65506a2aefbdc5d1a89eeda82aa942480cea5f84825",
+    "bytes": 9669241,
+    "retrieved_on": "2026-09-06",
+    "adapter": "ajk",
+    "edition_priority": 2022,
+    "pages": [
+      221,
+      222
+    ]
+  },
+  {
+    "id": "ajk_2020",
+    "url": "https://pndajk.gov.pk/uploadfiles/downloads/Statistical Year Book 2020.pdf",
+    "title": "AJ&K Statistical Year Book  2020",
+    "file": "objects/ajk_2020.pdf",
+    "sha256": "600abd3e0113367730185dc72250923c0a3d4ffd591b787ae5189b2d67f44be3",
+    "bytes": 9039167,
+    "retrieved_on": "2026-09-06",
+    "adapter": "ajk",
+    "edition_priority": 2020,
+    "pages": [
+      209,
+      210
+    ]
+  },
+  {
+    "id": "baloch_2019-20",
+    "url": "https://web.archive.org/web/20250425163118id_/https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2019-20/?wpdmdl=255924&refresh=680bb7cc6828f1745598412",
+    "original_url": "https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2019-20/?wpdmdl=255924&refresh=680bb7cc6828f1745598412",
+    "file": "objects/baloch_2019-20.pdf",
+    "sha256": "11ee4244c2e11d82c1046933ef9f9343d5004591aed3f07959e9780cfb2d2359",
+    "bytes": 9066730,
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "baloch_2020-21",
+    "url": "https://web.archive.org/web/20250425163041id_/https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2020-21/?wpdmdl=255925&refresh=680bb7cc66c861745598412",
+    "original_url": "https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2020-21/?wpdmdl=255925&refresh=680bb7cc66c861745598412",
+    "file": "objects/baloch_2020-21.pdf",
+    "sha256": "9085ef064e7e224b191fee2ecfb30e79cd139251ff3f2e35150c127118eba32d",
+    "bytes": 9013404,
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "baloch_2021-22",
+    "url": "https://web.archive.org/web/20250425163152id_/https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2021-22/?wpdmdl=255926&refresh=680bb7cc655ee1745598412",
+    "original_url": "https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2021-22/?wpdmdl=255926&refresh=680bb7cc655ee1745598412",
+    "file": "objects/baloch_2021-22.pdf",
+    "sha256": "2fe87d357dfc05c4b22337671cf8b717e9429b6033b137532bd6489eb46f858c",
+    "bytes": 8670043,
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "baloch_2022-23",
+    "url": "https://web.archive.org/web/20250425163101id_/https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2022-23/?wpdmdl=255927&refresh=680bb7cc63fd21745598412",
+    "original_url": "https://bospnd.balochistan.gov.pk/download/development-statistics-of-balochistan-2022-23/?wpdmdl=255927&refresh=680bb7cc63fd21745598412",
+    "file": "objects/baloch_2022-23.pdf",
+    "sha256": "7757c3da007bc18b92fd348c3fd22a166810d8f98c9dde6fa582630ecddef25c",
+    "bytes": 17527348,
+    "retrieved_on": "2026-09-06",
+    "adapter": "baloch",
+    "edition_priority": 2023,
+    "pages": [
+      138
+    ]
+  },
+  {
+    "id": "kp_2021",
+    "url": "https://kpbos.gov.pk:8083/api/PublicationData/DownloadAttachment/43597e56-9e99-417d-81c5-7aa28f7895b2.pdf",
+    "file": "objects/kp_2021.pdf",
+    "sha256": "773f48d5425e5eb878c1813f8933bb9a26a230eb112be607539e093c0bfe29e4",
+    "bytes": 8714165,
+    "publication_year": 2021,
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2021,
+    "pages": [
+      131
+    ]
+  },
+  {
+    "id": "kp_2022",
+    "url": "https://kpbos.gov.pk:8083/api/PublicationData/DownloadAttachment/f7a43cb6-1efb-4f5f-8de9-92499b2d5ef1_DS-2022.pdf",
+    "file": "objects/kp_2022.pdf",
+    "sha256": "0ac6ef9646a195b7fb0bddad7e13df06447793ba91439123d2cb37018c4dd452",
+    "bytes": 25225040,
+    "publication_year": 2022,
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2022,
+    "pages": [
+      136
+    ]
+  },
+  {
+    "id": "kp_2023",
+    "url": "https://kpbos.gov.pk:8083/api/PublicationData/DownloadAttachment/47732261-4de0-4d9d-aa80-9fa1df678ece_Development_Statistics_2023.rar",
+    "file": "objects/kp_2023.rar",
+    "sha256": "51b2cab516c694f90ceae21009869b52e996b95f595437e254e66a194ac00958",
+    "bytes": 9909564,
+    "publication_year": 2023,
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2023,
+    "pages": [
+      138
+    ],
+    "pdf_file": "objects/kp_2023.pdf",
+    "pdf_sha256": "4f47febfcd7c6df0ef5c801c755d559da3808fb32bbf23efa0d2d79784bc5aff"
+  },
+  {
+    "id": "kp_2024",
+    "url": "https://kpbos.gov.pk:8083/api/PublicationData/DownloadAttachment/63b96d85-1457-44ba-9e09-92e61a716b43_DS%202024_final.rar",
+    "file": "objects/kp_2024.rar",
+    "sha256": "c5027b644a22911250a10b955252419cf09e504f3416adaae1db5b97216a2163",
+    "bytes": 9174524,
+    "publication_year": 2024,
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2024,
+    "pages": [
+      138
+    ],
+    "pdf_file": "objects/kp_2024.pdf",
+    "pdf_sha256": "9b2ff1431de4260edfd2eb0b9281230f58efb1235bb51aef1621dc2398ae7251"
+  },
+  {
+    "id": "kp_2025",
+    "url": "https://kpbos.gov.pk:8083/api/PublicationData/DownloadAttachment/367165df-ea81-4eac-bb23-39e2c2291435_Development%20Statistics%202025.rar",
+    "file": "objects/kp_2025.rar",
+    "sha256": "c750a887a76990ce8e1658e09bd7f32a22b562dcdd48ab08898d321e219e58c7",
+    "bytes": 4676642,
+    "publication_year": 2025,
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2025,
+    "pages": [
+      144
+    ],
+    "pdf_file": "objects/kp_2025.pdf",
+    "pdf_sha256": "a2a5ddabbdda806faf884dad3ecb7888c3d3097d3534ea9888e0f5dec25d0d27"
+  },
+  {
+    "id": "kp_2020",
+    "url": "https://pndkp.gov.pk/download/development-statistics-of-kp-2020/?wpdmdl=8646&refresh=6a9db84aeba1f1788721226",
+    "file": "objects/kp_2020.pdf",
+    "sha256": "942aa4229b257a9e68e4b6ae316b90fcb77ef46b14a6abf2db983aad4299a87a",
+    "bytes": 8057038,
+    "type": "application/pdf",
+    "retrieved_on": "2026-09-06",
+    "adapter": "kp",
+    "edition_priority": 2020,
+    "pages": [
+      119
+    ]
+  },
+  {
+    "id": "pbs_yearly",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Crime-By-Types-Yearly.xlsx",
+    "file": "objects/pbs_yearly.xlsx",
+    "sha256": "cf4264c761b692070be6ee22bde30bb179228aef815c9d33fa9c47f08e93de09",
+    "bytes": 12365,
+    "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "retrieved_on": "2026-09-06",
+    "adapter": "pbs_xlsx",
+    "edition_priority": 2025,
+    "pages": []
+  },
+  {
+    "id": "pbs_annual",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Crime-By-Types-annual.xlsx",
+    "file": "objects/pbs_annual.xlsx",
+    "sha256": "d25df513401eef76c63df3e05a393eb5e870e9f81ce3a326f35ba86609ccf479",
+    "bytes": 13204,
+    "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "pbs_monthly",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Moth-wise-Crime-data.xlsx",
+    "file": "objects/pbs_monthly.xlsx",
+    "sha256": "21253b21bcc3cfbfcb8a663110003097749ff53c82e907d53fda4566e3fbe425",
+    "bytes": 14086,
+    "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "pbs_province",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Province-Wise-Crime-data.xlsx",
+    "file": "objects/pbs_province.xlsx",
+    "sha256": "0347eafeb6320ab8831aca309e17292cf14e76b1275c957763613ab80d849faf",
+    "bytes": 13490,
+    "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "retrieved_on": "2026-09-06",
+    "adapter": "reference_only"
+  },
+  {
+    "id": "pbs_2022",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Pakistan_Statistical_Year_Book_2022.pdf",
+    "file": "objects/pbs_2022.pdf",
+    "sha256": "d233edeaffb33241ebabff91c42c5f714315d89c5094ddc60ed5700b86e18f56",
+    "bytes": 4026614,
+    "retrieved_on": "2026-09-06",
+    "adapter": "pbs_pdf",
+    "edition_priority": 2022,
+    "pages": [
+      445
+    ],
+    "years": [
+      2019
+    ]
+  },
+  {
+    "id": "pbs_2020_2022",
+    "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/Crime-by-Type-by-Provinces.pdf",
+    "file": "objects/pbs_2020_2022.pdf",
+    "sha256": "48c445a906128974fef434ed6abae2fe1e2af296be410b0aeaea74c3a833c59c",
+    "bytes": 89581,
+    "retrieved_on": "2026-09-06",
+    "adapter": "pbs_pdf",
+    "edition_priority": 2023,
+    "pages": [
+      1
+    ],
+    "years": [
+      2020,
+      2021,
+      2022
+    ]
+  }
+]
