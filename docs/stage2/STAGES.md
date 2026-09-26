@@ -350,9 +350,9 @@ A second census year, read by the same reader as 2023.
 - [census2017_plan.md](census2017_plan.md) — **the plan to publication**: what
   remains, in what order, and the five decisions that block it.
 - [census2017_localities.md](census2017_localities.md) — the locality tier:
-  2,505,703 observations, 46,692 mauzas. Patwar-circle closure 99.9%, but only
-  60 of 128 districts reconcile against their published rural population, so
-  **the mauza level must not yet be summed to a district total**.
+  2,505,703 observations, 46,692 mauzas. Patwar-circle closure 99.9% and
+  118 of 128 districts reconcile against their published rural population, against
+  115 of 129 for 2023. Ten are flagged `hierarchy_unreliable`.
 - [census2017_verification.md](census2017_verification.md) — checks against the
   second rendering and against independently published totals, plus
   reproducibility.

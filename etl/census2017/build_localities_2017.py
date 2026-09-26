@@ -172,12 +172,20 @@ def main():
             WHERE level='patwar_circle') p
       JOIN kids k USING (parent_id, indicator)""").fetchone()
 
+    # The mauza sum must count population only. `%ALL SEXES%` alone also matches
+    # `LITERACY % (10+ YEARS) / ALL SEXES`, so the first version of this check was
+    # adding a percentage to a population and reporting the result as an
+    # over-count - Okara appeared 8.98% over when the true figure is 7.1%, and the
+    # mauza count read 1,810 where there are 905 places carrying two indicators
+    # each. The same mistake as 2023's rate detector missing PERCENT.
     recon = []
     if a.unit_panel and pathlib.Path(a.unit_panel).exists():
         recon = con.sql(f"""
           WITH m AS (SELECT province_area, district, sum(value) mauza_sum FROM {P}
                      WHERE table_id='23' AND level='mauza' AND NOT missing
-                       AND indicator LIKE '%ALL SEXES%' GROUP BY 1,2),
+                       AND indicator LIKE '%POPULATION / ALL SEXES%'
+                       AND indicator NOT LIKE '%\%%' ESCAPE '\\'
+                       AND indicator NOT LIKE '%RATIO%' GROUP BY 1,2),
                p AS (SELECT province_area, district, sum(value) published_rural
                      FROM '{a.unit_panel}'
                      WHERE table_id='1' AND unit_type='district' AND locality='rural'

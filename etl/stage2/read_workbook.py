@@ -205,6 +205,25 @@ def merged_ranges(xlsx_path):
     return out
 
 
+def header_label(v):
+    """A header cell's text, including a bare number.
+
+    `txt` returns None for a non-string, which is right for a stub column - a
+    number there is a figure, not a unit name - but wrong for a header row.
+    Census 2017's tables 29, 30 and 32 label their columns with the number of
+    rooms or of persons: 1, 2, 3. Dropping those left all nine columns carrying
+    only their banner, `HOUSING UNITS BY NUMBER OF ROOMS`, and so
+    indistinguishable from one another.
+    """
+    t = txt(v)
+    if t is not None:
+        return t
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        f = float(v)
+        return str(int(f)) if f.is_integer() else str(v)
+    return None
+
+
 def header(rows, a, lc, merges=(), data_cols=None):
     """Column labels built from the header rows above the column-number row.
 
@@ -217,7 +236,7 @@ def header(rows, a, lc, merges=(), data_cols=None):
     grid = {}
     for ri in range(a):
         for ci in range(width):
-            v = txt(rows[ri][ci]) if ci < len(rows[ri]) else None
+            v = header_label(rows[ri][ci]) if ci < len(rows[ri]) else None
             # The title banner spans the whole sheet and names the table, not a
             # column. It must not become part of any column label.
             if v and not v.upper().startswith('TABLE'):

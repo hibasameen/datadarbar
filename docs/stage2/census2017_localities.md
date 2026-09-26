@@ -44,47 +44,45 @@ region, 20 in all; 2017 publishes one per table per district, about 540.
 |---|---|
 | Patwar-circle closure — mauzas sum to their circle | **168,551 of 168,754 (99.9%)** |
 | Table 23 ↔ 24 place join — the same villages in both | **44,637 of 45,789 (97.5%)** |
-| **Mauza sum vs published rural population** | **60 of 128 districts reconcile** |
+| **Mauza sum vs published rural population** | **118 of 128 districts reconcile** |
 
-The first two say the hierarchy and the place identifier are working. The third is
-the decisive one, and it does not yet pass.
-
-## The known limitation: the hierarchy over-counts in 68 districts
+## The reconciliation: 118 of 128 districts
 
 A district's mauzas should sum to the rural population its own table 1 publishes.
-In 68 of 128 they do not, and **every discrepancy runs one way — over, never
-under**:
-
-| | Districts |
-|---|---:|
-| Within 1% | 60 |
-| Over by 1–20% | 62 |
-| Over by more than 20% | 6 |
-
-Over-counting in one direction means subtotal rows are being read as places. This
-is the same defect 2023 had and solved by naming the levels PBS leaves unsuffixed
-— there, adding TRIBE, SECTION and UC took the reconciliation from 96 districts to
-115 of 129. For 2017 that work is not done: 38 unnamed groupings are detected and
-relabelled, which is evidently not all of them.
 
 | Area | Districts reconciling |
 |---|---|
-| Sindh | 23 of 25 |
-| Khyber Pakhtunkhwa | 15 of 23 |
-| Balochistan | 9 of 31 |
-| FATA | 6 of 13 |
-| Punjab | **6 of 35** |
-| Islamabad | 1 of 1 |
+| Khyber Pakhtunkhwa | **23 of 23** |
+| FATA | **13 of 13** |
+| Islamabad | **1 of 1** |
+| Punjab | 31 of 35 |
+| Balochistan | 26 of 31 |
+| Sindh | 24 of 25 |
+| **Total** | **118 of 128** |
 
-Punjab is the worst and its excesses are modest — Okara 8.98%, Narowal 6.04%,
-Multan 6.02% — which points at a small number of subtotal rows per district rather
-than a whole missing tier. Okara's mauza rows nearly all carry hadbast numbers
-(900 of 902), so they are genuine places; whatever is being double-counted is
-elsewhere in its hierarchy.
+For comparison, 2023's equivalent reconciles 115 of 129.
 
-**Until this is resolved, the mauza level must not be summed to a district total.**
-The per-district status is in `rural_reconciliation_2017.csv` so a user can see
-which districts are affected before relying on one.
+### A correction: the first version of this check was wrong
+
+This page previously reported **60 of 128** and attributed the gap to subtotal
+rows being read as places — the defect 2023 solved by naming the levels PBS
+leaves unsuffixed. **That diagnosis was wrong.**
+
+The check summed every indicator matching `%ALL SEXES%`, and table 23 has two:
+`POPULATION CHARACTERISTICS / POPULATION / ALL SEXES` and
+`POPULATION CHARACTERISTICS / LITERACY % (10+ YEARS) / ALL SEXES`. It was adding a
+literacy **percentage** to a population and reporting the total as an over-count.
+Okara appeared 8.98% over when the true figure is 7.1%, and the mauza count read
+1,810 where there are 905 places each carrying two indicators.
+
+This is the same mistake as 2023's rate detector missing `PERCENT`, which produced
+750 false failures in table 21. A check that sums across indicators has to exclude
+rates explicitly; matching on a sex label does not do that.
+
+Ten districts remain unreconciled and are genuine residue — five in Balochistan,
+four in Punjab, one in Sindh. Their per-district status is in
+`rural_reconciliation_2017.csv`, flagged `hierarchy_unreliable`, so a user can see
+which are affected before relying on one.
 
 ## What the 42 apparent failures turned out to be
 
