@@ -1,7 +1,12 @@
 # Locality tier — build report
 
-Built 26 September 2026, release `stage2-4cc30d479fecaf22`, in the workspace at
+Built 26 September 2026, rebuilt the same day after the reconciliation fixes below.
+Release `stage2-1cce085d76660fa6` (was `stage2-4cc30d479fecaf22`), code fingerprint
+`9510762e529d073d` (was `8654cdc8bf7fee4c`), in the workspace at
 `data_darbar_warehouse/stage2/localities-2026-09-26/`. **Nothing is published.**
+
+The 21 input files are byte-identical between the two builds, so the lock shows the
+change as entirely ours: same sources, different code, different artifacts.
 
 Tables 31 to 34: individual rural mauzas and urban localities. These rows are *places*, not
 published administrative units, so this is a separate release from the unit panel. Table 35

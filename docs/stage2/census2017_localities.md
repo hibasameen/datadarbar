@@ -38,6 +38,11 @@ and the village.
 What differs is the shape of the input. 2023 publishes one workbook per table per
 region, 20 in all; 2017 publishes one per table per district, about 540.
 
+> The 2017 draft carries no release manifest or input lock yet — `build_all_2017.py`
+> and the release manifest are still open in workstream D, so this directory's identity
+> rests on the code fingerprint in git rather than on a hash of its own artifacts. The
+>2023 locality release does carry both.
+
 ## Checks
 
 | Check | Result |
