@@ -254,6 +254,37 @@ def _norm_name(x: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", (x or "").lower())).strip()
 
 
+def _load_module(path: Path, name: str):
+    """Load one ETL module by path, without putting its folder on sys.path."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def census_table_titles(repo: Path) -> dict:
+    """{(year, table_id): PBS's own title}.
+
+    The titles are already written down twice in the ETL — table_spec.TITLES for
+    2023 and table_map.MAP for 2017 — so the map reuses them rather than
+    inventing a third set. They are not interchangeable between years: 2017's
+    table 23 is a locality table and 2023's is drinking water.
+    """
+    out = {}
+    try:
+        t23 = _load_module(repo / "etl" / "stage2" / "table_spec.py", "_dd_spec23")
+        out.update({(2023, k): v for k, v in t23.TITLES.items()})
+    except Exception as e:
+        print(f"    (no 2023 table titles: {e})")
+    try:
+        t17 = _load_module(repo / "etl" / "census2017" / "table_map.py", "_dd_map17")
+        out.update({(2017, k): v[2] for k, v in t17.MAP.items()})
+    except Exception as e:
+        print(f"    (no 2017 table titles: {e})")
+    return out
+
+
 def census_district_map_keys(app: Path, units: list[str]) -> dict:
     """{census district name: map key} for the units that have a polygon."""
     src = (app / "data" / "census_data.js").read_text()
@@ -1276,6 +1307,10 @@ def build(src: Path, district_only: bool = False) -> None:
         # find out. One row per selectable series, with the count of units that
         # actually carry a value and a polygon, so a series that would colour
         # four districts can be shown as such instead of looking empty.
+        titles = census_table_titles(REPO)
+        _title_values = ", ".join(
+            "(" + str(y) + ", '" + t + "', '" + ttl.replace("'", "''") + "')"
+            for (y, t), ttl in sorted(titles.items()))
         parts = []
         if p17:
             parts.append(f"""
@@ -1315,6 +1350,7 @@ def build(src: Path, district_only: bool = False) -> None:
             {
                 "census_year": "2017 or 2023",
                 "table_id": "PBS table number within that census",
+                "table_title": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water",
                 "unit_type": "district or tehsil — the geography this series can be drawn on",
                 "indicator": "the indicator as PBS labels it",
                 "col_label": "the column heading the values sat under",
@@ -1326,8 +1362,11 @@ def build(src: Path, district_only: bool = False) -> None:
                 "max_value": "largest value in the series",
             },
             "Derived from census_panel_2017 and census_panel_2023",
-            " UNION ALL ".join(parts) + """
-              ORDER BY census_year, table_id, unit_type, indicator, col_label, locality, sex""",
+            "WITH ix AS (" + " UNION ALL ".join(parts) + "), tt(ty, tid, title) AS (VALUES "
+            + _title_values + ") "
+            + """SELECT ix.* EXCLUDE (table_id), ix.table_id, tt.title AS table_title
+                 FROM ix LEFT JOIN tt ON tt.ty = ix.census_year AND tt.tid = ix.table_id
+                 ORDER BY census_year, table_id, unit_type, indicator, col_label, locality, sex""",
             unit="counts of units; the values themselves live in the panels",
         )
 

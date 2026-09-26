@@ -27,6 +27,14 @@ const TOPICS = {
   health:         { label: 'Health',                    groups: ['micsMaternal', 'micsChildHealth', 'micsNutrition', 'pslmHealth', 'dhsFamilyPlanning', 'dhsFertility', 'dhsMaternal', 'dhsImmunisation', 'dhsNutrition', 'healthAccessDistrict', 'healthAccess'] },
   women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
   children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
+  // The census layers are the only ones whose indicator list is not written
+  // here. Their two panels hold 33,795 mappable series between them, so the
+  // groups and indicators are built from census_series_index the first time a
+  // census topic is opened, and the values for the chosen series are read from
+  // the panel on demand. See assets/js/census-map.js.
+  census2023d:    { label: 'Census 2023 \u2014 districts',  groups: [], census: true },
+  census2023t:    { label: 'Census 2023 \u2014 tehsils',    groups: [], census: true },
+  census2017d:    { label: 'Census 2017 \u2014 districts',  groups: [], census: true },
   ruralFacilities: { label: 'Rural Facilities \u2014 Mouza Census 2020',
                      groups: ['mouza_electricity_energy', 'mouza_drinking_water', 'mouza_streets_roads', 'mouza_housing', 'mouza_schools', 'mouza_health', 'mouza_connectivity', 'mouza_cooking_fuel', 'mouza_markets_credit', 'mouza_hazards', 'mouza_settlement'] },
 };
@@ -989,11 +997,58 @@ function povIsCitywide(p) {
   return geoKind() === 'district' && KARACHI_DISTRICTS.has(G().key(p || {})) && !povRows()[G().key(p || {})];
 }
 
+// The census layers build their own menus and fetch their own values; every
+// other group has both in the page already.
+function isCensusGroup(group) { return !!(INDICATOR_GROUPS[group || currentGroup] || {}).census; }
+let pendingCensusUrl = null;
+async function censusPrepare() {
+  if (!window.DD_CENSUS) return;
+  if (window.DD_CENSUS.isCensusTopic(currentTopic)) {
+    await window.DD_CENSUS.prepareLayer(currentTopic, TOPICS, INDICATOR_GROUPS);
+    if (pendingCensusUrl && pendingCensusUrl.group &&
+        TOPICS[currentTopic].groups.includes(pendingCensusUrl.group)) {
+      currentGroup = pendingCensusUrl.group;
+    }
+    if (!TOPICS[currentTopic].groups.includes(currentGroup)) {
+      currentGroup = TOPICS[currentTopic].groups[0];
+    }
+    await window.DD_CENSUS.prepareGroup(currentGroup, INDICATOR_GROUPS);
+    const inds = INDICATOR_GROUPS[currentGroup].indicators;
+    if (pendingCensusUrl && pendingCensusUrl.ind && inds[pendingCensusUrl.ind]) {
+      currentIndicator = pendingCensusUrl.ind;
+    } else if (!inds[currentIndicator]) {
+      currentIndicator = Object.keys(inds)[0];
+    }
+    pendingCensusUrl = null;
+  }
+}
+async function censusValues() {
+  if (window.DD_CENSUS && isCensusGroup()) {
+    await window.DD_CENSUS.loadValues(currentGroup, currentIndicator);
+  }
+}
+
 function geoKind(group) { return (INDICATOR_GROUPS[group || currentGroup] || {}).geo || 'district'; }
 function G() { return GEOGRAPHIES[geoKind()]; }
-function unitName(p) { return G().name(p || {}); }
-function unitProv(p) { return G().prov(p || {}); }
+function unitName(p) {
+  // The tehsil geometry carries no name of its own, and the payload that
+  // normally supplies one belongs to the poverty layers. A census tehsil
+  // answers with the name PBS published.
+  if (isCensusGroup()) {
+    const r = (window.DD_CENSUS.rows() || {})[G().key(p || {})];
+    if (r && r._name) return r._name;
+  }
+  return G().name(p || {});
+}
+function unitProv(p) {
+  if (isCensusGroup()) {
+    const r = (window.DD_CENSUS.rows() || {})[G().key(p || {})];
+    if (r && r._prov) return r._prov;
+  }
+  return G().prov(p || {});
+}
 function unitRecord(p) {
+  if (isCensusGroup()) return (window.DD_CENSUS.rows() || {})[G().key(p || {})];
   if ((INDICATOR_GROUPS[currentGroup] || {}).pov) return povRecord(p);
   return G().rows()[G().key(p || {})];
 }
@@ -1417,6 +1472,13 @@ function getVal(props) {
     if (povWithheld(props)) return null;
     return povValue(row, currentIndicator);
   }
+  // A census series is fetched one at a time, so its record holds that series
+  // alone, under the indicator id. There is no year prefix to compose: the year
+  // is the layer.
+  if (g && g.census) {
+    const cv = row[currentIndicator];
+    return (cv === null || cv === undefined) ? null : Number(cv);
+  }
   // Flat payloads (the Mouza Census) key straight off the indicator, and carry
   // their own coverage flag: a polygon outside the frame is missing, not zero.
   if (g && g.flatKeys) {
@@ -1754,6 +1816,9 @@ function renderLegend(breaks, scale, isDiff) {
   const dp = indDp(currentIndicator);
   let yearLabel = currentYear === 'diff' ? 'Change 2017→2023' : currentYear;
   if (g.pov) yearLabel = (g.povYears && currentIndicator === 'density') ? 'June ' + currentPovYear : '';
+  // A group that names its own year wins: the census layers disable the year
+  // buttons, which would otherwise leave the legend reading 2017 for a 2023 map.
+  if (g.yearLabel) yearLabel = g.yearLabel;
   const symmetric = isDiff || (Array.isArray(g.diverging) && g.diverging.includes(currentIndicator));
 
   let html = `<div class="legend-title">${g.indicators[currentIndicator]}<span>${yearLabel}</span></div>`;
@@ -1994,7 +2059,10 @@ function prepareDownload() {
   const csv = [header.join(',')].concat(rows.map(r => header.map(h => r[h]).join(','))).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   downloadBtn.href = URL.createObjectURL(blob);
-  downloadBtn.download = g.pov ? `data_darbar_${currentGroup}.csv` : `data_darbar_${currentGroup}_${currentYear}.csv`;
+  // A census layer names its own year; currentYear is pinned to 2017 whenever
+  // the year buttons are disabled, which would date a 2023 file 2017.
+  const fileYear = g.yearLabel || currentYear;
+  downloadBtn.download = g.pov ? `data_darbar_${currentGroup}.csv` : `data_darbar_${currentGroup}_${fileYear}.csv`;
 }
 
 // ── Search ──────────────────────────────────────────────────────────────────
@@ -2017,21 +2085,26 @@ function handleSearch() {
 function wireEvents() {
   topicSelect.addEventListener('change', async () => {
     currentTopic = topicSelect.value;
+    await censusPrepare();        // a census topic builds its own menus
     populateGroupSelect();        // re-fill datasets for this topic
     populateIndicatorSelect();    // re-fill indicators for the new dataset
     updateYearButtons();
     await syncGeography();
+    await censusValues();
     colorize();
   });
   groupSelect.addEventListener('change', async () => {
     currentGroup = groupSelect.value;
+    await censusPrepare();
     populateIndicatorSelect();
     updateYearButtons();
     await syncGeography();
+    await censusValues();
     colorize();
   });
-  indicatorSelect.addEventListener('change', () => {
+  indicatorSelect.addEventListener('change', async () => {
     currentIndicator = indicatorSelect.value;
+    await censusValues();
     colorize();
   });
   provinceSelect.addEventListener('change', colorize);
@@ -2278,6 +2351,9 @@ function applyUrlState() {
   const topic = q.get('topic'), group = q.get('group'), ind = q.get('indicator');
   if (topic && TOPICS[topic]) {
     currentTopic = topic;
+    // A census topic has no groups until its index has been read, so the rest
+    // of the link is held and applied once censusPrepare() has built them.
+    if (TOPICS[topic].census) { pendingCensusUrl = { group, ind }; return; }
     currentGroup = TOPICS[topic].groups[0];
     currentIndicator = Object.keys(INDICATOR_GROUPS[currentGroup].indicators)[0];
   }
@@ -2285,7 +2361,9 @@ function applyUrlState() {
     const t = Object.keys(TOPICS).find(k => TOPICS[k].groups.includes(group));
     if (t) { currentTopic = t; currentGroup = group; currentIndicator = Object.keys(INDICATOR_GROUPS[group].indicators)[0]; }
   }
-  if (ind && INDICATOR_GROUPS[currentGroup].indicators[ind]) currentIndicator = ind;
+  if (ind && INDICATOR_GROUPS[currentGroup] && INDICATOR_GROUPS[currentGroup].indicators[ind]) {
+    currentIndicator = ind;
+  }
 }
 
 async function init() {
@@ -2293,8 +2371,10 @@ async function init() {
   initMap();
   await loadData();
   applyUrlState();
+  await censusPrepare();
   await ensureGroupAssets();
   await buildLayer();
+  await censusValues();
   syncUnitCopy();
   populateTopicSelect();
   populateGroupSelect();
