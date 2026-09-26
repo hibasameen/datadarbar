@@ -174,15 +174,27 @@ def main():
         CREATE TABLE result AS
         WITH prov AS (
           SELECT table_id, province_area, locality, sex, indicator, col_label,
-                 sum(value) AS s
+                 sum(value) AS s, bool_or(series_ambiguous) AS amb
           FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
         ), nat AS (
-          SELECT table_id, locality, sex, indicator, col_label, sum(value) AS s
+          SELECT table_id, locality, sex, indicator, col_label,
+                 sum(value) AS s, bool_or(series_ambiguous) AS amb
           FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
         )
         SELECT a.*,
                CASE WHEN a.area='PAKISTAN' THEN nat.s ELSE prov.s END AS panel_sum,
-               false AS islamabad_share_unknown
+               false AS islamabad_share_unknown,
+               -- A series whose key is not unique inside its own table cannot be
+               -- checked against a published figure: the sum on our side is over
+               -- a set of rows we already say we cannot tell apart, and in these
+               -- tables the published side repeats too, printing a total and its
+               -- rural and urban parts under one label. Islamabad's table 33
+               -- carries 332,145 housing units and the 164,450 and 167,695 that
+               -- make it up, all as locality 'all'. Reporting that as a
+               -- disagreement states a conclusion the data cannot support, so it
+               -- is reported as what it is and counted separately.
+               coalesce(CASE WHEN a.area='PAKISTAN' THEN nat.amb ELSE prov.amb END, false)
+                 AS panel_ambiguous
         FROM area a
         LEFT JOIN prov ON prov.table_id=a.table_id AND prov.province_area=a.area
              AND prov.locality=a.locality AND prov.sex=a.sex
@@ -193,11 +205,17 @@ def main():
              AND nat.indicator IS NOT DISTINCT FROM a.indicator
              AND nat.col_label IS NOT DISTINCT FROM a.col_label""")
 
+    raw = d.execute('SELECT * FROM result').fetchall()
+    # The published side repeats a key when the workbook prints a total and its
+    # parts under one label, which is the same ambiguity seen from the other end.
+    pub_dupes = collections.Counter((r[0], r[1], r[2], r[3], r[4], r[5]) for r in raw)
     rows = [dict(table_id=r[0], area=r[1], indicator=r[2], col_label=r[3],
                  locality=r[4], sex=r[5], published=r[6], panel_sum=r[7],
                  status=('no matching series' if r[7] is None or r[8]
+                         else 'series ambiguous'
+                         if r[9] or pub_dupes[(r[0], r[1], r[2], r[3], r[4], r[5])] > 1
                          else 'exact' if abs(r[7] - r[6]) < 0.5 else 'differs'))
-            for r in d.execute('SELECT * FROM result').fetchall()]
+            for r in raw]
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     with open(out / 'area_verification_2017.csv', 'w', newline='') as fh:
