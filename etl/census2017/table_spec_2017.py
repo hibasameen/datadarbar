@@ -50,8 +50,9 @@ SPEC_2017 = {
     # banner unit, sex then indicator; locality in the header
     '10': dict(shape='banner_unit', levels=['sex', 'indicator'],             header=['locality', 'category']),
 
-    # disability: the universe marker ALL DISABLED sits where a locality would
-    '17': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['sex']),
+    # Disability. ALL DISABLED marks the universe, not a locality - see 18 and 19.
+    '17': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['sex'],
+               not_locality={'ALL DISABLED'}),
 
     # types of housing units, closest to 2023 table 20. The stub nests two deep:
     # Overall / Rural / Urban, then REGULAR, INSTITUTIONAL, HOMELESS, TOTAL and
@@ -72,6 +73,55 @@ SPEC_2017 = {
     # and close the group rather than sitting inside LATRINE.
     '37': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
                group_indicator=True, group_exits={'TOTAL :', 'PERCENT :'}),
+    # ---- profiled 26 September 2026. All map to 2023 only `partial`, so they are
+    # ---- extracted on their own terms and excluded from cross-year joins.
+
+    # unit row, then the locality rows carry the figures themselves
+    '28': dict(shape='stub_unit',   levels=['locality'],                     header=['category']),
+    '40': dict(shape='stub_unit',   levels=['locality'],                     header=['category']),
+    # one row per unit; locality and sex are both in the column header
+    '31': dict(shape='stub_unit',   levels=[],                               header=['locality', 'sex']),
+
+    # unit -> locality -> an age or category stub
+    # Sex is a tier here, not a column: the age block repeats under ALL DISABLED,
+    # then MALE, then FEMALE. Without it the sex blocks collapse onto each other.
+    #
+    # ALL DISABLED marks the universe, not a locality. It is in the locality
+    # vocabulary because it stands where a locality would, but it recurs inside
+    # every locality block - OVERALL, then ALL DISABLED, then the ages; RURAL,
+    # then ALL DISABLED again - so read as a locality it resets RURAL and URBAN
+    # back to 'all' and their figures land on the district total.
+    '18': dict(shape='banner_unit', levels=['locality', 'sex', 'indicator'],  header=['category'],
+               not_locality={'ALL DISABLED'}),
+    '19': dict(shape='banner_unit', levels=['locality', 'sex', 'indicator'],  header=['category'],
+               not_locality={'ALL DISABLED'}),
+    '21': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['sex', 'category']),
+    '22': dict(shape='banner_unit', levels=['locality', 'sex', 'indicator'], header=['category']),
+    # TOTAL and PERCENT close each locality block and sum the categories above
+    # them, as in table 27; without this they reset the locality instead.
+    '29': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               not_locality={'TOTAL'}),
+    '32': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               not_locality={'TOTAL'}),
+    # TOTAL here sums the tenure categories within a locality, as in table 27
+    '30': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               not_locality={'TOTAL'}),
+
+    # unit -> locality -> a heading carrying no figures -> its categories. The
+    # heading is recognised by having no numbers of its own, the same signal
+    # table 37 uses for KITCHEN, BATHROOM and LATRINE.
+    '33': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
+    '34': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
+    '35': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
+    '36': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
+    '38': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
+    '39': dict(shape='banner_unit', levels=['locality', 'indicator'],        header=['category'],
+               group_indicator=True),
 }
 
 # Read through the locality reader (`etl/stage2/read_localities.py`), not this
@@ -100,4 +150,5 @@ KNOWN_ABSENT = {
     # combined PDF, table 24 is in neither rendering.
     ('KOHISTAN', '23'): 'absent from the spreadsheet release; present in the combined PDF',
     ('KOHISTAN', '24'): 'absent from both renderings',
+
 }

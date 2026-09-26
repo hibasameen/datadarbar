@@ -50,16 +50,17 @@ circulation in the meantime.
 
 ## Workstream A — finish the extraction
 
-**2–5 days** (A1, A2, A3 done). No dependencies. Can run in parallel with C.
+**1–3 days** (A1–A4 done). No dependencies. Can run in parallel with C.
 
 | Task | Days | Notes |
 |---|---:|---|
 | ~~A1. Islamabad~~ | done | Its 39 anchor-listed workbooks are now read as district workbooks. All 135 districts sum to 207,684,626, the published national total, and all six areas reconcile exactly |
 | ~~A2. Locality tables 23–26~~ | done, with a caveat | 2,505,703 observations and 46,692 mauzas, through 2023's reader with one parameter added. Patwar-circle closure 99.9%. **But only 60 of 128 districts reconcile against published rural population** — the unsuffixed-subtotal problem 2023 solved and 2017 has not. See [census2017_localities.md](census2017_localities.md) |
 | ~~A3. Table 2, urban locality list~~ | done | 589 named localities, 0 problems. Four areas sum exactly to their published urban population; table 2 is not expected to sum overall, as 2023's does not |
-| A4. Profile and declare the 16 undeclared tables | 2–3 | 18, 19, 21, 22, 28–36, 38–40 — all map to 2023 only `partial`, so they are worth having but not for the cross-year join |
+| ~~A4. Profile and declare the 16 undeclared tables~~ | done, with residue | All 16 declared and extracted: 35 of 40 tables, 4,397,361 observations. Five of the new ones are entirely clean (21, 22, 28, 31, 40); tables 29, 30, 32 and 35 hold most of the remaining ambiguity because **their category labels are bare numbers** — 1, 2, 3 rooms — indistinguishable from a column-number row, so the header collapses to its banner |
 | A5. Kohistan's table 4 | 0.5 | No `All Ages` row under any spelling, where the other 133 districts have one; the last known coverage defect |
 | A7. Resolve the locality hierarchy over-count | 2–3 | New, from A2: 68 districts over-count because subtotal rows are read as places. 2023's fix was to name the levels PBS leaves unsuffixed |
+| A8. Bare-number column labels in tables 29, 30, 32, 35 | 1–2 | New, from A4. Their categories are numbers, so `anchor` and `header` cannot tell the sub-header from the column-number row |
 | A6. Canonicalise indicator case | 0.5 | `Below 1`/`BELOW 1`, `All Ages`/`ALL AGES`, six pairs in table 7; column labels are canonicalised, indicators are not |
 
 **Exit test:** every table has every district that should have one, and the area

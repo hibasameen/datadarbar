@@ -15,15 +15,15 @@ artifacts after every change.
 
 | | |
 |---|---:|
-| Observations | **3,376,869** |
+| Observations | **4,397,361** |
 | Cells marked missing | **26.8% of rows**, of which 899,800 recovered from the PDFs |
-| Tables | 19 of the 24 declared (locality tables not yet run) |
+| Tables | **35 of 40** — the other five are table 2 and the four locality tables, built separately |
 | Districts | **135** — every one, including Islamabad and 13 FATA agencies and Frontier Regions |
 | District rows supplied where the workbook named none | 47 |
-| Sub-district units | 533 |
-| Series | 1,633 |
-| Flagged `series_ambiguous` | **636 (0.019%)**, in 8 of 19 tables |
-| Tables entirely clean | **12** — tables 1, 3, 4, 5, 6, 7, 8, 10, 12, 14, 15, 20 |
+| Sub-district units | 534 |
+| Series | 3,338 |
+| Flagged `series_ambiguous` | **105,980 (2.41%)**, in 19 of 35 tables |
+| Tables entirely clean | **16** — tables 1, 3, 4, 5, 6, 7, 8, 10, 12, 14, 15, 21, 22, 28, 31, 40 |
 
 ## Verification
 
@@ -32,7 +32,7 @@ artifacts after every change.
 | Observations in = observations out | 3,346,270 = 3,346,270, no fan-out |
 | Workbooks read | 2,532 read, 12 header-recovered, 2 correctly skipped as empty |
 | Observations with no district | **0** |
-| **District closure** | **339,011 of 339,097 pass exactly, no tolerance** |
+| **District closure** | **348,015 of 348,101 pass exactly, no tolerance** |
 | Each area's total vs PBS's separately published area table | **6 of 6 exact** |
 | Regression tests | **64 pass** (22 shared reader, 19 normalisation, 14 unit recovery, 9 header recovery) |
 | Repeat build | **byte-identical**, extract and panel |

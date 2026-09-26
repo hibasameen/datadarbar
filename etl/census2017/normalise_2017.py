@@ -49,8 +49,10 @@ import re
 SEP = ' / '
 
 UNIT_FIX = {
-    'SHEIKUPURA DISTRICT': ('SHEIKHUPURA DISTRICT', "PBS drops the H; table 6 only"),
-    'KILLA ABDULLAB DISTRICT': ('KILLA ABDULLAH DISTRICT', "PBS writes B for H; table 17 only"),
+    'SHEIKUPURA DISTRICT': ('SHEIKHUPURA DISTRICT', 'PBS drops the H; table 6 only'),
+    'KILLA ABDULLAB DISTRICT': ('KILLA ABDULLAH DISTRICT', 'PBS writes B for H; table 17 only'),
+    'KILLAH ABDULLAH DISTRICT': ('KILLA ABDULLAH DISTRICT', 'PBS adds an H; table 34 only'),
+    'FR D.I KHAN': ('FR D.I.KHAN', 'PBS drops the second dot; table 29 only'),
 }
 
 # unit label -> (unit, locality). Kohistan alone folds the locality into the name.
