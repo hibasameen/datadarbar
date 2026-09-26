@@ -40,6 +40,23 @@ IS_RATE = re.compile(r'\b(RATE|RATIO|PERCENT|PROPORTION|AVERAGE|DENSITY|SIZE)\b'
 # Balochistan's mismatches.
 BLOCK_END = re.compile(r'\bDIVISION\b')
 
+# The area workbooks list the areas one after another down a single sheet -
+# PAKISTAN, then each province, then FATA and FEDERAL CAPITAL - each with its own
+# RURAL and URBAN rows beneath it. None of those labels is a unit the reader
+# recognises, and none contains the word DIVISION, so the block opened at the
+# area's own row ran to the end of the sheet and every other area's figures were
+# emitted as this one's. In table 1 that turned one national series into 13 rows,
+# carrying Punjab's 109,989,655 and Sindh's 47,854,510 as if they were Pakistan's,
+# and it accounted for 8,519 of the 16,327 apparent differences.
+AREA_LABELS = {'PAKISTAN', 'KHYBERPAKHTUNKHWA', 'PUNJAB', 'SINDH', 'BALOCHISTAN',
+               'FATA', 'FEDERALCAPITAL', 'ISLAMABAD'}
+
+
+def area_label(lab):
+    """The area a stub label names, or None."""
+    k = re.sub(r'[^A-Z]', '', (lab or '').upper())
+    return k if k in AREA_LABELS else None
+
 
 def area_row_index(rows, stub, a, area):
     """The row at which the area's own total block begins.
@@ -83,7 +100,9 @@ def area_observations(capture, man, table):
         end = len(rows)
         for j in range(i + 1, len(rows)):
             lab = str(rows[j][stub] or '').strip() if stub < len(rows[j]) else ''
-            if lab and (BLOCK_END.search(lab.upper()) or unit_type(lab)):
+            here = area_label(lab)
+            if lab and (BLOCK_END.search(lab.upper()) or unit_type(lab)
+                        or (here and here != re.sub(r'[^A-Z]', '', f['area'].upper()))):
                 end = j
                 break
         rows = rows[:end]
