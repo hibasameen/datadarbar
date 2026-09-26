@@ -42,25 +42,36 @@ region, 20 in all; 2017 publishes one per table per district, about 540.
 
 | Check | Result |
 |---|---|
-| Patwar-circle closure — mauzas sum to their circle | **168,551 of 168,754 (99.9%)** |
-| Table 23 ↔ 24 place join — the same villages in both | **44,637 of 45,789 (97.5%)** |
-| **Mauza sum vs published rural population** | **118 of 128 districts reconcile** |
+| Patwar-circle closure — mauzas sum to their circle | **168,631 of 168,754 (99.9%)** |
+| Table 23 ↔ 24 place join — the same villages in both | **44,618 of 45,769 (97.5%)** |
+| **Mauza sum vs published rural population** | **129 of 129 districts reconcile; 123 exactly** |
 
-## The reconciliation: 118 of 128 districts
+## The reconciliation: 129 of 129 districts
 
 A district's mauzas should sum to the rural population its own table 1 publishes.
 
 | Area | Districts reconciling |
 |---|---|
-| Khyber Pakhtunkhwa | **23 of 23** |
+| Khyber Pakhtunkhwa | **24 of 24** |
 | FATA | **13 of 13** |
 | Islamabad | **1 of 1** |
-| Punjab | 31 of 35 |
-| Balochistan | 26 of 31 |
-| Sindh | 24 of 25 |
-| **Total** | **118 of 128** |
+| Punjab | **35 of 35** |
+| Balochistan | **31 of 31** |
+| Sindh | **25 of 25** |
+| **Total** | **129 of 129** |
 
-For comparison, 2023's equivalent reconciles 115 of 129.
+123 of the 129 reconcile *exactly*, to the person. The other six are **under** by
+between 0.01% and 0.89% — Sahiwal −12,374, South Waziristan −5,987, Bahawalnagar
+−1,484, Khuzdar −1,398, Gujrat −782, Pakpattan −199. An under-count means villages
+that are absent or unread, not a hierarchy misread, and no relabelling can close
+it. They stay inside the 1% tolerance the check applies.
+
+The district count is 129, not 128, because Malakand now joins — see below. Five of
+the 135 districts in the panel are wholly urban and have no rural table to compare
+against; Kohistan's tables 23 and 24 are absent from the spreadsheet release, which
+`KNOWN_ABSENT` records.
+
+For comparison, 2023's equivalent reconciles 121 of 130.
 
 ### A correction: the first version of this check was wrong
 
@@ -79,10 +90,79 @@ This is the same mistake as 2023's rate detector missing `PERCENT`, which produc
 750 false failures in table 21. A check that sums across indicators has to exclude
 rates explicitly; matching on a sex label does not do that.
 
-Ten districts remain unreconciled and are genuine residue — five in Balochistan,
-four in Punjab, one in Sindh. Their per-district status is in
-`rural_reconciliation_2017.csv`, flagged `hierarchy_unreliable`, so a user can see
-which are affected before relying on one.
+### The ten that did not: unsuffixed groupings, in three shapes
+
+Ten districts were **over, never under** — the signature of double-counting rather
+than missing data. In each, rows that are really intermediate groupings had been
+read as villages, so they were summed alongside the very rows they are the total
+of. Twenty-one rows are responsible, and their sum is the excess *exactly* in all
+ten districts:
+
+| District | Excess | Rows responsible |
+|---|---:|---|
+| Panjgur | 218,296 | `PANJGUR`, `GOWARGO`, `PAROME` |
+| Okara | 155,259 | `OKARA CANTONMENT`, `MANDI AHMEDABAD(HERA SINGH)QH` |
+| Sherani | 152,952 | `SHERANI` |
+| Multan | 138,578 | `MULTAN CANTONMENT` |
+| Washuk | 113,611 | `WASHUK`, `MASHKHEL`, `NAG`, `SHAHOO GARHI` |
+| Kharan | 82,063 | `SAR KHARAN`, `TOHMULK` |
+| Jhang | 79,010 | `SHORKOT CANTONMENT` |
+| Gwadar | 58,380 | `GWADAR`, `SUNTSER` |
+| Karachi West | 56,407 | `MANGOPIR TC II` |
+| Bahawalpur | 25,730 | `ABLANI-QH` |
+
+Three shapes:
+
+- **A bare restatement of the unit above.** Balochistan prints the sub-division
+  again at village depth before listing its union councils: `PANJGUR TEHSIL`
+  178,752, then a bare `PANJGUR` 178,752, then the UCs that add to it. Sherani is
+  the pure case — district, sub-division and bare row all 152,952, hence exactly
+  100% over.
+- **Cantonments.** Okara, Multan and Shorkot — whole urban administrative areas
+  printed inside the rural table's tree with no suffix.
+- **A suffix at the wrong depth.** `ABLANI-QH` and `MANDI AHMEDABAD(HERA SINGH)QH`
+  are qanungo halqas printed *inside* a patwar circle; `MANGOPIR TC II` is a town
+  committee inside a sub-tehsil council. The suffix is there, but not where the
+  reader looks for it.
+
+`relabel_unsuffixed_groupings` recognised two shapes and missed all three, because
+both its tests walked downward looking for **numbered** villages. Here the children
+are either groupings themselves (union councils under `SHERANI`, patwar circles
+under `MULTAN CANTONMENT`) or villages whose hadbast number PBS left blank —
+`MANGOPIR TC II` is exactly the sum of five dehs, two of which carry no number, and
+the old run stopped at the first of them. It now tries the numbered run first, falls
+back to the unnumbered one, and finally tries a run of groupings one tier up.
+
+**A missing hadbast number is not the discriminator.** 23 districts contain
+hadbast-less rows at village level and only ten failed; in the other thirteen those
+rows are ordinary villages whose number was simply not printed — `PIPRI`, `MIANO`,
+`301/1-L`. Karachi West contains both kinds: of its three hadbast-less rows only
+`MANGOPIR TC II` is a grouping, and `HUB` and `MAIGARHI` are real dehs. Relabelling
+on the missing number alone would have corrupted thirteen districts that already
+reconciled. The arithmetic is what authorises the change; the name is only a hint.
+
+The order of the tests matters as much as the tests. Reading the unnumbered run
+*first* overshoots the subtotal in districts where villages are numbered, which
+silently undid relabels that already worked — it cost Bajaur, Khyber, Rahim Yar
+Khan and Bahawalnagar their reconciliation before the numbered run was given
+priority.
+
+### Malakand was missing entirely
+
+Tables 5–23 print Malakand as `MALAKAND PROTECTED AREA`, a former Provincially
+Administered Tribal Area whose name carries none of the words that mark a unit. The
+locality reader never called the corpus-wide alias table, so the district's own row
+read as a village and all 650,120 of its rural residents were orphaned with a null
+district — silently dropped from the reconciliation by its inner join, which is why
+this check reported 128 districts rather than 129.
+
+The alias `MALAKAND PROTECTED AREA → MALAKAND DISTRICT` already existed, reviewed,
+in `unit_aliases.py`; the unit reader applied it and the locality reader did not.
+The same gap did visible damage in 2023, where it attached Malakand's tehsils to
+Lower Kohistan and made it over-count by 445%.
+
+Per-district status is in `rural_reconciliation_2017.csv`. Every row carries
+`relabelled` and `relabel_rule`, naming which test reclassified it.
 
 ## What the 42 apparent failures turned out to be
 

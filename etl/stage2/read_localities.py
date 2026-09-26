@@ -14,6 +14,7 @@ without excluding them roughly triples the national population.
 import hashlib, re
 from read_workbook import (anchor, numbered_columns, header, txt, cell, unit_type,
                            ADMIN, OTHER_UNIT)
+from unit_aliases import apply as apply_alias
 
 # Grouping levels, outermost first. The revenue hierarchy is not the same in
 # every area: KP's ex-FATA districts nest TRIBE and SECTION between the
@@ -35,20 +36,40 @@ CHARGE = re.compile(r'^CHARGE\s*N[O0]?\b')
 CIRCLE = re.compile(r'^CIRCLE\s*N[O0]?\b')
 
 
+# The innermost grouping tier has a different name in Sindh, so a row relabelled
+# as the immediate parent of villages must be named for its own area.
+INNER_LEVEL = {'SINDH': 'tapedar_circle'}
+
+
 def relabel_unsuffixed_groupings(recs, key):
     """Reclassify subtotal rows that PBS published without a suffix.
 
-    Two shapes occur, and both are confirmed by arithmetic rather than inferred:
+    Three shapes occur, and each is confirmed by arithmetic rather than inferred
+    from the name:
 
-    * a row whose value equals the sum of the run of villages beneath it —
-      Okara prints "CHAK NO 016/1-L" as a subtotal above the four mauzas that
-      add to exactly its 20,573;
     * a row whose value equals the single row beneath it — Panjgur prints a bare
       "GICHK" between GICHK SUB-TEHSIL and GICHK UC, all three 33,578, a chain
-      of single-child levels with no suffix on the middle one.
+      of single-child levels with no suffix on the middle one;
+    * a row whose value equals the sum of the run of villages beneath it —
+      Okara prints "CHAK NO 016/1-L" as a subtotal above the four mauzas that
+      add to exactly its 20,573. The run may include villages whose hadbast
+      number was not printed: Karachi West's MANGOPIR TC II is exactly the sum
+      of five dehs, two of which (HUB, MAIGARHI) carry no number;
+    * a row whose value equals the sum of the run of *groupings* beneath it,
+      which sits a tier higher again. Bahawalpur's ABLANI-QH is ABLANI PC +
+      KHAIRO GHAZI KHANANA PC + TALHER PC exactly, and MULTAN CANTONMENT is the
+      sum of the patwar circles printed under it. Balochistan's restatements of
+      a sub-division at village depth are the same shape: PANJGUR TEHSIL 178,752
+      is followed by a bare PANJGUR 178,752 and then the union councils that add
+      to it. Matching the *parent's* value instead would be far too loose — a
+      union council with one village shares that village's population, and
+      treating the village as a subtotal deletes it.
 
     A row is only reclassified when the equality is exact, and never when it
-    carries a hadbast number, which marks it as a real village.
+    carries a hadbast number, which marks it as a real village. The arithmetic
+    is what authorises the change, not the name: most rows lacking a hadbast are
+    ordinary villages whose number PBS simply left blank, and relabelling on the
+    missing number alone would corrupt them.
     """
     n = len(recs)
     for i, r in enumerate(recs):
@@ -58,18 +79,47 @@ def relabel_unsuffixed_groupings(recs, key):
         if i + 1 < n and recs[i + 1].get(key) == r[key]:
             r['level'] = 'unnamed_grouping'
             r['relabelled'] = True
+            r['relabel_rule'] = 'single_child_chain'
             continue
-        # subtotal of the run of villages that follows
-        run, j = [], i + 1
-        while j < n and recs[j]['level'] == 'mauza' and recs[j]['hadbast']:
-            run.append(recs[j]); j += 1
-        if len(run) >= 2 and abs(sum(x.get(key) or 0 for x in run) - r[key]) < 0.5:
-            r['level'] = 'patwar_circle'
+        # subtotal of the run of villages that follows. The numbered run is
+        # tried first and the unnumbered extension only as a fallback: a run
+        # that stops at a village with no hadbast is often the right run, and
+        # reading past it overshoots the subtotal and loses the match.
+        run, rule = None, None
+        for numbered_only in (True, False):
+            cand, j = [], i + 1
+            while j < n and recs[j]['level'] == 'mauza' and (
+                    recs[j]['hadbast'] or not numbered_only):
+                cand.append(recs[j]); j += 1
+            if len(cand) >= 2 and abs(sum(x.get(key) or 0 for x in cand) - r[key]) < 0.5:
+                run = cand
+                rule = 'village_run' if numbered_only else 'village_run_unnumbered'
+                break
+        if run is not None:
+            r['level'] = INNER_LEVEL.get(r.get('province_area'), 'patwar_circle')
             r['relabelled'] = True
+            r['relabel_rule'] = rule
             r['patwar_circle'] = r['name']
             for x in run:
                 x['patwar_circle'] = r['name']
                 x['parent_id'] = r['own_id']
+            continue
+        # subtotal of a run of groupings, one tier higher again. The run is the
+        # groupings at a single level: stopping at the first grouping of another
+        # level keeps a qanungo halqa's circles from absorbing the next halqa's.
+        run, j, lvl = [], i + 1, None
+        while j < n and recs[j]['level'] not in ('district', 'sub_district'):
+            if recs[j]['level'] != 'mauza':
+                if lvl is None:
+                    lvl = recs[j]['level']
+                elif recs[j]['level'] != lvl:
+                    break
+                run.append(recs[j])
+            j += 1
+        if len(run) >= 2 and abs(sum(x.get(key) or 0 for x in run) - r[key]) < 0.5:
+            r['level'] = 'unnamed_grouping'
+            r['relabelled'] = True
+            r['relabel_rule'] = 'grouping_run'
     return recs
 
 
@@ -125,6 +175,14 @@ def read(rows, province_area, table, merges=(), urban=None):
         label = txt(r[stub]) if stub < len(r) else None
         if not label:
             continue
+        # The corpus-wide alias corrections apply here as they do to the unit
+        # tables. One matters: these tables print Malakand as MALAKAND PROTECTED
+        # AREA, a name carrying none of the words that mark a unit, so without
+        # the alias the district's own row reads as a village. In 2017 that
+        # orphaned all 650,120 of its rural residents from the reconciliation;
+        # in 2023 it attached Malakand's tehsils to Lower Kohistan, which then
+        # over-counted by 445%.
+        label, _ = apply_alias(table, label)
         U = label.upper()
         if U.isdigit() or U.startswith(('TABLE', 'NAME OF', 'HADBAST', 'URBAN LOCAL')):
             continue

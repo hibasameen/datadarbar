@@ -59,7 +59,7 @@ circulation in the meantime.
 | ~~A3. Table 2, urban locality list~~ | done | 589 named localities, 0 problems. Four areas sum exactly to their published urban population; table 2 is not expected to sum overall, as 2023's does not |
 | ~~A4. Profile and declare the 16 undeclared tables~~ | done, with residue | All 16 declared and extracted: 35 of 40 tables, 4,397,361 observations. Five of the new ones are entirely clean (21, 22, 28, 31, 40); tables 29, 30, 32 and 35 hold most of the remaining ambiguity because **their category labels are bare numbers** — 1, 2, 3 rooms — indistinguishable from a column-number row, so the header collapses to its banner |
 | ~~A5. Kohistan's table 4~~ | done | It labels the total row `ALL`, not `All Ages`. KP's 784,711 gap against its own published total is now zero |
-| ~~A7. Resolve the locality hierarchy over-count~~ | done | Not an over-count: the check was adding a literacy percentage to a population. 118 of 128 districts reconcile, against 115 of 129 for 2023. Ten remain, flagged |
+| ~~A7. Resolve the locality hierarchy over-count~~ | done | Two defects. The check was adding a literacy percentage to a population; and unsuffixed grouping rows were read as villages in ten districts. All 129 districts now reconcile, 123 exactly. The same fixes carried back to 2023 take it to 121 of 130 |
 | ~~A8. Bare-number column labels~~ | done | `txt` returned None for a non-string, so numeric header labels were dropped and every column collapsed onto its banner. Flagged rows fell from 109,778 to 31,963; it also fixed a 2023 column that had shipped mislabelled |
 | ~~A6. Canonicalise indicator case~~ | done | 101 indicator groups merged. Raised table 35's flagged count by 3,798, which A8 covers |
 

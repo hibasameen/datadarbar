@@ -54,10 +54,11 @@ def main():
     fixed = ['own_id', 'parent_id', 'province_area', 'table_id', 'district', 'sub_district',
              'qanungo_halqa', 'patwar_circle', 'charge', 'locality', 'name', 'level',
              'hadbast', 'locality_type', 'missing', 'source_file', 'src_row',
-             'relabelled']
+             'relabelled', 'relabel_rule']
     long = []
     for r in obs:
         r.setdefault('relabelled', False)
+        r.setdefault('relabel_rule', None)
         miss = set((r['missing'] or '').split(';')) - {''}
         for k, v in r.items():
             if k in fixed:
@@ -79,6 +80,7 @@ def main():
     types['value'] = 'DOUBLE'
     types['missing'] = 'BOOLEAN'
     types['relabelled'] = 'BOOLEAN'
+    types['relabel_rule'] = 'VARCHAR'
     types['src_row'] = 'INTEGER'
     spec = ', '.join(f"'{k}': '{v}'" for k, v in types.items())
     con.execute(f"""COPY (SELECT * FROM read_csv('{tmp}', header=true, quote='"', escape='"',

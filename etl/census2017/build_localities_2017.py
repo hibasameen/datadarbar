@@ -113,10 +113,11 @@ def main():
 
     fixed = ['own_id', 'parent_id', 'province_area', 'table_id', 'district', 'sub_district',
              'qanungo_halqa', 'patwar_circle', 'charge', 'locality', 'name', 'level',
-             'hadbast', 'locality_type', 'missing', 'source_file', 'src_row', 'relabelled']
+             'hadbast', 'locality_type', 'missing', 'source_file', 'src_row', 'relabelled', 'relabel_rule']
     long = []
     for r in obs:
         r.setdefault('relabelled', False)
+        r.setdefault('relabel_rule', None)
         miss = set((r['missing'] or '').split(';')) - {''}
         for k, v in r.items():
             if k in fixed:
@@ -136,6 +137,7 @@ def main():
     con.execute('SET threads TO 1'); con.execute('SET preserve_insertion_order TO true')
     types = {c: 'VARCHAR' for c in cols}
     types.update(value='DOUBLE', missing='BOOLEAN', relabelled='BOOLEAN', src_row='INTEGER')
+    types.update(relabel_rule='VARCHAR')
     spec = ', '.join(f"'{k}': '{v}'" for k, v in types.items())
     con.execute(f"""COPY (SELECT * FROM read_csv('{tmp}', header=true, quote='"', escape='"',
         columns={{{spec}}}) ORDER BY province_area, district, sub_district, patwar_circle,
