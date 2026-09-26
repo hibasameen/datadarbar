@@ -141,7 +141,7 @@ def main():
     spec = ', '.join(f"'{k}': '{v}'" for k, v in types.items())
     con.execute(f"""COPY (SELECT * FROM read_csv('{tmp}', header=true, quote='"', escape='"',
         columns={{{spec}}}) ORDER BY province_area, district, sub_district, patwar_circle,
-        locality, charge, name, table_id, indicator)
+        locality, charge, name, table_id, indicator, src_row, own_id)
         TO '{out / 'locality_observations_2017.parquet'}' (FORMAT PARQUET, COMPRESSION ZSTD)""")
     tmp.unlink()
 

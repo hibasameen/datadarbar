@@ -160,6 +160,18 @@ uniqueness at 99.76% *while the KP mauza level over-counts by 47%*, because both
 ask whether the data is internally consistent with the hierarchy as read. Only comparing
 against an independently published total exposed it.
 
+### Repeat builds are byte-identical
+
+Both locality builds now reproduce exactly: two consecutive runs produce identical
+parquet, CSV and JSON. They did not before. The parquet was written with a sort key
+that is not total — 203 rows in 2023 share the same
+(area, district, sub-district, circle, locality, charge, name, table, indicator) —
+so the order of those rows was whatever the sort happened to produce, and 3,479 rows
+landed in a different position between runs. The contents were always the same; only
+the byte stream moved, which is exactly the kind of difference that makes a release
+hash useless for telling a real change from none. `src_row` and `own_id` are now part
+of the sort, which makes it total.
+
 ## Other verification
 
 | Check | Result |
