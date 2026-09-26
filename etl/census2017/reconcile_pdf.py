@@ -179,6 +179,47 @@ def split_at(line, off):
     return start if (NUM.match(tok) or tok in DASH) else end
 
 
+SECTION_NAME = re.compile(r'\b([A-Z][A-Z .\-]*(?:DISTRICT|AGENCY))\b')
+
+
+def section_district(pdf_lines, limit=12):
+    """The district a PDF section says it is about, if it prints one."""
+    for line in pdf_lines[:limit]:
+        m = SECTION_NAME.search(line)
+        if m:
+            return m.group(1).strip()
+    return None
+
+
+def misbound(section_name, expected):
+    """True when a section belongs to a different district than the document.
+
+    Three of PBS's combined PDFs carry each other's table 5, in a cycle:
+    Rawalpindi's holds Rahim Yar Khan, Rahim Yar Khan's holds Rajanpur, and
+    Rajanpur's holds Rawalpindi. Compared against the right workbook those
+    sections disagree in almost every cell - 2,367 of them - and the
+    disagreement says nothing about our reading.
+
+    The test has to allow for the two renderings spelling a district
+    differently, which they do in 62 sections, and for a Frontier Region being
+    printed as "TRIBAL AREA ADJ. <parent> DISTRICT", which is the same unit
+    under its other name. Those score 0.55 and above on a letters-only ratio;
+    the three misbound sections score 0.36, 0.40 and 0.44, so the gap is wide
+    and 0.5 sits in it.
+    """
+    if not section_name or not expected:
+        return False
+    def letters(x):
+        x = re.sub(r'[^A-Z]', '', x.upper())
+        for w in ('DISTRICT', 'AGENCY', 'TRIBALAREAADJ'):
+            x = x.replace(w, '')
+        return x
+    a, b = letters(section_name), letters(expected)
+    if not a or not b or a == b:
+        return False
+    return difflib.SequenceMatcher(None, a, b).ratio() < 0.5
+
+
 def pdf_rows(pdf_lines):
     """[(stub key, label, cells)] for the lines of a PDF section that carry data."""
     off = data_offset(pdf_lines)
@@ -308,6 +349,7 @@ def main():
 
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
+    misbound_rows = []
     tot = collections.Counter()
     per_table = collections.defaultdict(collections.Counter)
     unmatched_districts = []
@@ -327,6 +369,13 @@ def main():
         for t in sorted(want, key=int):
             if t not in tabs or t not in secs:
                 per_table[t]['absent_in_one_rendering'] += 1
+                continue
+            sec_name = section_district(secs[t])
+            if misbound(sec_name, pf['district']):
+                per_table[t]['misbound_sections'] += 1
+                tot['misbound_sections'] += 1
+                misbound_rows.append(dict(district=pf['district'], table_id=t,
+                                          section_says=sec_name))
                 continue
             comp, masked, differ, unal, labs = reconcile(os.path.join(a.dir, tabs[t]), secs[t])
             tot['compared'] += comp
@@ -364,9 +413,16 @@ def main():
 
     json.dump(dict(totals=dict(tot), per_table={t: dict(c) for t, c in per_table.items()},
                    districts=len(todo), unmatched_districts=unmatched_districts,
-                   fuzzy_district_matches=fuzzy_matches),
+                   fuzzy_district_matches=fuzzy_matches,
+                   misbound_sections=misbound_rows),
               open(out / 'reconciliation_report_2017.json', 'w'), indent=1, sort_keys=True)
     print('\n' + json.dumps(dict(tot), indent=1, sort_keys=True))
+    if misbound_rows:
+        print(f'\nsections skipped because the PDF prints another district '
+              f'({len(misbound_rows)}):')
+        for m in misbound_rows:
+            print(f"   {m['district']:32s} table {m['table_id']:>3s} "
+                  f"-> section says {m['section_says']}")
     if fuzzy_matches:
         print(f'\ndistricts paired by nearest name ({len(fuzzy_matches)}):')
         for m in fuzzy_matches:
