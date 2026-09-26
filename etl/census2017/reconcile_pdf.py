@@ -147,15 +147,48 @@ def workbook_rows(path):
     return out, stub
 
 
+def split_at(line, off):
+    """Move the stub/data boundary so it never falls inside a token.
+
+    `data_offset` yields one column for the whole section, but a value in the
+    first data column can be wide enough to start to the left of it. Lahore's
+    table 14 prints
+
+        10 AND ABOVE         535,956       51,281 ...
+
+    and the section offset lands inside 535,956, so the label became
+    "10 AND ABOVE5" and the first value 35,956. The label then matched no
+    workbook row, and because the walk moves on regardless, every later row in
+    that block paired against the wrong one - 21,659 of the 30,768 apparent
+    disagreements against the PDFs came from this one line shape.
+
+    Which way to move depends on what is being split. A number belongs wholly to
+    the data, so the boundary goes to its start; a word belongs to the label, so
+    the boundary goes to its end. Moving always left would truncate "75 AND
+    ABOVE" to "75 AND" and break the alignment it is meant to fix.
+    """
+    if not 0 < off < len(line):
+        return off
+    if line[off - 1].isspace() or line[off].isspace():
+        return off
+    start = line.rfind(' ', 0, off) + 1
+    end = line.find(' ', off)
+    if end == -1:
+        end = len(line)
+    tok = line[start:end]
+    return start if (NUM.match(tok) or tok in DASH) else end
+
+
 def pdf_rows(pdf_lines):
     """[(stub key, label, cells)] for the lines of a PDF section that carry data."""
     off = data_offset(pdf_lines)
     out = []
     for line in pdf_lines:
-        c = cells(line, off)
+        o = split_at(line, off)
+        c = cells(line, o)
         if not c:
             continue
-        label = line[:off].strip()
+        label = line[:o].strip()
         if label:
             out.append((stub_key(label), label, c))
     return out
@@ -181,12 +214,20 @@ def reconcile(xls_path, pdf_lines, window=40):
     """
     wrows, _ = workbook_rows(xls_path)
     if wrows is None:
-        return 0, [], [], 0
+        return 0, [], [], 0, 0
     prows = pdf_rows(pdf_lines)
 
-    compared, masked, differ, unaligned = 0, [], [], 0
+    compared, masked, differ, unaligned, label_rows = 0, [], [], 0, 0
     j = 0
     for skey, label, ri, vals in wrows:
+        # A banner - the unit, the locality, the sex - carries no numbers, so
+        # there is nothing in the PDF for it to align to. Counting those as
+        # unaligned put 96 rows of Lahore's table 14 into the figure on its own
+        # and made the number mean "rows we did not compare" rather than "rows we
+        # could not place", which are different problems.
+        if not vals:
+            label_rows += 1
+            continue
         hit = None
         for k in range(j, min(len(prows), j + window)):
             if prows[k][0] == skey and len(prows[k][2]) == len(vals):
@@ -206,7 +247,7 @@ def reconcile(xls_path, pdf_lines, window=40):
                     differ.append((label, ri, col, excel, printed))
             elif not same_number(excel, printed):
                 differ.append((label, ri, col, excel, printed))
-    return compared, masked, differ, unaligned
+    return compared, masked, differ, unaligned, label_rows
 
 
 def main():
@@ -287,15 +328,17 @@ def main():
             if t not in tabs or t not in secs:
                 per_table[t]['absent_in_one_rendering'] += 1
                 continue
-            comp, masked, differ, unal = reconcile(os.path.join(a.dir, tabs[t]), secs[t])
+            comp, masked, differ, unal, labs = reconcile(os.path.join(a.dir, tabs[t]), secs[t])
             tot['compared'] += comp
             tot['masked'] += len(masked)
             tot['differ'] += len(differ)
             tot['unaligned_rows'] += unal
+            tot['label_rows'] += labs
             per_table[t]['compared'] += comp
             per_table[t]['masked'] += len(masked)
             per_table[t]['differ'] += len(differ)
             per_table[t]['unaligned_rows'] += unal
+            per_table[t]['label_rows'] += labs
             for lab, ri, col, printed in masked:
                 mask_rows.append(dict(district=dist, table_id=t, row_label=lab,
                                       src_row=ri + 1, src_col=col + 1, pdf=printed))
