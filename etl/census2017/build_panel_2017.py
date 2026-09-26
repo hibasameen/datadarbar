@@ -11,8 +11,8 @@ Two checks run, and both are reported rather than asserted away:
   sum to the district's own published figure. Rates are excluded, because a rate
   is not additive. The comparison is exact, with no tolerance.
 
-  PROVINCIAL RECONCILIATION. Each province's districts must sum to the figure in
-  that province's own table, which is a separate PBS publication reached through
+  PROVINCIAL RECONCILIATION. Each province_area's districts must sum to the figure in
+  that province_area's own table, which is a separate PBS publication reached through
   a different part of the archive page. This is what caught the two headerless
   table-1 workbooks: KP and Punjab were short by exactly Swabi's and Okara's
   populations.
@@ -42,7 +42,7 @@ def connect():
 def area_totals(capture):
     """{(area, measure): value} from the six area table-1 workbooks.
 
-    "Area" rather than "province" on purpose. Pakistan has four provinces -
+    "Area" rather than "province_area" on purpose. Pakistan has four provinces -
     Punjab, Sindh, Khyber Pakhtunkhwa and Balochistan. The other two units in the
     2017 census frame are not provinces: FATA was the Federally Administered
     Tribal Areas, a federal territory merged into Khyber Pakhtunkhwa in 2018, and
@@ -118,31 +118,31 @@ def main():
 
     # --- tehsil -> district register, from table 1, which covers all 134 districts ---
     #
-    # Keyed on (province, unit) and restricted to names that resolve to exactly
+    # Keyed on (province_area, unit) and restricted to names that resolve to exactly
     # one district. A bare unit name is not unique in Pakistan - SAHIWAL TEHSIL
     # exists in both Sahiwal and Sargodha - so a register that ignored that would
     # match one tehsil to two districts and multiply its rows, which is how the
     # first attempt produced 25,500 observations more than it read.
     d.execute("""CREATE TABLE reg AS
                  WITH pairs AS (
-                   SELECT DISTINCT r.province, m.unit AS unit, dm.unit AS district
+                   SELECT DISTINCT r.province_area, m.unit AS unit, dm.unit AS district
                    FROM raw r JOIN umap m ON m.raw = r.unit
                    JOIN umap dm ON dm.raw = r.district
                    WHERE r.table_id='1' AND r.district IS NOT NULL
                  )
-                 SELECT province, unit, min(district) AS district
+                 SELECT province_area, unit, min(district) AS district
                  FROM pairs GROUP BY 1, 2 HAVING count(DISTINCT district) = 1""")
     ambiguous = d.execute("""WITH pairs AS (
-                   SELECT DISTINCT r.province, m.unit AS unit, dm.unit AS district
+                   SELECT DISTINCT r.province_area, m.unit AS unit, dm.unit AS district
                    FROM raw r JOIN umap m ON m.raw = r.unit
                    JOIN umap dm ON dm.raw = r.district
                    WHERE r.table_id='1' AND r.district IS NOT NULL)
-                 SELECT province, unit, count(DISTINCT district) n
+                 SELECT province_area, unit, count(DISTINCT district) n
                  FROM pairs GROUP BY 1,2 HAVING count(DISTINCT district) > 1
                  ORDER BY 3 DESC, 1, 2""").fetchall()
 
     d.execute("""CREATE TABLE panel AS
-      SELECT 2017 AS census_year, r.province,
+      SELECT 2017 AS census_year, r.province_area,
              r.table_id,
              coalesce(dm.unit, reg.district)                AS district,
              m.unit                                        AS unit,
@@ -157,7 +157,7 @@ def main():
       FROM raw r
       JOIN umap m        ON m.raw = r.unit
       LEFT JOIN umap dm  ON dm.raw = r.district
-      LEFT JOIN reg      ON reg.unit = m.unit AND reg.province = r.province
+      LEFT JOIN reg      ON reg.unit = m.unit AND reg.province_area = r.province_area
       LEFT JOIN lmap lm  ON lm.table_id = r.table_id AND lm.raw = r.col_label
       ORDER BY r.table_id, district, unit, locality, sex, indicator, col_label,
                r.src_row, r.src_col""")
@@ -338,7 +338,7 @@ def main():
             continue
         got = d.execute("""SELECT sum(value) FROM panel
                            WHERE unit_type='district' AND locality='all' AND table_id='1'
-                             AND col_label ILIKE '%ALL SEXES%' AND province = ?""",
+                             AND col_label ILIKE '%ALL SEXES%' AND province_area = ?""",
                         [prov]).fetchone()[0]
         recon.append(dict(area=prov, published=vals[1], panel=got,
                           exact=(got is not None and abs(vals[1] - got) < 0.5)))
@@ -352,7 +352,7 @@ def main():
     json.dump(dict(stats=stats, area_reconciliation=recon,
                    recovered_unit_checks=checks,
                    unit_corrections=notes,
-                   ambiguous_unit_names=[dict(province=p, unit=u, districts=n)
+                   ambiguous_unit_names=[dict(province_area=p, unit=u, districts=n)
                                          for p, u, n in ambiguous],
                    label_groups_merged=[dict(table_id=t, canonical=c, variants=v)
                                         for t, c, v in merged],

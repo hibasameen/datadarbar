@@ -42,7 +42,7 @@ def main():
 
     # 1. the long observation table
     con.execute(f"""COPY (
-        SELECT dds_id, adm3_pcode, dd_id, province, district, unit, unit_type,
+        SELECT dds_id, adm3_pcode, dd_id, province_area, district, unit, unit_type,
                table_id, indicator, col_label, locality, sex,
                value, missing, missing_source, is_rate, value_corrected, renderings_disagree,
                unit_source, source_file, src_row, src_col
@@ -66,7 +66,7 @@ def main():
         for name, t, ind, loc, sx in WIDE)
     con.execute(f"""CREATE TABLE wide AS
       SELECT dds_id, min(adm3_pcode) adm3_pcode, min(dd_id) dd_id,
-             min(province) province, min(district) district,
+             min(province_area) province_area, min(district) district,
              min(unit) unit, min(unit_type) unit_type,
 {sel}
       FROM p GROUP BY dds_id""")

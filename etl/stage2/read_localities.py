@@ -3,7 +3,7 @@
 These differ from the unit tables in kind: a row is a *place* — a mauza, deh or
 urban locality — not a published administrative unit. Places nest inside
 revenue groupings that the tables print as subtotal rows, and those groupings
-are named differently by province:
+are named differently by province or territory:
 
     Punjab, KP, Balochistan   district -> tehsil -> QH -> PC -> mauza
     Sindh                     district -> taluka -> STC -> TC -> deh
@@ -16,7 +16,7 @@ from read_workbook import (anchor, numbered_columns, header, txt, cell, unit_typ
                            ADMIN, OTHER_UNIT)
 
 # Grouping levels, outermost first. The revenue hierarchy is not the same in
-# every province: KP's ex-FATA districts nest TRIBE and SECTION between the
+# every area: KP's ex-FATA districts nest TRIBE and SECTION between the
 # tehsil and the village, and both KP and Balochistan use union councils in
 # places. Omitting them counts the same people three times or more — Bajaur's
 # mauza level over-counts by exactly 2.99x without TRIBE and SECTION.
@@ -73,7 +73,7 @@ def relabel_unsuffixed_groupings(recs, key):
     return recs
 
 
-def place_id(province, path, name, hadbast, seq):
+def place_id(province_area, path, name, hadbast, seq):
     """A stable identifier for a place, independent of which table it came from.
 
     Tables 31 and 32 describe the same villages — population and housing — but
@@ -81,12 +81,12 @@ def place_id(province, path, name, hadbast, seq):
     them. The id is built from the place's position in the hierarchy instead,
     with a sequence number to separate the handful of same-named siblings.
     """
-    parts = [province] + [p or '' for p in path] + [name or '', hadbast or '', str(seq)]
+    parts = [province_area] + [p or '' for p in path] + [name or '', hadbast or '', str(seq)]
     h = hashlib.sha256('\u241f'.join(parts).encode()).hexdigest()[:16]
     return f'DDL-{h}'
 
 
-def read(rows, province, table, merges=()):
+def read(rows, province_area, table, merges=()):
     a = anchor(rows)
     if a is None:
         raise ValueError(f'table {table}: no column-number row')
@@ -101,7 +101,7 @@ def read(rows, province, table, merges=()):
         k = (tuple(path), name, hadbast)
         seq = seen.get(k, 0)
         seen[k] = seq + 1
-        return place_id(province, path, name, hadbast, seq)
+        return place_id(province_area, path, name, hadbast, seq)
 
     district = subdist = qh = pc = None
     locality = charge = None
@@ -180,7 +180,7 @@ def read(rows, province, table, merges=()):
             hv, hk = cell(r[id_col])
             if hk in ('number', 'text'):
                 hadbast = str(hv).strip()
-        yield dict(province=province, table_id=table, district=district,
+        yield dict(province_area=province_area, table_id=table, district=district,
                    sub_district=subdist, qanungo_halqa=qh, patwar_circle=pc,
                    locality=locality if urban else label,
                    charge=charge if urban and level != 'charge' else

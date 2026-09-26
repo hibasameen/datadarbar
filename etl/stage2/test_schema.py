@@ -8,11 +8,11 @@ import unittest
 import duckdb
 from build_panel import TABLES  # noqa: F401  (import check)
 
-PANEL_COLUMNS = ['province', 'table_id', 'district', 'unit', 'unit_source', 'unit_type',
+PANEL_COLUMNS = ['province_area', 'table_id', 'district', 'unit', 'unit_source', 'unit_type',
                  'locality', 'sex', 'indicator', 'col_label', 'value', 'missing',
                  'source_file', 'sheet', 'src_row', 'src_col', 'region', 'missing_source',
                  'is_rate', 'renderings_disagree', 'dds_id', 'adm3_pcode', 'dd_id', 'geo_method']
-CROSSWALK_COLUMNS = ['dds_id', 'province', 'district', 'unit', 'unit_type', 'adm3_pcode',
+CROSSWALK_COLUMNS = ['dds_id', 'province_area', 'district', 'unit', 'unit_type', 'adm3_pcode',
                      'adm3_name', 'dd_id', 'polygon', 'method', 'evidence']
 
 

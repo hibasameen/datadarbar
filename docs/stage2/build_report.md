@@ -40,6 +40,7 @@ they contribute district rows only.
 | National total | 241,499,431 - exactly the published figure, as are all five area totals |
 | Regression tests | 19 pass |
 | Repeat build | **all 24 artifacts byte-identical in a fresh directory** |
+| Area column | `province_area`, not `province` — two of its values, FATA and Islamabad, are not provinces |
 | Input lock | 285 files, 601.5 MB, checksummed |
 
 Closure is the strongest check available: for every count indicator, in every district, on

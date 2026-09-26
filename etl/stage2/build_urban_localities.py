@@ -61,14 +61,14 @@ def main():
                     miss.append(name)
             if not any(k for k in vals if k != 'tehsil'):
                 continue
-            rows_out.append(dict(province=prov, district=district, tehsil=vals.pop('tehsil', None),
+            rows_out.append(dict(province_area=prov, district=district, tehsil=vals.pop('tehsil', None),
                                  locality=t, size_class=size_class, missing=';'.join(miss),
                                  source_file=f.name, src_row=i + 1, **vals))
-    keys = ['province', 'district', 'tehsil', 'locality', 'size_class']
+    keys = ['province_area', 'district', 'tehsil', 'locality', 'size_class']
     extra = [k for k in dict.fromkeys(k for r in rows_out for k in r)
              if k not in keys + ['missing', 'source_file', 'src_row']]
     fields = keys + extra + ['missing', 'source_file', 'src_row']
-    rows_out.sort(key=lambda r: (r['province'], r['district'] or '', r['locality']))
+    rows_out.sort(key=lambda r: (r['province_area'], r['district'] or '', r['locality']))
     with open(out / 'urban_localities.csv', 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=fields, extrasaction='ignore')
         w.writeheader(); w.writerows(rows_out)

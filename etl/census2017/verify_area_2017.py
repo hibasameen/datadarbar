@@ -5,14 +5,14 @@ figure: total population in table 1. Everything else rested on closure, which is
 internal - it shows the parts sum to the whole as PBS printed it, and is blind to
 anything that goes wrong identically on both sides.
 
-PBS also publishes each table for Pakistan and for each province, as 216
+PBS also publishes each table for Pakistan and for each province_area, as 216
 workbooks reached through a different part of the archive page and absent from
 the index the district files come from. Those are genuinely independent figures,
 and they cover every table and every column rather than one.
 
 The check: read an area workbook with the same spec the district files use, then
 for each (table, indicator, column, locality, sex) compare its published figure
-against the sum of that province's districts in the panel. Rates are excluded,
+against the sum of that province_area's districts in the panel. Rates are excluded,
 being non-additive.
 
 Anything that does not match is reported rather than corrected. A mismatch can
@@ -32,11 +32,11 @@ from normalise_2017 import canon_map, last_segment
 from table_spec_2017 import SPEC_2017
 
 IS_RATE = re.compile(r'\b(RATE|RATIO|PERCENT|PROPORTION|AVERAGE|DENSITY|SIZE)\b')
-# What ends the area's own block. A provincial workbook lists the province total
+# What ends the area's own block. A provincial workbook lists the province_area total
 # first and then works down through divisions and districts; `unit_type` does not
 # recognise a bare DIVISION - correctly, since 2023 has no such tier - so without
 # this the reader keeps attributing KALAT DIVISION's rows to BALOCHISTAN and the
-# check compares a division against a province. That alone produced 7,211 of
+# check compares a division against a province_area. That alone produced 7,211 of
 # Balochistan's mismatches.
 BLOCK_END = re.compile(r'\bDIVISION\b')
 
@@ -44,8 +44,8 @@ BLOCK_END = re.compile(r'\bDIVISION\b')
 def area_row_index(rows, stub, a, area):
     """The row at which the area's own total block begins.
 
-    A province's row is labelled PUNJAB or SINDH, which `unit_type` does not
-    recognise as a unit - correctly, since a province is not a sub-district unit -
+    A province_area's row is labelled PUNJAB or SINDH, which `unit_type` does not
+    recognise as a unit - correctly, since a province_area is not a sub-district unit -
     so the reader never opens a block there and nothing beneath it is emitted.
     Only Islamabad came through on the first attempt, because its row happens to
     read ISLAMABAD DISTRICT.
@@ -155,14 +155,14 @@ def main():
     if islamabad_rows:
         d.executemany('INSERT INTO isb VALUES (?,?,?,?,?,?)', islamabad_rows)
 
-    # A province is compared against its own districts. PAKISTAN is compared
+    # A province_area is compared against its own districts. PAKISTAN is compared
     # against every district in the panel PLUS Islamabad's own published figure,
     # because Islamabad has no per-district spreadsheets and without it the two
     # sides do not cover the same ground.
     d.execute("""
         CREATE TABLE result AS
         WITH prov AS (
-          SELECT table_id, province, locality, sex, indicator, col_label,
+          SELECT table_id, province_area, locality, sex, indicator, col_label,
                  sum(value) AS s
           FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
         ), nat AS (
@@ -176,7 +176,7 @@ def main():
                CASE WHEN a.area='PAKISTAN' AND isb.published IS NULL THEN true
                     ELSE false END AS islamabad_share_unknown
         FROM area a
-        LEFT JOIN prov ON prov.table_id=a.table_id AND prov.province=a.area
+        LEFT JOIN prov ON prov.table_id=a.table_id AND prov.province_area=a.area
              AND prov.locality=a.locality AND prov.sex=a.sex
              AND prov.indicator IS NOT DISTINCT FROM a.indicator
              AND prov.col_label IS NOT DISTINCT FROM a.col_label

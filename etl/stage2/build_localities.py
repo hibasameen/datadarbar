@@ -51,7 +51,7 @@ def main():
                 problems.append(dict(table=t, region=reg, issue='no rows'))
 
     # long format: one row per place per measure
-    fixed = ['own_id', 'parent_id', 'province', 'table_id', 'district', 'sub_district',
+    fixed = ['own_id', 'parent_id', 'province_area', 'table_id', 'district', 'sub_district',
              'qanungo_halqa', 'patwar_circle', 'charge', 'locality', 'name', 'level',
              'hadbast', 'locality_type', 'missing', 'source_file', 'src_row',
              'relabelled']
@@ -82,7 +82,7 @@ def main():
     types['src_row'] = 'INTEGER'
     spec = ', '.join(f"'{k}': '{v}'" for k, v in types.items())
     con.execute(f"""COPY (SELECT * FROM read_csv('{tmp}', header=true, quote='"', escape='"',
-        columns={{{spec}}}) ORDER BY province, district, sub_district, patwar_circle,
+        columns={{{spec}}}) ORDER BY province_area, district, sub_district, patwar_circle,
         locality, charge, name, table_id, indicator)
         TO '{out / 'locality_observations.parquet'}' (FORMAT PARQUET, COMPRESSION ZSTD)""")
     tmp.unlink()
@@ -90,17 +90,17 @@ def main():
     # register of places
     reg_rows, seen = [], set()
     for r in obs:
-        k = (r['province'], r['district'], r['sub_district'], r['patwar_circle'],
+        k = (r['province_area'], r['district'], r['sub_district'], r['patwar_circle'],
              r['locality'], r['charge'], r['name'], r['hadbast'])
         if k in seen:
             continue
         seen.add(k)
         reg_rows.append({f: r[f] for f in
-                         ['own_id', 'parent_id', 'province', 'district', 'sub_district',
+                         ['own_id', 'parent_id', 'province_area', 'district', 'sub_district',
                           'qanungo_halqa', 'patwar_circle', 'charge', 'locality', 'name',
                           'level', 'hadbast', 'locality_type']})
     reg_rows.sort(key=lambda r: tuple(str(r[k] or '') for k in
-                                     ['province', 'district', 'sub_district',
+                                     ['province_area', 'district', 'sub_district',
                                       'patwar_circle', 'locality', 'charge', 'name']))
     with open(out / 'locality_register.csv', 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(reg_rows[0])); w.writeheader(); w.writerows(reg_rows)
@@ -126,24 +126,24 @@ def main():
     recon = []
     if a.unit_panel and pathlib.Path(a.unit_panel).exists():
         recon = con.sql(f"""
-          WITH m AS (SELECT province, district, sum(value) mauza_sum FROM {P}
+          WITH m AS (SELECT province_area, district, sum(value) mauza_sum FROM {P}
                      WHERE table_id='31' AND level='mauza' AND NOT missing
                        AND indicator LIKE '%POPULATION / ALL SEXES%' GROUP BY 1,2),
-               p AS (SELECT province, district, sum(value) published_rural
+               p AS (SELECT province_area, district, sum(value) published_rural
                      FROM '{a.unit_panel}'
                      WHERE table_id='1' AND unit_type='district' AND locality='rural'
                        AND indicator LIKE '%ALL SEXES%' AND NOT missing GROUP BY 1,2)
-          SELECT p.province, p.district, published_rural, mauza_sum,
+          SELECT p.province_area, p.district, published_rural, mauza_sum,
                  mauza_sum - published_rural AS excess,
                  CASE WHEN published_rural > 0
                       THEN round(100.0*(mauza_sum-published_rural)/published_rural, 2) END AS pct,
                  CASE WHEN published_rural > 0
                        AND abs(mauza_sum-published_rural) <= 0.01*published_rural
                       THEN 'reconciles' ELSE 'hierarchy_unreliable' END AS status
-          FROM p JOIN m USING (province, district) ORDER BY excess DESC""").fetchall()
+          FROM p JOIN m USING (province_area, district) ORDER BY excess DESC""").fetchall()
         with open(out / 'rural_reconciliation.csv', 'w', newline='') as fh:
             w = csv.writer(fh)
-            w.writerow(['province', 'district', 'published_rural', 'mauza_sum',
+            w.writerow(['province_area', 'district', 'published_rural', 'mauza_sum',
                         'excess', 'pct', 'status'])
             w.writerows(recon)
 
@@ -158,7 +158,7 @@ def main():
 
     lv = collections.Counter(r['level'] for r in reg_rows)
     dup = collections.Counter(
-        (r['table_id'], r['province'], r['district'], r['sub_district'],
+        (r['table_id'], r['province_area'], r['district'], r['sub_district'],
          r['patwar_circle'], r['locality'], r['charge'], r['name'], r['hadbast'])
         for r in obs)
     ndup = sum(v - 1 for v in dup.values() if v > 1)
@@ -188,7 +188,7 @@ def main():
     print(f"patwar-circle closure  {closure[1]:,}/{closure[0]:,}"
           + (f"  ({100*closure[1]/closure[0]:.1f}%)" if closure[0] else ""))
     if recon:
-        print("\nmauza sum vs published rural population, by province:")
+        print("\nmauza sum vs published rural population, by province_area:")
         for prov, (n, ok) in sorted(byprov.items()):
             flag = '' if ok == n else '   <-- hierarchy unreliable'
             print(f"    {prov:22s} {ok:3d}/{n:3d} districts reconcile{flag}")

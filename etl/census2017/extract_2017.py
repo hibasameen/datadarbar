@@ -35,10 +35,15 @@ from recover_units import plan
 from headerless import synth_columns, is_empty, reason_text
 from table_spec_2017 import SPEC_2017, KNOWN_ABSENT
 
-PROVINCE = {'punjab': 'PUNJAB', 'sindh': 'SINDH', 'kp': 'KHYBER PAKHTUNKHWA',
-            'balochistan': 'BALOCHISTAN', 'fata': 'FATA', 'islamabad': 'ISLAMABAD'}
+# Directory name in the capture manifest -> the area's published name. The
+# manifest keeps its own `province` field: it records which directory a file was
+# downloaded from and is already written and locked. The panel's column is
+# `province_area`, because two of the six values - FATA and Islamabad - are not
+# provinces.
+AREA = {'punjab': 'PUNJAB', 'sindh': 'SINDH', 'kp': 'KHYBER PAKHTUNKHWA',
+        'balochistan': 'BALOCHISTAN', 'fata': 'FATA', 'islamabad': 'ISLAMABAD'}
 
-FIELDS = ['census_year', 'province', 'table_id', 'district', 'unit', 'unit_type',
+FIELDS = ['census_year', 'province_area', 'table_id', 'district', 'unit', 'unit_type',
           'unit_source', 'locality', 'sex', 'indicator', 'col_label', 'value',
           'missing', 'src_row', 'src_col', 'src_file', 'layout']
 
@@ -212,9 +217,9 @@ def main():
                                         why='no header and column count did not match the reference'))
                     continue
             stats[kind] += 1
-            prov = PROVINCE.get((f.get('province') or '').lower(), (f.get('province') or '').upper())
+            area = AREA.get((f.get('province') or '').lower(), (f.get('province') or '').upper())
             try:
-                for o in read(rows, prov, table, spec=SPEC_2017[table], layout=lay,
+                for o in read(rows, area, table, spec=SPEC_2017[table], layout=lay,
                               unit_at=unit_at):
                     o.update(census_year=2017, src_file=f['path'], layout=kind)
                     w.writerow(o)

@@ -75,7 +75,7 @@ def main():
       FROM panel""")
 
     con.execute("""CREATE TABLE cand AS
-      SELECT p.table_id, p.region, p.src_row, p.src_col, p.province, p.district, p.unit,
+      SELECT p.table_id, p.region, p.src_row, p.src_col, p.province_area, p.district, p.unit,
              p.unit_type, p.indicator, coalesce(p.col_label,'') col_label, p.locality, p.sex,
              p.value AS excel_value,
              TRY_CAST(replace(m.pdf, ',', '') AS DOUBLE) AS pdf_value
@@ -85,17 +85,17 @@ def main():
       WHERE NOT p.is_rate AND TRY_CAST(replace(m.pdf, ',', '') AS DOUBLE) IS NOT NULL""")
 
     con.execute("""CREATE TABLE corrections AS
-      WITH v AS (SELECT table_id,province,district,unit,unit_type,indicator,
+      WITH v AS (SELECT table_id,province_area,district,unit,unit_type,indicator,
                         coalesce(col_label,'') col_label,locality,sex,value
                  FROM panel1b WHERE value IS NOT NULL AND NOT missing AND NOT is_rate),
-           d AS (SELECT table_id,province,district,indicator,col_label,locality,sex,value
+           d AS (SELECT table_id,province_area,district,indicator,col_label,locality,sex,value
                  FROM v WHERE unit_type='district'),
-           k AS (SELECT table_id,province,district,indicator,col_label,locality,sex,sum(value) s
+           k AS (SELECT table_id,province_area,district,indicator,col_label,locality,sex,sum(value) s
                  FROM v WHERE unit_type<>'district' GROUP BY 1,2,3,4,5,6,7)
       SELECT c.*, d.value AS district_value, k.s AS children_sum
       FROM cand c
-      JOIN d USING (table_id,province,district,indicator,col_label,locality,sex)
-      JOIN k USING (table_id,province,district,indicator,col_label,locality,sex)
+      JOIN d USING (table_id,province_area,district,indicator,col_label,locality,sex)
+      JOIN k USING (table_id,province_area,district,indicator,col_label,locality,sex)
       WHERE c.unit_type<>'district'
         AND abs(d.value - k.s) >= 0.5
         AND abs(d.value - (k.s - c.excel_value + c.pdf_value)) < 0.5""")
@@ -117,25 +117,25 @@ def main():
       LEFT JOIN disputed q
         ON q.table_id=p.table_id AND q.region=p.region AND q.src_row=p.src_row
       LEFT JOIN cw c
-        ON c.province = p.province AND c.district = p.district AND c.unit = p.unit""")
+        ON c.province_area = p.province_area AND c.district = p.district AND c.unit = p.unit""")
 
     n = con.sql("SELECT count(*) FROM panel2").fetchone()[0]
     miss = con.sql("SELECT count(*) FROM panel2 WHERE missing").fetchone()[0]
     rec = con.sql("SELECT count(*) FROM panel2 WHERE missing_source LIKE '%pdf%'").fetchone()[0]
     withdds = con.sql("SELECT count(*) FROM panel2 WHERE dds_id IS NOT NULL").fetchone()[0]
     con.execute(f"""COPY (SELECT * FROM panel2
-        ORDER BY province, district, unit, table_id, indicator, col_label, locality, sex,
+        ORDER BY province_area, district, unit, table_id, indicator, col_label, locality, sex,
                  src_row, src_col)
         TO '{out / 'panel.parquet'}' (FORMAT PARQUET, COMPRESSION ZSTD)""")
 
     # ---- closure: children sum to their district, per table, counts only ----
     checks = con.sql("""
-      WITH v AS (SELECT table_id, province, district, unit, unit_type, indicator,
+      WITH v AS (SELECT table_id, province_area, district, unit, unit_type, indicator,
                         coalesce(col_label, '') AS col_label, locality, sex, value
                  FROM panel2 WHERE value IS NOT NULL AND NOT missing AND NOT is_rate),
-           d AS (SELECT table_id, province, district, indicator, col_label, locality, sex, value
+           d AS (SELECT table_id, province_area, district, indicator, col_label, locality, sex, value
                  FROM v WHERE unit_type='district'),
-           k AS (SELECT table_id, province, district, indicator, col_label, locality, sex,
+           k AS (SELECT table_id, province_area, district, indicator, col_label, locality, sex,
                         sum(value) s, count(*) n
                  FROM v WHERE unit_type<>'district'
                  GROUP BY 1,2,3,4,5,6,7)
@@ -143,7 +143,7 @@ def main():
              count(*) AS comparisons,
              count(*) FILTER (WHERE abs(d.value - k.s) < 0.5) AS closing,
              count(*) FILTER (WHERE abs(d.value - k.s) >= 0.5) AS failing
-      FROM d JOIN k USING (table_id, province, district, indicator, col_label, locality, sex)
+      FROM d JOIN k USING (table_id, province_area, district, indicator, col_label, locality, sex)
       GROUP BY 1 ORDER BY 1
     """).fetchall()
 

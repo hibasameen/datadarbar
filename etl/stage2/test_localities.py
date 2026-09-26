@@ -22,14 +22,14 @@ def main():
             ws = openpyxl.load_workbook(f, read_only=True, data_only=True).worksheets[0]
             g = [list(r) for r in ws.iter_rows(values_only=True)]
             rows += list(read(g, prov, t, merged_ranges(f)))
-        # key = province + district + sub-district + grouping + name + hadbast
+        # key = province_area + district + sub-district + grouping + name + hadbast
         keys = collections.Counter(
-            (r['province'], r['district'], r['sub_district'], r['patwar_circle'],
+            (r['province_area'], r['district'], r['sub_district'], r['patwar_circle'],
              r['locality'], r['charge'], r['name'], r['hadbast']) for r in rows)
         dup = sum(v - 1 for v in keys.values() if v > 1)
         # and without the grouping, to see how much work the grouping is doing
         loose = collections.Counter(
-            (r['province'], r['district'], r['sub_district'], r['name']) for r in rows)
+            (r['province_area'], r['district'], r['sub_district'], r['name']) for r in rows)
         ldup = sum(v - 1 for v in loose.values() if v > 1)
         hb = sum(1 for r in rows if r['hadbast'])
         lv = collections.Counter(r['level'] for r in rows)

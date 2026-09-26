@@ -113,11 +113,11 @@ that cannot be resolved is to withhold it, not to force it.
 
 ## Workstream D — warehouse, catalogue and release machinery
 
-**5–7 days.** Depends on A; C determines whether a crosswalk table ships with it. D0 should run first, and soon.
+**4.5–6.5 days** (D0 done). Depends on A; C determines whether a crosswalk table ships with it. D0 should run first, and soon.
 
 | Task | Days | Notes |
 |---|---:|---|
-| D0. Rename `province` to `province_area`, both years | 0.5 | Decision 2. Done before the warehouse is built on the old name; 2023 must be rebuilt and re-verified byte-identical afterwards |
+| ~~D0. Rename `province` to `province_area`~~ | done | Both years rebuilt and verified data-neutral |
 | D1. `build_warehouse_2017.py` | 2 | Parquet tables sized for the DuckDB-WASM range-read design, as 2023's five are |
 | D2. Catalogue entries | 1 | The `notes` field is the only place a user is warned before publishing a number. For 2017 it must carry: `missing` is not zero and 26.8% of cells are missing; `unit_type` must be filtered or district and sub-district rows double-count; `is_rate` must never be averaged; `series_ambiguous` marks 636 rows whose key is not unique |
 | D3. `build_all_2017.py` | 1 | One command, refuses to start if the tests fail, as 2023's does |
@@ -162,11 +162,9 @@ I would advise against it.
 therefore on the critical path and a release does not go out without at least a
 district-level crosswalk.
 
-**2. The column becomes `province_area`.** Read from "province/area": it must
+**2. The column is now `province_area`.** Done, both years. Read from "province/area": it must
 cover both, since the values include FATA in 2017 and Islamabad in 2023, neither
-of which is a province. Renamed in both census years, before Workstream D builds
-a warehouse on the current schema. Nothing is published, so there is no migration
-to manage.
+of which is a province. Renamed in both census years before Workstream D builds a warehouse on it. Verified data-neutral: 4,599,521 rows in 2023 and 3,362,716 in 2017, zero rows changed when the column is renamed back, and repeat builds remain byte-identical. The capture manifest and the external mouza2020 crosswalk keep their own `province` field — they record where a file came from, not which area a figure belongs to.
 
 **3. FATA is presented as merged districts.** This was the right call and better
 founded than the alternative I had suggested — the 2023 counterparts do exist, so

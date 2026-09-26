@@ -259,7 +259,7 @@ def split_header(label, want):
     return loc, sex, ' / '.join(keep)
 
 
-def read(rows, province, table, merges=(), spec=None, layout=None, unit_at=None):
+def read(rows, province_area, table, merges=(), spec=None, layout=None, unit_at=None):
     """Yield one observation per numeric cell.
 
     The unit hierarchy is walked the same way for every table; what differs is
@@ -310,7 +310,7 @@ def read(rows, province, table, merges=(), spec=None, layout=None, unit_at=None)
             if kind == 'text':
                 continue
             hloc, hsex, rest = split_header(raw, want)
-            yield dict(province=province, table_id=table, district=district, unit=unit,
+            yield dict(province_area=province_area, table_id=table, district=district, unit=unit,
                        unit_type=utype, unit_source=unit_source,
                        locality=hloc or state.get('locality', 'all'),
                        sex=hsex or state.get('sex', 'all'),

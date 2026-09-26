@@ -93,13 +93,14 @@ def main():
 
     mouza = collections.defaultdict(dict)
     for r in csv.DictReader(open(a.mouza)):
+        # External input: the mouza2020 crosswalk keeps its own column names.
         mouza[r['province']].setdefault(norm(r['tehsil']), r)
 
     units = [r for r in csv.DictReader(open(a.units)) if r['unit_type'] != 'district']
     rows, withheld = [], []
     for u in units:
-        unit, dist, prov = u['unit'], u['district'], u['province']
-        rec = dict(province=prov, district=dist, unit=unit, unit_type=u['unit_type'],
+        unit, dist, prov = u['unit'], u['district'], u['province_area']
+        rec = dict(province_area=prov, district=dist, unit=unit, unit_type=u['unit_type'],
                    dd_id='', polygon='', adm3_pcode='', adm3_name='', method='', evidence='')
         c, how = cod_match(unit, dist)
         if c:
@@ -119,7 +120,7 @@ def main():
 
         if unit.upper() in WITHHELD:
             cands = by_dk.get(norm(dist), [])
-            withheld.append(dict(province=prov, district=dist, unit=unit,
+            withheld.append(dict(province_area=prov, district=dist, unit=unit,
                                  reason=WITHHELD[unit.upper()],
                                  candidates='; '.join(sorted(p['name'] for p in cands))))
             rec.update(method='withheld', evidence=WITHHELD[unit.upper()])
@@ -159,7 +160,7 @@ def main():
             rec.update(method='cod', evidence=f"COD-AB {rec['cod_match']} name match within {dist}; "
                                               f"no geoBoundaries polygon (unit postdates that layer)")
             rows.append(rec); continue
-        withheld.append(dict(province=prov, district=dist, unit=unit,
+        withheld.append(dict(province_area=prov, district=dist, unit=unit,
                              reason='no polygon or p-code matched by name within the district',
                              candidates='; '.join(sorted(p['name'] for p in pool))))
         rec.update(method='withheld', evidence='no polygon or p-code matched by name within the district')
@@ -172,10 +173,10 @@ def main():
     # a fixed sort, so a rebuild reproduces the same identifiers.
     PROV = {'KHYBER PAKHTUNKHWA': 'KP', 'PUNJAB': 'PB', 'SINDH': 'SD',
             'BALOCHISTAN': 'BA', 'ISLAMABAD': 'IS'}
-    for i, r in enumerate(sorted(rows, key=lambda x: (x['province'], x['district'], x['unit'])), 1):
-        r['dds_id'] = f"DDS-{PROV[r['province']]}-{i:04d}"
+    for i, r in enumerate(sorted(rows, key=lambda x: (x['province_area'], x['district'], x['unit'])), 1):
+        r['dds_id'] = f"DDS-{PROV[r['province_area']]}-{i:04d}"
     rows.sort(key=lambda x: x['dds_id'])
-    order = ['dds_id', 'province', 'district', 'unit', 'unit_type', 'adm3_pcode',
+    order = ['dds_id', 'province_area', 'district', 'unit', 'unit_type', 'adm3_pcode',
              'adm3_name', 'dd_id', 'polygon', 'method', 'evidence']
     rows = [{k: r.get(k, '') for k in order} for r in rows]
 
@@ -183,7 +184,7 @@ def main():
     with open(out / 'sub_district_crosswalk.csv', 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=order); w.writeheader(); w.writerows(rows)
     with open(out / 'withheld.csv', 'w', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=['province', 'district', 'unit', 'reason', 'candidates'])
+        w = csv.DictWriter(fh, fieldnames=['province_area', 'district', 'unit', 'reason', 'candidates'])
         w.writeheader(); w.writerows(withheld)
 
     # Bridge: where a unit was placed on a geoBoundaries polygon but matched no

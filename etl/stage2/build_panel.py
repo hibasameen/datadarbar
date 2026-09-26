@@ -53,11 +53,13 @@ def main():
 
     cw = collections.defaultdict(dict)
     for row in csv.DictReader(open(a.crosswalk)):
+        # The mouza2020 crosswalk is an external input and keeps its own column
+        # names; `province_area` is this panel's column, not that file's.
         cw[row['province']].setdefault(norm(row['tehsil']), row)
 
     # PBS's province files are not always what their name says: table 6 is
     # published under a KP filename but contains all 135 districts, and there
-    # is no KP-only table 6. So the district's province is taken from the
+    # is no KP-only table 6. So the district's area is taken from the
     # table 1 roster rather than from the filename, and observations are
     # de-duplicated afterwards.
     roster = {}
@@ -90,29 +92,29 @@ def main():
             n = 0
             for o in read(rows, prov, t, merged_ranges(f)):
                 if o['district']:
-                    o['province'] = roster.get(
+                    o['province_area'] = roster.get(
                         re.sub(r'\s+', ' ', o['district'].strip().upper()), prov)
-                o['home_file'] = (o['province'] == prov)
+                o['home_file'] = (o['province_area'] == prov)
                 o['source_file'] = f.name
                 o['sheet'] = ws.title
                 obs.append(o); n += 1
                 # Keyed on district as well as name: Punjab has a SAHIWAL
                 # TEHSIL in both Sahiwal and Sargodha districts, and they are
                 # different places.
-                key = (o['province'], o['district'], o['unit'])
-                units.setdefault(key, dict(province=o['province'], district=o['district'],
+                key = (o['province_area'], o['district'], o['unit'])
+                units.setdefault(key, dict(province_area=o['province_area'], district=o['district'],
                                            unit=o['unit'], unit_type=o['unit_type'],
                                            tables=set()))['tables'].add(t)
             if n == 0:
                 problems.append(dict(table=t, region=reg, issue='no observations'))
 
-    # De-duplicate: where a district appears in both its own province file and
-    # a mislabelled multi-province one, keep the row from the file that belongs
+    # De-duplicate: where a district appears in both its own area file and
+    # a mislabelled multi-area one, keep the row from the file that belongs
     # to it. Sorting puts home-file rows first, so the first seen wins.
     obs.sort(key=lambda o: (not o['home_file'], o['source_file'], o['src_row'], o['src_col']))
     seen, deduped, dropped = set(), [], 0
     for o in obs:
-        k = (o['table_id'], o['province'], o['district'], o['unit'], o['locality'],
+        k = (o['table_id'], o['province_area'], o['district'], o['unit'], o['locality'],
              o['sex'], o['indicator'], o['col_label'], o['src_col'])
         if k in seen:
             dropped += 1
@@ -123,7 +125,7 @@ def main():
     if dropped:
         problems.append(dict(table='-', region='-',
                              issue=f'{dropped} duplicate observations dropped '
-                                   f'(multi-province source files)'))
+                                   f'(multi-area source files)'))
 
     # polygon join, sub-district units only
     keys = {p: list(d) for p, d in cw.items()}
@@ -131,21 +133,21 @@ def main():
         if u['unit_type'] == 'district':
             u['dd_id'], u['match'] = '', ''
             continue
-        d = cw[PMAP[[k for k, v in REGIONS.items() if v == u['province']][0]]]
+        d = cw[PMAP[[k for k, v in REGIONS.items() if v == u['province_area']][0]]]
         n = norm(u['unit']); hit, how = d.get(n), 'exact'
         if not hit:
             g = difflib.get_close_matches(n, keys[PMAP[[k for k, v in REGIONS.items()
-                                                        if v == u['province']][0]]], n=1, cutoff=0.82)
+                                                        if v == u['province_area']][0]]], n=1, cutoff=0.82)
             if g:
                 hit, how = d[g[0]], 'fuzzy'
         u['dd_id'] = hit['dd_id'] if hit else ''
         u['match'] = f"{hit['match']}/{how}" if hit else 'unmatched'
 
-    cols = ['province', 'table_id', 'district', 'unit', 'unit_source', 'unit_type', 'locality',
+    cols = ['province_area', 'table_id', 'district', 'unit', 'unit_source', 'unit_type', 'locality',
             'sex', 'indicator', 'col_label', 'value', 'missing', 'source_file', 'sheet', 'src_row', 'src_col']
     write_observations(obs, cols, out)
     with open(out / 'units.csv', 'w', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=['province', 'district', 'unit', 'unit_type',
+        w = csv.DictWriter(fh, fieldnames=['province_area', 'district', 'unit', 'unit_type',
                                            'dd_id', 'match', 'tables'])
         w.writeheader()
         for u in units.values():
@@ -158,7 +160,7 @@ def main():
     for o in obs:
         if o['table_id'] == '1' and o['locality'] == 'all' and o['indicator'].startswith('POPULATION-2023') \
            and 'ALL SEXES' in o['indicator'].upper() and isinstance(o['value'], (int, float)):
-            pop[(o['province'], o['unit'])] = o['value']
+            pop[(o['province_area'], o['unit'])] = o['value']
     rep = dict(observations=len(obs), units=len(units), districts=len(dists),
                sub_district_units=len(subs),
                dash_cells=sum(1 for o in obs if o['missing']),
