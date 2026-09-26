@@ -11,7 +11,7 @@ uncertain ones say so.
 |---|---|---|---|
 | 0 Acquisition | done | **done** | 5,746 files, locked, verified |
 | 1 Extraction | done | **done** | 35 of 40 unit tables, plus table 2 and the four locality tables |
-| 2 Geography register | mostly done | **not started** | the critical path |
+| 2 Geography register | mostly done | **done** | 127 district and 510 sub-district groups, all balancing against PBS's restated 2017 population |
 | 3 Missingness reconciliation | done | **done** | 899,800 cells recovered |
 | 4 Panel assembly | done | **partial** | built; 636 rows flagged |
 | 5 Warehouse and catalogue | done | **nothing exists** | |
