@@ -70,7 +70,11 @@ def last_segment(s):
 
 
 def _key(s):
-    return re.sub(r'[^A-Z0-9]', '', (s or '').upper())
+    # "&" and "AND" are the same word. Dropping punctuation alone made
+    # "18 & ABOVE" key as 18ABOVE and "18 AND ABOVE" as 18ANDABOVE, so the two
+    # spellings of one age band stayed apart and the district using the minority
+    # form dropped out of every area total for that series.
+    return re.sub(r'[^A-Z0-9]', '', re.sub(r'&', ' AND ', (s or '').upper()))
 
 
 # Variants that co-occurrence cannot resolve, because they differ in the segment
@@ -102,6 +106,32 @@ LABEL_ALIAS = {
 INDICATOR_ALIAS = {
     ('4', 'ALL'): 'All Ages',
     ('5', 'ALL'): 'All Ages',
+    # Kohistan writes the same total row `ALL` in every table it appears in, not
+    # only 4 and 5. Each one cost Khyber Pakhtunkhwa a district's worth of
+    # population in that table's area check.
+    ('8', 'ALL'): 'ALL AGES',
+    ('10', 'ALL'): 'ALL AGES',
+    ('17', 'ALL'): 'ALL AGES',
+    ('22', 'ALL'): 'ALL AGES',
+    ('19', '10 YEAR AND ABOVE'): '10 & ABOVE',
+    ('28', 'HOUSEHOLD BY NUMBER OF PERSONS / TOTAL NUMBER OF HOUSEHOLDS'):
+        'HOUSEHOLD BY NUMBER OF PERSONS / TOTAL',
+    # PBS's majority spelling is the ungrammatical one; Kohistan's is correct.
+    # The alias points at the majority because the job here is to join them, not
+    # to pick the better English.
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEARS) / LESS THAN 5'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / LESS THAN 5',
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEARS) / 5-10'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / 5-10',
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEARS) / 11-50'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / 11-50',
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEARS) / OVER 50'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / OVER 50',
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEARS) / UNDER CONSTRUCTION'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / UNDER CONSTRUCTION',
+    ('35', 'HOUSING UNITS BY TENURE / OWNED'): 'HOUSING UNITS BY OWNERSHIP / OWNED',
+    ('35', 'HOUSING UNITS BY TENURE / RENTED'): 'HOUSING UNITS BY OWNERSHIP / RENTED',
+    ('35', 'HOUSING UNITS BY TENURE / RENT-FREE'): 'HOUSING UNITS BY OWNERSHIP / RENT-FREE',
 }
 
 
