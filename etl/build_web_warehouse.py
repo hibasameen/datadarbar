@@ -26,6 +26,7 @@ Usage:  python3 etl/build_web_warehouse.py [--src /path/to/data_darbar_warehouse
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import os
 import re
@@ -223,6 +224,55 @@ def load_dd_pov(path: Path) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# ── census → map geometry -----------------------------------------------------
+# The map colours the 2015 district layer inlined in app/data/census_data.js,
+# whose key is normName(properties.districts). Resolving a census district onto
+# it is name work, and only two rules are allowed: an exact match after
+# normalisation, and a reviewed spelling difference listed below. A census unit
+# is never merged into a *different* unit to find it a polygon — Lower Chitral
+# and Upper Chitral would both land on 2015 Chitral and paint one district twice
+# with two different numbers, and FR Bannu is not Bannu. Units with no polygon
+# of their own stay unmapped and the map says how many there are.
+CENSUS_DISTRICT_ALIAS = {
+    "chagai": "chaghi",
+    "musakhel": "musakhail",
+    "naushahro feroze": "naushehro feroze",
+    "sujawal": "sajawal",
+    "kambar shahdad kot": "kambar shahdadkot",
+    "mirpur khas": "mirpurkhas",
+    "tando allahyar": "tando allah yar",
+    "torghar": "tor ghar",
+    "umer kot": "umerkot",
+    # 2023 renamed the two agencies that kept their 2015 polygon name
+    "north waziristan": "north waziristan agency",
+    "south waziristan": "south waziristan agency",
+}
+
+
+def _norm_name(x: str) -> str:
+    """app.js normName(): lowercase, non-alphanumerics to single spaces."""
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", (x or "").lower())).strip()
+
+
+def census_district_map_keys(app: Path, units: list[str]) -> dict:
+    """{census district name: map key} for the units that have a polygon."""
+    src = (app / "data" / "census_data.js").read_text()
+    geo = json.loads(re.search(r"window\.DD_GEO=(\{.*?\});\s*window\.DD_DATA=", src, re.S).group(1))
+    have = {_norm_name(f["properties"].get("districts")
+                       or f["properties"].get("district_agency")) for f in geo["features"]}
+    out = {}
+    for u in units:
+        base = _norm_name(u.replace(" DISTRICT", "").replace(" AGENCY", ""))
+        for cand in (base, CENSUS_DISTRICT_ALIAS.get(base, ""), base + " agency"):
+            if cand and cand in have:
+                out[u] = cand
+                break
+    dupes = [k for k, n in collections.Counter(out.values()).items() if n > 1]
+    if dupes:
+        raise SystemExit(f"census map keys collide on {dupes} — two districts would share a polygon")
+    return out
+
+
 def build(src: Path, district_only: bool = False) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
@@ -1117,9 +1167,19 @@ def build(src: Path, district_only: bool = False) -> None:
         "missing": "the cell was printed as a dash rather than a number",
     }
 
+    def _xw(path):
+        units = [r[0] for r in con.sql(
+            f"SELECT DISTINCT unit FROM '{path}' WHERE unit_type='district'").fetchall()]
+        xw = census_district_map_keys(APP, units)
+        vals = ", ".join("('" + u.replace("'", "''") + "', '" + k + "')"
+                         for u, k in sorted(xw.items()))
+        print(f"    map keys: {len(xw)} of {len(units)} districts have a 2015 polygon")
+        return vals, len(xw), len(units)
+
     p17 = _latest("census2017/*/panel/panel_2017.parquet")
     if p17:
         print("census 2017…")
+        _xw17, _n17, _t17 = _xw(p17.as_posix())
         register(
             "census_panel_2017",
             "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, "
@@ -1137,11 +1197,14 @@ def build(src: Path, district_only: bool = False) -> None:
             "census_panel_2023 by table_id or indicator is unsafe: the numbering differs and "
             "only 50 indicator labels match verbatim.",
             {**CENSUS_SHARED,
+             "map_key": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary",
              "series_ambiguous": "the series key is not unique within this table (31,963 rows)"},
             "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
-            f"""SELECT census_year, province_area, table_id, district, unit, unit_type,
+            f"""WITH xw(xunit, dkey) AS (VALUES {_xw17})
+                SELECT census_year, province_area, table_id, district, unit, unit_type,
+                       CASE WHEN unit_type = 'district' THEN dkey END AS map_key,
                        locality, sex, indicator, col_label, value, missing, series_ambiguous
-                FROM '{p17.as_posix()}'
+                FROM '{p17.as_posix()}' LEFT JOIN xw ON xunit = unit
                 ORDER BY table_id, unit_type, province_area, district, unit,
                          locality, sex, indicator, col_label""",
             unit="persons, households or housing units; rates and percentages where the indicator says so",
@@ -1150,6 +1213,7 @@ def build(src: Path, district_only: bool = False) -> None:
     p23 = _latest("stage2/optionB-*/warehouse/census2023_observations.parquet")
     if p23:
         print("census 2023…")
+        _xw23, _n23, _t23 = _xw(p23.as_posix())
         register(
             "census_panel_2023",
             "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, "
@@ -1168,6 +1232,7 @@ def build(src: Path, district_only: bool = False) -> None:
             "differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, "
             "including 'EDUCATOINAL ATTAINMENT'.",
             {**CENSUS_SHARED,
+             "map_key": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary",
              "dds_id": "Data Darbar sub-district identifier, present on every row",
              "dd_id": "identifier used by the site's tehsil geometry; NULL on district rows",
              "adm3_pcode": "COD-AB ADM3 code; NULL on district rows and on units without a match",
@@ -1176,13 +1241,94 @@ def build(src: Path, district_only: bool = False) -> None:
              "renderings_disagree": "PBS's two renderings of this table disagree here",
              "unit_source": "the district workbook this row was read from"},
             "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
-            f"""SELECT 2023 AS census_year, province_area, table_id, dds_id, dd_id, adm3_pcode,
-                       district, unit, unit_type, locality, sex, indicator, col_label,
+            f"""WITH xw(xunit, dkey) AS (VALUES {_xw23}),
+                     -- 51 census tehsils share 23 older polygons, because the
+                     -- tehsil was split after the boundary was drawn: Lahore
+                     -- City, Model Town, Raiwind and Shalimar all land on one
+                     -- 2015 Lahore shape. Painting one of them would show an
+                     -- arbitrary value and summing them would invent a figure
+                     -- for every rate, so a shape is only usable when exactly
+                     -- one unit claims it.
+                     sole AS (SELECT dd_id FROM '{p23.as_posix()}'
+                              WHERE unit_type = 'tehsil' AND dd_id IS NOT NULL
+                              GROUP BY 1
+                              -- district and unit, not unit alone: Sahiwal
+                              -- Tehsil exists in both Sahiwal and Sargodha and
+                              -- the two share a polygon, so keying on the name
+                              -- counts them as one place and lets a shape carry
+                              -- two different populations.
+                              HAVING count(DISTINCT district || '|' || unit) = 1)
+                SELECT 2023 AS census_year, province_area, table_id, dds_id, dd_id, adm3_pcode,
+                       district, unit, unit_type,
+                       CASE WHEN unit_type = 'district' THEN dkey
+                            WHEN unit_type = 'tehsil'
+                                 AND dd_id IN (SELECT dd_id FROM sole) THEN dd_id END AS map_key,
+                       locality, sex, indicator, col_label,
                        value, missing, is_rate, value_corrected, renderings_disagree, unit_source
-                FROM '{p23.as_posix()}'
+                FROM '{p23.as_posix()}' LEFT JOIN xw ON xunit = unit
                 ORDER BY table_id, unit_type, province_area, district, unit,
                          locality, sex, indicator, col_label""",
             unit="persons, households or housing units; rates and percentages where is_rate is TRUE",
+        )
+
+    if p17 or p23:
+        # The picker needs to know what can be mapped without loading 9 MB to
+        # find out. One row per selectable series, with the count of units that
+        # actually carry a value and a polygon, so a series that would colour
+        # four districts can be shown as such instead of looking empty.
+        parts = []
+        if p17:
+            parts.append(f"""
+              SELECT 2017 AS census_year, table_id, unit_type, indicator, col_label,
+                     locality, sex, FALSE AS is_rate,
+                     count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) AS mappable_units,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_2017.parquet').as_posix()}'
+              WHERE unit_type IN ('district', 'tehsil')
+              GROUP BY ALL
+              HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
+                 AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
+                   = count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+        if p23:
+            parts.append(f"""
+              SELECT 2023 AS census_year, table_id, unit_type, indicator, col_label,
+                     locality, sex, bool_or(is_rate) AS is_rate,
+                     count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) AS mappable_units,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_2023.parquet').as_posix()}'
+              WHERE unit_type IN ('district', 'tehsil')
+              GROUP BY census_year, table_id, unit_type, indicator, col_label, locality, sex
+              HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
+                 AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
+                   = count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+        register(
+            "census_series_index",
+            "One row per census series that the district and tehsil map can colour, "
+            "for both census years.",
+            "This is a guide to the two census panels, not data in its own right: every row "
+            "points at a series in census_panel_2017 or census_panel_2023, which is where the "
+            "values are. mappable_units counts the units that have both a value and a boundary, "
+            "so it is the number of shapes that would actually be coloured — a series with a "
+            "low count is thin, not broken. is_rate marks series that must not be summed. "
+            "Series are listed per census year and must not be compared across years on "
+            "table_id or indicator; see either panel's notes.",
+            {
+                "census_year": "2017 or 2023",
+                "table_id": "PBS table number within that census",
+                "unit_type": "district or tehsil — the geography this series can be drawn on",
+                "indicator": "the indicator as PBS labels it",
+                "col_label": "the column heading the values sat under",
+                "locality": "all, rural or urban",
+                "sex": "all, male, female or transgender",
+                "is_rate": "the series is a rate or percentage",
+                "mappable_units": "units with both a value and a boundary — the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row",
+                "min_value": "smallest value in the series",
+                "max_value": "largest value in the series",
+            },
+            "Derived from census_panel_2017 and census_panel_2023",
+            " UNION ALL ".join(parts) + """
+              ORDER BY census_year, table_id, unit_type, indicator, col_label, locality, sex""",
+            unit="counts of units; the values themselves live in the panels",
         )
 
     if p17 or p23:
