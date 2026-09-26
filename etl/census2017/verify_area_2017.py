@@ -166,6 +166,16 @@ def main():
         d.executemany('INSERT INTO area VALUES (?,?,?,?,?,?,?)', batch)
         print(f'  table {t:3s}  {len(batch):>6,} comparable series', flush=True)
 
+    # Rows are kept when they carry a figure, not when they are unmasked. A cell
+    # PBS printed as a dash is masked, but this release recovers the printed zero
+    # from the combined PDFs and stores it, so the row is a known zero and
+    # belongs in the sum. Dropping every masked row instead made a series that is
+    # all dashes sum to nothing and report 'no matching series' rather than
+    # comparing zero against zero - 2,610 series moved that way when the PDF
+    # reconciliation improved and found 1,196,133 dash cells instead of 899,800.
+    # The 1,638 rows whose dash was never recovered stay out: their value is
+    # genuinely unknown.
+    #
     # A province_area is compared against its own districts. PAKISTAN is compared
     # against every district in the panel PLUS Islamabad's own published figure,
     # because Islamabad has no per-district spreadsheets and without it the two
@@ -175,11 +185,11 @@ def main():
         WITH prov AS (
           SELECT table_id, province_area, locality, sex, indicator, col_label,
                  sum(value) AS s, bool_or(series_ambiguous) AS amb
-          FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
+          FROM panel WHERE unit_type='district' AND value IS NOT NULL GROUP BY ALL
         ), nat AS (
           SELECT table_id, locality, sex, indicator, col_label,
                  sum(value) AS s, bool_or(series_ambiguous) AS amb
-          FROM panel WHERE unit_type='district' AND NOT missing GROUP BY ALL
+          FROM panel WHERE unit_type='district' AND value IS NOT NULL GROUP BY ALL
         )
         SELECT a.*,
                CASE WHEN a.area='PAKISTAN' THEN nat.s ELSE prov.s END AS panel_sum,

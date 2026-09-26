@@ -233,8 +233,28 @@ def header(rows, a, lc, merges=(), data_cols=None):
     columns.
     """
     width = (max(data_cols) + 1) if data_cols else max((len(r) for r in rows[:a]), default=0)
+
+    # A sheet can print the column-number row twice. Kohistan's 36 workbooks do,
+    # and `anchor` takes the later of the two, which leaves the earlier one
+    # sitting exactly where the header should be. Since a bare number is a
+    # legitimate header label - tables 29, 30 and 32 label columns by number of
+    # rooms - it was read as one, and Kohistan's columns came out labelled '2',
+    # '3', '4' instead of MARRIED, WIDOWED, DIVORCED. None of its series then
+    # matched any other district's, so Kohistan dropped silently out of every
+    # area total it belonged to, in 14 tables.
+    #
+    # Only an exact duplicate is skipped: a row carrying the same values in the
+    # same columns as the column-number row cannot be a header, whereas a header
+    # that merely contains numbers can be and must be kept.
+    def signature(row):
+        return [(c, str(x).strip()) for c, x in enumerate(row)
+                if x is not None and str(x).strip() != '']
+
+    anchor_sig = signature(rows[a]) if a < len(rows) else None
     grid = {}
     for ri in range(a):
+        if anchor_sig and signature(rows[ri]) == anchor_sig:
+            continue
         for ci in range(width):
             v = header_label(rows[ri][ci]) if ci < len(rows[ri]) else None
             # The title banner spans the whole sheet and names the table, not a
