@@ -86,13 +86,20 @@ def place_id(province_area, path, name, hadbast, seq):
     return f'DDL-{h}'
 
 
-def read(rows, province_area, table, merges=()):
+def read(rows, province_area, table, merges=(), urban=None):
+    """Yield one observation per place.
+
+    `urban` says whether this is an urban-locality table, where the second column
+    is a measurement rather than a hadbast number and places nest in charges and
+    circles instead of revenue circles. It defaults to 2023's numbering; Census
+    2017 publishes the same four tables as 23-26 and passes it explicitly.
+    """
     a = anchor(rows)
     if a is None:
         raise ValueError(f'table {table}: no column-number row')
     stub, data_cols = numbered_columns(rows, a)
     cols = header(rows, a, stub, merges, data_cols)
-    urban = table in ('33', '34')
+    urban = (table in ('33', '34')) if urban is None else urban
     # In the rural tables column 2 holds the hadbast / deh number, which is an
     # identifier rather than a measurement.
     id_col = data_cols[0] if not urban else None

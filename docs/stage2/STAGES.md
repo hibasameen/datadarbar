@@ -349,6 +349,10 @@ A second census year, read by the same reader as 2023.
   reconcile exactly; 0.019% of rows flagged `series_ambiguous`.
 - [census2017_plan.md](census2017_plan.md) — **the plan to publication**: what
   remains, in what order, and the five decisions that block it.
+- [census2017_localities.md](census2017_localities.md) — the locality tier:
+  2,505,703 observations, 46,692 mauzas. Patwar-circle closure 99.9%, but only
+  60 of 128 districts reconcile against their published rural population, so
+  **the mauza level must not yet be summed to a district total**.
 - [census2017_verification.md](census2017_verification.md) — checks against the
   second rendering and against independently published totals, plus
   reproducibility.
