@@ -41,6 +41,8 @@ FIELDS = [
 ]
 DATASET_NAMES = {
     "budget_lines": "Pakistan federal budget line items",
+    "census_panel_2017": "Pakistan Census 2017 district and tehsil tables",
+    "census_panel_2023": "Pakistan Census 2023 district and tehsil tables",
     "district_indicators": "Pakistan district census and survey indicators",
     "file_catalog": "Pakistan statistical source-file catalogue",
     "lsm_qim": "Pakistan large-scale manufacturing index",

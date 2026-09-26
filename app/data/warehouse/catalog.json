@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-25",
+ "generated": "2026-09-26",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -245,6 +245,190 @@
      "name": "release",
      "type": "VARCHAR",
      "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "census_panel_2017",
+   "file": "census_panel_2017.parquet",
+   "bytes": 8034252,
+   "rows": 4397361,
+   "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
+   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
+   "unit": "persons, households or housing units; rates and percentages where the indicator says so",
+   "source": "PBS Population and Housing Census 2017, per-district Excel tables (135 districts \u00d7 40 tables)",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number WITHIN that census. Numbering is not comparable across years: 2017's table 23 is a locality table, 2023's is drinking water"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district the unit sits in; equal to unit on district rows"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the published unit's own name"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT unit_type are nested, so summing across them double-counts"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban. rural + urban = all, so pick one"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender. The three sexes sum to all, so pick one"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it, joined with / down the header hierarchy"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the value sat under, kept because the same indicator can appear under several columns"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+    },
+    {
+     "name": "missing",
+     "type": "BOOLEAN",
+     "description": "the cell was printed as a dash rather than a number"
+    },
+    {
+     "name": "series_ambiguous",
+     "type": "BOOLEAN",
+     "description": "the series key is not unique within this table (31,963 rows)"
+    }
+   ]
+  },
+  {
+   "name": "census_panel_2023",
+   "file": "census_panel_2023.parquet",
+   "bytes": 9137958,
+   "rows": 4599521,
+   "description": "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, sub-tehsil and sub-division level.",
+   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure \u2014 that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id \u2014 the key the site's own tehsil geometry uses \u2014 is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
+   "unit": "persons, households or housing units; rates and percentages where is_rate is TRUE",
+   "source": "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number WITHIN that census. Numbering is not comparable across years: 2017's table 23 is a locality table, 2023's is drinking water"
+    },
+    {
+     "name": "dds_id",
+     "type": "VARCHAR",
+     "description": "Data Darbar sub-district identifier, present on every row"
+    },
+    {
+     "name": "dd_id",
+     "type": "VARCHAR",
+     "description": "identifier used by the site's tehsil geometry; NULL on district rows"
+    },
+    {
+     "name": "adm3_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB ADM3 code; NULL on district rows and on units without a match"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district the unit sits in; equal to unit on district rows"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the published unit's own name"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT unit_type are nested, so summing across them double-counts"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban. rural + urban = all, so pick one"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender. The three sexes sum to all, so pick one"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it, joined with / down the header hierarchy"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the value sat under, kept because the same indicator can appear under several columns"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+    },
+    {
+     "name": "missing",
+     "type": "BOOLEAN",
+     "description": "the cell was printed as a dash rather than a number"
+    },
+    {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": "the value is a rate or percentage and must not be summed"
+    },
+    {
+     "name": "value_corrected",
+     "type": "BOOLEAN",
+     "description": "the figure was corrected against the other rendering"
+    },
+    {
+     "name": "renderings_disagree",
+     "type": "BOOLEAN",
+     "description": "PBS's two renderings of this table disagree here"
+    },
+    {
+     "name": "unit_source",
+     "type": "VARCHAR",
+     "description": "the district workbook this row was read from"
     }
    ]
   },
@@ -4009,7 +4193,7 @@
   },
   {
    "title": "Travel time to care by poverty quintile",
-   "sql": "-- Districts grouped into MPI quintiles, weighted by population: the poorest\n-- fifth is nine times further from care than the least poor.\nWITH q AS (\n  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n  WHERE m.low_n = 0)\nSELECT mpi_quintile, count(*) AS districts,\n       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\nFROM q GROUP BY 1 ORDER BY 1;"
+   "sql": "-- Districts in fifths by MPI (equal numbers of districts), each fifth weighted by\n-- population. The piece's 47 v 5 minutes uses population quintiles and medians;\n-- the gradient is the same either way.\nWITH q AS (\n  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n  WHERE m.low_n = 0)\nSELECT mpi_quintile, count(*) AS districts,\n       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\nFROM q GROUP BY 1 ORDER BY 1;"
   },
   {
    "title": "Tehsils where most people are over an hour from care even with a vehicle",
@@ -4026,7 +4210,26 @@
   {
    "title": "Where remittances come from, FY2024-25",
    "sql": "-- The country series are hierarchical (U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, 'ten European Countries'\n-- contains Belgium..Sweden). Summing all of them overstates the total by 42%;\n-- these fifteen add up exactly to SBP's published figure.\nSELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n       round(sum(o.value)) AS mn_usd\nFROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\nWHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n  AND replace(c.series_name, 'Workers'' remittances received from ', '') IN (\n    'Saudi Arabia', 'U.A.E.', 'U.K.', 'U.S.A.',\n    'Other GCC Countries excluding Saudi Arabia & U.A.E.', 'ten European Countries',\n    'Norway', 'Switzerland', 'Australia', 'Canada', 'Japan', 'Malaysia',\n    'South Africa', 'South Korea', 'Other Countries')\nGROUP BY 1 ORDER BY mn_usd DESC;"
+  },
+  {
+   "title": "Census 2023 population by district \u2014 the safe filter",
+   "sql": "-- The panel nests levels: district rows and the tehsil rows inside them both\n-- exist, and locality sums to its own total, so pin both.\n-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n-- would still hand back the male, female and transgender rows. Name the\n-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\nSELECT province_area, unit AS district, value AS population\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'district'\n  AND indicator = 'POPULATION-2023 / ALL SEXES'\n  AND locality = 'all' AND NOT missing\nORDER BY population DESC;\n-- 136 rows adding to 241,499,431 \u2014 PBS's published national total."
+  },
+  {
+   "title": "Check a filter before you trust it",
+   "sql": "-- Worth doing on any table_id you have not used before: if a single unit\n-- returns more than one row, your filter is not yet a series.\nSELECT indicator, col_label, locality, sex, count(*) AS rows_, sum(value) AS total\nFROM census_panel_2023\nWHERE table_id = '1' AND unit = 'LAHORE DISTRICT'\nGROUP BY 1, 2, 3, 4\nORDER BY rows_ DESC, total DESC\nLIMIT 20;"
+  },
+  {
+   "title": "Tehsil populations joined to the map geometry",
+   "sql": "-- dd_id is the key the site's tehsil layer uses. It is NULL on district rows\n-- and missing for about 150,000 tehsil rows, so an inner join silently drops\n-- units; count what you lose before mapping.\nSELECT count(*) AS tehsil_rows,\n       count(dd_id) AS joinable_to_geometry,\n       count(*) - count(dd_id) AS would_be_dropped\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'tehsil'\n  AND locality = 'all' AND sex = 'all' AND indicator ILIKE '%POPULATION%';"
+  },
+  {
+   "title": "Why 2017 and 2023 cannot simply be joined",
+   "sql": "-- Both panels use the same column names, which makes a cross-year join look\n-- easy. It is not: the indicator vocabularies barely overlap, and most of the\n-- difference is punctuation rather than meaning. Until a crosswalk exists,\n-- read this before comparing anything across the two censuses.\nWITH a AS (SELECT DISTINCT indicator FROM census_panel_2017),\n     b AS (SELECT DISTINCT indicator FROM census_panel_2023)\nSELECT (SELECT count(*) FROM a) AS labels_2017,\n       (SELECT count(*) FROM b) AS labels_2023,\n       (SELECT count(*) FROM a SEMI JOIN b USING (indicator)) AS identical_labels;"
+  },
+  {
+   "title": "A dash means different things in the two panels",
+   "sql": "-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n-- 2023 left them NULL. So a count of populated cells is not comparable across\n-- the years, and neither is an average taken over missing rows.\nSELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\nFROM census_panel_2017 GROUP BY 1, 2\nUNION ALL\nSELECT 2023, missing, count(*), count(value)\nFROM census_panel_2023 GROUP BY 1, 2\nORDER BY census_year, missing;"
   }
- ],
- "revision": "2026-09-25-census-b46b2c08db1e"
+ ]
 }

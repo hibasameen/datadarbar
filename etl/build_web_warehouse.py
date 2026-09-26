@@ -1087,6 +1087,109 @@ def build(src: Path, district_only: bool = False) -> None:
     else:
         print("sbp…  skipped (run build_sbp.py catalog / observations / load first)")
 
+    # ── 5. census panels: the 2017 and 2023 unit tables ──────────────────────
+    # Two tables, deliberately not one. The years cannot be stacked yet: only 50
+    # of 2017's 377 indicator labels appear verbatim among 2023's 201, and most of
+    # the difference is cosmetic rather than real ("00 - 04" vs "00 -- 04"), so a
+    # stacked table would look comparable while silently splitting age bands into
+    # separate rows. The crosswalk that would make a cross-year join safe is the
+    # geography register work, which is not done.
+    def _latest(pattern):
+        hits = sorted(src.glob(pattern))
+        return hits[-1] if hits else None
+
+    CENSUS_SHARED = {
+        "census_year": "2017 or 2023",
+        "province_area": "province, or FATA / Islamabad Capital Territory — the census frame has "
+                         "four provinces and two federal areas, not six provinces",
+        "table_id": "PBS table number WITHIN that census. Numbering is not comparable across "
+                    "years: 2017's table 23 is a locality table, 2023's is drinking water",
+        "district": "district the unit sits in; equal to unit on district rows",
+        "unit": "the published unit's own name",
+        "unit_type": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT "
+                     "unit_type are nested, so summing across them double-counts",
+        "locality": "all, rural or urban. rural + urban = all, so pick one",
+        "sex": "all, male, female or transgender. The three sexes sum to all, so pick one",
+        "indicator": "the indicator as PBS labels it, joined with / down the header hierarchy",
+        "col_label": "the column heading the value sat under, kept because the same indicator "
+                     "can appear under several columns",
+        "value": "the published figure — unit depends on the indicator, see notes",
+        "missing": "the cell was printed as a dash rather than a number",
+    }
+
+    p17 = _latest("census2017/*/panel/panel_2017.parquet")
+    if p17:
+        print("census 2017…")
+        register(
+            "census_panel_2017",
+            "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, "
+            "tehsil, sub-tehsil and sub-division level.",
+            "Do not sum across unit_type, locality or sex — each is a nested hierarchy and "
+            "adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or "
+            "PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the "
+            "indicator label before aggregating. missing = TRUE marks a cell PBS printed as a "
+            "dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, "
+            "read back from the combined district PDFs, so the zero is real rather than absent "
+            "— unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows "
+            "flags a series whose key is not unique within its table, so a filter on indicator "
+            "and col_label alone may return more than one series there. Tables 23–26 are the "
+            "individual-locality tables and are not in this panel. Comparing to "
+            "census_panel_2023 by table_id or indicator is unsafe: the numbering differs and "
+            "only 50 indicator labels match verbatim.",
+            {**CENSUS_SHARED,
+             "series_ambiguous": "the series key is not unique within this table (31,963 rows)"},
+            "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
+            f"""SELECT census_year, province_area, table_id, district, unit, unit_type,
+                       locality, sex, indicator, col_label, value, missing, series_ambiguous
+                FROM '{p17.as_posix()}'
+                ORDER BY table_id, unit_type, province_area, district, unit,
+                         locality, sex, indicator, col_label""",
+            unit="persons, households or housing units; rates and percentages where the indicator says so",
+        )
+
+    p23 = _latest("stage2/optionB-*/warehouse/census2023_observations.parquet")
+    if p23:
+        print("census 2023…")
+        register(
+            "census_panel_2023",
+            "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, "
+            "sub-tehsil and sub-division level.",
+            "Do not sum across unit_type, locality or sex — each is a nested hierarchy and "
+            "adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure — that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the "
+            "624,219 rows that are rates or percentages and must never be summed. missing = "
+            "TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 "
+            "panel the value is left NULL rather than recovered as zero, so a count of "
+            "non-missing cells is not comparable between the two years. renderings_disagree = "
+            "TRUE on 27,033 rows flags a figure where PBS's two published renderings of the "
+            "same table do not agree. adm3_pcode and dd_id are the geographic join keys and are "
+            "incomplete by design: both are NULL on every district row, and dd_id — the key the "
+            "site's own tehsil geometry uses — is present on 1,919,489 of 2,069,879 tehsil rows. "
+            "Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering "
+            "differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, "
+            "including 'EDUCATOINAL ATTAINMENT'.",
+            {**CENSUS_SHARED,
+             "dds_id": "Data Darbar sub-district identifier, present on every row",
+             "dd_id": "identifier used by the site's tehsil geometry; NULL on district rows",
+             "adm3_pcode": "COD-AB ADM3 code; NULL on district rows and on units without a match",
+             "is_rate": "the value is a rate or percentage and must not be summed",
+             "value_corrected": "the figure was corrected against the other rendering",
+             "renderings_disagree": "PBS's two renderings of this table disagree here",
+             "unit_source": "the district workbook this row was read from"},
+            "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
+            f"""SELECT 2023 AS census_year, province_area, table_id, dds_id, dd_id, adm3_pcode,
+                       district, unit, unit_type, locality, sex, indicator, col_label,
+                       value, missing, is_rate, value_corrected, renderings_disagree, unit_source
+                FROM '{p23.as_posix()}'
+                ORDER BY table_id, unit_type, province_area, district, unit,
+                         locality, sex, indicator, col_label""",
+            unit="persons, households or housing units; rates and percentages where is_rate is TRUE",
+        )
+
+    if p17 or p23:
+        EXAMPLES.extend(CENSUS_PANEL_EXAMPLES)
+    else:
+        print("census panels…  skipped (no panel release found under --src)")
+
     # ── catalog ──────────────────────────────────────────────────────────────
     catalog = {
         "name": "Data Darbar",
@@ -1263,6 +1366,62 @@ HEALTH_EXAMPLES = [
 # The State Bank tables are long: one row per series x date, and the series are
 # identified by name in sbp_series_catalog. Every example therefore starts from
 # the catalogue, by name, so it reads as English rather than as a code.
+CENSUS_PANEL_EXAMPLES = [
+    {"title": "Census 2023 population by district — the safe filter",
+     "sql": ("-- The panel nests levels: district rows and the tehsil rows inside them both\n"
+             "-- exist, and locality sums to its own total, so pin both.\n"
+             "-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n"
+             "-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n"
+             "-- would still hand back the male, female and transgender rows. Name the\n"
+             "-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\n"
+             "SELECT province_area, unit AS district, value AS population\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit_type = 'district'\n"
+             "  AND indicator = 'POPULATION-2023 / ALL SEXES'\n"
+             "  AND locality = 'all' AND NOT missing\n"
+             "ORDER BY population DESC;\n"
+             "-- 136 rows adding to 241,499,431 — PBS's published national total.")},
+    {"title": "Check a filter before you trust it",
+     "sql": ("-- Worth doing on any table_id you have not used before: if a single unit\n"
+             "-- returns more than one row, your filter is not yet a series.\n"
+             "SELECT indicator, col_label, locality, sex, count(*) AS rows_, sum(value) AS total\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit = 'LAHORE DISTRICT'\n"
+             "GROUP BY 1, 2, 3, 4\n"
+             "ORDER BY rows_ DESC, total DESC\n"
+             "LIMIT 20;")},
+    {"title": "Tehsil populations joined to the map geometry",
+     "sql": ("-- dd_id is the key the site's tehsil layer uses. It is NULL on district rows\n"
+             "-- and missing for about 150,000 tehsil rows, so an inner join silently drops\n"
+             "-- units; count what you lose before mapping.\n"
+             "SELECT count(*) AS tehsil_rows,\n"
+             "       count(dd_id) AS joinable_to_geometry,\n"
+             "       count(*) - count(dd_id) AS would_be_dropped\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit_type = 'tehsil'\n"
+             "  AND locality = 'all' AND sex = 'all' AND indicator ILIKE '%POPULATION%';")},
+    {"title": "Why 2017 and 2023 cannot simply be joined",
+     "sql": ("-- Both panels use the same column names, which makes a cross-year join look\n"
+             "-- easy. It is not: the indicator vocabularies barely overlap, and most of the\n"
+             "-- difference is punctuation rather than meaning. Until a crosswalk exists,\n"
+             "-- read this before comparing anything across the two censuses.\n"
+             "WITH a AS (SELECT DISTINCT indicator FROM census_panel_2017),\n"
+             "     b AS (SELECT DISTINCT indicator FROM census_panel_2023)\n"
+             "SELECT (SELECT count(*) FROM a) AS labels_2017,\n"
+             "       (SELECT count(*) FROM b) AS labels_2023,\n"
+             "       (SELECT count(*) FROM a SEMI JOIN b USING (indicator)) AS identical_labels;")},
+    {"title": "A dash means different things in the two panels",
+     "sql": ("-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n"
+             "-- 2023 left them NULL. So a count of populated cells is not comparable across\n"
+             "-- the years, and neither is an average taken over missing rows.\n"
+             "SELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\n"
+             "FROM census_panel_2017 GROUP BY 1, 2\n"
+             "UNION ALL\n"
+             "SELECT 2023, missing, count(*), count(value)\n"
+             "FROM census_panel_2023 GROUP BY 1, 2\n"
+             "ORDER BY census_year, missing;")},
+]
+
 SBP_EXAMPLES = [
     {"title": "Find a State Bank series by name",
      "sql": ("-- sbp_observations is one row per series x date. Start here: find the\n"
