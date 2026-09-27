@@ -268,7 +268,7 @@ function drawMovers(){
  const rows=moverRows();const GREEN='var(--green-700)',RED='var(--negative)';
  const isPct=mMeasure==='pct';
  const fmtV=v=>isPct?((v>=0?'+':'−')+Math.abs(v).toFixed(0)+'%'):((v>=0?'+':'−')+fmtBn(Math.abs(v)));
- if(!rows.length){el.append('div').style('padding','24px').style('color','var(--slate-500)').text('No data at this level.');return;}
+ if(!rows.length){el.append('div').style('padding','24px').style('color','var(--muted)').text('No data at this level.');return;}
  const W=el.node().clientWidth||900,rh=22,H=rows.length*rh+30;
  const lblW=Math.max(130,Math.min(230,W*0.3));
  const minV=Math.min(0,d3.min(rows,r=>r.val)),maxV=Math.max(0,d3.max(rows,r=>r.val));
@@ -276,11 +276,11 @@ function drawMovers(){
  const x=d3.scaleLinear().domain([minV,maxV]).range([lblW+12+neg,W-70]);
  const zero=x(0);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-24).attr('stroke','var(--slate-400)');
+ svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-24).attr('stroke','var(--muted-2)');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+4})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.name}</b>${tLevel==='product'?' · HS '+d.code:''}<br>${d.y0}: ${fmtRs(d.v0)} → ${d.y1}: ${fmtRs(d.v1)}<br><b>${(d.delta>=0?'+':'−')+fmtRs(Math.abs(d.delta))}</b>${d.pct!=null?`  ·  ${d.pct>=0?'+':''}${d.pct.toFixed(0)}%`:''}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2-2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600)
-  .attr('fill',d=>d.val<0?RED:'var(--slate-700)')
+  .attr('fill',d=>d.val<0?RED:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.1);return d.name.length>max?d.name.slice(0,max-1)+'…':d.name;});
  g.append('rect').attr('y',3).attr('height',rh-9).attr('rx',3)
   .attr('x',d=>Math.min(zero,x(d.val))).attr('width',d=>Math.max(1,Math.abs(x(d.val)-zero)))
@@ -332,16 +332,16 @@ function drawCountry(){
 }
 function chbar(elSel,rows,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,10);
- if(!rows.length){el.append('div').style('padding','12px').style('color','var(--slate-400)').style('font-size','12px').text('No recorded trade at this level.');return;}
+ if(!rows.length){el.append('div').style('padding','12px').style('color','var(--muted-2)').style('font-size','12px').text('No recorded trade at this level.');return;}
  const W=el.node().clientWidth||440,rh=23,H=rows.length*rh+8,lblW=Math.max(96,Math.min(180,W*0.46));
  const x=d3.scaleLinear().domain([0,d3.max(rows,d=>d.bn)||1]).range([lblW+6,W-54]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+3})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.name}</b>${/^\d/.test(d.code)?' · HS '+d.code:''}<br>${fmtRs(d.bn)}`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-700)')
+ g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)')
   .text(d=>{const max=Math.floor(lblW/5.9);return d.name.length>max?d.name.slice(0,max-1)+'…':d.name;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('rx',3).attr('width',d=>Math.max(1,x(d.bn)-x(0))).attr('fill',color);
- g.append('text').attr('x',d=>x(d.bn)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10).attr('font-weight',700).attr('fill','var(--slate-600)').text(d=>fmtBn(d.bn));
+ g.append('text').attr('x',d=>x(d.bn)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10).attr('font-weight',700).attr('fill','var(--body)').text(d=>fmtBn(d.bn));
 }
 
 /* ================= CSV export ================= */

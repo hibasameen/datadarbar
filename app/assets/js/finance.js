@@ -17,7 +17,7 @@ const ERAS=[[1952,1958,'Early years'],[1958,1969,'Ayub industrialisation'],[1969
 
 const LSM_SHORT={'QIM':'QIM (overall)','Manufacturing of Food':'Food','Manufacturing of Beverages':'Beverages','Manufacturing of Tobacco':'Tobacco','Manufacturing of Textile':'Textiles','Manufacture of wearing apparel':'Wearing apparel','Manufacturing of Leather Products':'Leather','Manufacturing of Wood Products':'Wood','Manufacturing of Paper & Board':'Paper & board','Manufacturing of Coke & Petroleum Products':'Petroleum products','Manufacturing of Chemicals':'Chemicals','Manufacturing of Pharmaceuticals Products':'Pharmaceuticals','Manufacturing of Rubber Products':'Rubber','Manufacturing of Non Metalic Mineral Products':'Cement & minerals','Manufacturing of Iron & Steel Products':'Iron & steel','Manufacture of Fabricated Metal':'Fabricated metal','Manufacture of Computer, electronics and Optical products':'Electronics & optics','Manufacture of Electrical Equipment':'Electrical equipment','Manufacture of Machinery and  Equipment n.e.c':'Machinery','Manufacturing of Automobiles':'Automobiles','Manufacture of other transport  Equipment':'Other transport','Manufacture of furniture':'Furniture','Other manufacturing':'Other (footballs)'};
 const OLD2NEW={'Textile':'Manufacturing of Textile','Pharmaceuticals':'Manufacturing of Pharmaceuticals Products','Chemicals':'Manufacturing of Chemicals','Automobiles':'Manufacturing of Automobiles','Iron & Steel Products':'Manufacturing of Iron & Steel Products','Coke & Petroleum Products':'Manufacturing of Coke & Petroleum Products','Leather Products':'Manufacturing of Leather Products','Rubber Products':'Manufacturing of Rubber Products','Wood Products':'Manufacturing of Wood Products','Non Metalic Mineral Products':'Manufacturing of Non Metalic Mineral Products','Paper & Board':'Manufacturing of Paper & Board','Electronics':'Manufacture of Electrical Equipment','QIM':'QIM'};
-const LSM_PALETTE=['var(--green-900)','var(--gold-500)','var(--teal-700)','var(--negative)','var(--green-500)','var(--plum)','var(--sienna)','var(--slate)','var(--gold-700)','var(--teal-500)','var(--olive)','var(--rust)','var(--green-400)','var(--amber)','var(--green-300)','var(--sand)','var(--green-700)','var(--plum-300)','var(--teal-300)','var(--slate-300)','var(--olive-300)','var(--sienna-300)','var(--gold-400)'];
+const LSM_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)','var(--plum)','var(--teal-500)','var(--sienna)','var(--olive)','var(--sky)','var(--negative)','var(--mauve)','var(--amber)','var(--green-500)','var(--grey-blue)','var(--teal-300)','var(--sand)','var(--green-800)','var(--plum-300)','var(--line-strong)','var(--sienna-300)','var(--olive-300)','var(--green-300)','var(--gold-700)'];
 
 /* ---- topics (sidebar navigation, one topic at a time; #hash deep links) ---- */
 const TOPICS=[
@@ -418,9 +418,9 @@ function drawMix(){
  const shade=d=>{const c=d3.hcl(MACRO[d.parent].c);const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
  const g=svg.selectAll('g.row').data(rows,d=>d.k);
  const gE=g.enter().append('g').attr('class','row');
- gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--slate-700)');
+ gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)');
  gE.append('rect').attr('rx',4).attr('height',rh-8).style('cursor','pointer');
- gE.append('text').attr('class','rv').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-600)');
+ gE.append('text').attr('class','rv').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--body)');
  const gm=gE.merge(g);
  gm.transition().duration(450).attr('transform',(d,i)=>`translate(0,${i*rh+4})`);
  const fp=parentOf(selSector);
@@ -449,7 +449,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  const el=d3.select(elSel);if(!el.node())return;el.selectAll('*').remove();
  const gs=growthSeries(selSector);const lbl=gs.lbl,color=gs.color;
  d3.select(lblSel).text(selSector==='all'?'the whole economy':lbl);
- if(!gs.pts||!gs.pts.length){el.append('div').style('padding','20px').style('color','var(--slate-500)').text('No growth series for this sector.');return;}
+ if(!gs.pts||!gs.pts.length){el.append('div').style('padding','20px').style('color','var(--muted)').text('No growth series for this sector.');return;}
  const pts=gs.pts.map(p=>({...p,n:fyEnd(p.year)}));
  const W=el.node().clientWidth||520,H=tall?320:300,m={t:16,r:12,b:26,l:40};
  const x=d3.scaleLinear().domain([pts[0].n-0.5,lastPt(pts).n+0.5]).range([m.l,W-m.r]);
@@ -459,7 +459,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  ERAS.forEach((e,i)=>{if(i%2)svg.append('rect').attr('x',x(e[0])).attr('y',m.t).attr('width',x(Math.min(e[1],lastPt(pts).n))-x(e[0])).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);});
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor(W/80)).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(6).tickFormat(d=>d+'%')).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--slate-300)');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
  const bw=Math.max(2,(W-m.l-m.r)/pts.length-1.5);
  svg.selectAll('rect.b').data(pts).join('rect').attr('class','b')
   .attr('x',d=>x(d.n)-bw/2).attr('width',bw)
@@ -482,8 +482,16 @@ function drawGrowthLine(elSel,lblSel,tall){
 /* ================= growth contributions ================= */
 let cGroup='broad',cYear=null,cView='contrib';
 const CONTRIB_COLORS={agri:'var(--green-400)',ind:'var(--gold-500)',serv:'var(--green-800)'};
-const DETAIL_PALETTE=['var(--green-700)','var(--green-400)','var(--green-400)','var(--green-300)','var(--negative)','var(--gold-500)','var(--gold-400)','var(--gold-300)','var(--gold-800)',
- 'var(--green-900)','var(--green-800)','var(--green-300)','var(--green-200)','var(--green-900)','var(--teal-700)','var(--teal-700)','var(--green-300)','var(--teal-700)','var(--teal-500)','var(--teal-500)'];
+/* Twenty sub-sectors, twenty distinct colours, in the shared ramp's family
+   order. The remap that merged the two CSS worlds had collapsed this to
+   thirteen - green-300 appeared three times and teal-700 three times - so
+   different sectors were drawn the same colour in a stacked bar, which is not
+   a style problem but an unreadable chart. */
+const DETAIL_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)',
+ 'var(--plum)','var(--teal-500)','var(--sienna)','var(--olive)','var(--sky)',
+ 'var(--negative)','var(--mauve)','var(--amber)','var(--green-500)',
+ 'var(--grey-blue)','var(--teal-300)','var(--sand)','var(--green-800)',
+ 'var(--plum-300)','var(--slate-300)','var(--sienna-300)'];
 function contribKeys(){
  const ks=Object.keys(ST.contrib||{});
  const order={agri:0,ind:1,serv:2};
@@ -549,7 +557,7 @@ function drawContrib(){
   .call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(0,${y(0)})`).attr('class','axis')
   .call(d3.axisBottom(x).tickFormat((d,i)=>years.length>14&&i%2?'':d.slice(2)))
-  .call(g=>g.selectAll('text').attr('y',12).attr('fill','var(--slate-500)'));
+  .call(g=>g.selectAll('text').attr('y',12).attr('fill','var(--muted)'));
  // stacked bars, positive up / negative down
  years.forEach(yr=>{
   const rows=rowsBy[yr].slice().sort((a,b)=>keys.indexOf(a.key)-keys.indexOf(b.key));
@@ -607,12 +615,12 @@ function drawCYear(){
  const x=d3.scaleLinear().domain([minV,maxV]).range([lblW+12+negRoom,W-56]);
  const zero=x(0);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-20).attr('stroke','var(--slate-400)');
+ svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-20).attr('stroke','var(--muted-2)');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+4})`)
   .attr('opacity',d=>focusOK(d)?1:.32)
   .on('mousemove',(e,d)=>showTip(`<b>${d.label}</b> · ${cYear}<br>${(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2)} pp — ${d.v>=0?'added to':'subtracted from'} growth`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2-2).attr('dy','.32em').attr('text-anchor','end')
-  .attr('font-size',cGroup==='broad'?12.5:11).attr('font-weight',600).attr('fill',d=>d.v<0?RED:'var(--slate-700)')
+  .attr('font-size',cGroup==='broad'?12.5:11).attr('font-weight',600).attr('fill',d=>d.v<0?RED:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);return d.label.length>max?d.label.slice(0,max-1)+'…':d.label;});
  // bar: from zero, right for positive, left for negative
  g.append('rect').attr('y',3).attr('height',rh-9).attr('rx',3)
@@ -625,7 +633,7 @@ function drawCYear(){
   .attr('fill',d=>d.v>=0?'var(--green-600)':RED).text(d=>(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2));
  const tot=d3.sum(rows,r=>r.v);
  const gdpP=(ST.contrib_gdp.find(p=>p.year===cYear)||{}).value;
- svg.append('text').attr('x',lblW).attr('y',H-6).attr('text-anchor','end').attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-600)').text('Sum');
+ svg.append('text').attr('x',lblW).attr('y',H-6).attr('text-anchor','end').attr('font-size',11).attr('font-weight',800).attr('fill','var(--body)').text('Sum');
  svg.append('text').attr('x',zero+5).attr('y',H-6).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
   .text(`${tot>=0?'+':'−'}${Math.abs(tot).toFixed(2)} pp` + (gdpP!=null?`  ·  published GDP growth ${fmtPct(gdpP)}`:''));
 }
@@ -648,7 +656,7 @@ function drawCEras(){
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'pp'))
   .call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(0,${y(0)})`).attr('class','axis').call(d3.axisBottom(x).tickSize(0))
-  .call(g=>g.selectAll('text').attr('y',14).attr('font-weight',600).attr('fill','var(--slate-600)'));
+  .call(g=>g.selectAll('text').attr('y',14).attr('font-weight',600).attr('fill','var(--body)'));
  data.forEach(d=>{
   let up=0,dn=0;
   keys.forEach(k=>{
@@ -685,17 +693,17 @@ function drawLsm(){
  const sel=Object.keys(lsmSeries).filter(c=>lsmSel.has(c));
  const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(330,W*0.28)),narrow=W<600,m={t:16,r:narrow?16:150,b:28,l:42};
  const allPts=sel.flatMap(c=>lsmSeries[c]);
- if(!allPts.length){el.append('div').style('padding','30px').style('color','var(--slate-500)').text('Pick at least one sector.');return;}
+ if(!allPts.length){el.append('div').style('padding','30px').style('color','var(--muted)').text('Pick at least one sector.');return;}
  const x=d3.scaleLinear().domain(d3.extent(allPts,p=>p.n)).range([m.l,W-m.r]);
  const y=d3.scaleLinear().domain([0,d3.max(allPts,p=>p.v)*1.05]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor((W-m.r)/70)).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(6)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--slate-300)').attr('stroke-dasharray','3 3');
- svg.append('text').attr('x',m.l+4).attr('y',y(100)-5).attr('font-size',10).attr('fill','var(--slate-400)').text('2015-16 = 100');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ svg.append('text').attr('x',m.l+4).attr('y',y(100)-5).attr('font-size',10).attr('fill','var(--muted-2)').text('2015-16 = 100');
  // base-change marker
- svg.append('line').attr('x1',x(2016)).attr('x2',x(2016)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--slate-200)');
- svg.append('text').attr('x',x(2016)).attr('y',m.t-4).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--slate-400)').text('base change');
+ svg.append('line').attr('x1',x(2016)).attr('x2',x(2016)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--line)');
+ svg.append('text').attr('x',x(2016)).attr('y',m.t-4).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted-2)').text('base change');
  const line=d3.line().x(p=>x(p.n)).y(p=>y(p.v)).curve(d3.curveMonotoneX);
  sel.forEach(c=>{
   const pts=lsmSeries[c];
@@ -730,7 +738,7 @@ function drawQim(){
  svg.append('path').datum(pts).attr('fill','none').attr('stroke','var(--green-600)').attr('stroke-width',1.8)
   .attr('d',d3.line().x(p=>x(p.d)).y(p=>y(p.qim)));
  const bw=Math.max(1,(W-m.l-m.r)/pts.length-0.6);
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',yb(0)).attr('y2',yb(0)).attr('stroke','var(--slate-200)');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',yb(0)).attr('y2',yb(0)).attr('stroke','var(--line)');
  svg.selectAll('rect.yy').data(pts.filter(p=>p.yoy!=null)).join('rect').attr('class','yy')
   .attr('x',p=>x(p.d)-bw/2).attr('width',bw)
   .attr('y',p=>Math.min(yb(0),yb(p.yoy))).attr('height',p=>Math.abs(yb(0)-yb(p.yoy)))
@@ -768,14 +776,14 @@ function drawWeights(){
   .on('click',(e,d)=>{lsmSel.has(d.c)?lsmSel.delete(d.c):lsmSel.add(d.c);styleChips();drawLsm();drawWeights();})
   .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>Jul–May 2025-26: ${fmtPct(d.g)}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',d=>lsmSel.has(d.c)?800:600)
-  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--slate-600)')
+  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);const t=LSM_SHORT[d.c];return t.length>max?t.slice(0,max-1)+'…':t;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('rx',3)
   .attr('width',d=>Math.max(1.5,x(d.w)-x(0)))
-  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--slate-300)');
- g.append('text').attr('x',d=>x(d.w)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-500)').text(d=>d.w.toFixed(1)+'%');
+  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--line-strong)');
+ g.append('text').attr('x',d=>x(d.w)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--muted)').text(d=>d.w.toFixed(1)+'%');
  g.append('text').attr('x',W-4).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800)
-  .attr('fill',d=>d.g==null?'var(--slate-400)':d.g>=0?'var(--green-600)':'var(--negative)').text(d=>fmtPct(d.g));
+  .attr('fill',d=>d.g==null?'var(--muted-2)':d.g>=0?'var(--green-600)':'var(--negative)').text(d=>fmtPct(d.g));
 }
 
 /* ================= 4. CMI dumbbells ================= */
@@ -806,18 +814,18 @@ function drawCmi(){
  const unit=cmiM==='emp'?'persons':cmiM==='est'?'establishments':'% of manufacturing GVA';
  const g=svg.selectAll('g.r').data(rows).join('g').attr('class','r').attr('transform',(d,i)=>`translate(0,${i*rh+12})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.lbl}</b><br>2005-06: ${d.p05.toFixed(1)}%${d.a05?` (${d.a05.toLocaleString()} ${unit})`:''}<br>2015-16: ${d.p15.toFixed(1)}%${d.a15?` (${d.a15.toLocaleString()} ${unit})`:''}<br><b>${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}pp</b> change in share`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',m.l-10).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',600).attr('fill','var(--slate-700)').text(d=>d.lbl);
+ g.append('text').attr('x',m.l-10).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',600).attr('fill','var(--body)').text(d=>d.lbl);
  g.append('line').attr('x1',d=>x(d.p05)).attr('x2',d=>x(d.p15)).attr('y1',2).attr('y2',2)
   .attr('stroke',d=>d.p15>=d.p05?'var(--green-500)':'var(--negative)').attr('stroke-width',2.5).attr('opacity',.75);
- g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','var(--surface)').attr('stroke','var(--slate-400)').attr('stroke-width',2);
+ g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','var(--surface)').attr('stroke','var(--muted-2)').attr('stroke-width',2);
  g.append('circle').attr('cx',d=>x(d.p15)).attr('cy',2).attr('r',5).attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)');
  g.append('text').attr('x',W-6).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',700)
   .attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)').text(d=>`${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}`);
  // legend lives in HTML above the chart so it can never overlap the rows
  d3.select('#cmiLegend').html(
-   '<span><i style="width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--slate-400)"></i>2005-06 census</span>'+
+   '<span><i style="width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--muted-2)"></i>2005-06 census</span>'+
    '<span><i style="width:10px;height:10px;border-radius:50%;background:var(--green-600)"></i>2015-16 census</span>'+
-   '<span style="color:var(--slate-400)">line = change in share · right-hand number = percentage-point change</span>');
+   '<span style="color:var(--muted-2)">line = change in share · right-hand number = percentage-point change</span>');
 }
 
 /* ================= IO: focus / chord / grid ================= */
@@ -865,7 +873,7 @@ function drawIOFocus(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const cy=y0=>y0;
  const hdr=(x,txt,anchor)=>svg.append('text').attr('x',x).attr('y',18).attr('text-anchor',anchor)
-   .attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)')
+   .attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)')
    .attr('letter-spacing','.05em').text(txt);
  hdr(cx-gap/2-6,'SUPPLIES INTO IT','end');hdr(cx+gap/2+6,'IT SUPPLIES TO','start');
  // centre block
@@ -886,7 +894,7 @@ function drawIOFocus(){
   g.append('rect').attr('y',6).attr('height',15).attr('rx',3)
    .attr('x',d=>side<0?edge-bw(d.v):edge).attr('width',d=>bw(d.v))
    .attr('fill',d=>colors[d.j]).attr('opacity',.85);
-  g.append('text').attr('y',13.5).attr('dy','.32em').attr('font-size',11).attr('font-weight',600).attr('fill','var(--slate-700)')
+  g.append('text').attr('y',13.5).attr('dy','.32em').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)')
    .attr('text-anchor',side<0?'end':'start')
    .attr('x',d=>side<0?edge-bw(d.v)-7:edge+bw(d.v)+7)
    .text(d=>{const room=side<0?(edge-bw(d.v)-14):(W-(edge+bw(d.v))-14);const max=Math.floor(room/6.2);
@@ -898,7 +906,7 @@ function drawIOFocus(){
   `<span>buys <b>${fmtRs(inTot)}</b> of inputs from other sectors</span>`+
   `<span>sells <b>${fmtRs(outTot)}</b> of inputs to them</span>`+
   (own>0?`<span>uses <b>${fmtRs(own)}</b> of its own output</span>`:'')+
-  `<span style="color:var(--slate-400)">click any bar to re-centre</span>`);
+  `<span style="color:var(--muted-2)">click any bar to re-centre</span>`);
 }
 function wrapText(sel,text,width,size){
  const words=text.split(/\s+/);const lines=[];let cur='';
@@ -958,26 +966,26 @@ function drawIOGrid(){
  // column headers (rotated)
  sectors.forEach((s,j)=>{
   svg.append('text').attr('transform',`translate(${m.l+j*cell+cell/2},${m.t-8}) rotate(-52)`)
-   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-600)').text(s);
+   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)').text(s);
  });
- svg.append('text').attr('x',m.l).attr('y',18).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('BUYER →');
- svg.append('text').attr('x',6).attr('y',m.t-8).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('SUPPLIER ↓');
+ svg.append('text').attr('x',m.l).attr('y',18).attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)').attr('letter-spacing','.05em').text('BUYER →');
+ svg.append('text').attr('x',6).attr('y',m.t-8).attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)').attr('letter-spacing','.05em').text('SUPPLIER ↓');
  sectors.forEach((s,i)=>{
   svg.append('text').attr('x',m.l-8).attr('y',m.t+i*cell+cell/2).attr('dy','.32em').attr('text-anchor','end')
-   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-700)').style('cursor','pointer')
+   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)').style('cursor','pointer')
    .on('click',()=>setIOSector(i)).text(s);
   svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t+i*cell+cell/2).attr('dy','.32em')
-   .attr('font-size',10).attr('font-weight',700).attr('fill','var(--slate-500)').text(fmtBn(rowTot[i]));
+   .attr('font-size',10).attr('font-weight',700).attr('fill','var(--muted)').text(fmtBn(rowTot[i]));
   sectors.forEach((s2,j)=>{
    const v=M[i][j];
    svg.append('rect').attr('x',m.l+j*cell).attr('y',m.t+i*cell).attr('width',cell-1).attr('height',cell-1).attr('rx',2)
-    .attr('fill',i===j?'var(--slate-100)':(v>0?col(Math.sqrt(v)):'var(--surface)'))
+    .attr('fill',i===j?'var(--ground)':(v>0?col(Math.sqrt(v)):'var(--surface)'))
     .style('cursor','pointer').on('click',()=>setIOSector(i))
     .on('mousemove',e=>showTip(i===j?`<b>${s}</b> — own use excluded here`:`<b>${s}</b> supplies<br><b>${s2}</b><br>${fmtRs(v)}`,e))
     .on('mouseleave',hideTip);
   });
  });
- svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t-8).attr('font-size',10).attr('font-weight',800).attr('fill','var(--slate-500)').text('total');
+ svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t-8).attr('font-size',10).attr('font-weight',800).attr('fill','var(--muted)').text('total');
 }
 
 /* ================= budget (treemap + trend, unchanged mechanics) ================= */

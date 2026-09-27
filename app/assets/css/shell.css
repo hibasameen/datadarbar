@@ -26,10 +26,11 @@
      remap gave two sectors the same token. These are muted and earthy so they
      still sit on cream beside the green chrome, and deliberately not the
      default web palette: no electric blue, no violet. */
-  --plum:#6b4c7a;       --plum-300:#a98cb5;
+  --pine:#1b5e4a;       --olive:#5c6b3a;      --olive-300:#a9b789;
+  --slate:#2f5d7c;      --sky:#7b9ec9;        --slate-300:#8fb0c6;
+  --grey-blue:#6e7f95;
+  --plum:#6b4c7a;       --mauve:#a3789e;      --plum-300:#a98cb5;
   --sienna:#b5651d;     --sienna-300:#dda878;
-  --slate:#2f5d7c;      --slate-300:#8fb0c6;
-  --olive:#5c6b3a;      --olive-300:#a9b789;
   --rust:#a8452f;       --amber:#c98b2e;      --sand:#d8b48a;
   --ink:#17301f;        --body:#3d424d;       --muted:#6b7280;
   --muted-2:#8b93a0;

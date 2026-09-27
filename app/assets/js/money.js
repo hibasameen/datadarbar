@@ -134,7 +134,7 @@ function axes(f, x, y, yFmt, xTicks) {
     .call(g => g.selectAll('.tick line').clone().attr('x2', f.W - f.m.r - f.m.l).attr('class', 'gl'));
 }
 const zeroLine = (f, x, y) => f.svg.append('line').attr('x1', f.m.l).attr('x2', f.W - f.m.r)
-  .attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--slate-300)');
+  .attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--line-strong)');
 const linePath = (f, pts, x, y, colour, w, dash) => f.svg.append('path').datum(pts)
   .attr('fill', 'none').attr('stroke', colour).attr('stroke-width', w || 2)
   .attr('stroke-dasharray', dash || null)
@@ -220,9 +220,9 @@ function multiLine(chart, sel, opts) {
   axes(f, x, y, opts.yFmt);
   if (opts.refLine != null) {
     f.svg.append('line').attr('x1', f.m.l).attr('x2', f.W - f.m.r).attr('y1', y(opts.refLine)).attr('y2', y(opts.refLine))
-      .attr('stroke', 'var(--slate-300)').attr('stroke-dasharray', '3 3');
+      .attr('stroke', 'var(--line-strong)').attr('stroke-dasharray', '3 3');
     if (opts.refText) f.svg.append('text').attr('x', f.m.l + 4).attr('y', y(opts.refLine) - 5)
-      .attr('font-size', 10).attr('fill', 'var(--slate-400)').text(opts.refText);
+      .attr('font-size', 10).attr('fill', 'var(--muted-2)').text(opts.refText);
   } else if (lo < 0) zeroLine(f, x, y);
   if (opts.before) opts.before(f, x, y, keys);
   keys.forEach(k => {
@@ -448,7 +448,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
   svg.append('text').attr('x', x0).attr('y', 16).attr('font-size', 13).attr('font-weight', 800)
     .attr('fill', 'var(--green-900)').text(title);
   svg.append('text').attr('x', x0).attr('y', 32).attr('font-size', 11.5).attr('font-weight', 600)
-    .attr('fill', 'var(--slate-500)').text(subtitle);
+    .attr('fill', 'var(--muted)').text(subtitle);
   const nodes = root.descendants().filter(d => d.depth > 0);
   const cell = g.selectAll('g').data(nodes).join('g').attr('transform', d => `translate(${d.x0},${d.y0})`);
   const tipHtml = d => {
@@ -525,7 +525,7 @@ function drawBop() {
   nestedPanel(svg, sideTree(deb, fi), wc + gap, hdr, wd, H - hdr, 'Dollars out', td, sub(td), fi);
   /* the balance, in the gap */
   const gx = wc + gap / 2;
-  svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--slate-200)');
+  svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--line)');
   const bt = svg.append('text').attr('x', gx).attr('y', H / 2 + hdr / 2).attr('text-anchor', 'middle')
     .attr('transform', `rotate(-90 ${gx} ${H / 2 + hdr / 2})`).attr('font-size', 11).attr('font-weight', 800)
     .attr('fill', bal < 0 ? 'var(--negative)' : 'var(--green-700)');
@@ -571,7 +571,7 @@ function drawRemit() {
     .on('mouseleave', hideTip);
   svg.selectAll('text.v').data(rows).join('text').attr('class', 'v cv')
     .attr('x', r => x(r[2]) + 6).attr('y', r => y(r[0]) + y.bandwidth() / 2 + 3)
-    .attr('fill', 'var(--slate-500)').text(r => usdm(r[2]));
+    .attr('fill', 'var(--muted)').text(r => usdm(r[2]));
 }
 
 /* ---------------- charts: money & banks ---------------- */
@@ -580,7 +580,7 @@ function drawMoney() {
   multiLine('money', '#chMoney', { yFmt: d => d3.format('~s')(d / 1000), fmt: v => 'Rs ' + bn(v / 1000),
     m: { t: 16, r: 130, b: 28, l: 58 },
     before: f => f.svg.append('text').attr('x', f.m.l).attr('y', f.m.t - 4).attr('font-size', 10)
-      .attr('fill', 'var(--slate-400)').text('Rs trillion') });
+      .attr('fill', 'var(--muted-2)').text('Rs trillion') });
 }
 function drawNpl() {
   if (!S.npl_ratio) return nodata('#chNpl', 'No non-performing loan data.');

@@ -22,29 +22,35 @@
 (function () {
   'use strict';
 
-  /* Distinguishable in order, so the first two series of any chart are the
-     most separated pair rather than two neighbouring greens - then widening
-     out, because a fifteen-sector chart drawn from three hues is unreadable
-     as well as dull. Muted and earthy so they hold together on cream beside
-     the green chrome, and deliberately not the default web palette: no
-     electric blue, no violet. Sixteen, because past sixteen a legend is the
-     wrong tool and the chart wants a different shape. */
+  /* Sixteen, spread across hue families rather than drawn from the chrome.
+
+     The first attempt built the ramp out of the brand colours and read as
+     what it was: ten of sixteen were green or gold, with one blue and one
+     purple between them, so a chart of eight series looked like eight shades
+     of the same thing. Reordering would not have fixed that - the set was
+     unbalanced, not badly sorted.
+
+     This is roughly even across green, blue, gold, red, purple and teal, and
+     the first five land in five different families, which is what matters:
+     most charts never reach slot six. Every hue is held at an editorial
+     saturation so it still sits on cream beside the green header - these are
+     muted cousins of the default web palette, not the palette itself. */
   var CATEGORICAL = [
-    '#0c3a1e', // green-900
-    '#d4a017', // gold-500
-    '#0f6e78', // teal-700
-    '#9a2c1f', // brick
-    '#4d8a62', // green-500
-    '#6b4c7a', // plum
-    '#b5651d', // sienna
-    '#2f5d7c', // slate
-    '#8a6a0d', // gold-700
-    '#3f9aa3', // teal-500
-    '#5c6b3a', // olive
+    '#1b5e4a', // pine
+    '#d4a017', // gold
+    '#2f5d7c', // slate blue
     '#a8452f', // rust
-    '#7aa88c', // green-400
+    '#6b4c7a', // plum
+    '#3f9aa3', // teal
+    '#b5651d', // sienna
+    '#5c6b3a', // olive
+    '#7b9ec9', // sky
+    '#9a2c1f', // brick
+    '#a3789e', // mauve
     '#c98b2e', // amber
-    '#9dbfa9', // green-300
+    '#4d8a62', // sage
+    '#6e7f95', // grey blue
+    '#8fbfc4', // pale teal
     '#d8b48a', // sand
   ];
 
