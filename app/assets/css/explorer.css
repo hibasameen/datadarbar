@@ -82,3 +82,6 @@ a.tree-item{color:var(--green-800)}
   max-width:62ch}
 .chart.panel code{font-family:var(--mono);font-size:.8em;background:var(--green-100);
   padding:.05rem .25rem;border-radius:3px}
+
+/* The card the rail just jumped to, so the eye lands in the right place. */
+.card.is-picked{box-shadow:0 0 0 2px var(--accent);transition:box-shadow .2s}
