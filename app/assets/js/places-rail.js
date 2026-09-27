@@ -24,6 +24,10 @@
 (function () {
   'use strict';
 
+  /* Words that mean the number is already relative to something. Checked on
+     the measure and the breakdown, because either half can carry it. */
+  var RATE_WORDS = /%|\brates?\b|\bratios?\b|\bper\b|averag|\bavg\b|\bmedian\b|\bmean\b|\bindex\b|proportion|\bshare\b|\bpct\b|per cent|percent|\bdensity\b/i;
+
   function build(IX, N, col, level, list) {
     var index = [], seen = {};
     for (var i = 0; i < N; i++) {
@@ -42,6 +46,25 @@
          rather than an empty dropdown. */
       var measure = col('measure', i) || label;
       var metric = col('metric', i) || '';
+      /* A count can be read per head; a rate already is one.
+
+         For census rows dp carries the index's own is_rate flag - null for a
+         count, 2 for a rate - and that is trustworthy. For every other source
+         dp is a decimal-places hint rather than a claim about the measure:
+         "Annual Growth Rate (%)" has no dp and is plainly a rate. So those
+         are tested on the name as well, which is what the name is for.
+
+         Population and area are excluded even though they are counts:
+         "population per 1,000 people" is 1,000 everywhere, and land per head
+         is a different question from the one this control asks. */
+      var dp = col('dp', i);
+      var census = col('source', i) === 'census';
+      // dp is is_rate only for census rows. Elsewhere it is decimal places:
+      // crop area carries dp 1 and is a count of hectares, not a rate.
+      var isRate = (census && dp > 0)
+        || RATE_WORDS.test(measure) || RATE_WORDS.test(metric || '');
+      var countable = !isRate && !/^(population|area)\b/i.test(measure);
+
       index.push({
         topic: topic, topicLabel: col('topic_label', i) || topic,
         ds: ds, dsLabel: ds,
@@ -52,6 +75,19 @@
         row: i, fullLabel: label,
         rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
       });
+      if (countable) {
+        index.push({
+          topic: topic, topicLabel: col('topic_label', i) || topic,
+          ds: ds, dsLabel: ds,
+          ind: measure, label: measure,
+          metric: 'n' + i,
+          metricLabel: (metric || 'All') + '\u2002\u00b7\u2002per 1,000 people',
+          key: col('indicator', i), groupKey: col('group_key', i),
+          years: (list ? list('years', i) : []).join('/'),
+          row: i, norm: true, fullLabel: label + ', per 1,000 people',
+          rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
+        });
+      }
     }
     /* "Total Population" is published in several tables, each with its own
        age bands, so the metric list showed "0-4" three times over. Where a
@@ -161,7 +197,7 @@
         levels: ['topic', 'ds', 'ind', 'metric'],
         labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                   metric: 'Metric' },
-        onChange: function (r) { if (r) opts.onChange(r.row); },
+        onChange: function (r) { if (r) opts.onChange(r.row, !!r.norm); },
       });
       rail.sync(false);
 
@@ -171,7 +207,7 @@
            instead of a rail pointing at an empty one. */
         fire: function () {
           var r = pick(index, st);
-          if (r) opts.onChange(r.row);
+          if (r) opts.onChange(r.row, !!r.norm);
         },
         /* The picker list and the rail are peers, so choosing from one moves
            the other. Without this they drift and the page shows a rail that
@@ -207,11 +243,11 @@
             levels: ['topic', 'ds', 'ind', 'metric'],
             labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                       metric: 'Metric' },
-            onChange: function (x) { if (x) opts.onChange(x.row); },
+            onChange: function (x) { if (x) opts.onChange(x.row, !!x.norm); },
           });
           rail.sync(false);
           var drawn = pick(index, st) || next;
-          opts.onChange(drawn.row);
+          opts.onChange(drawn.row, !!drawn.norm);
         },
       };
     },

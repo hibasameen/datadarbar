@@ -42,6 +42,7 @@
     year: null,
     locality: 'all',
     sex: 'all',
+    norm: false,        // showing the per-1,000 twin of a count
     values: null,       // map_key -> number
     meta: null,         // map_key -> {relation, note}
     place: null,        // selected map key
@@ -256,6 +257,27 @@
   function fetchValues(i) {
     var src = col('source', i), ind = col('indicator', i), gk = col('group_key', i);
 
+    /* Per 1,000 people applies to any count, whatever published it. The
+       census route does its own division below, because it has a year and a
+       locality to match; everything else divides here against the latest
+       census, which is the only population these places have. */
+    if (state.norm && src !== 'census') {
+      return Promise.all([rawValues(i), population('2023',
+                                                   'POPULATION-2023 / ALL SEXES')])
+        .then(function (both) {
+          var v = both[0].values || both[0], pop = both[1], out = {};
+          Object.keys(v).forEach(function (k) {
+            if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * 1000;
+          });
+          return { values: out, meta: {} };
+        });
+    }
+    return rawValues(i);
+  }
+
+  function rawValues(i) {
+    var src = col('source', i), ind = col('indicator', i), gk = col('group_key', i);
+
     if (src === 'place') {
       var fams = (col('families', i) || '').split(' ').filter(Boolean);
       return Promise.all([loadGroup(gk), fams.length ? loadProvenance() : null])
@@ -327,7 +349,61 @@
           return { values: out, meta: {} };
         });
     }
-    return censusYear(year);
+    if (!state.norm) return censusYear(year);
+
+    /* Per 1,000 people, against the whole population of the place - not the
+       population of the band. "Divorced, 35-44 per 1,000" is therefore per
+       1,000 of everyone, which is a rate of the whole place rather than a
+       prevalence within the age group, and the label says people rather than
+       anything narrower.
+
+       Locality is matched, so a rural count is divided by the rural
+       population, and the year is the indicator's own: dividing a 2017 count
+       by a 2023 population would invent a change that is only a denominator
+       moving. */
+    var popYear = /^\u0394/.test(year) ? '2023' : year;
+    var popInd = popYear === '2017'
+      ? 'POPULATION - 2017 / ALL SEXES'
+      : 'POPULATION-2023 / ALL SEXES';
+    return Promise.all([
+      /^\u0394/.test(year)
+        ? Promise.all([censusYear('2017'), censusYear('2023')]).then(function (b) {
+            var a = b[0].values, c2 = b[1].values, out = {};
+            Object.keys(c2).forEach(function (k) {
+              if (a[k] != null && c2[k] != null) out[k] = c2[k] - a[k];
+            });
+            return { values: out };
+          })
+        : censusYear(year),
+      population(popYear, popInd),
+    ]).then(function (both) {
+      var v = both[0].values, pop = both[1], out = {};
+      Object.keys(v).forEach(function (k) {
+        if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * 1000;
+      });
+      return { values: out, meta: {} };
+    });
+  }
+
+  /* The place's population, from table 1 of the same census, at the same
+     locality and unit type. */
+  function population(year, indicator) {
+    return engine().then(function (w) {
+      return w.query(
+        'SELECT map_key AS k, value AS v FROM census_panel_' + year
+        + " WHERE table_id = '1'"
+        + '   AND indicator = ' + q(indicator)
+        + '   AND locality = ' + q(state.locality)
+        + (state.level === 'district' ? "   AND unit_type = 'district'"
+                                      : "   AND unit_type <> 'district'")
+        + '   AND map_key IS NOT NULL AND value IS NOT NULL');
+    }).then(function (res) {
+      var out = {};
+      res.rows.forEach(function (r) {
+        String(r.k).split(' ').forEach(function (k) { out[k] = r.v; });
+      });
+      return out;
+    });
   }
 
   /* low_n and n_obs are filed under the survey family - dhs_fert - while the
@@ -407,8 +483,9 @@
     return yrs;
   }
 
-  function choose(i) {
+  function choose(i, norm) {
     state.row = i;
+    if (norm !== undefined) state.norm = !!norm;
     if (rail) rail.follow(i);
     var yrs = yearsFor(i);
     // Default to the most recent actual year, not to the change. The curated
@@ -477,6 +554,16 @@
     });
   }
 
+  /* Decimal places for whatever is on screen. A count carries none, but its
+     per-1,000 twin is a small number - six divorced people in a district of a
+     million is 0.006 - and printing it with the count's precision showed a
+     legend running 0 to 0. */
+  function dpFor(row) {
+    if (state.norm) return 2;
+    var dp = col('dp', row);
+    return dp == null ? dp : dp;
+  }
+
   function rampFor(row) {
     if (row == null || !window.DDMapScales) return ['#e6f4ec', '#145228'];
     return window.DDMapScales.for(col('group_key', row), col('topic', row));
@@ -520,7 +607,7 @@
         var v = state.values[g.key(f.properties)];
         if (v != null && !isNaN(v) && (!prov || g.prov(f.properties) === prov)) vals.push(v);
       });
-      var isRate = col('dp', state.row) > 0;
+      var isRate = state.norm || col('dp', state.row) > 0;
       var sc = scaleFor(vals, isRate);
 
       if (layer) { map.removeLayer(layer); }
@@ -579,13 +666,14 @@
   function renderLegend() {
     var i = state.row;
     if (i == null) return;
-    $('legendTitle').textContent = col('label', i);
+    $('legendTitle').textContent = (col('label', i))
+      + (state.norm ? ', per 1,000 people' : '');
     var n = state.values ? Object.keys(state.values).length : 0;
     $('legendSub').textContent = col('group_label', i) + (n ? ' · ' + n.toLocaleString()
       + ' ' + GEO[state.level].noun + 's' : '');
 
     var sc = state.scale;
-    var dp = col('dp', i);
+    var dp = dpFor(i);
     $('legendRamp').style.background = 'linear-gradient(90deg,' +
       chroma.scale(rampFor(i)).colors(5).join(',') + ')';
     $('legendLo').textContent = sc ? fmt(sc.breaks[0], dp) : '';
@@ -679,7 +767,7 @@
   function renderRanks() {
     var box = $('ranks');
     if (state.row == null || !state.values) { box.hidden = true; return; }
-    var dp = col('dp', state.row);
+    var dp = dpFor(state.row);
     var seen = {}, rows = [];
     Object.keys(state.values).forEach(function (k) {
       var v = state.values[k];
@@ -722,7 +810,7 @@
       return;
     }
     var key = state.place, v = state.values ? state.values[key] : null;
-    var dp = col('dp', state.row);
+    var dp = dpFor(state.row);
 
     var entries = Object.keys(state.values || {}).map(function (k) {
       return { k: k, v: state.values[k] };
@@ -932,6 +1020,7 @@
     q.set('i', col('indicator', state.row));
     q.set('lv', state.level);
     if (state.year) q.set('y', state.year);
+    if (state.norm) q.set('n', '1');
     if (state.locality !== 'all') q.set('loc', state.locality);
     if (state.sex !== 'all') q.set('sex', state.sex);
     if (state.place) q.set('p', state.place);
@@ -952,6 +1041,7 @@
     if (row < 0) return false;
     if (q.get('y')) state.year = q.get('y');
     if (q.get('loc')) state.locality = q.get('loc');
+    state.norm = q.get('n') === '1';
     if (q.get('sex')) state.sex = q.get('sex');
     state.place = q.get('p') || null;
     state.openTopic = col('topic', row);
@@ -999,7 +1089,8 @@
     renderPicker();
     rail = window.DDPlacesRail && window.DDPlacesRail.mount({
       el: $('rail'), IX: IX, N: N, col: col, list: list, level: state.level,
-      row: state.row, onChange: choose,
+      row: state.row,
+      onChange: function (row, norm) { state.norm = !!norm; choose(row); },
     });
     if (!readUrl() && rail) rail.fire();
   }
