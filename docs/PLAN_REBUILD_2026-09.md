@@ -21,6 +21,83 @@ Readable copy of this plan: https://claude.ai/artifact/D4VvoE3crATDwahGVa9mhn
 **Nothing here publishes.** Every phase ends at a commit on a branch. Deployment
 is a separate decision and is not in this plan.
 
+## Status, 27 September
+
+Phases 0 and 1 are complete. Phase 2 has its three Places sources in; the
+Economy and State sources remain. Phase 3 has not started, and is what the site
+still visibly lacks.
+
+| | | |
+|---|---|---|
+| **0** | Gates and ground | **done** |
+| 0.1 | Measure the engine | done — 6,295 KB against 1,826 KB; warehouse-only on first paint is off, one source and two deliveries instead |
+| 0.2 | Concurrent writer | done — sandbox closed |
+| 0.3 | Shared shell | done — `shell.css`, `apply_shell.py`, `shell.js`; 75 pages on one shell |
+| **1** | The place spine | **done** |
+| 1.1 | Curated districts onto PBS 2023 | done — 147 slugs placed, zero values changed |
+| 1.2 | `place_indicators` + index | done, then rebuilt around subjects and facets |
+| 1.3 | Tehsil layers | done — all 83 indicators, verified against the live payload |
+| 1.4 | Publish geographies and crosswalks | done — 6 tables catalogued, including `geography_keys` |
+| **2** | Ingest | **3 of 7** |
+| 2.1 | Emigrants by district | done — 2,190 rows, no crosswalk needed |
+| 2.2 | Crops by district and FY | done — 78,425 rows, index-only delivery |
+| 2.3 | Census entity counts | done — 15,387 rows, the only source covering AJK and GB |
+| 2.4 | GDP growth, GVA annual and quarterly | **remaining** — Economy, not Places |
+| 2.5 | Trade by country, group, monthly | **remaining** — Economy |
+| 2.6 | FBR tax collection by head | **remaining** — State |
+| 2.7 | Remittances, skills, destinations | **remaining** — Economy |
+| **3** | Places | **not started** |
+| 3.1 | The picker | remaining — the index is built and measured at 0.087 MB gzipped |
+| 3.2 | The year control | remaining, and narrower than the design assumed (below) |
+| 3.3 | Readable labels | remaining |
+| 3.4 | The right panel | remaining |
+| 3.5 | Drop `census_data.js` | remaining |
+| 3.6 | Facilities overlay | remaining |
+| **4** | Economy and State | **not started** — blocked on 2.4–2.6 |
+| **5** | Analysts' shelf | **geography half done in 1.4**; catalogue and census-panel pages remain |
+
+### What the work changed about the plan
+
+Four things were found by building that the plan had assumed otherwise.
+
+**Warehouse-only on first paint is off.** The engine is 6,295 KB over the wire
+against the 1,826 KB it would save. One source of truth, two deliveries,
+chosen by size: small enough to ship goes as a payload, too big stays on
+Parquet with the engine on demand. Crops is the first source to take the second
+route — 78,425 rows of values, 324 index entries.
+
+**Census was a topic, and should not have been.** The first index filed 37,971
+series under one heading, reproducing the source-oriented structure this
+redesign exists to remove. Census tables are now placed by subject, and both
+halves of the index read one topic vocabulary. There are thirteen topics: the
+design's ten, plus Migration, Agriculture and Buildings & facilities, each
+added with a source the design predates.
+
+**The census year is not a facet.** The design says year, rural/urban and sex
+are chosen after picking an indicator. Locality and sex are real facets. Of
+4,039 district cell definitions, **34 exist in both censuses**. The two
+censuses did not publish the same tables, so for 99 per cent of census
+indicators the year is part of what the indicator is. The 2017 · 2023 · Change
+control still works for the curated survey indicators, which are built as
+pairs, and for population, which PBS restates itself.
+
+**Every map draws AJK and Gilgit-Baltistan, and none draws Indian-occupied
+Kashmir.** 156 districts and 649 tehsils. The 58 tehsils outside the census
+frame were greyed until 2.3 arrived, which is the only source that reaches
+them.
+
+### Work done that was not in the plan
+
+- `.claude/skills/pk-census-geography/` — the geography written up as a skill,
+  with every boundary change generated from the crosswalks rather than typed.
+- Asset cache-busting. The payloads under `app/data` loaded under names that
+  never change, so a rebuilt 649-shape tehsil layer still rendered as 591 for
+  anyone who had the old one. `ASSET_V` is stamped by the builders now.
+- `scripts/build_seo.py` carried its own copy of the header and footer, so
+  Phase 0.3 had reached only 10 of 75 pages. It imports the shared definition.
+- A build-time guard for literal `\uXXXX` escapes in labels, after that bug
+  shipped twice.
+
 ## Where we are
 
 | | state |
