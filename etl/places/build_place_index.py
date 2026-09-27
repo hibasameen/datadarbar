@@ -112,7 +112,11 @@ def main():
     # picker lists them and the values are read when one is chosen. Same shape
     # as the two halves below, so it unions straight in.
     extra_index = ''.join(
-        "\n        UNION ALL SELECT * FROM '%s'" % x for x in a.extra_index)
+        """
+        UNION ALL SELECT level, topic, topic_label, group_key, group_label,
+               dataset, indicator, label, '' AS raw_indicator, '' AS raw_col,
+               dp, source, years, localities, sexes, shapes, units,
+               min_value, max_value FROM '%s'""" % x for x in a.extra_index)
     tvals = ', '.join(
         "('" + t + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "')"
         for t, k in sorted(TOPIC_OF_TABLE.items()))
@@ -127,6 +131,7 @@ def main():
         curated AS (
           SELECT p.level, gt.topic, gt.topic_label, v.group_key, v.group_label,
                  v.dataset, p.indicator, v.label,
+                 '' AS raw_indicator, '' AS raw_col,
                  nullif(v.dp, -1) AS dp,
                  'place' AS source,
                  list_sort(list_distinct(list(p.year) FILTER (WHERE p.year IS NOT NULL)))
@@ -158,6 +163,8 @@ def main():
                  c.table_id || '|' || c.indicator || '|' || coalesce(c.col_label, '') AS indicator,
                  c.indicator || CASE WHEN c.col_label IS NOT NULL AND c.col_label <> c.indicator
                                    THEN ' \u00b7 ' || c.col_label ELSE '' END AS label,
+                 c.indicator AS raw_indicator,
+                 coalesce(c.col_label, '') AS raw_col,
                  CASE WHEN bool_or(c.is_rate) THEN 2 END AS dp,
                  'census' AS source,
                  list_sort(list_distinct(list(CAST(c.census_year AS TEXT)))) AS years,
@@ -172,6 +179,24 @@ def main():
         SELECT * FROM curated UNION ALL SELECT * FROM census{extra_index}""")
 
     out_i = pathlib.Path(a.out_index)
+    # PBS's own concatenation is the audit trail; the picker needs something a
+    # reader can scan. labels.py changes case, dashes, the order of two parts
+    # and a redundant repetition - never the words.
+    from labels import display
+    rows = con.sql("""SELECT rowid, label, raw_indicator, raw_col
+                      FROM place_indicator_index WHERE raw_indicator <> ''""").fetchall()
+    con.execute('CREATE TABLE relabel(rid BIGINT, lab TEXT)')
+    con.executemany('INSERT INTO relabel VALUES (?,?)',
+                    [(r[0], display(r[2], r[3] or None)) for r in rows])
+    con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+        SELECT i.* REPLACE (coalesce(r.lab, i.label) AS label),
+               nullif(i.label, coalesce(r.lab, i.label)) AS label_source
+        FROM place_indicator_index i LEFT JOIN relabel r ON r.rid = i.rowid""")
+    con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_indicator')
+    con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_col')
+    print(f'  {len(rows):,} census labels rewritten for reading; '
+          f'PBS\u2019s own kept in label_source')
+
     ovals = ', '.join("('" + k + "', " + str(i) + ")" for i, k in enumerate(ORDER))
     con.execute(f"""COPY (SELECT i.* FROM place_indicator_index i
                           LEFT JOIN (VALUES {ovals}) AS o(topic, ord) ON o.topic = i.topic
