@@ -58,3 +58,27 @@ a.tree-item{color:var(--green-800)}
   .tree{width:auto;border-right:0;border-bottom:1px solid var(--line)}
   .pane{padding:18px 16px}
 }
+
+/* ── the dropdown rail: dataset, topic, indicator ─────────────────────────
+   Three peers over one index, sitting above the coverage strip. They wrap to
+   one per line on a phone, where a 3-up row would leave each select too
+   narrow to read a label like "Khyber Pakhtunkhwa, seven serious offences". */
+.xrail{display:flex;flex-wrap:wrap;gap:.6rem .9rem;align-items:flex-end;
+  padding:.7rem .9rem;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);margin-bottom:.7rem}
+.xf{display:flex;flex-direction:column;gap:.2rem;flex:1 1 190px;min-width:0}
+.xf-label{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:600}
+.xf-select{font:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line-strong);border-radius:6px;padding:.36rem .5rem;
+  width:100%;max-width:100%;cursor:pointer}
+.xf-select:focus-visible{outline:2px solid var(--green-700);outline-offset:1px}
+.xrail-meta{flex:1 1 100%;font-size:.72rem;color:var(--muted);margin:0}
+
+/* A dataset that cannot be charted yet gets prose in the chart box instead. */
+.chart.panel{display:block;overflow:auto;padding:.2rem .1rem}
+.chart.panel h2{font-size:1rem;margin:0 0 .5rem}
+.chart.panel p{font-size:.86rem;line-height:1.55;margin:0 0 .7rem;color:var(--body);
+  max-width:62ch}
+.chart.panel code{font-family:var(--mono);font-size:.8em;background:var(--green-100);
+  padding:.05rem .25rem;border-radius:3px}

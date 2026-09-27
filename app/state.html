@@ -42,10 +42,13 @@
     <div class="tree-group">
       <div class="tree-label">Crime &amp; policing</div>
       <button class="tree-item" type="button" data-topic="crime">Reported offences</button>
+      <button class="tree-item" type="button" data-topic="sindhCrime">Sindh crime tables</button>
+      <button class="tree-item" type="button" data-topic="firs">Sindh first information reports</button>
     </div>
     <div class="tree-group">
       <div class="tree-label">Energy</div>
       <button class="tree-item" type="button" data-topic="plants">Power plants &amp; capacity</button>
+      <button class="tree-item" type="button" data-topic="discos">Electricity distribution</button>
     </div>
     <div class="tree-group">
       <div class="tree-label">Public services</div>
@@ -69,10 +72,11 @@
       </div>
     </header>
 
+    <div class="xrail" id="rail"></div>
+
     <div class="coverage" id="coverage"></div>
 
     <section class="card" id="card">
-      <div class="card-controls" id="cardControls"></div>
       <div class="chart" id="chart"></div>
       <p class="card-note" id="cardNote"></p>
     </section>
@@ -88,6 +92,7 @@
 <!-- /dd:footer -->
 <script src="assets/js/d3.v7.min.js"></script>
 <script src="data/state_data.js"></script>
+<script src="assets/js/explorer.js"></script>
 <script src="assets/js/state.js"></script>
 <script src="assets/js/shell.js"></script>
 </body></html>

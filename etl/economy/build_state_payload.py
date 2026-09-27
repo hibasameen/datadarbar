@@ -82,7 +82,10 @@ def main():
 
     con = duckdb.connect()
     con.execute('SET threads TO 1')
-    W_ = pathlib.Path(a.warehouse).as_posix()
+    W = pathlib.Path(a.warehouse)
+    W_ = W.as_posix()
+    cat_file = W / 'catalog.json'
+    catalog = json.loads(cat_file.read_text()) if cat_file.exists() else None
 
     def rows(sql):
         return [[str(x) if hasattr(x, 'isoformat') else x for x in r]
@@ -160,6 +163,29 @@ def main():
           AND (measure = 'reported_crime_total' OR region = 'KP')
         ORDER BY region, geography, year, offence""")
 
+    # Sindh publishes its own crime tables on a different schema from the
+    # national compilation - 54 categories nested in 7 groups, by police range
+    # - so it is its own dataset rather than being forced into police_crime.
+    # Only rows the extractor selected: the tables carry prior-year comparison
+    # columns that would otherwise be counted as observations of their own.
+    sindh = rows(f"""
+        SELECT year, geography_name, geography_level,
+               CASE WHEN upper(category_group) = 'MISCELLANEOUS' THEN 'Miscellaneous'
+                    ELSE category_group END AS grp,
+               crime_category_raw, sum(cases_reported)
+        FROM '{W_}/sindh_crime_annual.parquet'
+        WHERE selection_status = 'selected' AND row_type = 'detail'
+          AND cases_reported IS NOT NULL
+        GROUP BY 1, 2, 3, 4, 5 ORDER BY 1, 2, 4, 5""")
+
+    # First information reports, daily. Eight weeks of 2025, not a year: the
+    # ytd column is a running total and must never be summed.
+    firs = rows(f"""
+        SELECT report_date, geography_name, geography_level, daily_firs, ytd_firs
+        FROM '{W_}/sindh_fir_daily.parquet'
+        WHERE daily_firs IS NOT NULL
+        ORDER BY report_date, geography_name""")
+
     # Energy: every plant, with a grouped fuel family for the chart.
     plants = rows(f"""
         SELECT plant_name, {FUEL_FAMILY} AS family, technology, fuel,
@@ -197,6 +223,88 @@ def main():
                count(DISTINCT item)
         FROM '{W_}/budget_lines.parquet'""").fetchone()
 
+    # ── the indicator index ────────────────────────────────────────────────
+    # One row per dataset x topic x indicator: what the three dropdowns offer
+    # and what each one draws. Nothing here is a claim about the data - the
+    # year span on every row is computed from the block below, so an index
+    # entry cannot outlive the series it describes.
+    INDEX = [
+        # ds, topic, indicator, label, chart, block, year-field
+        ('fbr_tax_collection', 'tax', 'stack', 'Collection by head, stacked',
+         'taxStack', 'tax', 'fy_end'),
+        ('fbr_tax_collection', 'tax', 'lines', 'Collection by head, as lines',
+         'taxLines', 'tax', 'fy_end'),
+        ('fbr_tax_collection', 'tax', 'share', 'Each head as a share of the total',
+         'taxShare', 'tax', 'fy_end'),
+        ('budget_lines', 'budget', 'panel',
+         'What eighteen budget documents contain', 'budgetPanel', None, None),
+        ('ljcp_case_flows', 'courts', 'pending', 'Cases pending at year end',
+         'courtsPending', 'courts', 'year'),
+        ('ljcp_case_flows', 'courts', 'clearance', 'Clearance rate',
+         'courtsClearance', 'courts', 'year'),
+        ('ljcp_case_flows', 'courts', 'flow', 'Instituted against disposed',
+         'courtsFlow', 'courts', 'year'),
+        ('ljcp_case_flows', 'courts', 'category', 'Civil against criminal',
+         'courtsCategory', 'courts', 'year'),
+        ('ljcp_judicial_strength', 'judges', 'composition',
+         'Posts by rank: working, vacant, neither', 'judgesComposition',
+         'judges', 'year'),
+        ('ljcp_judicial_strength', 'judges', 'trend',
+         'Working and vacant over time', 'judgesTrend', 'judges', 'year'),
+        ('police_crime_annual', 'crime', 'force', 'Reported cases by force',
+         'crimeForce', 'crime', 'year'),
+        ('police_crime_annual', 'crime', 'offence',
+         'By offence, across Pakistan', 'crimeOffence', 'offences', 'year'),
+        ('police_crime_annual', 'crime', 'ajk',
+         'Azad Jammu & Kashmir, by district', 'crimeAjk', 'crimeDistricts',
+         'year'),
+        ('police_crime_annual', 'crime', 'kp',
+         'Khyber Pakhtunkhwa, seven serious offences', 'crimeKp',
+         'crimeDistricts', 'year'),
+        ('sindh_crime_annual', 'sindhCrime', 'group',
+         'Sindh, by category group', 'sindhGroup', 'sindhCrime', 'year'),
+        ('sindh_crime_annual', 'sindhCrime', 'category',
+         'Sindh, the twelve largest categories', 'sindhCategory', 'sindhCrime',
+         'year'),
+        ('sindh_crime_annual', 'sindhCrime', 'range',
+         'Sindh, by police range', 'sindhRange', 'sindhCrime', 'year'),
+        ('sindh_fir_daily', 'firs', 'daily',
+         'First information reports, daily', 'firsDaily', 'firs', None),
+        ('nepra_plants', 'plants', 'fuel', 'Installed capacity by fuel',
+         'plantsFuel', 'plants', None),
+        ('nepra_plants', 'plants', 'largest', 'The eighteen largest plants',
+         'plantsLargest', 'plants', None),
+        ('nepra_plants', 'plants', 'reports',
+         'Plants in NEPRA\u2019s reports, by fiscal year', 'plantsReports',
+         'plants', None),
+        ('nepra_disco_annual', 'discos', 'panel',
+         'Why the distribution tables are not a series yet', 'discoPanel',
+         None, None),
+        ('climate_events', 'events', 'timeline', 'Alerts by hazard and year',
+         'eventsTimeline', 'events', None),
+        ('climate_impacts', 'impacts', 'deaths_total', 'Deaths by province',
+         'impactsMetric', None, None),
+        ('climate_impacts', 'impacts', 'injured_total', 'Injured by province',
+         'impactsMetric', None, None),
+        ('climate_impacts', 'impacts', 'houses_damaged_total',
+         'Houses damaged by province', 'impactsMetric', None, None),
+        ('climate_impacts', 'impacts', 'livestock_perished',
+         'Livestock perished by province', 'impactsMetric', None, None),
+    ]
+    TOPIC_LABEL = {
+        'tax': ('What the state collects', 'Public money'),
+        'budget': ('The federal budget', 'Public money'),
+        'courts': ('Case flows and pendency', 'Justice'),
+        'judges': ('Judges and vacancies', 'Justice'),
+        'crime': ('Reported offences', 'Crime & policing'),
+        'sindhCrime': ('Sindh crime tables', 'Crime & policing'),
+        'firs': ('Sindh first information reports', 'Crime & policing'),
+        'plants': ('Power plants and capacity', 'Energy'),
+        'discos': ('Electricity distribution', 'Energy'),
+        'events': ('Disaster alerts', 'Public services'),
+        'impacts': ('Monsoon impacts', 'Public services'),
+    }
+
     payload = {
         'tax': {'rows': tax,
                 'cols': ['fy', 'fy_end', 'tax_type', 'head', 'pkr_mn']},
@@ -214,6 +322,11 @@ def main():
         'crimeDistricts': {'rows': districts,
                            'cols': ['year', 'region', 'district', 'measure',
                                     'offence', 'value']},
+        'sindhCrime': {'rows': sindh,
+                       'cols': ['year', 'place', 'level', 'group', 'category',
+                                'value']},
+        'firs': {'rows': firs,
+                 'cols': ['date', 'place', 'level', 'daily', 'ytd']},
         'plants': {'rows': plants,
                    'cols': ['plant', 'family', 'technology', 'fuel', 'mw',
                             'first_fy', 'last_fy']},
@@ -228,6 +341,32 @@ def main():
             'first': budget[2], 'last': budget[3], 'items': budget[4],
         },
     }
+    def span(block, field):
+        """The years a block actually covers, read off the block itself."""
+        if not block or not field:
+            return ''
+        b = payload[block]
+        i = b['cols'].index(field)
+        ys = sorted({r[i] for r in b['rows'] if r[i] is not None})
+        if not ys:
+            return ''
+        return str(ys[0]) if len(ys) == 1 else f'{ys[0]} to {ys[-1]}'
+
+    ds_rows = {t['name']: t['rows'] for t in catalog['tables']} if catalog else {}
+    payload['index'] = [
+        {
+            'ds': ds, 'dsLabel': ds,
+            'topic': topic, 'topicLabel': TOPIC_LABEL[topic][0],
+            'theme': TOPIC_LABEL[topic][1],
+            'ind': ind, 'label': label, 'chart': chart,
+            'years': span(block, yf),
+            'rows': (f"{ds_rows[ds]:,} rows" if ds in ds_rows else ''),
+        }
+        for ds, topic, ind, label, chart, block, yf in INDEX
+    ]
+    missing = {r['topic'] for r in payload['index']} - set(TOPIC_LABEL)
+    assert not missing, f'index topics with no label: {missing}'
+
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(
@@ -236,7 +375,7 @@ def main():
         'window.DD_STATE=' + json.dumps(payload, separators=(',', ':')) + ';\n')
 
     for k in ('tax', 'courts', 'judges', 'crime', 'offences', 'crimeDistricts',
-              'plants', 'events', 'impacts'):
+              'sindhCrime', 'firs', 'plants', 'events', 'impacts'):
         print(f'  {k:15s} {len(payload[k]["rows"]):>6,} rows')
     print(f'  -> {out} ({out.stat().st_size/1e3:.1f} KB)')
 

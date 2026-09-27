@@ -44,6 +44,7 @@
   var courts = asObjects(D.courts), judges = asObjects(D.judges);
   var crime = asObjects(D.crime), offences = asObjects(D.offences);
   var crimeDistricts = asObjects(D.crimeDistricts);
+  var sindhCrime = asObjects(D.sindhCrime), firs = asObjects(D.firs);
   var plants = asObjects(D.plants), events = asObjects(D.events);
   var impacts = asObjects(D.impacts);
 
@@ -108,6 +109,43 @@
           + 'named offences are a partial breakdown and do not add to a '
           + 'force\u2019s total.',
     },
+    sindhCrime: {
+      theme: 'Crime & policing',
+      title: 'Sindh\u2019s own crime tables',
+      dek: 'Sindh police publish on their own schema \u2014 54 offence categories '
+         + 'in seven groups, by police range, 2019 to 2025 \u2014 which is a '
+         + 'longer and finer series than the national compilation carries.',
+      note: 'These figures do not line up with the national compilation and '
+          + 'should not be spliced onto it: the categories are Sindh\u2019s own, and '
+          + 'the geography is police ranges, which are not districts and do '
+          + 'not nest inside the census frame. Prior-year comparison columns '
+          + 'printed in the source are excluded, so each year is counted once. '
+          + 'Within Sindh the groups do partition the categories, so those add '
+          + 'up; the twelve shown are the largest of the 54.',
+    },
+    firs: {
+      theme: 'Crime & policing',
+      title: 'First information reports',
+      dek: 'Every FIR registered across Sindh, day by day, through the autumn '
+         + 'of 2025.',
+      note: 'Eight weeks, not a year, and the only complete daily series any '
+          + 'Pakistani force publishes. The table also carries a year-to-date '
+          + 'column, which is a running total: adding those numbers up would '
+          + 'count the same reports once for every day that remained in the '
+          + 'year. Only the daily figure drawn here is a flow.',
+    },
+    discos: {
+      theme: 'Energy',
+      title: 'Electricity distribution',
+      dek: 'Nineteen years of NEPRA\u2019s distribution tables for 25 companies, '
+         + 'published and queryable but not yet a series.',
+      note: 'The year lives in a row label that is a calendar year in some '
+          + 'editions and a fiscal year in others, and the consumer categories '
+          + 'drift between editions \u2014 \u2018Agricultural\u2019 in one table and '
+          + '\u2018Agricu- ltural\u2019 in the next, where a column header wrapped in '
+          + 'the PDF. Charting it needs a label crosswalk across the editions, '
+          + 'the same work the budget documents need.',
+    },
     plants: {
       theme: 'Energy',
       title: 'Power plants and capacity',
@@ -150,49 +188,66 @@
     },
   };
 
-  var state = { topic: 'tax', mode: 'stack' };
+  /* State is an index of 27 indicators over 10 datasets. The subject tree and
+     the three dropdowns are two ways into the same row; whichever the reader
+     uses, `current` is that row and `CHART[row.chart]` draws it. */
+  var state = { ds: 'fbr_tax_collection', topic: 'tax', ind: 'stack' };
+  var current = D.index[0];
+  var rail;
 
   function $(id) { return document.getElementById(id); }
 
   function fmtTn(v) { return (v / 1e6).toFixed(1); }
 
-  function render() {
-    var t = TOPICS[state.topic];
-    $('paneTheme').textContent = t.theme;
-    $('paneTitle').textContent = t.title;
-    $('paneDek').textContent = t.dek;
-    $('cardNote').textContent = t.note;
+  var CHART = {
+    taxStack: function () { renderTax('stack'); },
+    taxLines: function () { renderTax('lines'); },
+    taxShare: function () { renderTax('share'); },
+    budgetPanel: renderBudget,
+    courtsPending: function () { renderCourts('pending'); },
+    courtsClearance: function () { renderCourts('clearance'); },
+    courtsFlow: function () { renderCourts('flow'); },
+    courtsCategory: renderCourtsCategory,
+    judgesComposition: renderJudges,
+    judgesTrend: renderJudgesTrend,
+    crimeForce: renderCrimeForce,
+    crimeOffence: renderCrimeOffence,
+    crimeAjk: renderCrimeAjk,
+    crimeKp: renderCrimeKp,
+    sindhGroup: function () { renderSindh('group'); },
+    sindhCategory: function () { renderSindh('category'); },
+    sindhRange: function () { renderSindh('range'); },
+    firsDaily: renderFirs,
+    plantsFuel: function () { renderPlants('fuel'); },
+    plantsLargest: function () { renderPlants('largest'); },
+    plantsReports: function () { renderPlants('reports'); },
+    discoPanel: renderDiscoPanel,
+    eventsTimeline: renderEvents,
+    impactsMetric: renderImpacts,
+  };
+
+  function render(row) {
+    current = row || current;
+    var t = TOPICS[current.topic] || {};
+    $('paneTheme').textContent = current.theme;
+    $('paneTitle').textContent = t.title || current.topicLabel;
+    $('paneDek').textContent = t.dek || '';
+    $('cardNote').textContent = t.note || '';
     document.querySelectorAll('.tree-item[data-topic]').forEach(function (b) {
-      b.classList.toggle('is-on', b.dataset.topic === state.topic);
+      b.classList.toggle('is-on', b.dataset.topic === current.topic);
     });
-    var fn = {
-      budget: renderBudget, courts: renderCourts, judges: renderJudges,
-      crime: renderCrime, plants: renderPlants, events: renderEvents,
-      impacts: renderImpacts,
-    }[state.topic];
-    (fn || renderTax)();
+    (CHART[current.chart] || renderBudget)();
   }
 
   /* ── what the state collects ─────────────────────────────────────────── */
-  function renderTax() {
+  function renderTax(mode) {
+    state.mode = mode;
     var years = Array.from(new Set(tax.map(function (d) { return d.fyEnd; }))).sort(d3.ascending);
     $('coverage').innerHTML = '<b>Coverage</b>'
       + '<span>' + tax[0].fy + ' to ' + tax[tax.length - 1].fy + '</span>'
       + '<span>' + years.length + ' fiscal years</span>'
       + '<span>' + new Set(tax.map(function (d) { return d.head; })).size + ' heads</span>'
       + '<span style="margin-left:auto">Nominal rupees, not inflation-adjusted</span>';
-
-    if (['stack', 'lines', 'share'].indexOf(state.mode) < 0) state.mode = 'stack';
-    $('cardControls').innerHTML =
-      ['stack', 'lines'].map(function (m) {
-        return '<button class="seg" type="button" data-mode="' + m + '" aria-pressed="'
-             + (state.mode === m) + '">' + (m === 'stack' ? 'Stacked' : 'By head') + '</button>';
-      }).join('')
-      + '<button class="seg" type="button" data-mode="share" aria-pressed="'
-      + (state.mode === 'share') + '">Share of total</button>';
-    $('cardControls').querySelectorAll('.seg').forEach(function (b) {
-      b.onclick = function () { state.mode = b.dataset.mode; render(); };
-    });
 
     var heads = Array.from(new Set(tax.map(function (d) { return d.head; })));
     var byYear = d3.rollup(tax, function (v) {
@@ -274,18 +329,19 @@
   }
 
   /* ── courts ──────────────────────────────────────────────────────────── */
-  function renderCourts() {
+  function renderCourts(mode) {
+    state.mode = mode;
     var rows = courts.filter(function (d) { return d.category === 'all'; });
     var provs = Array.from(new Set(rows.map(function (d) { return d.province; }))).sort();
     var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
     cover(['2020 to 2024', provs.length + ' provinces',
            'all courts', 'civil and criminal also available']);
-    seg([['pending', 'Pending'], ['clearance', 'Clearance rate'],
-         ['flow', 'Instituted vs disposed']]);
-
     var key = state.mode === 'clearance' ? 'clearance_pct' : 'pending_end';
     if (state.mode === 'flow') return flowChart(rows, provs, years);
-    lineChart(rows, provs, years, key,
+    lineChart(rows.map(function (d) {
+                return { k: d.province, year: d.year,
+                         pending_end: d.pending_end, clearance_pct: d.clearance_pct };
+              }), provs, years, key,
               state.mode === 'clearance' ? 'per cent' : 'cases pending',
               state.mode === 'clearance' ? d3.format('.0f') : shortNum);
   }
@@ -318,6 +374,35 @@
     host.say('', 'Dashed: cases instituted. Solid: cases disposed.');
   }
 
+  /* Civil and criminal nest inside 'all', so they are never added — they are
+     drawn as two lines against each other, which is what the split is for. */
+  function renderCourtsCategory() {
+    var rows = courts.filter(function (d) { return d.category !== 'all'; });
+    var provs = Array.from(new Set(rows.map(function (d) { return d.province; }))).sort();
+    var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var series = rows.map(function (d) {
+      return { k: d.province + ' \u00b7 ' + d.category, year: d.year,
+               value: d.pending_end, cat: d.category, prov: d.province };
+    });
+    var keys = [];
+    provs.forEach(function (p) {
+      ['civil', 'criminal'].forEach(function (c) { keys.push(p + ' \u00b7 ' + c); });
+    });
+    keys = keys.filter(function (k) {
+      return series.some(function (d) { return d.k === k; });
+    });
+    cover([years[0] + ' to ' + years[years.length - 1], provs.length + ' provinces',
+           'civil against criminal', 'pending at year end']);
+    var colour = d3.scaleOrdinal().domain(provs)
+      .range(['#0c3a1e', '#1e6b3e', '#b5860b', '#4d8a62', '#d4a017']);
+    lineChart(series, keys, years, 'value', 'cases pending, log scale', shortNum,
+      { log: true, gaps: true,
+        colour: function (k) { return colour(k.split(' \u00b7 ')[0]); },
+        dash: function (k) { return /civil$/.test(k) ? '4 3' : null; },
+        foot: 'Dashed: civil. Solid: criminal. These two are the parts of the '
+            + '\u2018all courts\u2019 figure, so they are never added to it.' });
+  }
+
   /* ── judges ──────────────────────────────────────────────────────────── */
   var TIER_LABEL = {
     district_sessions_judges: 'District & sessions judges',
@@ -331,8 +416,7 @@
   function renderJudges() {
     var years = Array.from(new Set(judges.map(function (d) { return d.year; })))
       .sort(d3.descending);
-    seg(years.map(function (y) { return [String(y), String(y)]; }));
-    var year = +state.mode;
+    var year = years[0];
     var rows = judges.filter(function (d) { return d.year === year; })
       .sort(function (a, b) { return b.sanctioned - a.sanctioned; });
     var tot = function (f) { return d3.sum(rows, function (d) { return d[f]; }); };
@@ -389,75 +473,309 @@
            });
   }
 
+  /* Two years is a short series, but it is a series: the ranks move in
+     different directions, which a single-year bar chart cannot show. */
+  function renderJudgesTrend() {
+    var years = Array.from(new Set(judges.map(function (d) { return d.year; })))
+      .sort(d3.ascending);
+    var rows = [];
+    judges.forEach(function (d) {
+      rows.push({ k: (TIER_LABEL[d.tier] || d.tier) + ' \u00b7 working',
+                  year: d.year, value: d.working });
+      rows.push({ k: (TIER_LABEL[d.tier] || d.tier) + ' \u00b7 vacant',
+                  year: d.year, value: d.vacant });
+    });
+    var tiers = Array.from(new Set(judges.map(function (d) {
+      return TIER_LABEL[d.tier] || d.tier;
+    })));
+    var keys = rows.map(function (d) { return d.k; })
+      .filter(function (k, i, a) { return a.indexOf(k) === i; });
+    var colour = palette(tiers);
+    var last = years[years.length - 1];
+    cover(['Balochistan only', years.join(' and '),
+           d3.sum(judges.filter(function (d) { return d.year === last; }),
+                  function (d) { return d.vacant; }) + ' posts vacant in ' + last,
+           tiers.length + ' ranks']);
+    lineChart(rows, keys, years, 'value', 'posts', function (v) { return String(v); },
+      { colour: function (k) { return colour(k.split(' \u00b7 ')[0]); },
+        dash: function (k) { return /vacant$/.test(k) ? '4 3' : null; },
+        foot: 'Dashed: vacant. Solid: working. Balochistan only, and the two '
+            + 'do not add to sanctioned strength \u2014 an ex-cadre officer\u2019s post '
+            + 'counts as neither.' });
+  }
+
   /* ── crime ───────────────────────────────────────────────────────────── */
-  function renderCrime() {
-    var regions = Array.from(new Set(crime.map(function (d) { return d.region; })));
-    var forces = regions.filter(function (r) { return r !== 'Pakistan'; }).sort();
+  function crimeCover(extra) {
     var years = Array.from(new Set(crime.map(function (d) { return d.year; }))).sort(d3.ascending);
     var nat = crime.filter(function (d) { return d.region === 'Pakistan'; })
       .sort(function (a, b) { return a.year - b.year; });
     cover([years[0] + ' to ' + years[years.length - 1],
-           forces.length + ' forces',
-           shortNum(nat[nat.length - 1].value) + ' cases in '
-             + nat[nat.length - 1].year,
-           'reported offences, not crimes committed']);
-    seg([['trend', 'By force'], ['offences', 'By offence'],
-         ['districts', 'By district']]);
-    if (state.mode === 'offences') return offenceChart(years);
-    if (state.mode === 'districts') return districtCrime();
+           shortNum(nat[nat.length - 1].value) + ' cases in ' + nat[nat.length - 1].year]
+          .concat(extra || []));
+  }
 
+  function renderCrimeForce() {
+    var forces = Array.from(new Set(crime.map(function (d) { return d.region; })))
+      .filter(function (r) { return r !== 'Pakistan'; }).sort();
+    var years = Array.from(new Set(crime.map(function (d) { return d.year; }))).sort(d3.ascending);
+    crimeCover([forces.length + ' forces', 'reported offences, not crimes committed']);
     var rows = crime.filter(function (d) { return d.region !== 'Pakistan'; })
-      .map(function (d) { return { province: d.region, year: d.year, value: d.value }; });
+      .map(function (d) { return { k: d.region, year: d.year, value: d.value }; });
     lineChart(rows, forces, years, 'value', 'reported cases, log scale', shortNum,
-              { log: true,
-                axis: 'reported cases, log scale',
-                foot: crime.some(function (d) {
-                        return d.own_value && d.own_value !== d.value;
-                      })
-                  ? '\u2020 the force\u2019s own yearbook gives a different total from '
-                    + 'PBS for that year.'
-                  : '',
-                trail: function (k) {
-                  var own = crime.filter(function (d) {
-                    return d.region === k && d.own_value
-                        && d.own_value !== d.value;
-                  });
-                  return own.length ? ' \u2020' : '';
-                } });
+      { log: true,
+        foot: crime.some(function (d) { return d.own_value && d.own_value !== d.value; })
+          ? '\u2020 the force\u2019s own yearbook gives a different total from PBS for that year.'
+          : '',
+        trail: function (k) {
+          return crime.some(function (d) {
+            return d.region === k && d.own_value && d.own_value !== d.value;
+          }) ? ' \u2020' : '';
+        } });
   }
 
-  function offenceChart(years) {
-    var latest = d3.max(offences, function (d) { return d.year; });
-    var rows = offences.filter(function (d) {
-      return d.year === latest && d.region === 'Pakistan';
-    }).sort(function (a, b) { return b.value - a.value; });
-    barChart(rows, function (d) { return d.offence; }, function (d) { return d.value; },
-             'Cases reported across Pakistan, ' + latest,
-             'The eleven offences PBS names. They do not add to a force\u2019s total.');
-  }
-
-  function districtCrime() {
-    var ajk = crimeDistricts.filter(function (d) {
-      return d.measure === 'reported_crime_total';
+  /* Two of the eleven offences are not a six-year series. 'Others' is reported
+     in 2019 and never again; 'M.V. Theft/ Snatching' starts in 2022. Those are
+     reclassifications, so the lines break rather than joining across the gap —
+     a continuous line there would invent a number PBS never published. */
+  function renderCrimeOffence() {
+    var rows = offences.filter(function (d) { return d.region === 'Pakistan'; })
+      .map(function (d) { return { k: d.offence, year: d.year, value: d.value }; });
+    var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var keys = Array.from(d3.rollup(rows, function (v) {
+      return d3.max(v, function (d) { return d.value; });
+    }, function (d) { return d.k; }))
+      .sort(function (a, b) { return b[1] - a[1]; })
+      .map(function (e) { return e[0]; });
+    var partial = keys.filter(function (k) {
+      return new Set(rows.filter(function (d) { return d.k === k; })
+        .map(function (d) { return d.year; })).size < years.length;
     });
-    var latest = d3.max(ajk, function (d) { return d.year; });
-    var rows = ajk.filter(function (d) { return d.year === latest; })
-      .sort(function (a, b) { return b.value - a.value; });
-    barChart(rows, function (d) { return d.district; }, function (d) { return d.value; },
-             'All reported crime by district, Azad Jammu & Kashmir, ' + latest,
-             'The only force publishing a district total. Khyber Pakhtunkhwa '
-               + 'publishes seven named offences for 37 districts, not a total.');
+    crimeCover([keys.length + ' named offences',
+                partial.length + ' of them not reported every year']);
+    lineChart(rows, keys, years, 'value', 'cases reported, log scale', shortNum,
+      { log: true, gaps: true,
+        foot: 'A line breaks where PBS stopped or started naming that offence: '
+            + partial.join(' and ') + '. The eleven do not add to a force\u2019s total.' });
+  }
+
+  function renderCrimeAjk() {
+    var rows = crimeDistricts
+      .filter(function (d) { return d.measure === 'reported_crime_total'; })
+      .map(function (d) { return { k: d.district, year: d.year, value: d.value }; });
+    var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var keys = Array.from(new Set(rows.map(function (d) { return d.k; }))).sort();
+    crimeCover([keys.length + ' districts', 'all reported crime']);
+    lineChart(rows, keys, years, 'value', 'reported cases', shortNum,
+      { gaps: true,
+        foot: 'Azad Jammu & Kashmir is the only force publishing a district '
+            + 'total. These ten add to the territory\u2019s own figure.' });
+  }
+
+  /* Khyber Pakhtunkhwa publishes seven named offences across 37 districts and
+     no total. Summed across the province they come to 5,971 cases in 2024
+     against a provincial total of 216,872, so they are drawn as the seven
+     offences they are and never labelled a total. */
+  function renderCrimeKp() {
+    var kp = crimeDistricts.filter(function (d) { return d.region === 'KP'; });
+    var rows = Array.from(d3.rollup(kp,
+      function (v) { return d3.sum(v, function (d) { return d.value; }); },
+      function (d) { return d.offence; }, function (d) { return d.year; }))
+      .flatMap(function (e) {
+        return Array.from(e[1], function (y) {
+          return { k: e[0], year: y[0], value: y[1] };
+        });
+      });
+    var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var keys = Array.from(d3.rollup(rows, function (v) {
+      return d3.max(v, function (d) { return d.value; });
+    }, function (d) { return d.k; }))
+      .sort(function (a, b) { return b[1] - a[1]; }).map(function (e) { return e[0]; });
+    var places = new Set(kp.map(function (d) { return d.district; })).size;
+    var tot = d3.sum(rows.filter(function (d) { return d.year === years[years.length - 1]; }),
+                     function (d) { return d.value; });
+    cover([places + ' districts', keys.length + ' named offences',
+           tot.toLocaleString() + ' cases in ' + years[years.length - 1],
+           'not a provincial total']);
+    lineChart(rows, keys, years, 'value', 'cases reported, log scale', shortNum,
+      { log: true, gaps: true,
+        foot: 'Seven serious offences summed across ' + places + ' districts. '
+            + 'They are not Khyber Pakhtunkhwa\u2019s crime total, which was '
+            + '216,872 in 2024 \u2014 thirty-six times this.' });
+  }
+
+  /* ── Sindh's own tables ──────────────────────────────────────────────── */
+  function renderSindh(mode) {
+    var prov = sindhCrime.filter(function (d) { return d.level === 'province'; });
+    var use = mode === 'range'
+      ? sindhCrime.filter(function (d) { return d.level === 'range'; })
+      : prov;
+    var by = mode === 'group' ? 'group' : mode === 'range' ? 'place' : 'category';
+    var rows = Array.from(d3.rollup(use,
+      function (v) { return d3.sum(v, function (d) { return d.value; }); },
+      function (d) { return d[by]; }, function (d) { return d.year; }))
+      .flatMap(function (e) {
+        return Array.from(e[1], function (y) {
+          return { k: e[0], year: y[0], value: y[1] };
+        });
+      });
+    var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var keys = Array.from(d3.rollup(rows, function (v) {
+      return d3.max(v, function (d) { return d.value; });
+    }, function (d) { return d.k; }))
+      .sort(function (a, b) { return b[1] - a[1]; }).map(function (e) { return e[0]; });
+    if (mode === 'category') keys = keys.slice(0, 12);
+    var shown = rows.filter(function (d) { return keys.indexOf(d.k) >= 0; });
+    cover([years[0] + ' to ' + years[years.length - 1],
+           mode === 'range' ? keys.length + ' police ranges'
+             : keys.length + (mode === 'group' ? ' category groups' : ' of '
+                 + new Set(prov.map(function (d) { return d.category; })).size
+                 + ' categories'),
+           'Sindh police, on its own schema']);
+    lineChart(shown, keys, years, 'value', 'cases reported, log scale', shortNum,
+      { log: true, gaps: true,
+        foot: mode === 'category'
+          ? 'The twelve largest of '
+            + new Set(prov.map(function (d) { return d.category; })).size
+            + ' categories. Sindh publishes on its own schema, so these do not '
+            + 'line up with the national compilation.'
+          : mode === 'range'
+            ? 'Police ranges, which are not districts and do not nest inside '
+              + 'the census geography.'
+            : 'Categories as Sindh groups them. The groups partition the '
+              + 'categories, so they do add to the provincial total.' });
+  }
+
+  /* Eight weeks of 2025, not a year. ytd is a running total and is drawn as
+     one; daily_firs is the flow and is the only column that may be summed. */
+  function renderFirs() {
+    var prov = firs.filter(function (d) { return d.level === 'province'; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var dist = firs.filter(function (d) { return d.level === 'police_district'; });
+    cover([niceSpan(prov[0].date, prov[prov.length - 1].date),
+           prov.length + ' daily reports',
+           new Set(dist.map(function (d) { return d.place; })).size + ' districts',
+           'eight weeks, not a year']);
+    var host = chartHost();
+    var W = host.w, H = host.h, svg = host.svg;
+    var m = fit({ top: 16, right: 64, bottom: 30, left: 56 }, W);
+    var x = d3.scaleTime()
+      .domain(d3.extent(prov, function (d) { return new Date(d.date); }))
+      .range([m.left, W - m.right]);
+    var y = d3.scaleLinear().domain([0, d3.max(prov, function (d) { return d.daily; })])
+      .nice().range([H - m.bottom, m.top]);
+    svg.append('path').datum(prov).attr('fill', 'none')
+      .attr('stroke', '#1e6b3e').attr('stroke-width', 2)
+      .attr('d', d3.line().x(function (d) { return x(new Date(d.date)); })
+                          .y(function (d) { return y(d.daily); }));
+    svg.selectAll('circle').data(prov).join('circle')
+      .attr('cx', function (d) { return x(new Date(d.date)); })
+      .attr('cy', function (d) { return y(d.daily); })
+      .attr('r', 2.5).attr('fill', '#1e6b3e')
+      .append('title').text(function (d) {
+        return d.date + '\n' + d.daily.toLocaleString() + ' FIRs that day'
+             + '\n' + d.ytd.toLocaleString() + ' so far this year';
+      });
+    svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
+      .call(d3.axisBottom(x).ticks(5)).attr('color', muted()).attr('font-size', 11);
+    svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
+      .call(d3.axisLeft(y).ticks(5)).attr('color', muted()).attr('font-size', 11);
+    host.say('First information reports registered each day across Sindh.',
+             'The year-to-date column in this table is a running total and is '
+           + 'never summed; only the daily figure drawn here is a flow.');
   }
 
   /* ── power plants ────────────────────────────────────────────────────── */
-  function renderPlants() {
+  var FY = ['2017-18', '2018-19', '2019-20', '2020-21', '2021-22', '2022-23',
+            '2023-24', '2024-25'];
+
+  /* first_fy and last_fy are the first and last fiscal year a plant appears in
+     NEPRA's reports, NOT when it was commissioned: 108 of the 133 carry
+     2017-18, which is simply where the report series begins. Drawn as
+     cumulative capacity it would show 37,853 MW springing into existence in
+     one year. So this counts what is IN the reports each year, and says so. */
+  function renderPlantsReports() {
+    var rows = FY.map(function (fy) {
+      var live = plants.filter(function (d) {
+        return d.first_fy <= fy && fy <= d.last_fy;
+      });
+      return { fy: fy, n: live.length, mw: d3.sum(live, function (d) { return d.mw; }) };
+    });
+    var gone = plants.filter(function (d) { return d.last_fy < FY[FY.length - 1]; });
+    cover([FY[0] + ' to ' + FY[FY.length - 1],
+           rows[rows.length - 1].n + ' plants in the latest report',
+           gone.length + ' have dropped out',
+           'report coverage, not commissioning']);
+    var host = chartHost();
+    var W = host.w, H = host.h, svg = host.svg;
+    var m = fit({ top: 14, right: 74, bottom: 34, left: 58 }, W);
+    var x = d3.scalePoint().domain(FY).range([m.left, W - m.right]).padding(.4);
+    var y = d3.scaleLinear().domain([0, d3.max(rows, function (d) { return d.mw; })])
+      .nice().range([H - m.bottom, m.top]);
+    svg.append('path').datum(rows).attr('fill', 'none')
+      .attr('stroke', '#1e6b3e').attr('stroke-width', 2)
+      .attr('d', d3.line().x(function (d) { return x(d.fy); })
+                          .y(function (d) { return y(d.mw); }));
+    svg.selectAll('circle').data(rows).join('circle')
+      .attr('cx', function (d) { return x(d.fy); })
+      .attr('cy', function (d) { return y(d.mw); })
+      .attr('r', 3.5).attr('fill', '#1e6b3e')
+      .append('title').text(function (d) {
+        return d.fy + '\n' + d.n + ' plants\n'
+             + Math.round(d.mw).toLocaleString() + ' MW';
+      });
+    svg.selectAll('text.n').data(rows).join('text').attr('class', 'n')
+      .attr('x', function (d) { return x(d.fy); })
+      .attr('y', function (d) { return y(d.mw) - 9; })
+      .attr('text-anchor', 'middle').attr('font-size', 10.5).attr('fill', muted())
+      .text(function (d) { return d.n; });
+    svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
+      .call(d3.axisBottom(x)).attr('color', muted()).attr('font-size', 10)
+      .selectAll('text').attr('transform', 'rotate(-30)').attr('text-anchor', 'end');
+    svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(shortNum))
+      .attr('color', muted()).attr('font-size', 11);
+    host.say('Installed megawatts present in NEPRA\u2019s report for each fiscal '
+           + 'year, with the number of plants above each point.',
+             'This is report coverage, not commissioning. The fiscal years on '
+           + 'each plant are the first and last it appears in, and 108 of the '
+           + '133 begin at 2017-18 because that is where the series starts. '
+           + 'The ' + gone.length + ' plants whose last year is earlier have '
+           + 'dropped out of the reports, which is not the same as having '
+           + 'closed.');
+  }
+
+  function renderDiscoPanel() {
+    cover(['25 distribution companies', '19 fiscal years', '20,689 rows',
+           'not a series yet']);
+    var host = $('chart');
+    host.className = 'chart panel';
+    host.innerHTML =
+      '<h2>Nineteen years of distribution tables, and no series in them yet</h2>'
+      + '<p>NEPRA\u2019s state-of-industry reports carry 20,689 rows for 25 '
+      + 'distribution companies, and they cannot be charted as they stand. The '
+      + 'year sits in a row label that is sometimes a calendar year '
+      + '(<code>2016</code>) and sometimes a fiscal one (<code>2022-23</code>), '
+      + 'so the same company\u2019s history is split across two spellings of '
+      + 'time. The consumer categories drift between editions as well \u2014 '
+      + '<code>Agricultural</code> in one table and <code>Agricu- ltural</code> '
+      + 'in the next, where a column header wrapped in the PDF.</p>'
+      + '<p>Charting it needs a label crosswalk across the editions, the same '
+      + 'work the budget documents need and the census districts needed. '
+      + 'Inventing one here would produce a line that looks continuous and is '
+      + 'not, so the table is downloadable and documented and this page does '
+      + 'not draw it.</p>'
+      + '<p><a href="/datasets/nepra-disco-annual/">Dataset page and field '
+      + 'definitions</a></p>';
+  }
+
+  function renderPlants(mode) {
+    state.mode = mode;
+    if (mode === 'reports') return renderPlantsReports();
     var mw = d3.sum(plants, function (d) { return d.mw; });
     cover([plants.length + ' plants',
            Math.round(mw).toLocaleString() + ' MW installed',
            'nameplate capacity, not generation']);
-    seg([['fuel', 'By fuel'], ['largest', 'Largest plants']]);
-
-    if (state.mode === 'largest') {
+    if (mode === 'largest') {
       var top = plants.slice(0, 18);
       return barChart(top, function (d) { return d.plant; }, function (d) { return d.mw; },
                       'Installed megawatts \u00b7 the 18 largest of ' + plants.length,
@@ -488,7 +806,6 @@
              + d3.max(rows, function (d) { return d.year; }),
            hazards.length + ' hazard types',
            'alert levels, not losses']);
-    seg([]);
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 14, right: 20, bottom: 30, left: 132 }, W);
@@ -564,10 +881,7 @@
            Math.round(nat.deaths_total) + ' deaths',
            Math.round(nat.injured_total) + ' injured',
            'cumulative for the season, not a daily count']);
-    seg([['deaths_total', 'Deaths'], ['injured_total', 'Injured'],
-         ['houses_damaged_total', 'Houses damaged'],
-         ['livestock_perished', 'Livestock']]);
-    var metric = state.mode;
+    var metric = current.ind;
     var rows = impacts.filter(function (d) {
       return d.metric === metric && d.level !== 'country';
     }).sort(function (a, b) { return b.value - a.value; });
@@ -601,6 +915,7 @@
      footnotes ran past the viewBox and were simply cut off. */
   function chartHost() {
     var host = $('chart');
+    host.className = 'chart';
     host.innerHTML = '';
     var lede = document.createElement('div');
     lede.className = 'chart-lede';
@@ -635,17 +950,6 @@
             ? ' style="margin-left:auto"' : '') + '>' + b + '</span>';
         }).join('');
   }
-  function seg(modes) {
-    if (!modes.length) { $('cardControls').innerHTML = ''; return; }
-    if (!modes.some(function (m) { return m[0] === state.mode; })) state.mode = modes[0][0];
-    $('cardControls').innerHTML = modes.map(function (m) {
-      return '<button class="seg" type="button" data-mode="' + m[0]
-           + '" aria-pressed="' + (state.mode === m[0]) + '">' + m[1] + '</button>';
-    }).join('');
-    $('cardControls').querySelectorAll('.seg').forEach(function (b) {
-      b.onclick = function () { state.mode = b.dataset.mode; render(); };
-    });
-  }
   function axes(svg, x, y, m, W, H, fmt, label, log) {
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
       .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')))
@@ -660,7 +964,8 @@
     var g = svg.append('g').attr('transform', 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
     keys.forEach(function (k, i) {
       var row = g.append('g').attr('transform', 'translate(0,' + i * 17 + ')');
-      row.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2).attr('fill', colour(k));
+      row.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
+        .attr('fill', colour(k));
       row.append('text').attr('x', 15).attr('y', 9).attr('font-size', 11.5)
         .attr('fill', ink()).text(labelFn ? labelFn(k) : k);
     });
@@ -702,7 +1007,7 @@
     var x = d3.scaleLinear().domain(d3.extent(years)).range([m.left, W - m.right]);
     var y;
     if (opt.log) {
-      var lo = d3.min(rows, function (d) { return d[field]; });
+      var lo = d3.min(rows, function (d) { return d[field] || undefined; });
       y = d3.scaleLog().domain([Math.max(1, lo * 0.8),
                                 d3.max(rows, function (d) { return d[field]; })])
         .range([H - m.bottom, m.top]);
@@ -713,18 +1018,43 @@
     }
     var colour = palette(keys);
     keys.forEach(function (k) {
-      var series = rows.filter(function (d) { return d.province === k; })
+      var series = rows.filter(function (d) { return d.k === k; })
         .sort(function (a, b) { return a.year - b.year; });
       if (!series.length) return;
+      // With gaps on, a year the source did not report breaks the line rather
+      // than being bridged: a continuous line across it would draw a number
+      // nobody published.
+      if (opt.gaps) {
+        var at = {};
+        series.forEach(function (d) { at[d.year] = d; });
+        series = years.map(function (yr) { return at[yr] || { year: yr, k: k }; });
+      }
+      var line = d3.line()
+        .defined(function (d) { return d[field] !== undefined && d[field] !== null; })
+        .x(function (d) { return x(d.year); })
+        .y(function (d) { return y(d[field]); });
       svg.append('path').datum(series).attr('fill', 'none')
-        .attr('stroke', colour(k)).attr('stroke-width', 2)
-        .attr('d', d3.line().x(function (d) { return x(d.year); })
-                            .y(function (d) { return y(d[field]); }));
+        .attr('stroke', opt.colour ? opt.colour(k) : colour(k))
+        .attr('stroke-width', 2)
+        .attr('stroke-dasharray', opt.dash ? opt.dash(k) : null)
+        .attr('d', line);
+      if (opt.gaps) {
+        svg.selectAll('circle.p-' + keys.indexOf(k))
+          .data(series.filter(function (d) { return d[field] != null; }))
+          .join('circle').attr('class', 'p-' + keys.indexOf(k))
+          .attr('cx', function (d) { return x(d.year); })
+          .attr('cy', function (d) { return y(d[field]); })
+          .attr('r', 2.2).attr('fill', opt.colour ? opt.colour(k) : colour(k))
+          .append('title').text(function (d) {
+            return k + '\n' + d.year + ': ' + d[field].toLocaleString();
+          });
+      }
     });
     axes(svg, x, y, m, W, H, fmt, opt.axis || label, opt.log);
     host.say(opt.lede || '', opt.foot || '');
-    legend(svg, keys, colour, W, m, function (k) {
-      var last = rows.filter(function (d) { return d.province === k; }).pop();
+    legend(svg, keys, opt.colour ? d3.scaleOrdinal().domain(keys)
+             .range(keys.map(opt.colour)) : colour, W, m, function (k) {
+      var last = rows.filter(function (d) { return d.k === k; }).pop();
       return k + (opt.trail ? opt.trail(k) : '')
            + (last ? '  ' + fmt(last[field]) : '');
     });
@@ -738,7 +1068,7 @@
       + '<span>' + b.docs + ' budget documents</span>'
       + '<span>' + b.rows.toLocaleString() + ' lines</span>'
       + '<span>' + b.items.toLocaleString() + ' distinct item labels</span>';
-    $('cardControls').innerHTML = '';
+    $('chart').className = 'chart panel';
     $('chart').innerHTML =
       '<div class="notice"><p><b>' + b.docs + ' years of budget documents are in the '
       + 'warehouse, and they are not yet a series.</b></p>'
@@ -768,36 +1098,82 @@
     return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
   }
 
+  /* The CSV serves the block the current indicator actually draws, which is
+     not always the block named after its topic. */
   var CSV_BLOCK = {
-    offences: 'offences', districts: 'crimeDistricts',
+    crimeOffence: 'offences', crimeAjk: 'crimeDistricts',
+    crimeKp: 'crimeDistricts', crimeForce: 'crime',
+    sindhGroup: 'sindhCrime', sindhCategory: 'sindhCrime',
+    sindhRange: 'sindhCrime', firsDaily: 'firs',
+    impactsMetric: 'impacts', eventsTimeline: 'events',
+    judgesTrend: 'judges', judgesComposition: 'judges',
+    courtsPending: 'courts', courtsClearance: 'courts',
+    courtsFlow: 'courts', courtsCategory: 'courts',
+    taxStack: 'tax', taxLines: 'tax', taxShare: 'tax',
+    plantsFuel: 'plants', plantsLargest: 'plants', plantsReports: 'plants',
   };
 
   function downloadCsv() {
-    var name = state.topic === 'crime' && CSV_BLOCK[state.mode]
-      ? CSV_BLOCK[state.mode] : state.topic;
-    var block = D[name];
+    var name = CSV_BLOCK[current.chart];
+    var block = name && D[name];
+    if (!block) {
+      window.location.href = '/datasets/'
+        + current.ds.replace(/_/g, '-') + '/';
+      return;
+    }
     if (!block || !block.cols) return;
     var rows = [block.cols].concat(block.rows);
     var csv = rows.map(function (r) { return r.map(csvCell).join(','); }).join('\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    a.download = 'data_darbar_' + (CSV_NAME[name] || name) + '.csv';
+    a.download = 'data_darbar_' + current.ds + '.csv';
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
 
+  /* The tree and the rail are peers. A tree click sets the topic and takes
+     that topic's first indicator; the rail then re-fills itself and reports
+     the row it settled on, which is what gets drawn. The URL carries all
+     three so a chart can be linked to. */
+  function pick(topic) {
+    var first = D.index.filter(function (r) { return r.topic === topic; })[0];
+    if (!first) return;
+    state.ds = first.ds;
+    state.topic = first.topic;
+    state.ind = first.ind;
+    render(rail.sync(false));
+    writeUrl();
+  }
+
+  function writeUrl() {
+    var q = new URLSearchParams({ t: state.topic, i: state.ind });
+    history.replaceState(null, '', location.pathname + '?' + q);
+  }
+
+  function readUrl() {
+    var q = new URLSearchParams(location.search);
+    var t = q.get('t'), i = q.get('i');
+    var row = D.index.filter(function (r) {
+      return (!t || r.topic === t) && (!i || r.ind === i);
+    })[0];
+    if (row) { state.ds = row.ds; state.topic = row.topic; state.ind = row.ind; }
+  }
+
   function boot() {
+    readUrl();
+    rail = window.DDExplorer.mount({
+      el: $('rail'), index: D.index, state: state,
+      onChange: function (row) { render(row); writeUrl(); },
+    });
+    render(rail.sync(false));
     document.querySelectorAll('.tree-item[data-topic]').forEach(function (b) {
-      b.onclick = function () {
-        state.topic = b.dataset.topic;
-        state.mode = state.topic === 'tax' ? 'stack' : '';
-        render();
-      };
+      b.onclick = function () { pick(b.dataset.topic); };
     });
     $('csvBtn').onclick = downloadCsv;
-    render();
+    var t;
     window.addEventListener('resize', function () {
-      if (state.topic !== 'budget') render();
+      clearTimeout(t);
+      t = setTimeout(function () { render(current); }, 150);
     });
   }
 
