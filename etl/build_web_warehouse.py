@@ -1491,6 +1491,207 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="census units",
         )
 
+    # ── the national series: Economy and State ──────────────────────────────
+    print("national accounts, trade and tax\u2026")
+    PULL = REPO.parent / "raw_data" / "pbs_insight_explorer"
+    NA = PULL / "national_accounts_2026-09-27"
+    TR = PULL / "trade_2026-09-27"
+    CSV = "header=true, quote='\"', escape='\"'"
+
+    def csv_table(name, path, desc, notes, cols, source, unit):
+        if not path.exists():
+            print(f"  {name:<28} skipped (no {path.name})")
+            return
+        register(name, desc, notes, cols, source,
+                 f"SELECT * FROM read_csv('{path.as_posix()}', {CSV})", unit=unit)
+
+    csv_table(
+        "gdp_growth", NA / "gdp_growth_1952_2025.csv",
+        "Real GDP growth and its sectoral components, 1951\u201352 to 2024\u201325.",
+        "Seventy-four fiscal years, the longest series on the site. "
+        "government_label names the government of the day, which PBS\u2019s own "
+        "dashboard carries and which is useful for reading the series but is a "
+        "political attribution rather than a statistical one \u2014 a growth rate in a "
+        "government\u2019s first months reflects decisions taken before it.",
+        {"fy": "fiscal year, e.g. 2024-25", "fy_end": "calendar year it ends in",
+         "gdp_growth_pct": "real GDP growth, per cent",
+         "agriculture_growth_pct": "agriculture, per cent",
+         "industry_growth_pct": "industry, per cent",
+         "services_growth_pct": "services, per cent",
+         "commodity_producing_sector_growth_pct": "agriculture and industry together",
+         "government_label": "the government in office that year, as PBS labels it"},
+        "PBS national accounts (na.data.gov.pk), pull of 2026-09-27", "per cent")
+
+    csv_table(
+        "gdp_indicators", NA / "gdp_indicators_annual_2000_2026.csv",
+        "GDP, national product, per-capita income and the exchange rate, "
+        "1999\u20132000 to 2025\u201326.",
+        "Constant prices on PBS\u2019s own base. status marks a year PBS flags as "
+        "provisional or revised; the latest years are usually provisional and "
+        "move.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "gdp_constant_pkr_mn": "GDP at constant prices, million rupees",
+         "npi_constant_pkr_mn": "net national product, million rupees",
+         "per_capita_income_constant_rs": "per-capita income, rupees",
+         "exchange_rate_pkr_per_usd": "rupees per US dollar",
+         "status": "PBS\u2019s own flag: provisional, revised or final"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees, rupees")
+
+    csv_table(
+        "gva_by_activity_annual", NA / "gdp_by_activity_annual_constant_2000_2026.csv",
+        "Gross value added by sector and sub-sector, annual, at constant prices.",
+        "Three levels in one table \u2014 sector, subsector and category \u2014 so summing "
+        "the rows double- or triple-counts. Filter to one level before adding "
+        "anything up.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "sector": "the broad sector", "subsector": "within the sector",
+         "category": "within the sub-sector",
+         "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
+         "status": "PBS\u2019s own flag"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "gva_by_activity_quarterly", NA / "gdp_by_activity_quarterly_constant_2016_2025.csv",
+        "The same, quarterly, from 2015\u201316.",
+        "Quarterly national accounts are newer and thinner than the annual series "
+        "and are revised more. The same nesting applies: sector, subsector and "
+        "category are levels, not categories to add together.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "quarter": "Q1 is July\u2013September", "sector": "the broad sector",
+         "subsector": "within the sector", "category": "within the sub-sector",
+         "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
+         "status": "PBS\u2019s own flag"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "fbr_tax_collection", NA / "fbr_tax_collection_by_head_1992_2024.csv",
+        "Federal tax collection by head and sub-head, 1991\u201392 to 2023\u201324.",
+        "Direct and indirect tax by the heads FBR reports. tax_type, head and "
+        "subhead nest, so filter to one level before summing.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "tax_type": "direct or indirect", "head": "the tax head",
+         "subhead": "within the head",
+         "collection_pkr_mn": "collection, million rupees",
+         "status": "PBS\u2019s own flag"},
+        "FBR via PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "trade_by_country", TR / "trade_by_country_fy_period.csv",
+        "Imports and exports by trading partner, fiscal year and period, "
+        "2003\u201304 onwards.",
+        "231 partners. Read the period column before using a total: "
+        "FY_from_quarters is the four quarters added, and is what to use for a "
+        "year \u2014 the portal\u2019s own whole-year rows are excluded because they "
+        "overstate badly, 38.3 against a published 32.1 US dollars billion of "
+        "exports for 2024-25. The quarterly rows still run a little over the "
+        "totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; "
+        "trade_reconciliation puts every period beside the totals so the gap can "
+        "be seen. The dollar columns are zero before 2013-14 on every endpoint. "
+        "This is aggregate trade and does not replace trade_hs8, which has the "
+        "8-digit product detail.",
+        {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
+         "country": "partner as the portal names it", "iso2": "ISO 3166 alpha-2",
+         "iso3": "ISO 3166 alpha-3", "continent": "continent",
+         "pbs_country_code": "PBS\u2019s own code",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database (trade.data.gov.pk), pull of 2026-09-27",
+        "rupees and US dollars")
+
+    csv_table(
+        "trade_by_group", TR / "trade_by_commodity_group_fy_period.csv",
+        "Imports and exports by commodity group, fiscal year and period.",
+        "Ten groups, numbered 0 to 9. The portal does not label them; by their "
+        "values they are the one-digit SITC sections, but PBS does not say so and "
+        "they are carried as numbers rather than given names they may not have. "
+        "The period caution for trade_by_country applies here too.",
+        {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
+         "group": "commodity group 0\u20139, unlabelled by the portal",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    csv_table(
+        "trade_monthly_totals", TR / "trade_monthly_totals_2003_2026.csv",
+        "Total imports and exports by calendar month, 2003\u201304 onwards.",
+        "The totals endpoint, which the country and group tables are reconciled "
+        "against. The portal\u2019s month list has no June, so June appears only "
+        "inside Q4.",
+        {"fy": "fiscal year", "year": "calendar year", "month": "calendar month",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    csv_table(
+        "trade_reconciliation", TR / "trade_reconciliation_fy_period.csv",
+        "Each period\u2019s totals beside the sum of its country rows and its group "
+        "rows.",
+        "Read this before quoting a trade total. Monthly country and group rows "
+        "match the totals endpoint to within 0.01 US dollars billion in every "
+        "month except April 2021. Quarterly rows overshoot on exports, most often "
+        "in Q4 \u2014 3.3 per cent on average \u2014 so a year built from quarters is "
+        "close but not exact.",
+        {"fy": "fiscal year", "period": "the period compared",
+         "totals_imports_pkr": "from the totals endpoint",
+         "totals_exports_pkr": "from the totals endpoint",
+         "countries_imports_pkr": "the country rows added",
+         "countries_exports_pkr": "the country rows added",
+         "groups_imports_pkr": "the group rows added",
+         "groups_exports_pkr": "the group rows added"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    # ── the diaspora country files ──────────────────────────────────────────
+    DIA_NOTE = ("The portal serves this keyed by country and it is not country "
+                "data: 198 country keys return 21 distinct series and not one "
+                "country has a series of its own, with 141 of them returning the "
+                "same one. The national series is taken instead and the country "
+                "dimension dropped, because publishing one number against 141 "
+                "countries would present it as variation.")
+    for name, desc, notes, cols, unit in [
+        ("diaspora_remittances_monthly",
+         "Remittances to Pakistan by month, 2018 to 2025.",
+         DIA_NOTE + " The value is as the portal gives it, which its magnitude "
+         "puts in millions of US dollars \u2014 34,662 for 2024 against roughly 30 "
+         "billion published \u2014 but the portal does not label the unit, so treat "
+         "the level with care and the shape as sound.",
+         {"year": "calendar year", "month": "calendar month",
+          "value": "remittances, unit as the portal gives it"},
+         "unlabelled by the source; magnitude suggests million US dollars"),
+        ("diaspora_emigrants_by_skill",
+         "Registered emigrants by skill level and year.",
+         DIA_NOTE + " Skill levels are the Bureau of Emigration\u2019s own bands. "
+         "Total is the sum of the others, so do not add it to them.",
+         {"year": "calendar year", "mode": "the portal\u2019s own breakdown mode",
+          "skill_level": "highly qualified, highly skilled, skilled, "
+                         "semi-skilled, unskilled, or total",
+          "emigrants": "people"},
+         "people"),
+        ("diaspora_destinations",
+         "Registered emigrants by destination country and year, 2011 to 2024.",
+         "This one is genuinely by country, unlike the remittance and skill files "
+         "from the same portal: 199 countries in 2024 with 102 distinct values. "
+         "The totals match the Bureau of Emigration\u2019s published figures \u2014 "
+         "859,740 in 2023 and 725,587 in 2024. Saudi Arabia takes about six in "
+         "ten.",
+         {"year": "calendar year", "country": "destination as the portal names it",
+          "iso2": "ISO 3166 alpha-2", "iso3": "ISO 3166 alpha-3",
+          "continent": "continent code", "emigrants": "people"},
+         "people"),
+        ("diaspora_occupations",
+         "Registered emigrants by occupation, 2024.",
+         "Forty occupation categories for one year. Labourer is the largest at "
+         "364,574, about half of all emigration that year.",
+         {"year": "calendar year", "occupation": "category as the portal names it",
+          "emigrants": "people"},
+         "people"),
+    ]:
+        f = OUT / f"{name}.parquet"
+        if f.exists():
+            register(name, desc, notes, cols,
+                     "Bureau of Emigration & Overseas Employment via PBS\u2019s "
+                     "diaspora portal, pull of 2026-09-27",
+                     f"SELECT * FROM '{f.as_posix()}'", unit=unit)
+
     f = OUT / "census_entities.parquet"
     if f.exists():
         register(
