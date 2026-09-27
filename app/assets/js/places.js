@@ -510,9 +510,13 @@
              + (y === state.year) + '">' + esc(lab) + '</button>';
       }).join('');
     } else if (yrs.length === 1) {
-      h += '<button type="button" disabled aria-pressed="true">' + esc(yrs[0])
-         + '</button><button type="button" disabled title="This indicator appears in only one census">'
-         + 'only year</button>';
+      /* Two greyed-out buttons read as a broken control. Most indicators
+         genuinely exist in one census only - 4,187 of the 4,601 district
+         rows - because the two censuses ask different questions, so this is
+         a fact about the indicator and is said as one. The 414 that do span
+         both get real buttons above. */
+      h += '<span class="year-one">' + esc(yrs[0])
+         + ' \u00b7 the only year this is published for</span>';
     }
     $('yearCtl').innerHTML = h;
     $('yearCtl').hidden = !h;

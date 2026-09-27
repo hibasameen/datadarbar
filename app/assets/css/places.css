@@ -43,6 +43,11 @@
 
 /* ── map ────────────────────────────────────────────────────────────────── */
 .map-wrap{flex-grow:1;min-width:0;position:relative;background:var(--ground)}
+/* Leaflet paints its container #ddd by default, which showed through as a
+   grey panel behind the map on a page whose ground is cream. The map has no
+   tile layer - the shapes are the whole picture - so the container simply
+   takes the page's ground. */
+#placesMap,.leaflet-container{background:var(--ground)}
 #placesMap{position:absolute;inset:0}
 .map-card{position:absolute;background:rgba(255,255,255,.96);border:1px solid var(--line);
   border-radius:10px;z-index:500}
@@ -118,3 +123,9 @@
 .dot.hollow{border:1.5px solid #0c3a1e}
 :root[data-theme="dark"] .dot.solid{background:#9ed3b0}
 :root[data-theme="dark"] .dot.hollow{border-color:#9ed3b0}
+
+/* A single-census indicator states its year rather than offering a control
+   that cannot be used. */
+.year-one{display:block;padding:6px 2px 0;font-size:11.5px;color:var(--muted);
+  line-height:1.4}
+.year-ctl:has(.year-one){border:0;padding:0}
