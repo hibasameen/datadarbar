@@ -42,10 +42,10 @@ still visibly lacks.
 | 2.1 | Emigrants by district | done — 2,190 rows, no crosswalk needed |
 | 2.2 | Crops by district and FY | done — 78,425 rows, index-only delivery |
 | 2.3 | Census entity counts | done — 15,387 rows, the only source covering AJK and GB |
-| 2.4 | GDP growth, GVA annual and quarterly | **remaining** — Economy, not Places |
-| 2.5 | Trade by country, group, monthly | **remaining** — Economy |
-| 2.6 | FBR tax collection by head | **remaining** — State |
-| 2.7 | Remittances, skills, destinations | **remaining** — Economy |
+| 2.4 | GDP growth, GVA annual and quarterly | done — 1,575 rows across four tables |
+| 2.5 | Trade by country, group, monthly | done — 1.21 m rows, HS8 by range reads |
+| 2.6 | FBR tax collection by head | done — 264 rows, 1991-92 to 2023-24 |
+| 2.7 | Remittances, skills, destinations | done — 2,405 rows across four tables |
 | **3** | Places | **not started** |
 | 3.1 | The picker | remaining — the index is built and measured at 0.087 MB gzipped |
 | 3.2 | The year control | remaining, and narrower than the design assumed (below) |
@@ -53,7 +53,7 @@ still visibly lacks.
 | 3.4 | The right panel | remaining |
 | 3.5 | Drop `census_data.js` | remaining |
 | 3.6 | Facilities overlay | remaining |
-| **4** | Economy and State | **not started** — blocked on 2.4–2.6 |
+| **4** | Economy and State | State done (8 topics live); Economy merge remaining |
 | **5** | Analysts' shelf | **geography half done in 1.4**; catalogue and census-panel pages remain |
 
 ### What the work changed about the plan
@@ -104,7 +104,7 @@ them.
 |---|---|
 | Census panels | Both on PBS's Digital Census 2023 frame; 37,971 mappable series; unit map decides every unit's shape |
 | Geography | `districts_2023_geo.js` (157), `tehsils_2023_geo.js` (591 census units of 650); district, sub-district and unit crosswalks all balance against PBS |
-| Warehouse | 28 tables, 32.9 MB, byte-range reads confirmed working on the deployed host |
+| Warehouse | 60 tables, 11.0 m rows, byte-range reads confirmed working on the deployed host |
 | Curated map data | 296 indicators shipped as pre-baked JS: `census_data.js` is 1,826 KB of blocking script at first paint |
 | Site | 11 pages organised by source; two stylesheets plus inline `<style>` on six pages |
 | New data | ~79 MB from four PBS portals, pulled 27 Sep, none ingested |
@@ -318,8 +318,8 @@ choropleth; fold `poverty.html` in and retire it.
 
 ## Phase 4 — Economy and State
 
-*Economy blocked by 0.3 and 2.4–2.5. State is not blocked at all: every one of
-its themes has data already collected.*
+*Nothing here is blocked on ingestion any more: 2.4–2.7 are all in the
+warehouse. Economy is a merge of three existing pages; State is done.*
 
 > **Correction, 27 September.** The row above and items 4.4–4.5 below were
 > written on a search of `app/data/warehouse/` alone, and concluded that NEPRA
