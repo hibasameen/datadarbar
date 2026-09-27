@@ -103,7 +103,16 @@ def main():
         for u in [x for x in r['units_2023'].split(' + ') if x]:
             by_unit[u] = r
 
-    rows, settled, split_evidence, absent = [], 0, 0, 0
+    # which 2017 census units the layer actually draws
+    poly_keys = {norm(n) for n, _ in u17}
+
+    def polygon_for(member):
+        k = norm(member)
+        if k in poly_keys or any(p.startswith(k) for p in poly_keys if k):
+            return True
+        return bool(difflib.get_close_matches(k, list(poly_keys), n=1, cutoff=0.85))
+
+    rows, settled, split_evidence, absent, unreliable = [], 0, 0, 0, 0
     for dds, (name, dist, scores) in ov.items():
         r = by_unit.get(name)
         if r is None:
@@ -160,7 +169,16 @@ def main():
             if m:
                 per_parent[m] += sc
         inside = sorted(((v, k) for k, v in per_parent.items()), reverse=True)
-        if not scores:
+        # A group whose 2017 side is not fully drawn cannot be resolved by
+        # overlap at all. The 2017 layer has no Model Town, so Model Town's
+        # ground sits inside the LAHORE CANTT polygon and any share computed
+        # for it would be attributed to whichever sibling does have a shape.
+        # Eight groups are in this position and are reported, not answered.
+        undrawn = [m for m in members.values() if not polygon_for(m)]
+        if undrawn:
+            unreliable += 1
+            verdict = 'unreliable: 2017 layer has no polygon for ' + ', '.join(sorted(undrawn))
+        elif not scores:
             absent += 1
             verdict = 'no overlap found'
         elif inside and inside[0][0] >= 0.75:
@@ -186,6 +204,7 @@ def main():
     print(f"   settled (75% or more inside one group member): {settled}")
     print(f"   divided across members, or mostly outside them: {split_evidence}")
     print(f"   no overlap found: {absent}")
+    print(f"   unreliable, the 2017 layer is missing a group member: {unreliable}")
     done = collections.Counter(r['district_group'] for r in rows if r['verdict'] == 'settled')
     tot = collections.Counter(r['district_group'] for r in rows)
     whole = [g for g in tot if done[g] == tot[g]]
