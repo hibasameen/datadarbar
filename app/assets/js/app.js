@@ -1793,11 +1793,12 @@ function colorize() {
       ? ['#1a5632', '#f4efe2', '#a8331a'] : ['#a8331a', '#f4efe2', '#1a5632'];
     scale = chroma.scale(divColors).domain([-absMax, 0, absMax]);
     breaks = [-absMax, -absMax / 2, 0, absMax / 2, absMax];
-  } else if (g0.classed) {
+  } else if (g0.classed || (g0.census && !(g0.rateInds || {})[currentIndicator])) {
     // Classed quantiles rather than a linear ramp: lights and population
     // density are heavily right-skewed (Karachi is ~250x the median tehsil),
     // and a linear domain from min to max washes almost every unit out to the
-    // lightest colour. Equal-count classes keep the map readable.
+    // lightest colour. Equal-count classes keep the map readable. Census
+    // counts go the same way for the same reason; census rates do not.
     breaks = chroma.limits(values, 'q', 5);
     const classColors = chroma.scale(ramp).colors(breaks.length - 1);
     scale = v => chroma(classColors[classOf(v, breaks)]);
@@ -2350,7 +2351,9 @@ function updateSummaryBar() {
       summYear.textContent = (g2.povYears && currentIndicator === 'density') ? 'June ' + currentPovYear
         : (g2.yearLabel || '—');
     } else if (g2.noYear) {
-      summYear.textContent = g2.label.match(/\d{4}/)?.[0] || '\u2014';
+      // A census group is labelled by its table, not its year, so reading a
+      // year out of the label finds nothing. The layer states its own.
+      summYear.textContent = g2.yearLabel || g2.label.match(/\d{4}/)?.[0] || '\u2014';
     } else if (currentYear === 'diff') {
       summYear.textContent = '\u0394 2017\u21922023';
     } else {

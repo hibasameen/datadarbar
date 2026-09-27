@@ -141,14 +141,20 @@ window.DD_CENSUS = (function () {
         'ORDER BY indicator, col_label, locality, sex');
     }).then(function (res) {
       meta.series = res.rows;
-      var inds = {}, dp = {};
+      var inds = {}, dp = {}, rate = {};
       res.rows.forEach(function (r, i) {
         var id = 's' + i;
         inds[id] = seriesLabel(r);
-        if (r.is_rate) dp[id] = 2;
+        if (r.is_rate) { dp[id] = 2; rate[id] = true; }
       });
       GROUPS[groupKey_].indicators = inds;
       GROUPS[groupKey_].dp = dp;
+      // Which series are rates, for the map's colour scale: a count of people
+      // by district or tehsil is heavily right-skewed here — Karachi East has
+      // 150 times the people of the median tehsil — and a smooth ramp from the
+      // smallest to the largest leaves almost every unit the palest colour. A
+      // rate is not skewed that way and reads better on the smooth ramp.
+      GROUPS[groupKey_].rateInds = rate;
     });
   }
 
