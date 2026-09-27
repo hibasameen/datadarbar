@@ -89,6 +89,7 @@ DATASET_NAMES = {
 }
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
+    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search 5,801 indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
     "map.html": ("Pakistan District Data & Maps: Census, Poverty, Night-lights — Data Darbar", "Explore Pakistan's district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil."),
     "trade.html": ("Pakistan Exports & Imports by Product and Country — Data Darbar", "Explore Pakistan's imports and exports by 8-digit HS product, trading partner and fiscal year. Read source definitions and download the underlying trade data."),
     "finance.html": ("Pakistan GDP & Federal Budget Data — Data Darbar", "Explore Pakistan's GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data."),

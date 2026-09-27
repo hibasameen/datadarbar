@@ -23,7 +23,7 @@ APP = pathlib.Path(__file__).resolve().parent.parent / 'app'
 # does not exist yet: it is shown, because the structure is the point, and it is
 # not a link, because a link to nothing is worse than a label.
 NAV = [
-    {'href': 'map.html',      'label': 'Places',    'match': ('map.html', 'poverty.html')},
+    {'href': 'places.html',   'label': 'Places',    'match': ('places.html', 'map.html', 'poverty.html')},
     {'href': 'finance.html',  'label': 'Economy',   'match': ('finance.html', 'money.html', 'trade.html', 'economy.html')},
     {'href': None,            'label': 'State',     'match': ()},
 ]
