@@ -13,24 +13,30 @@
    DuckDB-WASM, which reads only the row groups that query touches. A district
    series comes back as ~128 rows.
 
-   The map key is resolved at build time, not here — see build_web_warehouse.py.
-   A unit with no boundary of its own, or one sharing a polygon with another
-   unit, has map_key NULL and simply is not drawn; the count of those is
-   reported so a thin layer reads as thin rather than as broken.
+   Both years are drawn on one frame, PBS's Digital Census 2023, and which shape
+   a unit belongs on is decided at ETL time and recorded per unit — see
+   build_unit_map_2023.py. What arrives here is map_key, which may name several
+   shapes, and map_comparable, which says whether the figure needs combining
+   first. A unit that nothing on the 2023 frame can honestly carry has map_key
+   NULL and is not drawn; the count of what was drawn is reported so a thin
+   layer reads as thin rather than as broken.
 */
 window.DD_CENSUS = (function () {
   'use strict';
 
   var LAYERS = {
-    census2017d: { year: 2017, unit: 'district', geo: 'district',
+    census2017d: { year: 2017, unit: 'district', geo: 'district2023',
                    label: 'Census 2017 — districts',
                    source: 'PBS Population and Housing Census 2017' },
-    census2023d: { year: 2023, unit: 'district', geo: 'district',
+    census2023d: { year: 2023, unit: 'district', geo: 'district2023',
                    label: 'Census 2023 — districts',
                    source: 'PBS Population and Housing Census 2023' },
     census2023t: { year: 2023, unit: 'tehsil', geo: 'tehsil2023',
                    label: 'Census 2023 — tehsils',
                    source: 'PBS Population and Housing Census 2023' },
+    census2017t: { year: 2017, unit: 'tehsil', geo: 'tehsil2023',
+                   label: 'Census 2017 — tehsils',
+                   source: 'PBS Population and Housing Census 2017' },
   };
 
   var wh = null, booting = null;
@@ -104,10 +110,16 @@ window.DD_CENSUS = (function () {
           census: true, geo: L.geo, noYear: true, hasYears: false,
           yearLabel: String(L.year),
           blurb: 'Read on demand from the ' + L.year + ' census panel. ' +
-                 Number(r.series).toLocaleString() + ' series in this table; ' +
-                 'up to ' + Number(r.units).toLocaleString() + ' ' + L.unit + 's carry a value ' +
-                 'and a boundary. Units with no boundary of their own, and units that share ' +
-                 'one with a neighbour, are not drawn.',
+                 Number(r.series).toLocaleString() + ' series in this table, ' +
+                 'drawn on up to ' + Number(r.units).toLocaleString() + ' of PBS\'s ' +
+                 'Digital Census 2023 ' + L.unit + ' shapes.' +
+                 (L.year === 2017
+                   ? ' Both censuses share the 2023 frame so the years can be compared. ' +
+                     'Where a district absorbed another, the 2017 figure is the two combined; ' +
+                     'where one was split, it is drawn across all its successors and is the ' +
+                     'old unit\'s figure, not a share of it. Units that were redrawn ' +
+                     'many-to-many are left undrawn. Each says which it is when clicked.'
+                   : ''),
           indicators: {},
         };
         return key;
@@ -140,7 +152,22 @@ window.DD_CENSUS = (function () {
     });
   }
 
-  /* The values for one series: {map_key: {indicatorId: value, _name, _prov}} */
+  /* The values for one series: {shapeKey: {indicatorId: value, _name, _prov}}
+
+     Two things stand between a panel row and a shape on the map, and both come
+     from the unit map built at ETL time (see build_unit_map_2023.py).
+
+     A unit that was split after 2017 has no shape of its own on the 2023 frame,
+     but its successors together are exactly the ground it covered, so map_key
+     names all of them and the figure is drawn across the group. One value, one
+     colour, several shapes — nothing is divided between them.
+
+     A unit that absorbed another shares one shape with it, so two rows arrive
+     for one shape and have to be combined: added for a count, and averaged on
+     2017 population for a rate, because adding two literacy rates is
+     meaningless. This is the six districts that took in an FR.
+
+     Everything else is one row, one shape, and passes through untouched. */
   function loadValues(groupKey_, indicatorId) {
     var meta = groupMeta[groupKey_];
     if (!meta || !meta.series) return Promise.resolve(rows);
@@ -149,7 +176,8 @@ window.DD_CENSUS = (function () {
     var L = LAYERS[meta.layer];
     return engine().then(function (w) {
       return w.query(
-        'SELECT map_key, value, unit, province_area FROM census_panel_' + L.year + ' ' +
+        'SELECT map_key, map_comparable, map_note, map_weight, value, unit, province_area ' +
+        'FROM census_panel_' + L.year + ' ' +
         'WHERE table_id = ' + q(meta.tableId) +
         // The index collapses every tier below the district into one
         // geography; the panel keeps PBS's own word for each unit, so the
@@ -162,16 +190,67 @@ window.DD_CENSUS = (function () {
         '  AND sex = ' + q(s.sex) +
         '  AND map_key IS NOT NULL AND value IS NOT NULL');
     }).then(function (res) {
-      var out = {};
+      // Gather by map_key first, so the rows that share a shape meet before
+      // anything is written to a shape.
+      var byKey = {};
       res.rows.forEach(function (r) {
-        out[r.map_key] = { _name: r.unit, _prov: r.province_area };
-        out[r.map_key][indicatorId] = r.value;
+        (byKey[r.map_key] || (byKey[r.map_key] = [])).push(r);
       });
+
+      var out = {}, shapes = 0, combined = 0, spread = 0;
+      Object.keys(byKey).forEach(function (key) {
+        var group = byKey[key], value, name, note = '';
+        if (group.length === 1) {
+          value = Number(group[0].value);
+          name = group[0].unit;
+          note = group[0].map_note || '';
+        } else {
+          // Several units on one shape. A rate is averaged on the weight the
+          // unit map carries (2017 population); with no weight to go on, the
+          // shape is left undrawn rather than given an unweighted average that
+          // would read as if it were published.
+          name = group.map(function (r) { return r.unit; }).sort().join(' with ');
+          note = group[0].map_note || '';
+          if (s.is_rate) {
+            var wsum = 0, vsum = 0;
+            group.forEach(function (r) {
+              var wt = Number(r.map_weight);
+              if (isFinite(wt) && wt > 0) { wsum += wt; vsum += Number(r.value) * wt; }
+            });
+            if (!wsum) return;
+            value = vsum / wsum;
+          } else {
+            value = group.reduce(function (a, r) { return a + Number(r.value); }, 0);
+          }
+          combined += 1;
+        }
+        // One key can name several shapes: a unit drawn across its successors.
+        var keys = String(key).split(' ').filter(Boolean);
+        if (keys.length > 1) spread += 1;
+        keys.forEach(function (k) {
+          // _unit is the census unit this shape is showing, which is not the
+          // shape: a split parent is drawn on each of its successors and is
+          // still one unit. Anything that counts or totals has to count units,
+          // or Chitral is two districts and the country gains 7.5 million
+          // people.
+          out[k] = { _name: name, _prov: group[0].province_area, _unit: key };
+          if (note) out[k]._note = note;
+          out[k][indicatorId] = value;
+          shapes += 1;
+        });
+      });
+
       rows = out;
-      lastNote = res.rows.length + ' ' + L.unit + 's drawn · ' + Math.round(res.ms) + ' ms';
+      var bits = [shapes + ' shape' + (shapes === 1 ? '' : 's') + ' drawn'];
+      if (combined) bits.push(combined + ' where two units now share one');
+      if (spread) bits.push(spread + ' drawn across the units that replaced them');
+      bits.push(Math.round(res.ms) + ' ms');
+      lastNote = bits.join(' · ');
       return rows;
     });
   }
+
+
 
   return {
     layers: LAYERS,

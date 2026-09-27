@@ -40,6 +40,21 @@ import argparse, collections, csv, json, pathlib, re, sys
 
 import duckdb
 
+def nice(name):
+    """A unit name for prose, without mangling PBS's abbreviations.
+
+    str.title() turns FR BANNU into Fr Bannu and D.I.KHAN into D.I.Khan, and
+    these notes are shown to readers, so the short all-capital tokens - FR, ICT,
+    and the initials in D.I.Khan - are left as PBS writes them.
+    """
+    out = []
+    for word in name.split():
+        core = word.strip('.,')
+        out.append(word if (len(core) <= 3 and core.isupper()) or '.' in word
+                   else word.title())
+    return ' '.join(out)
+
+
 RATE = re.compile(r'(RATIO|RATE|PER CENT|PERCENT|PROPORTION|AVERAGE|DENSITY|'
                   r'PER SQ|HOUSEHOLD SIZE|PERSONS PER)', re.I)
 
@@ -135,18 +150,18 @@ def main():
             continue
         if rel in ('exact', 'renamed'):
             emit(2017, 'district', u17[0], u17[0], dkey.get(u23[0].upper().strip()),
-                 rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {u23[0].title()}')
+                 rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23[0])}')
         elif rel == 'merged':
             host = u23[0]
             note = ('2017 figure combines ' +
-                    ' and '.join(x.title() for x in sorted(u17)) +
-                    f', merged into {host.title()} after 2017')
+                    ' and '.join(nice(x) for x in sorted(u17)) +
+                    f', merged into {nice(host)} after 2017')
             for u in u17:
                 emit(2017, 'district', u, u, dkey.get(host.upper().strip()), rel,
                      'combined', note, w17.get((u.upper().strip(), u.upper().strip())))
         elif rel == 'split':
-            note = (f'{u17[0].title()} was split after 2017 into ' +
-                    ', '.join(x.title() for x in sorted(u23)) +
+            note = (f'{nice(u17[0])} was split after 2017 into ' +
+                    ', '.join(nice(x) for x in sorted(u23)) +
                     '. The 2017 figure is for the whole of the old district and '
                     'is shown across all of them, not divided between them')
             keys = [dkey.get(x.upper().strip()) for x in sorted(u23)]
@@ -155,7 +170,7 @@ def main():
                  rel, 'parent' if all(keys) else 'no', note)
         else:                                          # boundary transfer
             note = ('territory moved between ' +
-                    ' and '.join(x.title() for x in sorted(u23)) +
+                    ' and '.join(nice(x) for x in sorted(u23)) +
                     ' after 2017, so the two years cover slightly different ground')
             for u in u17:
                 emit(2017, 'district', u, u, dkey.get(u.upper().strip()), rel,
@@ -179,15 +194,15 @@ def main():
                               if len(cand) == 1 else None)
                 d = [dd for dd in home.get(a17[0].upper().strip(), [])
                      if dd in r['district_group'].split(' + ')]
-                note = (f'{a17[0].title()} was split after 2017 into ' +
-                        ', '.join(x.title() for x in sorted(a23)) +
+                note = (f'{nice(a17[0])} was split after 2017 into ' +
+                        ', '.join(nice(x) for x in sorted(a23)) +
                         '. The 2017 figure is for the whole of the old unit and is '
                         'shown across all of them, not divided between them')
                 emit(2017, 'tehsil', d[0] if len(d) == 1 else '', a17[0],
                      ' '.join(k for k in ks if k) if all(ks) else None,
                      rel, 'parent' if all(ks) else 'no', note)
                 continue
-            note = ('the units in ' + r['district_group'].title() + ' were redrawn after '
+            note = ('the units in ' + nice(r['district_group']) + ' were redrawn after '
                     '2017; which 2023 tehsil corresponds to which 2017 one is not '
                     'established, so no 2017 value is drawn')
             for u in a17:
@@ -201,7 +216,7 @@ def main():
         d17, u17 = r['district_2017'], r['units_2017']
         d23, u23 = r['district_2023'], r['units_2023']
         emit(2017, 'tehsil', d17, u17, skey.get((d23.upper().strip(), u23.upper().strip())),
-             rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {u23.title()}')
+             rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23)}')
 
     for (d, u), k in sorted(skey.items()):
         emit(2023, 'tehsil', d, u, k, 'exact', 'yes', '')

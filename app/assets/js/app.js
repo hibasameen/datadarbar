@@ -28,13 +28,14 @@ const TOPICS = {
   women:          { label: "Women's Empowerment",       groups: ['micsWomen', 'hiesDecisions'] },
   children:       { label: 'Children',                  groups: ['micsProtection', 'micsEquity'] },
   // The census layers are the only ones whose indicator list is not written
-  // here. Their two panels hold 33,795 mappable series between them, so the
+  // here. Their two panels hold 37,971 mappable series between them, so the
   // groups and indicators are built from census_series_index the first time a
   // census topic is opened, and the values for the chosen series are read from
   // the panel on demand. See assets/js/census-map.js.
   census2023d:    { label: 'Census 2023 \u2014 districts',  groups: [], census: true },
   census2023t:    { label: 'Census 2023 \u2014 tehsils',    groups: [], census: true },
   census2017d:    { label: 'Census 2017 \u2014 districts',  groups: [], census: true },
+  census2017t:    { label: 'Census 2017 \u2014 tehsils',    groups: [], census: true },
   ruralFacilities: { label: 'Rural Facilities \u2014 Mouza Census 2020',
                      groups: ['mouza_electricity_energy', 'mouza_drinking_water', 'mouza_streets_roads', 'mouza_housing', 'mouza_schools', 'mouza_health', 'mouza_connectivity', 'mouza_cooking_fuel', 'mouza_markets_credit', 'mouza_hazards', 'mouza_settlement'] },
 };
@@ -986,6 +987,24 @@ const GEOGRAPHIES = {
     prov: p => p.p || '',
     assets: ['data/tehsils_2023_geo.js'],
   },
+  // Census 2023's district frame, and the frame both censuses are drawn on.
+  // The layer above it is 2015 vintage with 147 shapes, and matching census
+  // district names against it reached 128 of 136 — the eight it missed are
+  // real boundary changes, not spellings, so no amount of aliasing would have
+  // closed them. PBS's own layer keys on the district code the panels carry,
+  // and draws 157: the 136 in the census plus Gilgit-Baltistan, Azad Jammu &
+  // Kashmir and the Occupied Kashmir shape, which are drawn but carry no
+  // census value, because the country does not stop at the census frame.
+  district2023: {
+    unit: 'district', unitPlural: 'districts', UnitPlural: 'Districts',
+    placeholder: 'Search districts\u2026',
+    geo:  () => window.DD_GEO_D23,
+    rows: () => ({}),
+    key:  p => p.code || '',
+    name: p => p.n || '',
+    prov: p => p.p || '',
+    assets: ['data/districts_2023_geo.js'],
+  },
 };
 
 // Payloads a group needs beyond its geography. The Mouza Census and the
@@ -1018,6 +1037,24 @@ function povIsCitywide(p) {
 // The census layers build their own menus and fetch their own values; every
 // other group has both in the page already.
 function isCensusGroup(group) { return !!(INDICATOR_GROUPS[group || currentGroup] || {}).census; }
+
+// A census unit that was split after 2017 is drawn on each of its successors,
+// so walking the shapes visits it more than once. Anything that totals, ranks
+// or counts has to see each unit once: this hands back a key to dedupe on, and
+// null where the shape has nothing to dedupe.
+function censusUnitKey(p) {
+  if (!isCensusGroup()) return null;
+  const r = (window.DD_CENSUS.rows() || {})[G().key(p || {})];
+  return r ? (r._unit || null) : null;
+}
+
+// The census notes are the only panel text that comes from a data file rather
+// than from this source, so they are escaped before going anywhere near HTML.
+function escHtml(t) {
+  return String(t == null ? '' : t)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 let pendingCensusUrl = null;
 async function censusPrepare() {
   if (!window.DD_CENSUS) return;
@@ -1890,6 +1927,15 @@ function showDistrictDetail(props) {
     html += `<div class="stat stat-notice">Rural households only. HIES 2024-25 records no district identifier for urban households.</div>`;
   }
 
+  // A census figure drawn on a boundary that is not the one it was published
+  // on. Both censuses share PBS's 2023 frame so that a year toggle means
+  // something, and eight districts really did change between them: the unit map
+  // records what was done about each, in words written for a reader. That
+  // belongs beside the number, not in a methods page.
+  if (isCensusGroup() && row._note) {
+    html += `<div class="stat stat-notice">${escHtml(row._note)}</div>`;
+  }
+
   // Borrowed-geography notices. Some figures are real but describe a coarser
   // or older geography than the district you clicked — Karachi before it was
   // split into seven, or Karachi West before Keamari was carved out of it.
@@ -1921,9 +1967,27 @@ function showDistrictDetail(props) {
     }
   }
 
-  for (const [ind, label] of Object.entries(g.indicators)) {
+  // A census table holds up to a few hundred series and only the chosen one is
+  // read from the panel, so listing the rest would be a column of dashes that
+  // reads as missing data rather than as data not asked for.
+  const listed = g.census
+    ? Object.entries(g.indicators).filter(([ind]) => ind === currentIndicator)
+    : Object.entries(g.indicators);
+
+  for (const [ind, label] of listed) {
     const pct = isPctLabel(label);
     let val;
+
+    if (g.census) {
+      const dp = (g.dp || {})[ind];
+      const v = row[ind];
+      val = (v === undefined || v === null) ? '\u2014'
+          : Number(v).toLocaleString(undefined, dp
+              ? { minimumFractionDigits: dp, maximumFractionDigits: dp }
+              : { maximumFractionDigits: 0 });
+      html += `<div class="stat"><span>${escHtml(label)}</span><strong>${val}</strong></div>`;
+      continue;
+    }
 
     if (g.noYear) {
       // Use mixedKeys if available, otherwise default prefix
@@ -1943,6 +2007,11 @@ function showDistrictDetail(props) {
     }
 
     html += `<div class="stat"><span>${label}</span><strong>${val}</strong></div>`;
+  }
+
+  if (g.census) {
+    statsDiv.innerHTML = html;
+    return;
   }
 
   html += '<div class="stat-divider"></div>';
@@ -2038,6 +2107,7 @@ function prepareDownload() {
   const provFilter = provinceSelect.value;
   const g = INDICATOR_GROUPS[currentGroup];
   const rows = [];
+  const censusSeen = new Set();
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
     const dist = unitName(p);
@@ -2061,6 +2131,23 @@ function prepareDownload() {
       rows.push(entry);
       return;
     }
+    // A census layer has no prefixed row: its values arrive keyed by the
+    // indicator id, and the shape is not always the unit. Where a unit was
+    // split, one figure is drawn on each successor, so a file that listed only
+    // shapes and values would invite a sum that double-counts those parents.
+    // The unit it was published for, and the reason, travel with the number.
+    if (g.census) {
+      if (censusSeen.has(row._unit)) return;
+      censusSeen.add(row._unit);
+      entry[G().unit] = row._name || dist;
+      entry.drawn_on = String(row._unit || '').split(' ').length;
+      entry.shape_id = row._unit;
+      entry.value = row[currentIndicator] ?? '';
+      entry.published_for = row._note ? 'a different boundary — see note' : entry[G().unit];
+      entry.note = (row._note || '').replace(/"/g, "'");
+      rows.push(entry);
+      return;
+    }
     for (const ind of Object.keys(g.indicators)) {
       if (g.noYear) {
         entry[ind] = row[`${g.prefix}_${ind}`] ?? '';
@@ -2074,7 +2161,12 @@ function prepareDownload() {
   });
   if (!rows.length) return;
   const header = Object.keys(rows[0]);
-  const csv = [header.join(',')].concat(rows.map(r => header.map(h => r[h]).join(','))).join('\n');
+  const cell = v => {
+    const t = String(v == null ? '' : v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  };
+  const csv = [header.map(cell).join(',')]
+    .concat(rows.map(r => header.map(h => cell(r[h])).join(','))).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   downloadBtn.href = URL.createObjectURL(blob);
   // A census layer names its own year; currentYear is pinned to 2017 whenever
@@ -2192,10 +2284,15 @@ function updateSummaryBar() {
   const g = INDICATOR_GROUPS[currentGroup];
   let count = 0, total = 0;
 
+  const counted = new Set();
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
     const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
+    // The bar counts places, so a unit drawn across the shapes that replaced
+    // it counts once. The shape count is in the layer note instead.
+    const uk = censusUnitKey(p);
+    if (uk) { if (counted.has(uk)) return; counted.add(uk); }
     total++;
     const v = getVal(p);
     if (v !== null && !isNaN(v)) count++;
@@ -2214,10 +2311,13 @@ function updateSummaryBar() {
     //   - means, medians, averages, scores → simple mean (not summable)
     //   - counts (population, establishments) → sum
     const values = [];
+    const seen = new Set();
     districtLayer.eachLayer(l => {
       const p = l.feature.properties || {};
       const prov = unitProv(p) || 'Unknown';
       if (!matchesProvince(provFilter, prov)) return;
+      const uk = censusUnitKey(p);
+      if (uk) { if (seen.has(uk)) return; seen.add(uk); }
       const v = getVal(p);
       if (v !== null && !isNaN(v)) values.push(v);
     });
@@ -2268,10 +2368,15 @@ function buildRankings() {
   const indLabel = g.indicators[currentIndicator] || 'Value';
   const entries = [];
 
+  const seen = new Set();
   districtLayer.eachLayer(l => {
     const p = l.feature.properties || {};
     const prov = unitProv(p) || 'Unknown';
     if (!matchesProvince(provFilter, prov)) return;
+    // One row per census unit, not per shape, or a district that was split
+    // fills two places in the same ranking with the same number.
+    const uk = censusUnitKey(p);
+    if (uk) { if (seen.has(uk)) return; seen.add(uk); }
     const dist = unitName(p);
     const v = getVal(p);
     if (v !== null && !isNaN(v)) entries.push({ dist, prov, v, layer: l, key: G().key(p) });
