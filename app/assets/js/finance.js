@@ -11,13 +11,13 @@ const hideTip=()=>tip.style('opacity',0);
 const fyEnd=y=>+y.slice(0,4)+1;          // '1951-52' -> 1952
 const fyLbl=n=>`${n-1}-${String(n).padStart(4,'0').slice(2)}`; // 1952 -> '1951-52'
 
-const MACRO={agri:{label:'Agriculture',c:'#5b8c5a'},ind:{label:'Industry',c:'#e07b39'},serv:{label:'Services',c:'#3d6db5'}};
-const MFG_C='#c9862b';let arcView='stack';
+const MACRO={agri:{label:'Agriculture',c:'var(--green-400)'},ind:{label:'Industry',c:'var(--gold-500)'},serv:{label:'Services',c:'var(--green-800)'}};
+const MFG_C='var(--gold-600)';let arcView='stack';
 const ERAS=[[1952,1958,'Early years'],[1958,1969,'Ayub industrialisation'],[1969,1977,'War & nationalisation'],[1977,1988,'Zia decade'],[1988,1999,'Adjustment years'],[1999,2008,'Musharraf boom'],[2008,2013,'Energy crisis'],[2013,2020,'CPEC era'],[2020,2022,'COVID'],[2022,2026,'Squeeze & stabilisation']];
 
 const LSM_SHORT={'QIM':'QIM (overall)','Manufacturing of Food':'Food','Manufacturing of Beverages':'Beverages','Manufacturing of Tobacco':'Tobacco','Manufacturing of Textile':'Textiles','Manufacture of wearing apparel':'Wearing apparel','Manufacturing of Leather Products':'Leather','Manufacturing of Wood Products':'Wood','Manufacturing of Paper & Board':'Paper & board','Manufacturing of Coke & Petroleum Products':'Petroleum products','Manufacturing of Chemicals':'Chemicals','Manufacturing of Pharmaceuticals Products':'Pharmaceuticals','Manufacturing of Rubber Products':'Rubber','Manufacturing of Non Metalic Mineral Products':'Cement & minerals','Manufacturing of Iron & Steel Products':'Iron & steel','Manufacture of Fabricated Metal':'Fabricated metal','Manufacture of Computer, electronics and Optical products':'Electronics & optics','Manufacture of Electrical Equipment':'Electrical equipment','Manufacture of Machinery and  Equipment n.e.c':'Machinery','Manufacturing of Automobiles':'Automobiles','Manufacture of other transport  Equipment':'Other transport','Manufacture of furniture':'Furniture','Other manufacturing':'Other (footballs)'};
 const OLD2NEW={'Textile':'Manufacturing of Textile','Pharmaceuticals':'Manufacturing of Pharmaceuticals Products','Chemicals':'Manufacturing of Chemicals','Automobiles':'Manufacturing of Automobiles','Iron & Steel Products':'Manufacturing of Iron & Steel Products','Coke & Petroleum Products':'Manufacturing of Coke & Petroleum Products','Leather Products':'Manufacturing of Leather Products','Rubber Products':'Manufacturing of Rubber Products','Wood Products':'Manufacturing of Wood Products','Non Metalic Mineral Products':'Manufacturing of Non Metalic Mineral Products','Paper & Board':'Manufacturing of Paper & Board','Electronics':'Manufacture of Electrical Equipment','QIM':'QIM'};
-const LSM_PALETTE=['#0c3a1e','#c0392b','#3d6db5','#d4a017','#9b59b6','#e07b39','#16a085','#2c3e8f','#a0522d','#5b8c5a','#d98880','#0e8a8a','#6d4c2b','#7f8c8d','#b8941a','#c39bd3','#34495e','#e8b92e','#8e44ad','#1e6b3e','#5d6d7e','#95a5a6','#17a2b8'];
+const LSM_PALETTE=['var(--green-900)','var(--negative)','var(--green-800)','var(--gold-500)','var(--teal-700)','var(--gold-500)','var(--teal-500)','var(--green-900)','var(--gold-800)','var(--green-400)','var(--negative-100)','var(--teal-700)','var(--gold-800)','var(--muted)','var(--gold-600)','var(--green-300)','var(--body)','var(--gold-400)','var(--teal-700)','var(--green-700)','var(--muted)','var(--muted)','var(--teal-500)'];
 
 /* ---- topics (sidebar navigation, one topic at a time; #hash deep links) ---- */
 const TOPICS=[
@@ -218,7 +218,7 @@ function buildArcLegend(){
    .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`);
   return;
  }
- const items=[['all','Whole economy','#17301f']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
+ const items=[['all','Whole economy','var(--ink)']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
  lg.selectAll('.li').data(items).join('div').attr('class','li')
   .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`)
   .on('click',(e,d)=>setSector(d[0]));
@@ -235,7 +235,7 @@ function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k)
 /* sector focus can be 'all', a macro key, or a sub-sector key */
 function parentOf(sel){return (sel==='all'||MACRO[sel])?sel:(ST.growth_sub_parent[sel]||'all');}
 function growthSeries(sel){
- if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'#17301f'};
+ if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'var(--ink)'};
  if(MACRO[sel])return {pts:ST.growth[sel]||ST.growth.mfg,lbl:MACRO[sel].label.toLowerCase(),color:MACRO[sel].c};
  return {pts:ST.growth_sub[sel]||[],lbl:(ST.growth_sub_labels[sel]||sel).toLowerCase(),color:MACRO[parentOf(sel)].c};
 }
@@ -277,7 +277,7 @@ function drawArcStack(){
  ERAS.forEach((e,i)=>{
   const x0=x(Math.max(e[0],arcData[0].n)),x1=x(Math.min(e[1],lastPt(arcData).n));
   if(x1<=x0)return;
-  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);
+  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);
   if(x1-x0>55)svg.append('text').attr('class','era-lbl').attr('x',(x0+x1)/2).attr('y',m.t-8).attr('text-anchor','middle').text(e[2]);
  });
  const keys=['agri','ind','serv'];
@@ -298,9 +298,9 @@ function drawArcStack(){
  if(bEnd.length){
   const defs=svg.append('defs');
   defs.append('pattern').attr('id','hatch').attr('width',6).attr('height',6).attr('patternUnits','userSpaceOnUse').attr('patternTransform','rotate(45)')
-   .append('line').attr('y2',6).attr('stroke','#faf7ef').attr('stroke-width',1.1).attr('opacity',.55);
+   .append('line').attr('y2',6).attr('stroke','var(--ground)').attr('stroke-width',1.1).attr('opacity',.55);
   svg.append('rect').attr('x',x(bEnd[0].n)).attr('y',m.t).attr('width',x(lastPt(bEnd).n)-x(bEnd[0].n)).attr('height',H-m.t-m.b).attr('fill','url(#hatch)').attr('pointer-events','none');
-  svg.append('line').attr('x1',x(1999.5)).attr('x2',x(1999.5)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','#faf7ef').attr('stroke-width',1.5).attr('pointer-events','none');
+  svg.append('line').attr('x1',x(1999.5)).attr('x2',x(1999.5)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--ground)').attr('stroke-width',1.5).attr('pointer-events','none');
  }
  // axes
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(15,Math.floor(W/85))).tickFormat(n=>fyLbl(n)));
@@ -308,7 +308,7 @@ function drawArcStack(){
  // in-band labels (latest values)
  const lastRow=lastPt(arcData);let acc=0;
  keys.forEach(k=>{const mid=acc+lastRow[k]/2;acc+=lastRow[k];
-  svg.append('text').attr('x',W-m.r-6).attr('y',y(mid)).attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',800).attr('fill','#fff').attr('pointer-events','none')
+  svg.append('text').attr('x',W-m.r-6).attr('y',y(mid)).attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--surface)').attr('pointer-events','none')
    .text(`${MACRO[k].label} ${lastRow[k].toFixed(0)}%`);});
  // year cursor + drag
  const cx=x(fyEnd(selYear));
@@ -329,7 +329,7 @@ function drawArcLines(){
  ERAS.forEach((e,i)=>{
   const x0=x(Math.max(e[0],arcData[0].n)),x1=x(Math.min(e[1],lastPt(arcData).n));
   if(x1<=x0)return;
-  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);
+  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);
   if(x1-x0>55)svg.append('text').attr('class','era-lbl').attr('x',(x0+x1)/2).attr('y',m.t-8).attr('text-anchor','middle').text(e[2]);
  });
  const firstPub=arcData.findIndex(d=>!d.back);
@@ -350,8 +350,8 @@ function drawArcLines(){
   if(fr[k]!=null)svg.append('text').attr('x',x(fr.n)+6).attr('y',y(fr[k])+(k==='serv'?14:-7)).attr('font-size',11).attr('font-weight',800).attr('fill',c).attr('opacity',op).text(`${lbl} ${fr[k].toFixed(0)}%`);
  });
  const cn=fyEnd('1965-66');
- svg.append('line').attr('x1',x(cn)).attr('x2',x(cn)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','#7d8b96').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.7).attr('pointer-events','none');
- svg.append('text').attr('x',x(cn)+5).attr('y',H-m.b-8).attr('font-size',10).attr('font-style','italic').attr('fill','#7d8b96').attr('pointer-events','none').text('services overtake agriculture');
+ svg.append('line').attr('x1',x(cn)).attr('x2',x(cn)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--muted)').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.7).attr('pointer-events','none');
+ svg.append('text').attr('x',x(cn)+5).attr('y',H-m.b-8).attr('font-size',10).attr('font-style','italic').attr('fill','var(--muted)').attr('pointer-events','none').text('services overtake agriculture');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(15,Math.floor(W/85))).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'%'));
  const cx=x(fyEnd(selYear));
@@ -456,7 +456,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  const ext=d3.extent(pts,p=>p.value);
  const y=d3.scaleLinear().domain([Math.min(-3,ext[0]),Math.max(8,ext[1])]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- ERAS.forEach((e,i)=>{if(i%2)svg.append('rect').attr('x',x(e[0])).attr('y',m.t).attr('width',x(Math.min(e[1],lastPt(pts).n))-x(e[0])).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);});
+ ERAS.forEach((e,i)=>{if(i%2)svg.append('rect').attr('x',x(e[0])).attr('y',m.t).attr('width',x(Math.min(e[1],lastPt(pts).n))-x(e[0])).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);});
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor(W/80)).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(6).tickFormat(d=>d+'%')).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--slate-300)');
@@ -464,7 +464,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  svg.selectAll('rect.b').data(pts).join('rect').attr('class','b')
   .attr('x',d=>x(d.n)-bw/2).attr('width',bw)
   .attr('y',d=>Math.min(y(0),y(d.value))).attr('height',d=>Math.abs(y(0)-y(d.value)))
-  .attr('rx',1.5).attr('fill',d=>d.value>=0?color:'#c0392b').attr('opacity',d=>d.value>=0?.75:.85)
+  .attr('rx',1.5).attr('fill',d=>d.value>=0?color:'var(--negative)').attr('opacity',d=>d.value>=0?.75:.85)
   .style('cursor','pointer')
   .on('click',(e,d)=>setYear(d.year))
   .on('mousemove',(e,d)=>showTip(`<b>${d.year}</b><br>${lbl} ${fmtPct(d.value)}`,e)).on('mouseleave',hideTip);
@@ -472,7 +472,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  const decades=d3.groups(pts,p=>Math.floor((p.n-1)/10)*10).map(([dec,arr])=>({x0:Math.max(arr[0].n-0.5,pts[0].n-0.5),x1:lastPt(arr).n+0.5,v:d3.mean(arr,p=>p.value)}));
  svg.selectAll('line.dec').data(decades).join('line').attr('class','dec')
   .attr('x1',d=>x(d.x0)).attr('x2',d=>x(d.x1)).attr('y1',d=>y(d.v)).attr('y2',d=>y(d.v))
-  .attr('stroke','#17301f').attr('stroke-width',2.2).attr('opacity',.65)
+  .attr('stroke','var(--ink)').attr('stroke-width',2.2).attr('opacity',.65)
   .on('mousemove',(e,d)=>showTip(`Decade average: <b>${d.v.toFixed(1)}%</b>`,e)).on('mouseleave',hideTip);
  // year cursor
  const cx=x(fyEnd(selYear));
@@ -481,9 +481,9 @@ function drawGrowthLine(elSel,lblSel,tall){
 
 /* ================= growth contributions ================= */
 let cGroup='broad',cYear=null,cView='contrib';
-const CONTRIB_COLORS={agri:'#5b8c5a',ind:'#e07b39',serv:'#3d6db5'};
-const DETAIL_PALETTE=['#2f6b3a','#5b8c5a','#8ab27f','#b7cf9f','#c0392b','#e07b39','#e8a05a','#f0c489','#a0522d',
- '#1f4e79','#3d6db5','#6a95d0','#9dbbe4','#2c3e8f','#7b68a6','#9b59b6','#c39bd3','#0e8a8a','#16a085','#5dbfae'];
+const CONTRIB_COLORS={agri:'var(--green-400)',ind:'var(--gold-500)',serv:'var(--green-800)'};
+const DETAIL_PALETTE=['var(--green-700)','var(--green-400)','var(--green-400)','var(--green-300)','var(--negative)','var(--gold-500)','var(--gold-400)','var(--gold-300)','var(--gold-800)',
+ 'var(--green-900)','var(--green-800)','var(--green-300)','var(--green-200)','var(--green-900)','var(--teal-700)','var(--teal-700)','var(--green-300)','var(--teal-700)','var(--teal-500)','var(--teal-500)'];
 function contribKeys(){
  const ks=Object.keys(ST.contrib||{});
  const order={agri:0,ind:1,serv:2};
@@ -569,10 +569,10 @@ function drawContrib(){
  // headline GDP growth line
  const gdp=ST.contrib_gdp;
  const lx=yr=>x(yr)+x.bandwidth()/2;
- svg.append('path').datum(gdp).attr('fill','none').attr('stroke','#17301f').attr('stroke-width',2)
+ svg.append('path').datum(gdp).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-width',2)
   .attr('d',d3.line().x(p=>lx(p.year)).y(p=>y(p.value)));
  svg.selectAll('circle.gd').data(gdp).join('circle').attr('class','gd')
-  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','#17301f')
+  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','var(--ink)')
   .on('mousemove',(e,p)=>showTip(`<b>GDP growth ${p.year}</b><br>${fmtPct(p.value)}`,e)).on('mouseleave',hideTip);
  // selected-year marker
  if(cYear!=null&&x(cYear)!=null)svg.append('rect').attr('x',x(cYear)-2).attr('y',m.t).attr('width',x.bandwidth()+4).attr('height',H-m.t-m.b)
@@ -584,7 +584,7 @@ function drawContrib(){
  lg.selectAll('span.it').data(items,d=>d.key).join('span').attr('class','it')
   .html(d=>`<i style="width:11px;height:11px;border-radius:3px;background:${contribColor(d)}"></i>${d.label}`);
  lg.selectAll('span.gdpk').data([0]).join('span').attr('class','gdpk')
-  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:#17301f"></i>GDP growth');
+  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:var(--ink)"></i>GDP growth');
 }
 function drawCYear(){
  const el=d3.select('#cYear');el.selectAll('*').remove();
@@ -599,7 +599,7 @@ function drawCYear(){
  // negative VALUE LABELS are placed to the right of the axis (in red) so they never
  // crowd the sector names on the left.
  const rows=contribRows(cYear,cGroup).sort((a,b)=>b.v-a.v).filter(r=>Math.abs(r.v)>0.001);
- const RED='#c0392b';
+ const RED='var(--negative)';
  const W=el.node().clientWidth||520,rh=cGroup==='broad'?34:22,H=rows.length*rh+26;
  const lblW=Math.max(110,Math.min(170,W*0.34));
  const minV=Math.min(0,d3.min(rows,r=>r.v)),maxV=Math.max(0,d3.max(rows,r=>r.v));
@@ -678,7 +678,7 @@ function initLsm(){
  styleChips();drawLsm();
 }
 function styleChips(){
- d3.selectAll('#lsmChips .chip').classed('on',c=>lsmSel.has(c)).style('background',c=>lsmSel.has(c)?lsmColors[c]:null).style('border-color',c=>lsmSel.has(c)?lsmColors[c]:null).style('color',c=>lsmSel.has(c)?'#fff':null);
+ d3.selectAll('#lsmChips .chip').classed('on',c=>lsmSel.has(c)).style('background',c=>lsmSel.has(c)?lsmColors[c]:null).style('border-color',c=>lsmSel.has(c)?lsmColors[c]:null).style('color',c=>lsmSel.has(c)?'var(--surface)':null);
 }
 function drawLsm(){
  const el=d3.select('#lsm');el.selectAll('*').remove();
@@ -704,7 +704,7 @@ function drawLsm(){
    svg.append('path').datum(oldPts.concat(newPts.filter(p=>p.n===2016)).sort((a,b)=>a.n-b.n))
     .attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2).attr('stroke-dasharray','5 4').attr('d',line);
   svg.append('path').datum(newPts).attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2.5).attr('d',line);
-  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','#fff').attr('stroke-width',1)
+  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','var(--surface)').attr('stroke-width',1)
    .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}${p.fy==='2025-26'?' (Jul–May)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
   const lp=lastPt(pts);
   if(!narrow) svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
@@ -722,8 +722,8 @@ function drawQim(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  // crisis shading
  [[new Date(2020,1,1),new Date(2020,7,31),'COVID'],[new Date(2022,5,1),new Date(2023,5,30),'import squeeze']].forEach(([a,b,l])=>{
-  svg.append('rect').attr('x',x(a)).attr('y',m.t).attr('width',x(b)-x(a)).attr('height',H-m.t-m.b).attr('fill','#c0392b').attr('opacity',.06);
-  svg.append('text').attr('class','era-lbl').attr('x',(x(a)+x(b))/2).attr('y',m.t+9).attr('text-anchor','middle').attr('fill','#a04338').text(l);});
+  svg.append('rect').attr('x',x(a)).attr('y',m.t).attr('width',x(b)-x(a)).attr('height',H-m.t-m.b).attr('fill','var(--negative)').attr('opacity',.06);
+  svg.append('text').attr('class','era-lbl').attr('x',(x(a)+x(b))/2).attr('y',m.t+9).attr('text-anchor','middle').attr('fill','var(--negative)').text(l);});
  svg.append('g').attr('transform',`translate(0,${split})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor(W/90)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(yb).ticks(3).tickFormat(d=>d+'%'));
@@ -734,7 +734,7 @@ function drawQim(){
  svg.selectAll('rect.yy').data(pts.filter(p=>p.yoy!=null)).join('rect').attr('class','yy')
   .attr('x',p=>x(p.d)-bw/2).attr('width',bw)
   .attr('y',p=>Math.min(yb(0),yb(p.yoy))).attr('height',p=>Math.abs(yb(0)-yb(p.yoy)))
-  .attr('fill',p=>p.yoy>=0?'var(--green-500)':'#c0392b').attr('opacity',.8);
+  .attr('fill',p=>p.yoy>=0?'var(--green-500)':'var(--negative)').attr('opacity',.8);
  svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.l-m.r).attr('height',H-m.t-m.b).attr('fill','transparent')
   .on('mousemove',function(e){
    const d0=x.invert(d3.pointer(e,this)[0]);
@@ -775,7 +775,7 @@ function drawWeights(){
   .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--slate-300)');
  g.append('text').attr('x',d=>x(d.w)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-500)').text(d=>d.w.toFixed(1)+'%');
  g.append('text').attr('x',W-4).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800)
-  .attr('fill',d=>d.g==null?'var(--slate-400)':d.g>=0?'var(--green-600)':'#c0392b').text(d=>fmtPct(d.g));
+  .attr('fill',d=>d.g==null?'var(--slate-400)':d.g>=0?'var(--green-600)':'var(--negative)').text(d=>fmtPct(d.g));
 }
 
 /* ================= 4. CMI dumbbells ================= */
@@ -808,11 +808,11 @@ function drawCmi(){
   .on('mousemove',(e,d)=>showTip(`<b>${d.lbl}</b><br>2005-06: ${d.p05.toFixed(1)}%${d.a05?` (${d.a05.toLocaleString()} ${unit})`:''}<br>2015-16: ${d.p15.toFixed(1)}%${d.a15?` (${d.a15.toLocaleString()} ${unit})`:''}<br><b>${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}pp</b> change in share`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',m.l-10).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',600).attr('fill','var(--slate-700)').text(d=>d.lbl);
  g.append('line').attr('x1',d=>x(d.p05)).attr('x2',d=>x(d.p15)).attr('y1',2).attr('y2',2)
-  .attr('stroke',d=>d.p15>=d.p05?'var(--green-500)':'#c0392b').attr('stroke-width',2.5).attr('opacity',.75);
- g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','#fff').attr('stroke','var(--slate-400)').attr('stroke-width',2);
- g.append('circle').attr('cx',d=>x(d.p15)).attr('cy',2).attr('r',5).attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'#c0392b');
+  .attr('stroke',d=>d.p15>=d.p05?'var(--green-500)':'var(--negative)').attr('stroke-width',2.5).attr('opacity',.75);
+ g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','var(--surface)').attr('stroke','var(--slate-400)').attr('stroke-width',2);
+ g.append('circle').attr('cx',d=>x(d.p15)).attr('cy',2).attr('r',5).attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)');
  g.append('text').attr('x',W-6).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',700)
-  .attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'#c0392b').text(d=>`${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}`);
+  .attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)').text(d=>`${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}`);
  // legend lives in HTML above the chart so it can never overlap the rows
  d3.select('#cmiLegend').html(
    '<span><i style="width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--slate-400)"></i>2005-06 census</span>'+
@@ -920,20 +920,20 @@ function drawIOChord(){
  const arc=d3.arc().innerRadius(innerR).outerRadius(outerR);
  const ribbon=(d3.ribbonArrow?d3.ribbonArrow():d3.ribbon()).radius(innerR-1).padAngle(1/innerR);
  const rib=g.append('g').attr('fill-opacity',0.62).selectAll('path').data(chords).join('path')
-   .attr('d',ribbon).attr('fill',d=>colors[d.source.index]).attr('stroke','#fff').attr('stroke-width',0.3)
+   .attr('d',ribbon).attr('fill',d=>colors[d.source.index]).attr('stroke','var(--surface)').attr('stroke-width',0.3)
    .style('cursor','pointer').on('click',(e,d)=>setIOSector(d.source.index))
    .on('mousemove',function(e,d){rib.attr('fill-opacity',x=>x===d?.95:.12);
-     showTip(`<b>${sectors[d.source.index]}</b> supplies<br><b>${sectors[d.target.index]}</b><br>${fmtRs(d.source.value)}<br><span style="color:#9ca3af">click to focus</span>`,e);})
+     showTip(`<b>${sectors[d.source.index]}</b> supplies<br><b>${sectors[d.target.index]}</b><br>${fmtRs(d.source.value)}<br><span style="color:var(--muted-2)">click to focus</span>`,e);})
    .on('mouseleave',()=>{rib.attr('fill-opacity',null);hideTip();});
  const grp=g.append('g').selectAll('g').data(chords.groups).join('g').style('cursor','pointer')
    .on('click',(e,d)=>setIOSector(d.index));
- grp.append('path').attr('d',arc).attr('fill',d=>colors[d.index]).attr('stroke','#fff')
+ grp.append('path').attr('d',arc).attr('fill',d=>colors[d.index]).attr('stroke','var(--surface)')
    .on('mousemove',function(e,d){rib.attr('fill-opacity',x=>x.source.index===d.index||x.target.index===d.index?.9:.1);
-     showTip(`<b>${sectors[d.index]}</b><br>supplies ${fmtRs(d.value)} to other sectors<br><span style="color:#9ca3af">click to focus</span>`,e);})
+     showTip(`<b>${sectors[d.index]}</b><br>supplies ${fmtRs(d.value)} to other sectors<br><span style="color:var(--muted-2)">click to focus</span>`,e);})
    .on('mouseleave',()=>{rib.attr('fill-opacity',null);hideTip();});
  grp.append('text').each(function(d){d.ang=(d.startAngle+d.endAngle)/2;}).attr('dy','.35em')
    .attr('transform',d=>`rotate(${d.ang*180/Math.PI-90}) translate(${outerR+6}) ${d.ang>Math.PI?'rotate(180)':''}`)
-   .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('font-size',11).attr('font-weight',600).attr('fill','#3d424d')
+   .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)')
    .text(d=>sectors[d.index]);
 }
 /* --- grid (matrix heatmap) --- */
@@ -971,7 +971,7 @@ function drawIOGrid(){
   sectors.forEach((s2,j)=>{
    const v=M[i][j];
    svg.append('rect').attr('x',m.l+j*cell).attr('y',m.t+i*cell).attr('width',cell-1).attr('height',cell-1).attr('rx',2)
-    .attr('fill',i===j?'var(--slate-100)':(v>0?col(Math.sqrt(v)):'#fbfbfa'))
+    .attr('fill',i===j?'var(--slate-100)':(v>0?col(Math.sqrt(v)):'var(--surface)'))
     .style('cursor','pointer').on('click',()=>setIOSector(i))
     .on('mousemove',e=>showTip(i===j?`<b>${s}</b> — own use excluded here`:`<b>${s}</b> supplies<br><b>${s2}</b><br>${fmtRs(v)}`,e))
     .on('mouseleave',hideTip);
@@ -1025,7 +1025,7 @@ function buildBudgetChips(){
  d3.select('#budgetChips').selectAll('button').data(keys,d=>d).join('button')
   .attr('class','chip').style('font-size','11px').style('padding','4px 9px')
   .classed('on',d=>sel.has(d))
-  .style('border-color',d=>sel.has(d)?colOf[d]:null).style('background',d=>sel.has(d)?colOf[d]:null).style('color',d=>sel.has(d)?'#fff':null)
+  .style('border-color',d=>sel.has(d)?colOf[d]:null).style('background',d=>sel.has(d)?colOf[d]:null).style('color',d=>sel.has(d)?'var(--surface)':null)
   .text(d=>d)
   .on('click',(e,d)=>{sel.has(d)?sel.delete(d):sel.add(d);if(!sel.size)sel.add(d);buildBudgetChips();drawBudgetTrend();});
 }
@@ -1064,12 +1064,12 @@ function drawBudgetTrendStack(){
  const y=d3.scaleLinear().domain([0,ymax*1.02]).range([H-M.b,M.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const yt=y.ticks(5);
- svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eceae2');
- svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','#8a8f98').text(d=>fmtBn(d));
- svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','#8a8f98').text((d,i)=>years.length>10&&i%2?'':d);
+ svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','var(--line)');
+ svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
+ svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
  const stack=d3.stack().keys(keys)(rows);
  const area=d3.area().x((d,i)=>x(years[i])).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
- svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','#fff').attr('stroke-width',.4)
+ svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','var(--surface)').attr('stroke-width',.4)
   .on('mousemove',function(e,s){const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));const yr=years[Math.max(0,Math.min(years.length-1,xi))];const v=rows.find(r=>r.year===yr)[s.key];showTip(`<b>${s.key}</b><br>${yr}: ${fmtRs(v)}`,e);}).on('mouseleave',hideTip);
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
@@ -1091,9 +1091,9 @@ function drawBudgetTrendLines(){
  const y=d3.scaleLinear().domain([0,ymax*1.05]).range([H-M.b,M.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const yt=y.ticks(5);
- svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eceae2');
- svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','#8a8f98').text(d=>fmtBn(d));
- svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','#8a8f98').text((d,i)=>years.length>10&&i%2?'':d);
+ svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','var(--line)');
+ svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
+ svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
  const line=d3.line().x((d,i)=>x(years[i])).y(d=>y(d.v)).curve(d3.curveMonotoneX);
  keys.forEach(k=>{
   const pts=rows.map(r=>({year:r.year,v:r[k]}));
@@ -1103,7 +1103,7 @@ function drawBudgetTrendLines(){
   svg.append('text').attr('x',x(lp.year)+7).attr('y',y(lp.v)+3.5).attr('font-size',10.5).attr('font-weight',700).attr('fill',colOf[k]).text(k.length>16?k.slice(0,15)+'…':k);
  });
  // hover guideline
- const focus=svg.append('line').attr('y1',M.t).attr('y2',H-M.b).attr('stroke','#c8ccd2').attr('stroke-width',1).style('opacity',0);
+ const focus=svg.append('line').attr('y1',M.t).attr('y2',H-M.b).attr('stroke','var(--line-strong)').attr('stroke-width',1).style('opacity',0);
  svg.append('rect').attr('x',M.l).attr('y',M.t).attr('width',W-M.r-M.l).attr('height',H-M.b-M.t).attr('fill','transparent')
   .on('mousemove',function(e){
    const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));
@@ -1127,15 +1127,15 @@ function drawBudget(){
  const grp=svg.selectAll('g.grp').data(root.children||[]).join('g').attr('class','grp');
  grp.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>d.y1-d.y0).attr('fill',d=>d.data.color).attr('opacity',.28).attr('rx',3)
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%`,e)).on('mouseleave',hideTip);
- grp.filter(d=>(d.x1-d.x0)>66).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+13).attr('font-size',11.5).attr('font-weight',800).attr('fill','#123').attr('pointer-events','none')
+ grp.filter(d=>(d.x1-d.x0)>66).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+13).attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--ink)').attr('pointer-events','none')
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  const leaf=svg.selectAll('g.lf').data(root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
- leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2).attr('fill',d=>d.parent.data.color).attr('stroke','#fff').attr('stroke-width',.6)
+ leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2).attr('fill',d=>d.parent.data.color).attr('stroke','var(--surface)').attr('stroke-width',.6)
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(1)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>22).each(function(d){
    const w=d.x1-d.x0,s=d3.select(this),m=Math.floor(w/6),c=d3.hcl(d.parent.data.color);
-   s.append('text').attr('class','cl').attr('x',5).attr('y',15).style('fill',c.l>62?'#1a1a1a':'#fff').text(d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name);
-   if((d.y1-d.y0)>34)s.append('text').attr('class','cv').attr('x',5).attr('y',29).style('fill',c.l>62?'#333':'rgba(255,255,255,.85)').text(`${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(0)}%`);
+   s.append('text').attr('class','cl').attr('x',5).attr('y',15).style('fill',c.l>62?'var(--ink)':'var(--surface)').text(d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name);
+   if((d.y1-d.y0)>34)s.append('text').attr('class','cv').attr('x',5).attr('y',29).style('fill',c.l>62?'var(--body)':'rgba(255,255,255,.85)').text(`${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(0)}%`);
  });
  d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure (function-wise)':'Tax & non-tax receipts'} ${yr} · total ${fmtRs(total)} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
 }

@@ -233,9 +233,6 @@
     $('paneTitle').textContent = t.title || current.topicLabel;
     $('paneDek').textContent = t.dek || '';
     $('cardNote').textContent = t.note || '';
-    document.querySelectorAll('.tree-item[data-topic]').forEach(function (b) {
-      b.classList.toggle('is-on', b.dataset.topic === current.topic);
-    });
     (CHART[current.chart] || renderBudget)();
   }
 
@@ -1164,13 +1161,11 @@
     rail = window.DDExplorer.mount({
       el: $('rail'), index: D.index, state: state,
       levels: ['topic', 'ds', 'ind'],
+      listLevel: 'ind', listEl: $('chartList'), searchEl: $('xFind'),
       labels: { ind: 'Chart' }, moreEl: $('more'),
       onChange: function (row) { render(row); writeUrl(); },
     });
     render(rail.sync(false));
-    document.querySelectorAll('.tree-item[data-topic]').forEach(function (b) {
-      b.onclick = function () { pick(b.dataset.topic); };
-    });
     $('csvBtn').onclick = downloadCsv;
     var t;
     window.addEventListener('resize', function () {

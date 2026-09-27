@@ -89,12 +89,25 @@
     el.innerHTML = '';
     el.classList.add('xrail');
 
-    var fields = levels.map(function (lv) {
-      var f = field(names[lv] || CAPTION[lv] || lv,
-                    'x' + lv.charAt(0).toUpperCase() + lv.slice(1));
-      el.appendChild(f.wrap);
-      return f;
-    });
+    /* A level can render as a list instead of a select. Economy and State put
+       the topic in a dropdown and then show that topic's charts as a list,
+       because the list is the thing you browse - a chart is a page you might
+       want, not a value you set. Places keeps all three as selects: 725
+       indicators under one dataset is not a list anyone reads. */
+    var listLevel = cfg.listLevel;
+
+    var fields = levels.filter(function (lv) { return lv !== listLevel; })
+      .map(function (lv) {
+        var f = field(names[lv] || CAPTION[lv] || lv,
+                      'x' + lv.charAt(0).toUpperCase() + lv.slice(1));
+        f.level = lv;
+        el.appendChild(f.wrap);
+        return f;
+      });
+
+    function fieldFor(lv) {
+      return fields.filter(function (f) { return f.level === lv; })[0];
+    }
 
     var meta = document.createElement('p');
     meta.className = 'xrail-meta';
@@ -104,13 +117,17 @@
       var rows = index;
       levels.forEach(function (lv, i) {
         var opts = uniq(rows, lv, LABEL_OF[lv]);
-        state[lv] = fill(fields[i].sel, opts, state[lv], i === 0);
-        // A select with one option stays visible but disabled, so the rail
-        // keeps its shape as you move between datasets.
-        fields[i].sel.disabled = opts.length < 2;
-        fields[i].cap.textContent =
-          (names[lv] || CAPTION[lv] || lv)
-          + (opts.length > 1 ? ' · ' + opts.length : '');
+        if (lv === listLevel) {
+          state[lv] = drawList(rows, lv, state[lv]);
+        } else {
+          var f = fieldFor(lv);
+          state[lv] = fill(f.sel, opts, state[lv], i === 0);
+          // A select with one option stays visible but disabled, so the rail
+          // keeps its shape as you move between datasets.
+          f.sel.disabled = opts.length < 2;
+          f.cap.textContent = (names[lv] || CAPTION[lv] || lv)
+            + (opts.length > 1 ? '\u2002\u00b7\u2002' + opts.length : '');
+        }
         rows = rows.filter(function (r) { return r[lv] === state[lv]; });
       });
 
@@ -121,6 +138,77 @@
       more(chosen);
       if (fire && cfg.onChange) cfg.onChange(chosen);
       return chosen;
+    }
+
+    /* The charts in the current topic, as a list. The one on screen is marked
+       rather than removed: a list that hides the thing you are looking at
+       makes you lose your place in it. */
+    function drawList(rows, lv, held) {
+      var host = cfg.listEl;
+      var opts = uniq(rows, lv, LABEL_OF[lv]);
+      var value = opts.some(function (o) { return o.value === held; })
+        ? held : (opts[0] && opts[0].value);
+      if (!host) return value;
+      host.innerHTML = '';
+      opts.forEach(function (o) {
+        var row = rows.filter(function (r) { return r[lv] === o.value; })[0] || {};
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'xlist-item' + (o.value === value ? ' is-on' : '');
+        b.setAttribute('aria-current', o.value === value ? 'true' : 'false');
+        b.innerHTML = '<span class="xlist-name"></span>'
+                    + '<span class="xlist-meta"></span>';
+        b.querySelector('.xlist-name').textContent = o.label;
+        b.querySelector('.xlist-meta').textContent =
+          [row.dsLabel, row.years].filter(Boolean).join(' \u00b7 ');
+        b.onclick = function () { state[lv] = o.value; sync(true); };
+        host.appendChild(b);
+      });
+      return value;
+    }
+
+    /* Type-to-find across every row, whatever topic it sits under, because
+       someone who knows a series by name should not have to know which topic
+       it was filed under first. */
+    function wireSearch() {
+      var box = cfg.searchEl;
+      if (!box) return;
+      var out = document.createElement('div');
+      out.className = 'xfind';
+      out.hidden = true;
+      box.parentNode.insertBefore(out, box.nextSibling);
+
+      box.addEventListener('input', function () {
+        var q = box.value.trim().toLowerCase();
+        if (q.length < 2) { out.hidden = true; out.innerHTML = ''; return; }
+        var hits = index.filter(function (r) {
+          return (r.label + ' ' + r.topicLabel + ' ' + r.dsLabel)
+            .toLowerCase().indexOf(q) >= 0;
+        }).slice(0, 12);
+        out.hidden = !hits.length;
+        out.innerHTML = '';
+        hits.forEach(function (r) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'xfind-item';
+          b.innerHTML = '<span class="xfind-name"></span>'
+                      + '<span class="xfind-meta"></span>';
+          b.querySelector('.xfind-name').textContent = r.label;
+          b.querySelector('.xfind-meta').textContent =
+            r.topicLabel + ' \u00b7 ' + r.dsLabel;
+          b.onclick = function () {
+            levels.forEach(function (lv) { state[lv] = r[lv]; });
+            box.value = '';
+            out.hidden = true;
+            out.innerHTML = '';
+            sync(true);
+          };
+          out.appendChild(b);
+        });
+      });
+      box.addEventListener('blur', function () {
+        setTimeout(function () { out.hidden = true; }, 160);
+      });
     }
 
     /* "Also in this topic", under the chart. A topic is a subject rather than
@@ -171,14 +259,15 @@
         + '</svg>';
     }
 
-    fields.forEach(function (f, i) {
-      f.sel.onchange = function () { state[levels[i]] = f.sel.value; sync(true); };
+    fields.forEach(function (f) {
+      f.sel.onchange = function () { state[f.level] = f.sel.value; sync(true); };
     });
+    wireSearch();
 
     return {
       sync: sync,
       levels: levels,
-      selects: fields.reduce(function (o, f, i) { o[levels[i]] = f.sel; return o; }, {}),
+      selects: fields.reduce(function (o, f) { o[f.level] = f.sel; return o; }, {}),
     };
   }
 

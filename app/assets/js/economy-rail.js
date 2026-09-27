@@ -111,28 +111,62 @@
     var index = build();
     if (!index || !index.length) return;
 
+    /* The sidebar these pages already have gets the search box, the topic
+       dropdown and the list of that topic's charts, in place of its own
+       nav. The charts themselves are untouched. */
+    var side = document.querySelector('.eco-side');
     var host = document.getElementById('rail');
     if (!host) {
       host = document.createElement('div');
       host.id = 'rail';
+      host.className = 'xrail';
+    }
+    var search, list;
+    if (side) {
+      side.classList.add('xside');
+      side.innerHTML = '';
+      var lab = document.createElement('label');
+      lab.className = 'xsearch';
+      lab.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" '
+        + 'stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
+        + '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>'
+        + '<input id="xFind" type="search" placeholder="Find a series\u2026" '
+        + 'aria-label="Find a series" autocomplete="off"/>';
+      side.appendChild(lab);
+      side.appendChild(host);
+      list = document.createElement('div');
+      list.className = 'xlist';
+      list.id = 'chartList';
+      side.appendChild(list);
+      search = lab.querySelector('#xFind');
+    } else {
       var anchor = document.querySelector('.card[data-topic]');
       if (!anchor || !anchor.parentNode) return;
       anchor.parentNode.insertBefore(host, anchor);
     }
 
+    /* "Also in this topic" belongs under the chart, not in the sidebar. It was
+       inserted next to the rail, and once the rail moved into the sidebar it
+       went with it - sitting above the list of the very charts it repeats. */
     var moreEl = document.getElementById('more');
     if (!moreEl) {
       moreEl = document.createElement('div');
       moreEl.className = 'xmore';
       moreEl.id = 'more';
       moreEl.hidden = true;
-      host.parentNode.insertBefore(moreEl, host.nextSibling);
+      var cards = document.querySelectorAll('.card[data-topic]');
+      var last = cards[cards.length - 1];
+      if (last && last.parentNode) {
+        last.parentNode.insertBefore(moreEl, last.nextSibling);
+      }
     }
 
     var state = { ds: index[0].ds, topic: index[0].topic, ind: index[0].ind };
     var rail = window.DDExplorer.mount({
       el: host, index: index, state: state,
       levels: ['topic', 'ds', 'ind'],
+      listLevel: list ? 'ind' : undefined, listEl: list, searchEl: search,
       labels: { ind: 'Chart' }, moreEl: moreEl,
       onChange: function (row) { go(row); },
     });
@@ -166,8 +200,9 @@
 
     rail.sync(false);
 
-    /* And the other way: the page's own topic control moves the rail with it,
-       so the two can never disagree about what is on screen. */
+    /* And the other way: a hash change from anywhere else - a shared link, the
+       back button - moves the rail with it, so the two can never disagree
+       about what is on screen. */
     window.addEventListener('hashchange', function () {
       var t = new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
       if (!t || t === state.topic) return;

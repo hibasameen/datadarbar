@@ -3,8 +3,8 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=b61af48c"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=b61af48c"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=ce9fb899"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=ce9fb899"/>
 <!-- SEO:START -->
 <title>Pakistan Federal Tax Collection &amp; Public Money — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish.">
@@ -28,36 +28,14 @@
 <!-- /dd:header -->
 
 <div class="explorer">
-  <aside class="tree" aria-label="Topics">
-    <div class="tree-group">
-      <div class="tree-label">Public money</div>
-      <button class="tree-item is-on" type="button" data-topic="tax">What the state collects</button>
-      <button class="tree-item" type="button" data-topic="budget">The federal budget</button>
-    </div>
-    <div class="tree-group">
-      <div class="tree-label">Justice</div>
-      <button class="tree-item" type="button" data-topic="courts">Case flows &amp; pendency</button>
-      <button class="tree-item" type="button" data-topic="judges">Judges &amp; vacancies</button>
-    </div>
-    <div class="tree-group">
-      <div class="tree-label">Crime &amp; policing</div>
-      <button class="tree-item" type="button" data-topic="crime">Reported offences</button>
-      <button class="tree-item" type="button" data-topic="sindhCrime">Sindh crime tables</button>
-      <button class="tree-item" type="button" data-topic="firs">Sindh first information reports</button>
-    </div>
-    <div class="tree-group">
-      <div class="tree-label">Energy</div>
-      <button class="tree-item" type="button" data-topic="plants">Power plants &amp; capacity</button>
-      <button class="tree-item" type="button" data-topic="discos">Electricity distribution</button>
-    </div>
-    <div class="tree-group">
-      <div class="tree-label">Public services</div>
-      <a class="tree-item" href="places.html?g=facilities&amp;i=entity_8&amp;lv=tehsil">Schools, on the map &rarr;</a>
-      <a class="tree-item" href="places.html?g=healthAccess&amp;i=mot_popw_mean&amp;lv=tehsil">Travel time to care &rarr;</a>
-      <button class="tree-item" type="button" data-topic="events">Disaster alerts</button>
-      <button class="tree-item" type="button" data-topic="impacts">Monsoon impacts</button>
-    </div>
-    <p class="tree-note">A series with a district key also appears on the Places map.</p>
+  <aside class="xside" aria-label="Topics and charts">
+    <label class="xsearch">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>
+      <input id="xFind" type="search" placeholder="Find a series&hellip;" aria-label="Find a series" autocomplete="off"/>
+    </label>
+    <div class="xrail" id="rail"></div>
+    <div class="xlist" id="chartList" aria-label="Charts in this topic"></div>
+    <p class="xside-note">A series with a district key also appears on the Places map.</p>
   </aside>
 
   <main class="pane">
@@ -71,8 +49,6 @@
         <button class="tool" id="csvBtn" type="button">CSV</button>
       </div>
     </header>
-
-    <div class="xrail" id="rail"></div>
 
     <div class="coverage" id="coverage"></div>
 
@@ -92,9 +68,9 @@
   <span class="footer-right"><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">PBS &#8599;</a><span class="footer-sep">&middot;</span><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">SBP &#8599;</a><span class="footer-sep">&middot;</span><a href="methods.html">Methods</a><span class="footer-sep">&middot;</span><a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a><span class="footer-sep">&middot;</span><a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
 </footer>
 <!-- /dd:footer -->
-<script src="assets/js/d3.v7.min.js?v=b61af48c"></script>
+<script src="assets/js/d3.v7.min.js?v=ce9fb899"></script>
 <script src="data/state_data.js"></script>
-<script src="assets/js/explorer.js?v=b61af48c"></script>
-<script src="assets/js/state.js?v=b61af48c"></script>
-<script src="assets/js/shell.js?v=b61af48c"></script>
+<script src="assets/js/explorer.js?v=ce9fb899"></script>
+<script src="assets/js/state.js?v=ce9fb899"></script>
+<script src="assets/js/shell.js?v=ce9fb899"></script>
 </body></html>

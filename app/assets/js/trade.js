@@ -1,7 +1,7 @@
 /* Data Darbar — Trade Atlas (Product 2). D3 v7 + window.ECON. */
-const SC={XI:'#1e6b3e',II:'#d4a017',V:'#3d6db5',VI:'#9b59b6',XVI:'#e07b39',XV:'#5b8c5a',IV:'#c0392b',I:'#16a085',VII:'#8e44ad',XVII:'#2c3e8f',III:'#b8941a',XVIII:'#0e8a8a',VIII:'#a0522d',X:'#7f8c8d',XIII:'#c39bd3',XII:'#d98880',IX:'#6d4c2b',XIV:'#e8b92e',XX:'#5d6d7e',XIX:'#34495e',XXI:'#95a5a6'};
+const SC={XI:'var(--green-700)',II:'var(--gold-500)',V:'var(--green-800)',VI:'var(--teal-700)',XVI:'var(--gold-500)',XV:'var(--green-400)',IV:'var(--negative)',I:'var(--teal-500)',VII:'var(--teal-700)',XVII:'var(--green-900)',III:'var(--gold-600)',XVIII:'var(--teal-700)',VIII:'var(--gold-800)',X:'var(--muted)',XIII:'var(--green-300)',XII:'var(--negative-100)',IX:'var(--gold-800)',XIV:'var(--gold-400)',XX:'var(--muted)',XIX:'var(--body)',XXI:'var(--muted)'};
 const SN={I:'Animals & products',II:'Vegetables',III:'Fats & oils',IV:'Food, bev, tobacco',V:'Minerals & fuels',VI:'Chemicals',VII:'Plastics & rubber',VIII:'Hides & leather',IX:'Wood',X:'Paper & pulp',XI:'Textiles',XII:'Footwear & headgear',XIII:'Stone, cement, glass',XIV:'Gems & precious metal',XV:'Base metals',XVI:'Machinery & electrical',XVII:'Transport equip.',XVIII:'Instruments',XIX:'Arms',XX:'Misc. manufactures',XXI:'Art & special'};
-const scolor=s=>SC[s]||'#95a5a6';
+const scolor=s=>SC[s]||'var(--muted)';
 const fmtBn=v=>v==null?'—':(Math.abs(v)>=1000?(v/1000).toFixed(v>=10000?0:1)+' tn':(Math.abs(v)>=1?Math.round(v).toLocaleString():v.toFixed(1))+' bn');
 const fmtRs=v=>v==null?'—':'Rs '+fmtBn(v);
 const tip=d3.select('#tip');
@@ -156,21 +156,21 @@ function drawDrill(){
    .on('click',(e,d)=>{if(dPath.length===0){hideTip();dPath=[d.data.key];drawDrill();}})
    .on('keydown',(e,d)=>{if(dPath.length===0&&(e.key==='Enter'||e.key===' ')){e.preventDefault();hideTip();dPath=[d.data.key];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%${dPath.length===0?'<br><span style=opacity:.7>click to zoom in</span>':''}`,e)).on('mouseleave',hideTip);
- grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','#123')
-   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff'):'#123')
+ grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
+   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
     .text(d=>{const w=d.x1-d.x0,m=Math.floor((w-10)/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  if(overview)grp.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>36).append('text')
    .attr('x',d=>d.x0+5).attr('y',d=>d.y0+29).attr('font-size',12).attr('font-weight',700).attr('pointer-events','none')
-   .attr('fill',d=>d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff').text(d=>(100*d.value/total).toFixed(1)+'%');
+   .attr('fill',d=>d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
  // product leaves (depth 2)
  const leaf=svg.selectAll('g.lf').data(overview?[]:root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
  leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2)
-   .attr('fill',d=>d.parent.data.color).attr('stroke','#fff').attr('stroke-width',0.5)
+   .attr('fill',d=>d.parent.data.color).attr('stroke','var(--surface)').attr('stroke-width',0.5)
    .style('cursor',dPath.length===0?'pointer':'default')
    .on('click',(e,d)=>{if(dPath.length===0){dPath=[d.data.section];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>HS ${d.data.hs8} · Sec ${d.data.section}<br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(2)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>52&&(d.y1-d.y0)>20).append('text').attr('class','cl').attr('x',4).attr('y',13)
-   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'#1a1a1a':'#fff';})
+   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'var(--ink)':'var(--surface)';})
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/5.8);return d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name;});
  // breadcrumb
  const bc=d3.select('#crumb');bc.selectAll('*').remove();
@@ -193,14 +193,14 @@ function drawTotalsInto(el,W,H,hi){
  const svg=el.append('svg').attr('width',W).attr('height',H);
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%(W<420?3:2)===0)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','#c5cad3');
- const ser=[['export','Exports',scolor('XI')],['import','Imports','#c0392b'],['balance','Balance','#3d6db5']];
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
+ const ser=[['export','Exports',scolor('XI')],['import','Imports','var(--negative)'],['balance','Balance','var(--green-800)']];
  const line=d3.line().defined(d=>d.v!=null).x(d=>x(d.y)).y(d=>y(d.v));
  ser.forEach(s=>{const pts=years.map(yr=>({y:yr,v:T[s[0]][yr]}));
    const dim=(hi==='gap'&&s[0]==='balance')||(hi==='grow'&&s[0]==='balance');
    svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('opacity',dim?0.25:1).attr('d',line);
    const lp=pts.filter(p=>p.v!=null).slice(-1)[0];if(lp)svg.append('text').attr('x',x(lp.y)+8).attr('y',y(lp.v)+4).attr('font-size',12).attr('font-weight',700).attr('fill',s[2]).attr('opacity',dim?0.3:1).text(s[1]);});
- if(hi==='gap'){const yr=years[years.length-1];const e=T.export[yr],im=T.import[yr];if(e&&im)svg.append('line').attr('x1',x(yr)).attr('x2',x(yr)).attr('y1',y(e)).attr('y2',y(im)).attr('stroke','#c0392b').attr('stroke-width',2).attr('stroke-dasharray','4 3');}
+ if(hi==='gap'){const yr=years[years.length-1];const e=T.export[yr],im=T.import[yr];if(e&&im)svg.append('line').attr('x1',x(yr)).attr('x2',x(yr)).attr('y1',y(e)).attr('y2',y(im)).attr('stroke','var(--negative)').attr('stroke-width',2).attr('stroke-dasharray','4 3');}
 }
 function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();drawTotalsInto(el,el.node().clientWidth||900,300,null);}
 
@@ -211,7 +211,7 @@ const pYears=()=>Object.keys(E.partners[pDir]).sort();
 const prYears=()=>Object.keys(E.products[prDir]).sort();
 function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();}
 function initProducts(){d3.selectAll('#prDir button').on('click',function(){d3.selectAll('#prDir button').classed('on',false);d3.select(this).classed('on',true);prDir=this.dataset.d;setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();});setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();}
-function drawPartners(){const ys=pYears();const y=ys[+d3.select('#pYr').property('value')||ys.length-1];hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'#c0392b');}
+function drawPartners(){const ys=pYears();const y=ys[+d3.select('#pYr').property('value')||ys.length-1];hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'var(--negative)');}
 function drawProducts(){const ys=prYears();const y=ys[+d3.select('#prYr').property('value')||ys.length-1];hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
 function hbar(elSel,rows,label,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,12);
@@ -220,9 +220,9 @@ function hbar(elSel,rows,label,color){
  const svg=el.append('svg').attr('width',W).attr('height',H);
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+7})`);
  g.append('title').text(d=>label(d));
- g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.35em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','#3d424d').text(d=>{const t=label(d);return t.length>maxc?t.slice(0,maxc-1)+'…':t;});
+ g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.35em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)').text(d=>{const t=label(d);return t.length>maxc?t.slice(0,maxc-1)+'…':t;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('width',d=>x(d.bn)-x(0)).attr('rx',4).attr('fill',d=>color(d)).on('mousemove',(e,d)=>showTip(`<b>${label(d)}</b><br>${fmtRs(d.bn)}`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',d=>x(d.bn)+6).attr('y',rh/2).attr('dy','.35em').attr('font-size',11).attr('font-weight',700).attr('fill','#505662').text(d=>fmtBn(d.bn));
+ g.append('text').attr('x',d=>x(d.bn)+6).attr('y',rh/2).attr('dy','.35em').attr('font-size',11).attr('font-weight',700).attr('fill','var(--body)').text(d=>fmtBn(d.bn));
 }
 
 /* ================= movers: risers & fallers ================= */
@@ -265,7 +265,7 @@ function moverRows(){
 }
 function drawMovers(){
  const el=d3.select('#movers');el.selectAll('*').remove();
- const rows=moverRows();const GREEN='#1e6b3e',RED='#c0392b';
+ const rows=moverRows();const GREEN='var(--green-700)',RED='var(--negative)';
  const isPct=mMeasure==='pct';
  const fmtV=v=>isPct?((v>=0?'+':'−')+Math.abs(v).toFixed(0)+'%'):((v>=0?'+':'−')+fmtBn(Math.abs(v)));
  if(!rows.length){el.append('div').style('padding','24px').style('color','var(--slate-500)').text('No data at this level.');return;}
@@ -315,18 +315,18 @@ function drawCountry(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%2===0)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- [['exp','Pakistan’s exports',scolor('XI')],['imp','Pakistan’s imports','#c0392b']].forEach(s=>{
+ [['exp','Pakistan’s exports',scolor('XI')],['imp','Pakistan’s imports','var(--negative)']].forEach(s=>{
   const pts=years.map(yr=>({y:yr,v:c.series[yr][s[0]]})).filter(p=>p.v!=null);
   const line=d3.line().x(p=>x(p.y)).y(p=>y(p.v));
   svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',2.5).attr('d',line);
-  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.y)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',s[2]).attr('stroke','#fff').attr('stroke-width',1)
+  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.y)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',s[2]).attr('stroke','var(--surface)').attr('stroke-width',1)
    .on('mousemove',(e,p)=>showTip(`<b>${s[1]}</b> · ${p.y}<br>${fmtRs(p.v)}`,e)).on('mouseleave',hideTip);
   const lp=pts.slice(-1)[0];if(lp)svg.append('text').attr('x',x(lp.y)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',s[2]).text(s[0]==='exp'?'exports':'imports');
  });
  // top items at chosen level
  const lvl=(c.level&&c.level[tLevel])||{exp:[],imp:[]};
  chbar('#cExp',lvl.exp||[],scolor('XI'));
- chbar('#cImp',lvl.imp||[],'#c0392b');
+ chbar('#cImp',lvl.imp||[],'var(--negative)');
  const lat=TX.meta.latest||{};
  d3.select('#cMeta').text(`${LEVEL_LABEL[tLevel]} breakdown · exports ${lat.export||''}, imports ${lat.import||''} · PBS 8-digit trade`);
 }

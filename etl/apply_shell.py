@@ -258,14 +258,23 @@ def ensure_script(text):
 # happened when the design-system tokens landed and --teal-700 came back empty
 # in a browser holding yesterday's copy.
 def asset_version(root):
+    """Hash EVERY asset the stamp is applied to, not a chosen few.
+
+    The first cut listed eight files by name. Because one hash is stamped on
+    every asset link, editing anything outside that list - finance.js, say -
+    left the stamp unchanged, so browsers kept serving the old file and the
+    edit reached nobody. That is worse than no versioning at all: it looks
+    like cache-busting while silently doing nothing.
+    """
     h = hashlib.sha256()
-    for rel in sorted(['assets/css/shell.css', 'assets/css/explorer.css',
-                       'assets/css/charts.css', 'assets/css/landing.css',
-                       'assets/css/places.css', 'assets/css/research.css',
-                       'assets/js/explorer.js', 'assets/js/palette.js']):
-        f = root / rel
-        if f.exists():
-            h.update(f.read_bytes())
+    files = []
+    for d in ('assets/css', 'assets/js'):
+        base = root / d
+        if base.is_dir():
+            files.extend(sorted(base.rglob('*.css')) + sorted(base.rglob('*.js')))
+    for f in sorted(set(files)):
+        h.update(f.relative_to(root).as_posix().encode())
+        h.update(f.read_bytes())
     return h.hexdigest()[:8]
 
 

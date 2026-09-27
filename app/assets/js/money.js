@@ -36,26 +36,26 @@ const fyOf = d => { const y = +d.slice(0, 4), m = +d.slice(5, 7); const f = m >=
 /* ---------------- series catalogue for the page ----------------
    key -> [label, colour]. Chart definitions below pick from these. */
 const SER = {
-  usd:['PKR per US$','#c0392b'], reer:['Real (REER)','#3d6db5'], neer:['Nominal (NEER)','#9ca3af'],
-  cpi_nat:['National CPI','#0c3a1e'], cpi_urb:['Urban CPI','#3d6db5'], cpi_rur:['Rural CPI','#c9862b'],
-  spi:['SPI (sensitive prices)','#7a5195'], wpi:['WPI (wholesale)','#9ca3af'],
-  cpi_urbf:['Urban food','#3d6db5'], cpi_rurf:['Rural food','#22804a'],
-  cpi_urbnf:['Urban non-food','#85b7eb'], cpi_rurnf:['Rural non-food','#97c459'],
-  cpi_urbc:['Urban core','#185fa5'], cpi_rurc:['Rural core','#3b6d11'],
-  pol_target:['Policy rate','#c0392b'], pol_rev:['Reverse repo (ceiling)','#5f5e5a'], pol_repo:['Repo (floor)','#9ca3af'],
+  usd:['PKR per US$','var(--negative)'], reer:['Real (REER)','var(--green-800)'], neer:['Nominal (NEER)','var(--muted-2)'],
+  cpi_nat:['National CPI','var(--green-900)'], cpi_urb:['Urban CPI','var(--green-800)'], cpi_rur:['Rural CPI','var(--gold-600)'],
+  spi:['SPI (sensitive prices)','var(--teal-700)'], wpi:['WPI (wholesale)','var(--muted-2)'],
+  cpi_urbf:['Urban food','var(--green-800)'], cpi_rurf:['Rural food','var(--green-600)'],
+  cpi_urbnf:['Urban non-food','var(--green-300)'], cpi_rurnf:['Rural non-food','var(--green-400)'],
+  cpi_urbc:['Urban core','var(--green-900)'], cpi_rurc:['Rural core','var(--green-800)'],
+  pol_target:['Policy rate','var(--negative)'], pol_rev:['Reverse repo (ceiling)','var(--body)'], pol_repo:['Repo (floor)','var(--muted-2)'],
   /* tenors run light->dark with maturity, but nothing lighter than mid-grey: the
      first cut used #d3d1c7 for 1 week and its label vanished against white */
-  kib_1w:['1 week','#9ca3af'], kib_2w:['2 weeks','#888780'], kib_1m:['1 month','#5f5e5a'],
-  kib_3m:['3 months','#85b7eb'], kib_6m:['6 months','#3d6db5'], kib_9m:['9 months','#185fa5'],
-  kib_1y:['1 year','#c9862b'], kib_2y:['2 years','#993c1d'], kib_3y:['3 years','#c0392b'],
-  lend:['Lending','#c0392b'], depo:['Deposits','#3d6db5'],
-  res_sbp:['SBP','#186636'], res_banks:['Banks','#9ca3af'], res_gold:['Gold','#d4a017'], res_imf:['IMF position','#7a5195'],
-  gx:['Goods exports','#22804a'], gm:['Goods imports','#c0392b'], sx:['Services exports','#97c459'],
-  sm:['Services imports','#f09595'], ca:['Current account','#3d6db5'], remit_bop:['Remittances','#0f6e56'],
-  m1:['M1','#c9862b'], m2:['M2','#186636'], m3:['M3','#3d6db5'], notes:['Notes in circulation','#9ca3af'],
-  npl_ratio:['NPL ratio','#c0392b']
+  kib_1w:['1 week','var(--muted-2)'], kib_2w:['2 weeks','var(--muted)'], kib_1m:['1 month','var(--body)'],
+  kib_3m:['3 months','var(--green-300)'], kib_6m:['6 months','var(--green-800)'], kib_9m:['9 months','var(--green-900)'],
+  kib_1y:['1 year','var(--gold-600)'], kib_2y:['2 years','var(--negative)'], kib_3y:['3 years','var(--negative)'],
+  lend:['Lending','var(--negative)'], depo:['Deposits','var(--green-800)'],
+  res_sbp:['SBP','var(--green-700)'], res_banks:['Banks','var(--muted-2)'], res_gold:['Gold','var(--gold-500)'], res_imf:['IMF position','var(--teal-700)'],
+  gx:['Goods exports','var(--green-600)'], gm:['Goods imports','var(--negative)'], sx:['Services exports','var(--green-400)'],
+  sm:['Services imports','var(--negative-100)'], ca:['Current account','var(--green-800)'], remit_bop:['Remittances','var(--teal-700)'],
+  m1:['M1','var(--gold-600)'], m2:['M2','var(--green-700)'], m3:['M3','var(--green-800)'], notes:['Notes in circulation','var(--muted-2)'],
+  npl_ratio:['NPL ratio','var(--negative)']
 };
-const lbl = k => SER[k] ? SER[k][0] : k, col = k => SER[k] ? SER[k][1] : '#888';
+const lbl = k => SER[k] ? SER[k][0] : k, col = k => SER[k] ? SER[k][1] : 'var(--muted)';
 
 /* chart -> {avail: keys offered as chips, def: default selection} */
 const CH = {
@@ -200,7 +200,7 @@ function chips(chart, onChange) {
     const on = SEL[chart].has(k);
     box.append('button').attr('class', 'chip' + (on ? ' on' : '')).attr('data-k', k)
       .style('background', on ? col(k) : null).style('border-color', on ? col(k) : null)
-      .html(`<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${on ? '#fff' : col(k)};margin-right:6px;vertical-align:middle"></span>${lbl(k)}`)
+      .html(`<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${on ? 'var(--surface)' : col(k)};margin-right:6px;vertical-align:middle"></span>${lbl(k)}`)
       .on('click', () => {
         if (on && SEL[chart].size === 1) return;          // never empty a chart
         if (on) SEL[chart].delete(k); else SEL[chart].add(k);
@@ -342,18 +342,18 @@ function drawRes() {
       const y2 = d3.scaleLinear().domain([0, Math.max(9, d3.max(cover, p => p[1]))]).nice().range([f.H - f.m.b, f.m.t]);
       const ax = f.svg.append('g').attr('transform', `translate(${f.W - f.m.r + 44},0)`).attr('class', 'axis')
         .call(d3.axisRight(y2).ticks(5).tickFormat(d => d + ' m'));
-      ax.selectAll('text').attr('fill', '#b8860b');
-      ax.select('.domain').attr('stroke', '#e8b92e');
+      ax.selectAll('text').attr('fill', 'var(--gold-600)');
+      ax.select('.domain').attr('stroke', 'var(--gold-400)');
       f.svg.append('text').attr('x', f.W - f.m.r + 44).attr('y', f.m.t - 4).attr('font-size', 9.5)
-        .attr('fill', '#b8860b').text(f.narrow ? 'months' : 'months of imports');
-      f.svg.append('path').datum(cover).attr('fill', 'none').attr('stroke', '#d4a017')
+        .attr('fill', 'var(--gold-600)').text(f.narrow ? 'months' : 'months of imports');
+      f.svg.append('path').datum(cover).attr('fill', 'none').attr('stroke', 'var(--gold-500)')
         .attr('stroke-width', 1.6).attr('stroke-dasharray', '4 3')
         .attr('d', d3.line().x(p => x(dt(p[0]))).y(p => y2(p[1])));
       f.svg.append('line').attr('x1', x(dt(cover[0][0]))).attr('x2', f.W - f.m.r).attr('y1', y2(3)).attr('y2', y2(3))
-        .attr('stroke', '#d4a017').attr('opacity', .5).attr('stroke-dasharray', '2 4');
+        .attr('stroke', 'var(--gold-500)').attr('opacity', .5).attr('stroke-dasharray', '2 4');
       f.svg.append('text').attr('x', x(dt(cover[0][0])) + 4).attr('y', y2(3) - 4).attr('font-size', 9.5)
-        .attr('fill', '#b8860b').text('3 months’ cover');
-      endLabel(f, x, y2, cover[cover.length - 1], '#b8860b', cover[cover.length - 1][1].toFixed(1) + ' mths');
+        .attr('fill', 'var(--gold-600)').text('3 months’ cover');
+      endLabel(f, x, y2, cover[cover.length - 1], 'var(--gold-600)', cover[cover.length - 1][1].toFixed(1) + ' mths');
     } });
 }
 
@@ -364,8 +364,8 @@ const CREDITS = [['gx', 'Goods exports'], ['sx', 'Services exports'], ['remit_bo
                  ['sic_other', 'Other transfers in'], ['pic', 'Income received']];
 const DEBITS  = [['gm', 'Goods imports'], ['sm', 'Services imports'], ['pid', 'Income paid abroad'],
                  ['sid', 'Transfers out']];
-const CRED_COL = { gx:'#186636', sx:'#3b6d11', remit_bop:'#0f6e56', sic_other:'#5dcaa5', pic:'#97c459' };
-const DEB_COL  = { gm:'#a32d2d', sm:'#d85a30', pid:'#e24b4a', sid:'#f09595' };
+const CRED_COL = { gx:'var(--green-700)', sx:'var(--green-800)', remit_bop:'var(--teal-700)', sic_other:'var(--green-300)', pic:'var(--green-400)' };
+const DEB_COL  = { gm:'var(--negative)', sm:'var(--gold-600)', pid:'var(--negative)', sid:'var(--negative-100)' };
 const fySum = (k, f) => (S[k] || []).filter(p => fyOf(p[0]) === f).reduce((a, p) => a + p[1], 0);
 const bopMonths = f => (D.bop_months && D.bop_months[f]) || 0;
 
@@ -402,7 +402,7 @@ function sideTree(items, fi) {
       if (raw.length && sum > 0) {
         raw.sort((a, b) => b.val - a.val);
         node.children = raw.map((d, r) => build([...path, d.i], d.c.n, d.val, d.c.ch,
-          d3.interpolateRgb(colour, '#fff')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
+          d3.interpolateRgb(colour, 'var(--surface)')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
         node.scale = v / sum;     // area factor applied to children
         node.children.forEach(c => c.area = c.v * node.scale);
         return node;
@@ -461,8 +461,8 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     return h;
   };
   cell.append('rect').attr('width', d => d.x1 - d.x0).attr('height', d => d.y1 - d.y0).attr('rx', 3)
-    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, '#fff')(0.78) : d.data.colour)
-    .attr('stroke', d => d.children ? d.data.colour : '#fff').attr('stroke-width', d => d.children ? 1.2 : 1)
+    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, 'var(--surface)')(0.78) : d.data.colour)
+    .attr('stroke', d => d.children ? d.data.colour : 'var(--surface)').attr('stroke-width', d => d.children ? 1.2 : 1)
     .attr('class', d => d.data.has ? 'zoom' : null)
     .on('mousemove', (e, d) => showTip(tipHtml(d), e)).on('mouseleave', hideTip)
     .on('click', (e, d) => { e.stopPropagation(); if (d.data.has) { hideTip(); toggleOpen(d.data.path); } });
@@ -474,7 +474,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     c.append('clipPath').attr('id', id).append('rect').attr('width', Math.max(0, w - 6)).attr('height', open ? 20 : h);
     const t = c.append('g').attr('clip-path', `url(#${id})`).style('pointer-events', 'none');
     const dark = !open && isDark(dd.colour);
-    const fg = open ? d3.color(dd.colour).darker(0.8) : (dark ? '#fff' : '#1a1a1a');
+    const fg = open ? d3.color(dd.colour).darker(0.8) : (dark ? 'var(--surface)' : 'var(--ink)');
     const fg2 = open ? d3.color(dd.colour).darker(0.4) : (dark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.65)');
     const words = dd.n.replace(/\s*\(.*$/, '').split(' ');
     let label = dd.n;
@@ -528,7 +528,7 @@ function drawBop() {
   svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--slate-200)');
   const bt = svg.append('text').attr('x', gx).attr('y', H / 2 + hdr / 2).attr('text-anchor', 'middle')
     .attr('transform', `rotate(-90 ${gx} ${H / 2 + hdr / 2})`).attr('font-size', 11).attr('font-weight', 800)
-    .attr('fill', bal < 0 ? '#a32d2d' : '#186636');
+    .attr('fill', bal < 0 ? 'var(--negative)' : 'var(--green-700)');
   bt.text(`${bal < 0 ? 'Deficit' : 'Surplus'} ${usdm(Math.abs(bal))}`);
   /* what is open, and a way to close it all */
   if (bopOpen.size) {
@@ -566,7 +566,7 @@ function drawRemit() {
   const tot = d3.sum(rows, r => r[2]);
   svg.selectAll('rect.b').data(rows).join('rect').attr('class', 'b')
     .attr('x', m.l).attr('y', r => y(r[0])).attr('height', y.bandwidth())
-    .attr('width', r => Math.max(0, x(r[2]) - m.l)).attr('fill', '#186636').attr('rx', 3)
+    .attr('width', r => Math.max(0, x(r[2]) - m.l)).attr('fill', 'var(--green-700)').attr('rx', 3)
     .on('mousemove', (e, r) => showTip(`<b>${r[0]}</b><br>${usdm(r[2])} in ${r[1]}<br>${(100 * r[2] / tot).toFixed(1)}% of total`, e))
     .on('mouseleave', hideTip);
   svg.selectAll('text.v').data(rows).join('text').attr('class', 'v cv')
