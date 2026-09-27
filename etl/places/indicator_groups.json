@@ -1,5 +1,5 @@
-[
- {
+{
+ "mpi": {
   "group_key": "mpi",
   "topic": "poverty",
   "topic_label": "Poverty & Wealth",
@@ -32,7 +32,7 @@
   "diverging": null,
   "classed": true
  },
- {
+ "rwi": {
   "group_key": "rwi",
   "topic": "poverty",
   "topic_label": "Poverty & Wealth",
@@ -60,7 +60,7 @@
   ],
   "classed": false
  },
- {
+ "satPop": {
   "group_key": "satPop",
   "topic": "poverty",
   "topic_label": "Poverty & Wealth",
@@ -86,7 +86,7 @@
   "diverging": null,
   "classed": true
  },
- {
+ "nightlights": {
   "group_key": "nightlights",
   "topic": "poverty",
   "topic_label": "Poverty & Wealth",
@@ -113,7 +113,7 @@
   ],
   "classed": true
  },
- {
+ "schoolAccess": {
   "group_key": "schoolAccess",
   "topic": "education",
   "topic_label": "Education",
@@ -167,7 +167,7 @@
   ],
   "classed": true
  },
- {
+ "healthAccessDistrict": {
   "group_key": "healthAccessDistrict",
   "topic": "health",
   "topic_label": "Health",
@@ -207,7 +207,7 @@
   "diverging": null,
   "classed": true
  },
- {
+ "healthAccess": {
   "group_key": "healthAccess",
   "topic": "health",
   "topic_label": "Health",
@@ -247,7 +247,7 @@
   "diverging": null,
   "classed": true
  },
- {
+ "mouza_electricity_energy": {
   "group_key": "mouza_electricity_energy",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -273,7 +273,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_drinking_water": {
   "group_key": "mouza_drinking_water",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -301,7 +301,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_streets_roads": {
   "group_key": "mouza_streets_roads",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -326,7 +326,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_housing": {
   "group_key": "mouza_housing",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -349,7 +349,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_schools": {
   "group_key": "mouza_schools",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -379,7 +379,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_health": {
   "group_key": "mouza_health",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -406,7 +406,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_connectivity": {
   "group_key": "mouza_connectivity",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -433,7 +433,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_cooking_fuel": {
   "group_key": "mouza_cooking_fuel",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -458,7 +458,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_markets_credit": {
   "group_key": "mouza_markets_credit",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -484,7 +484,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_hazards": {
   "group_key": "mouza_hazards",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -508,7 +508,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "mouza_settlement": {
   "group_key": "mouza_settlement",
   "topic": "ruralFacilities",
   "topic_label": "Rural Facilities — Mouza Census 2020",
@@ -532,7 +532,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "demographics": {
   "group_key": "demographics",
   "topic": "demographics",
   "topic_label": "Demographics",
@@ -562,7 +562,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "urbanRural": {
   "group_key": "urbanRural",
   "topic": "demographics",
   "topic_label": "Demographics",
@@ -594,7 +594,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "literacy": {
   "group_key": "literacy",
   "topic": "education",
   "topic_label": "Education",
@@ -620,7 +620,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "censusSchooling": {
   "group_key": "censusSchooling",
   "topic": "education",
   "topic_label": "Education",
@@ -651,7 +651,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "education": {
   "group_key": "education",
   "topic": "education",
   "topic_label": "Education",
@@ -690,7 +690,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmEducation": {
   "group_key": "pslmEducation",
   "topic": "education",
   "topic_label": "Education",
@@ -724,7 +724,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "employment": {
   "group_key": "employment",
   "topic": "employment",
   "topic_label": "Employment",
@@ -764,7 +764,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmEmployment": {
   "group_key": "pslmEmployment",
   "topic": "employment",
   "topic_label": "Employment",
@@ -791,7 +791,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "lfs": {
   "group_key": "lfs",
   "topic": "employment",
   "topic_label": "Employment",
@@ -825,7 +825,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "lfs25": {
   "group_key": "lfs25",
   "topic": "employment",
   "topic_label": "Employment",
@@ -859,7 +859,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "econCensus": {
   "group_key": "econCensus",
   "topic": "economic",
   "topic_label": "Economic Activity",
@@ -888,7 +888,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmFies": {
   "group_key": "pslmFies",
   "topic": "welfare",
   "topic_label": "Household Welfare",
@@ -910,7 +910,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "hies": {
   "group_key": "hies",
   "topic": "welfare",
   "topic_label": "Household Welfare",
@@ -936,7 +936,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmWash": {
   "group_key": "pslmWash",
   "topic": "housing",
   "topic_label": "Housing & Infrastructure",
@@ -962,7 +962,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "hiesHousing": {
   "group_key": "hiesHousing",
   "topic": "housing",
   "topic_label": "Housing & Infrastructure",
@@ -1002,7 +1002,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "hiesWaste": {
   "group_key": "hiesWaste",
   "topic": "housing",
   "topic_label": "Housing & Infrastructure",
@@ -1029,7 +1029,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmDigital": {
   "group_key": "pslmDigital",
   "topic": "ict",
   "topic_label": "ICT & Digital",
@@ -1069,7 +1069,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "hiesIct": {
   "group_key": "hiesIct",
   "topic": "ict",
   "topic_label": "ICT & Digital",
@@ -1098,7 +1098,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "pslmHealth": {
   "group_key": "pslmHealth",
   "topic": "health",
   "topic_label": "Health",
@@ -1125,7 +1125,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "hiesDecisions": {
   "group_key": "hiesDecisions",
   "topic": "women",
   "topic_label": "Women's Empowerment",
@@ -1156,7 +1156,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsMaternal": {
   "group_key": "micsMaternal",
   "topic": "health",
   "topic_label": "Health",
@@ -1180,7 +1180,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsNutrition": {
   "group_key": "micsNutrition",
   "topic": "health",
   "topic_label": "Health",
@@ -1204,7 +1204,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsChildHealth": {
   "group_key": "micsChildHealth",
   "topic": "health",
   "topic_label": "Health",
@@ -1226,7 +1226,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsWash": {
   "group_key": "micsWash",
   "topic": "housing",
   "topic_label": "Housing & Infrastructure",
@@ -1250,7 +1250,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsProtection": {
   "group_key": "micsProtection",
   "topic": "children",
   "topic_label": "Children",
@@ -1273,7 +1273,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsEquity": {
   "group_key": "micsEquity",
   "topic": "children",
   "topic_label": "Children",
@@ -1295,7 +1295,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "micsWomen": {
   "group_key": "micsWomen",
   "topic": "women",
   "topic_label": "Women's Empowerment",
@@ -1321,7 +1321,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "dhsFamilyPlanning": {
   "group_key": "dhsFamilyPlanning",
   "topic": "health",
   "topic_label": "Health",
@@ -1347,7 +1347,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "dhsFertility": {
   "group_key": "dhsFertility",
   "topic": "health",
   "topic_label": "Health",
@@ -1372,7 +1372,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "dhsMaternal": {
   "group_key": "dhsMaternal",
   "topic": "health",
   "topic_label": "Health",
@@ -1398,7 +1398,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "dhsImmunisation": {
   "group_key": "dhsImmunisation",
   "topic": "health",
   "topic_label": "Health",
@@ -1424,7 +1424,7 @@
   "diverging": null,
   "classed": false
  },
- {
+ "dhsNutrition": {
   "group_key": "dhsNutrition",
   "topic": "health",
   "topic_label": "Health",
@@ -1450,4 +1450,4 @@
   "diverging": null,
   "classed": false
  }
-]
+}

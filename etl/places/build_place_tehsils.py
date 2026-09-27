@@ -153,6 +153,14 @@ def main():
              nl['indicators'].get('density', 'Lights per km2')])
         con.execute(f"""INSERT INTO rows_out
             SELECT m.map_key, t.tehsil_id, m.n_units, m.units,
+                   ?, ?, ?, ?, 'nl_lowc', 'Uninhabited terrain', NULL,
+                   CAST(t.nl_lowc AS DOUBLE)
+            FROM '{a.src}/tehsil_satellite.parquet' t
+            JOIN dd_map m ON m.dd_id = t.tehsil_id
+            WHERE t.nl_lowc = 1""",
+            [nl['topic'], 'nightlights', nl['label'], nl['dataset']])
+        con.execute(f"""INSERT INTO rows_out
+            SELECT m.map_key, t.tehsil_id, m.n_units, m.units,
                    ?, ?, ?, ?, 'growth', ?, NULL, t.nl_growth
             FROM '{a.src}/tehsil_satellite.parquet' t
             JOIN dd_map m ON m.dd_id = t.tehsil_id

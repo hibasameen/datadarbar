@@ -59,10 +59,12 @@ def main():
             dp = g['dp'].get(ind)
             vals.append((g['group_key'], g['topic'], g['topic_label'],
                          g['group_label'], g['dataset'], ind, str(label),
-                         dp if dp is not None else -1))
+                         dp if dp is not None else -1,
+                         ' '.join(g.get('families', []))))
     con.execute("""CREATE TABLE vocab(group_key TEXT, topic TEXT, topic_label TEXT,
-                   group_label TEXT, dataset TEXT, indicator TEXT, label TEXT, dp INTEGER)""")
-    con.executemany('INSERT INTO vocab VALUES (?,?,?,?,?,?,?,?)', vals)
+                   group_label TEXT, dataset TEXT, indicator TEXT, label TEXT,
+                   dp INTEGER, families TEXT)""")
+    con.executemany('INSERT INTO vocab VALUES (?,?,?,?,?,?,?,?,?)', vals)
 
     # tehsil names, for the detail panel
     g = json.loads(pathlib.Path(a.pbs).read_text())
@@ -115,8 +117,8 @@ def main():
         """
         UNION ALL SELECT level, topic, topic_label, group_key, group_label,
                dataset, indicator, label, '' AS raw_indicator, '' AS raw_col,
-               dp, source, years, localities, sexes, shapes, units,
-               min_value, max_value FROM '%s'""" % x for x in a.extra_index)
+               dp, source, NULL AS families, years, localities, sexes,
+               shapes, units, min_value, max_value FROM '%s'""" % x for x in a.extra_index)
     tvals = ', '.join(
         "('" + t + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "')"
         for t, k in sorted(TOPIC_OF_TABLE.items()))
@@ -134,6 +136,11 @@ def main():
                  '' AS raw_indicator, '' AS raw_col,
                  nullif(v.dp, -1) AS dp,
                  'place' AS source,
+                 -- which family's low_n and n_obs qualify this group. The
+                 -- provenance is filed under the survey family (dhs_fert) and
+                 -- the indicators under the app's group (dhsFertility), so
+                 -- without this the flags never meet the figures they qualify.
+                 nullif(v.families, '') AS families,
                  list_sort(list_distinct(list(p.year) FILTER (WHERE p.year IS NOT NULL)))
                    AS years,
                  ['all'] AS localities, ['all'] AS sexes,
@@ -166,7 +173,7 @@ def main():
                  c.indicator AS raw_indicator,
                  coalesce(c.col_label, '') AS raw_col,
                  CASE WHEN bool_or(c.is_rate) THEN 2 END AS dp,
-                 'census' AS source,
+                 'census' AS source, NULL AS families,
                  list_sort(list_distinct(list(CAST(c.census_year AS TEXT)))) AS years,
                  list_sort(list_distinct(list(c.locality))) AS localities,
                  list_sort(list_distinct(list(c.sex))) AS sexes,

@@ -252,22 +252,25 @@
     var src = col('source', i), ind = col('indicator', i), gk = col('group_key', i);
 
     if (src === 'place') {
-      return loadGroup(gk).then(function (blob) {
-        var d = blob.d, out = {}, meta = {};
-        var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
-        for (var r = 0; r < d.value.length; r++) {
-          if (get(d.level, r) !== state.level) continue;
-          if (get(d.indicator, r) !== ind) continue;
-          if (state.year && get(d.year, r) !== state.year) continue;
-          var keys = String(get(d.map_key, r)).split(' ');
-          var note = get(d.note, r), rel = get(d.relation, r);
-          for (var k = 0; k < keys.length; k++) {
-            out[keys[k]] = d.value[r];
-            if (note) meta[keys[k]] = { relation: rel, note: note };
+      var fams = (col('families', i) || '').split(' ').filter(Boolean);
+      return Promise.all([loadGroup(gk), fams.length ? loadProvenance() : null])
+        .then(function (both) {
+          var blob = both[0], d = blob.d, out = {}, meta = {};
+          var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
+          for (var r = 0; r < d.value.length; r++) {
+            if (get(d.level, r) !== state.level) continue;
+            if (get(d.indicator, r) !== ind) continue;
+            if (state.year && get(d.year, r) !== state.year) continue;
+            var keys = String(get(d.map_key, r)).split(' ');
+            var note = get(d.note, r), rel = get(d.relation, r);
+            for (var k = 0; k < keys.length; k++) {
+              out[keys[k]] = d.value[r];
+              if (note) meta[keys[k]] = { relation: rel, note: note };
+            }
           }
-        }
-        return { values: out, meta: meta };
-      });
+          applyFlags(gk, fams, out, meta);
+          return { values: out, meta: meta };
+        });
     }
 
     if (src === 'crops') {
@@ -296,6 +299,53 @@
                                       : "   AND unit_type <> 'district'")
         + '   AND map_key IS NOT NULL AND value IS NOT NULL');
     }).then(toMap);
+  }
+
+  /* low_n and n_obs are filed under the survey family - dhs_fert - while the
+     figures they qualify are filed under the app's group - dhsFertility - so
+     they travel in a file of their own and are joined here. Without it the
+     flags never meet the figures, and a district map that suppressed an
+     estimate from under thirty households would quietly show it. */
+  var provCache = null;
+  function loadProvenance() {
+    if (provCache) return Promise.resolve(provCache);
+    return script('data/places/provenance.js').then(function () {
+      provCache = window.DD_PLACES_PROV;
+      return provCache;
+    });
+  }
+
+  function applyFlags(gk, fams, out, meta) {
+    var P = provCache;
+    if (!P || !fams.length) return;
+    var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
+    // MPI and night-lights are withheld outright: a poverty estimate from
+    // under thirty households, and a radiance reading off snow and sand
+    // rather than activity, are not figures to publish.
+    var hide = (gk === 'mpi' || gk === 'nightlights');
+    var want = {};
+    fams.forEach(function (f) { want[f + '_low_n'] = 1; });
+    want.low_n = 1; want.nl_lowc = 1;
+    for (var r = 0; r < P.value.length; r++) {
+      if (!P.value[r]) continue;
+      if (get(P.level, r) !== state.level) continue;
+      var fi = get(P.indicator, r);
+      if (!want[fi]) continue;
+      String(get(P.map_key, r)).split(' ').forEach(function (k) {
+        if (!(k in out) && !hide) return;
+        meta[k] = { relation: 'low_n', flag: fi, note: noteFor(gk, fi) };
+        if (hide) delete out[k];
+      });
+    }
+  }
+
+  function noteFor(gk, flag) {
+    if (gk === 'mpi') return 'Suppressed: the PSLM sample for this district is '
+      + 'below thirty households, which is too few to estimate from.';
+    if (flag === 'nl_lowc') return 'Suppressed: uninhabited terrain, where the '
+      + 'radiance is snow and sand albedo rather than activity.';
+    return 'Small sample \u2014 this figure rests on fewer observations than the '
+      + 'survey\u2019s reliability threshold, so read it as indicative.';
   }
 
   function toMap(res) {
@@ -392,8 +442,14 @@
             return { fillOpacity: 0, weight: 0, opacity: 0 };
           }
           if (v == null || isNaN(v) || !sc) {
-            return { fillColor: '#e2e5ea', fillOpacity: .5, weight: .6,
-                     color: '#b9c2b9', opacity: 1 };
+            var why = (state.meta || {})[g.key(p)];
+            // a place withheld for a small sample is marked, not just blank:
+            // blank reads as "no data", and this is "data we will not stand by"
+            return why && why.relation === 'low_n'
+              ? { fillColor: '#f5e6b8', fillOpacity: .45, weight: 1,
+                  color: '#c49515', opacity: .8, dashArray: '3 3' }
+              : { fillColor: '#e2e5ea', fillOpacity: .5, weight: .6,
+                  color: '#b9c2b9', opacity: 1 };
           }
           return { fillColor: sc.colour(v), fillOpacity: .9, weight: .6,
                    color: '#ffffff', opacity: 1 };
@@ -508,6 +564,10 @@
          + '</span></div>';
     }
     if (m && m.note) h += '<p class="notice">' + esc(m.note) + '</p>';
+    if (m && m.relation === 'low_n' && v != null) {
+      h += '<p class="notice">' + esc(noteFor(col('group_key', state.row), m.flag))
+         + '</p>';
+    }
 
     if (entries.length > 2) {
       h += '<div><div class="eyebrow">Ranking</div><div class="rank-list">'

@@ -121,7 +121,11 @@ def main():
         'mpi': ('mpi_districts', 'Poverty & Wealth \u2014 PSLM 2019-20',
                 'PSLM 2019-20 \u00b7 Alkire\u2013Foster',
                 ['mpi', 'H', 'A', 'c_schooling', 'c_attendance', 'c_electricity',
-                 'c_cooking_fuel', 'c_sanitation', 'c_water', 'c_housing']),
+                 'c_cooking_fuel', 'c_sanitation', 'c_water', 'c_housing',
+                 # provenance, not indicators: the map suppresses a district
+                 # whose PSLM sample is below the reliability threshold, and
+                 # without the flag it would show the estimate as if it stood
+                 'low_n', 'n_obs']),
         'healthAccessDistrict': ('health_access_district',
                 'Travel Time to Care \u2014 district',
                 'Malaria Atlas accessibility surfaces 2019',

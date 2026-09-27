@@ -90,7 +90,6 @@ DATASET_NAMES = {
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
     "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search 5,801 indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
-    "map.html": ("Pakistan District Data & Maps: Census, Poverty, Night-lights — Data Darbar", "Explore Pakistan's district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil."),
     "trade.html": ("Pakistan Exports & Imports by Product and Country — Data Darbar", "Explore Pakistan's imports and exports by 8-digit HS product, trading partner and fiscal year. Read source definitions and download the underlying trade data."),
     "finance.html": ("Pakistan GDP & Federal Budget Data — Data Darbar", "Explore Pakistan's GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data."),
     "money.html": ("Pakistan Inflation, Remittances & Monetary Data — Data Darbar", "Explore State Bank of Pakistan series on inflation, remittances, exchange rates, reserves, interest rates and banking, with source notes."),
@@ -98,6 +97,20 @@ BASE_PAGES = {
     "dictionary.html": ("Pakistan Open Data Dictionary — Data Darbar", "Read field definitions, units, source coverage and limitations for Data Darbar's downloadable Pakistan research datasets."),
     "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),
 }
+
+
+def _retired(p: Path) -> bool:
+    """A page that only redirects somewhere else does not belong in a sitemap.
+
+    Naming them one by one drifts - economy.html and poverty.html were listed,
+    then map.html, about.html and methodology.html retired and were not. The
+    page says what it is: a redirect carries noindex.
+    """
+    try:
+        head = p.read_text(encoding="utf-8")[:2000]
+    except OSError:
+        return True
+    return 'name="robots" content="noindex"' in head or 'http-equiv="refresh"' in head
 
 
 def norm(value):
@@ -245,12 +258,31 @@ def build():
         page(path, title, d["description"], body, schema)
         dataset_links.append(f'<li><a href="{path}">{ESC(title)}</a><span>{ESC(d["description"])}</span></li>')
     page("/datasets/", "Pakistan open data catalogue", "Download documented census, trade, budget, national accounts, poverty and State Bank of Pakistan datasets. Each table has field definitions, source information and limitations.", '<ul class="cards">' + ''.join(dataset_links) + '</ul><p>The <a href="/query.html">browser query tool</a> opens these same tables. Read the units and warnings before combining or summing rows.</p>', {"@type": "DataCatalog", "name": "Data Darbar Pakistan open data catalogue", "url": ORIGIN + "/datasets/", "dataset": [{"@type": "Dataset", "name": DATASET_NAMES[d["name"]], "url": ORIGIN + "/datasets/" + d["name"].replace("_", "-") + "/", "description": d["description"]} for d in catalog["tables"]]})
-    page("/about.html", "About", "Data Darbar is an open explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen and published with Adaad.", modal_content("ABOUT"), heading="About Data Darbar")
-    page("/methodology.html", "Methodology and sources", "Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.", modal_content("METH"))
+    # About and Methodology merged into Methods when the redesign collapsed
+    # them. They stay as redirects rather than as pages, so an old link still
+    # lands and the same text is not published at three URLs - which is both a
+    # duplicate-content problem and a way for two copies to drift.
+    for path, title, what, frag in (
+        ("/about.html", "About", "About Data Darbar", "#the-project"),
+        ("/methodology.html", "Methodology", "Methodology and sources",
+         "#places-the-map"),
+    ):
+        (APP / path.strip("/")).write_text(
+            '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>\n'
+            f'<title>Data Darbar \u2014 {title}</title>\n'
+            '<meta name="robots" content="noindex"/>\n'
+            f'<link rel="canonical" href="{ORIGIN}/methods.html"/>\n'
+            f'<meta http-equiv="refresh" content="0; url=methods.html{frag}"/>\n'
+            f"<script>location.replace('methods.html{frag}' + location.hash);</script>\n"
+            '</head><body style="font-family:system-ui;padding:40px;'
+            'background:#faf7ef;color:#17301f">\n'
+            f'{what} now lives on the <a href="methods.html{frag}">Methods</a> '
+            'page. Redirecting&hellip;\n</body></html>\n')
+
     for file, (title, description) in BASE_PAGES.items():
         patch_metadata(APP / file, title, description, "/" if file == "index.html" else "/" + file)
     sitemap = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if p.name not in ("economy.html", "poverty.html")]
+    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if not _retired(p)]
     for path in sorted(set(paths)):
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))

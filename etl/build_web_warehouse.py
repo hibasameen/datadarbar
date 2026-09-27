@@ -100,21 +100,17 @@ def _js_object_to_json(src: str) -> str:
     return s
 
 
-def load_indicator_groups(app_js: Path) -> dict:
-    s = app_js.read_text(encoding="utf-8")
-    i = s.index("const INDICATOR_GROUPS")
-    start = s.index("{", i)
-    depth, j = 0, start
-    while j < len(s):
-        if s[j] == "{":
-            depth += 1
-        elif s[j] == "}":
-            depth -= 1
-            if depth == 0:
-                j += 1
-                break
-        j += 1
-    return json.loads(_js_object_to_json(s[start:j]))
+def load_indicator_groups(_unused: Path = None) -> dict:
+    """The curated indicator vocabulary, from the ETL's own copy.
+
+    This used to parse app.js, because that is where the vocabulary lived. It
+    moved to etl/places/indicator_groups.json when map.html was retired: the
+    app is meant to read its labels from the warehouse, not the warehouse from
+    the app, and a build that parses a page's JavaScript breaks the moment the
+    page does.
+    """
+    src = REPO / "etl" / "places" / "indicator_groups.json"
+    return json.loads(src.read_text(encoding="utf-8"))
 
 
 def field_dictionary(groups: dict) -> dict:
@@ -239,22 +235,6 @@ def load_dd_pov(path: Path) -> dict:
 RATE_WORDS = ('RATIO|RATE|PER CENT|PERCENT|PROPORTION|AVERAGE|DENSITY'
               '|PER SQ|HOUSEHOLD SIZE|PERSONS PER')
 
-CENSUS_DISTRICT_ALIAS = {
-    "chagai": "chaghi",
-    "musakhel": "musakhail",
-    "naushahro feroze": "naushehro feroze",
-    "sujawal": "sajawal",
-    "kambar shahdad kot": "kambar shahdadkot",
-    "mirpur khas": "mirpurkhas",
-    "tando allahyar": "tando allah yar",
-    "torghar": "tor ghar",
-    "umer kot": "umerkot",
-    # 2023 renamed the two agencies that kept their 2015 polygon name
-    "north waziristan": "north waziristan agency",
-    "south waziristan": "south waziristan agency",
-}
-
-
 def _norm_name(x: str) -> str:
     """app.js normName(): lowercase, non-alphanumerics to single spaces."""
     return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", (x or "").lower())).strip()
@@ -291,23 +271,10 @@ def census_table_titles(repo: Path) -> dict:
     return out
 
 
-def census_district_map_keys(app: Path, units: list[str]) -> dict:
-    """{census district name: map key} for the units that have a polygon."""
-    src = (app / "data" / "census_data.js").read_text()
-    geo = json.loads(re.search(r"window\.DD_GEO=(\{.*?\});\s*window\.DD_DATA=", src, re.S).group(1))
-    have = {_norm_name(f["properties"].get("districts")
-                       or f["properties"].get("district_agency")) for f in geo["features"]}
-    out = {}
-    for u in units:
-        base = _norm_name(u.replace(" DISTRICT", "").replace(" AGENCY", ""))
-        for cand in (base, CENSUS_DISTRICT_ALIAS.get(base, ""), base + " agency"):
-            if cand and cand in have:
-                out[u] = cand
-                break
-    dupes = [k for k, n in collections.Counter(out.values()).items() if n > 1]
-    if dupes:
-        raise SystemExit(f"census map keys collide on {dupes} — two districts would share a polygon")
-    return out
+# The 2015 district layer and its aliases lived here, matched by name against
+# census_data.js. Both went with map.html: districts key on PBS’s own code
+# now, through etl/census2017/census_unit_map.csv.
+
 
 
 def build(src: Path, district_only: bool = False) -> None:
@@ -341,7 +308,7 @@ def build(src: Path, district_only: bool = False) -> None:
 
     # ── 1. district indicator panel (long format) ────────────────────────────
     print("districts…")
-    groups = load_indicator_groups(APP / "assets" / "js" / "app.js")
+    groups = load_indicator_groups()
     dic = field_dictionary(groups)
     prefixes = sorted({g["prefix"] for g in groups.values() if g.get("prefix")})
     districts = json.loads((APP / "data" / "districts.json").read_text())

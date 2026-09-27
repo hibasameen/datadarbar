@@ -94,6 +94,7 @@ def main():
     ix = con.sql(f"""
         SELECT level, topic, topic_label, group_key, group_label, dataset,
                indicator, label, coalesce(dp, -1) AS dp, source,
+               coalesce(families, '') AS families,
                coalesce(years, []) AS years,
                coalesce(localities, ['all']) AS localities,
                coalesce(sexes, ['all']) AS sexes,
@@ -104,22 +105,42 @@ def main():
         -- alphabetically by their key
         ORDER BY o.ord, group_key, label, level""").fetchall()
     names = ('level topic topic_label group_key group_label dataset indicator label '
-             'dp source years localities sexes shapes units min_value max_value').split()
+             'dp source families years localities sexes shapes units '
+             'min_value max_value').split()
     # the list columns intern as a whole: a locality set repeats across thousands
     # of indicators, so the distinct combinations are a handful
     rows = [tuple('\u001f'.join(x) if isinstance(x, list) else x for x in r) for r in ix]
     P = columnar(rows, names,
                  {'level', 'topic', 'topic_label', 'group_key', 'group_label',
-                  'dataset', 'source', 'years', 'localities', 'sexes', 'label',
-                  'indicator'})
+                  'dataset', 'source', 'families', 'years', 'localities',
+                  'sexes', 'label', 'indicator'})
     n1 = write(out / 'places_index.js', 'DD_PLACES_IX', P,
                f'Places picker index, {len(ix):,} indicators')
+
+    # ── provenance, in one file ────────────────────────────────────────────
+    # low_n and n_obs are filed under the survey family while the figures they
+    # qualify are filed under the app's group, so they cannot travel in the
+    # group's own file. 8,019 rows is small enough to ship once.
+    prov = con.sql(f"""
+        SELECT v.level, v.map_key, v.group_key, v.indicator,
+               round(v.value, 4) AS value
+        FROM '{(W / 'place_indicators.parquet').as_posix()}' v
+        WHERE v.value IS NOT NULL AND NOT EXISTS (
+          SELECT 1 FROM '{(W / 'place_indicator_index.parquet').as_posix()}' i
+          WHERE i.group_key = v.group_key AND i.indicator = v.indicator)
+        ORDER BY group_key, indicator, map_key""").fetchall()
+    PV = columnar(prov, 'level map_key group_key indicator value'.split(),
+                  {'level', 'map_key', 'group_key', 'indicator'})
+    np = write(out / 'places' / 'provenance.js', 'DD_PLACES_PROV', PV,
+               f'Places provenance flags, {len(prov):,} rows')
+    print(f'  places/provenance.js {len(prov):>6,} flags      {np/1e6:5.2f} MB')
 
     # ── the curated values, one file per group ─────────────────────────────
     vdir = out / 'places'
     vdir.mkdir(parents=True, exist_ok=True)
     for stale in vdir.glob('*.js'):
-        stale.unlink()
+        if stale.name not in ('overlay_schools.js', 'provenance.js'):
+            stale.unlink()
 
     groups = [r[0] for r in con.sql(f"""
         SELECT DISTINCT group_key FROM '{(W / 'place_indicators.parquet').as_posix()}'
