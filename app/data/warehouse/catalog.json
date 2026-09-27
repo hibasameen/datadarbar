@@ -251,7 +251,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201154,
+   "bytes": 8201164,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -618,6 +618,63 @@
      "name": "weight",
      "type": "BIGINT",
      "description": "2017 population, for averaging a rate across combined units"
+    }
+   ]
+  },
+  {
+   "name": "crops_district_fy",
+   "file": "crops_district_fy.parquet",
+   "bytes": 746807,
+   "rows": 78425,
+   "description": "Area, production and yield by crop, district and fiscal year, 1981\u201382 to 2024\u201325.",
+   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all \u2014 every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi\u2019s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS\u2019s portal and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage varies by crop: the majors run from 1981\u201382, most vegetables and fruit from 2008\u201309.",
+   "unit": "thousand hectares, thousand tonnes, tonnes per hectare",
+   "source": "PBS Agriculture Statistics via the national accounts portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, joining to geography_keys"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district name as PBS\u2019s 2023 layer gives it"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "crop_id",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own crop id"
+    },
+    {
+     "name": "crop",
+     "type": "VARCHAR",
+     "description": "crop name, or a placeholder where the portal gives none"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, e.g. 2024-25"
+    },
+    {
+     "name": "area_000ha",
+     "type": "DOUBLE",
+     "description": "thousand hectares sown"
+    },
+    {
+     "name": "production_000t",
+     "type": "DOUBLE",
+     "description": "thousand tonnes produced"
+    },
+    {
+     "name": "yield_t_per_ha",
+     "type": "DOUBLE",
+     "description": "tonnes per hectare; production divided by area"
     }
    ]
   },
@@ -2585,8 +2642,8 @@
   {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
-   "bytes": 337010,
-   "rows": 38269,
+   "bytes": 88676,
+   "rows": 5755,
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
@@ -2644,8 +2701,18 @@
     },
     {
      "name": "years",
-     "type": "BIGINT",
+     "type": "VARCHAR[]",
      "description": "how many years the series has"
+    },
+    {
+     "name": "localities",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "sexes",
+     "type": "VARCHAR[]",
+     "description": ""
     },
     {
      "name": "shapes",

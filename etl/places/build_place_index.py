@@ -33,6 +33,9 @@ def main():
     ap.add_argument('--tehsils', required=True)
     ap.add_argument('--extra', nargs='*', default=[],
                     help='further place-row parquets to union in')
+    ap.add_argument('--extra-index', nargs='*', default=[],
+                    help='index-row parquets for sources whose values are too '
+                         'large to ship and are read on demand instead')
     ap.add_argument('--census-index', required=True)
     ap.add_argument('--pbs', required=True)
     ap.add_argument('--out-values', required=True)
@@ -105,6 +108,11 @@ def main():
     # ── index ───────────────────────────────────────────────────────────────
     from census_topics import TOPIC_OF_TABLE
     from topics import TOPICS, GROUP_TOPIC, ORDER
+    # A source whose values are too large to ship supplies index rows only; the
+    # picker lists them and the values are read when one is chosen. Same shape
+    # as the two halves below, so it unions straight in.
+    extra_index = ''.join(
+        "\n        UNION ALL SELECT * FROM '%s'" % x for x in a.extra_index)
     tvals = ', '.join(
         "('" + t + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "')"
         for t, k in sorted(TOPIC_OF_TABLE.items()))
@@ -161,7 +169,7 @@ def main():
           FROM '{a.census_index}' AS c
           JOIN topics AS t ON t.table_id = c.table_id
           GROUP BY c.unit_type, t.topic, t.topic_label, c.table_id, c.indicator, c.col_label)
-        SELECT * FROM curated UNION ALL SELECT * FROM census""")
+        SELECT * FROM curated UNION ALL SELECT * FROM census{extra_index}""")
 
     out_i = pathlib.Path(a.out_index)
     ovals = ', '.join("('" + k + "', " + str(i) + ")" for i, k in enumerate(ORDER))
@@ -170,6 +178,25 @@ def main():
                           ORDER BY o.ord, i.group_key, i.label, i.level)
                     TO '{out_i.as_posix()}'
                     (FORMAT PARQUET, COMPRESSION ZSTD, COMPRESSION_LEVEL 12)""")
+
+    # SQL does not read Python's \uXXXX escapes, so a label built in a query
+    # string keeps them literally. It has happened twice; it fails the build now.
+    bad = con.sql(r"""SELECT count(*) FROM place_indicator_index
+        WHERE label LIKE '%' || chr(92) || 'u%'
+           OR group_label LIKE '%' || chr(92) || 'u%'
+           OR topic_label LIKE '%' || chr(92) || 'u%'""").fetchone()[0]
+    if bad:
+        ex = con.sql(r"""SELECT DISTINCT coalesce(
+              nullif(CASE WHEN label LIKE '%' || chr(92) || 'u%' THEN label END, ''),
+              nullif(CASE WHEN group_label LIKE '%' || chr(92) || 'u%' THEN group_label END, ''),
+              topic_label) FROM place_indicator_index
+            WHERE label LIKE '%' || chr(92) || 'u%'
+               OR group_label LIKE '%' || chr(92) || 'u%'
+               OR topic_label LIKE '%' || chr(92) || 'u%' LIMIT 3""").fetchall()
+        raise SystemExit(
+            f'{bad} index labels carry a literal backslash-u escape, e.g. '
+            + '; '.join(x[0] for x in ex)
+            + ' - use the character itself in SQL, not a Python escape')
 
     nv = con.sql('SELECT count(*) FROM place_indicators').fetchone()[0]
     ni = con.sql('SELECT count(*) FROM place_indicator_index').fetchone()[0]

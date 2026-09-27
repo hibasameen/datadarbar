@@ -1524,6 +1524,41 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="census units",
         )
 
+    f = OUT / "crops_district_fy.parquet"
+    if f.exists():
+        register(
+            "crops_district_fy",
+            "Area, production and yield by crop, district and fiscal year, "
+            "1981\u201382 to 2024\u201325.",
+            "108 crops over 123 districts and 44 fiscal years. All 123 district "
+            "codes join the PBS 2023 layer exactly, but the frame is older than "
+            "that layer: 33 of the 156 districts Data Darbar draws have no crop "
+            "rows at all \u2014 every district of Azad Jammu & Kashmir and "
+            "Gilgit-Baltistan, which have their own agricultural authorities, six "
+            "of Karachi\u2019s seven, and the most recently created districts "
+            "(Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower "
+            "Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s "
+            "code, and is vestigial rather than city-wide: six crops and nothing "
+            "at all in recent years. Two crops are unlabelled on PBS\u2019s portal "
+            "and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than "
+            "dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage "
+            "varies by crop: the majors run from 1981\u201382, most vegetables and "
+            "fruit from 2008\u201309.",
+            {"district_code": "PBS 2023 district code, joining to geography_keys",
+             "district": "district name as PBS\u2019s 2023 layer gives it",
+             "province": "province or area",
+             "crop_id": "PBS\u2019s own crop id",
+             "crop": "crop name, or a placeholder where the portal gives none",
+             "fy": "fiscal year, e.g. 2024-25",
+             "area_000ha": "thousand hectares sown",
+             "production_000t": "thousand tonnes produced",
+             "yield_t_per_ha": "tonnes per hectare; production divided by area"},
+            "PBS Agriculture Statistics via the national accounts portal, pull of "
+            "2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="thousand hectares, thousand tonnes, tonnes per hectare",
+        )
+
     f = OUT / "diaspora_emigrants_district.parquet"
     if f.exists():
         register(
