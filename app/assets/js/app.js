@@ -2441,13 +2441,8 @@ function wireMobile() {
   const controlPanelInner = document.getElementById('controlPanelInner');
 
   // Hamburger menu toggle
-  if (mobileMenuBtn && mobileNav) {
-    mobileMenuBtn.addEventListener('click', () => {
-      const expanded = !mobileNav.classList.toggle('hidden');
-      mobileMenuBtn.setAttribute('aria-expanded', String(expanded));
-      if (map) requestAnimationFrame(() => map.invalidateSize());
-    });
-  }
+  // The mobile menu is bound by assets/js/shell.js, which owns the header.
+
 
   // Mobile nav links → same actions as header
   const mobileResetBtn = document.getElementById('mobileResetBtn');

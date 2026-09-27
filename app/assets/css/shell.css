@@ -1,0 +1,97 @@
+/* Data Darbar — the shell: tokens, reset, header, footer, mobile nav.
+   ------------------------------------------------------------------
+   One stylesheet for the chrome that every page shares. Before this, six pages
+   carried their own copy inline and two more had their own stylesheet; 90 rules
+   appeared on three or more pages and 31 of those had drifted to different
+   bodies, so the same header genuinely rendered differently depending on where
+   you were. Page-specific CSS still belongs to the page — this file owns only
+   what is common, and the markup it styles is written by etl/apply_shell.py so
+   the two cannot drift apart again. */
+
+:root{
+  --green-900:#0c3a1e;  --green-800:#145228;  --green-700:#1e6b3e;
+  --green-100:#f0f9f4;
+  --gold-600:#b5860b;   --gold-500:#d4a017;   --gold-400:#e8b92e;
+  --gold-100:#fef6dc;
+  --ink:#17301f;        --body:#3d424d;       --muted:#6b7280;
+  --ground:#faf7ef;     --surface:#ffffff;    --line:#dfe4df;  --line-strong:#c5cad3;
+  --header-h:56px;
+  --sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--ground);color:var(--ink);
+     line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+a{color:var(--green-800)}
+[hidden]{display:none!important}
+
+/* ── header ───────────────────────────────────────────────────────────────
+   Three explorers, then the analysts' shelf behind a divider. The old "Data ▾"
+   dropdown held six products as peers; these are not peers, and the structure
+   should say so. */
+.site-header{height:var(--header-h);background:var(--green-900);
+  border-bottom:3px solid var(--gold-500);display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;position:sticky;
+  top:env(safe-area-inset-top,0px);z-index:500}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.header-logo{height:30px;width:auto}
+.header-text{display:flex;flex-direction:column;line-height:1.05}
+.header-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.header-tagline{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.7)}
+
+.header-nav{display:flex;align-items:center;gap:4px}
+.header-link{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:700;
+  color:#fff;text-decoration:none;white-space:nowrap;transition:background .14s,color .14s}
+.header-link:hover{background:rgba(255,255,255,.1)}
+.header-link.active{color:var(--green-900);background:var(--gold-500)}
+.header-sep{width:1px;height:20px;background:rgba(255,255,255,.2);margin:0 8px;flex-shrink:0}
+.header-link.shelf{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.75);padding:7px 12px}
+.header-link.shelf:hover{color:#fff}
+.header-link.shelf.active{color:var(--green-900);background:var(--gold-500)}
+.header-link.soon{color:rgba(255,255,255,.4);cursor:default}
+.header-link.soon:hover{background:none}
+
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.25);
+  border-radius:6px;color:#fff;padding:5px 7px;cursor:pointer;line-height:0}
+.mobile-nav{display:flex;flex-direction:column;gap:2px;background:var(--green-900);
+  border-bottom:3px solid var(--gold-500);padding:8px 16px 14px}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);text-decoration:none;
+  font-size:14px;font-weight:600;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.mobile-nav-link.active{color:var(--gold-400)}
+.mobile-nav-label{padding:12px 12px 4px;font-size:10.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42)}
+
+@media(max-width:860px){
+  .header-nav{display:none}
+  .mobile-menu-btn{display:block}
+  .site-header{padding:0 16px}
+}
+
+/* ── footer ─────────────────────────────────────────────────────────────── */
+.site-footer{background:var(--green-900);color:rgba(255,255,255,.65);
+  font-size:12px;padding:18px 24px calc(18px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;line-height:1.5}
+.site-footer a{color:rgba(255,255,255,.72);text-decoration:none}
+.site-footer a:hover{color:var(--gold-400);text-decoration:underline}
+.footer-sep{color:rgba(255,255,255,.22)}
+.footer-right{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 10px}
+@media(max-width:860px){
+  .site-footer{padding-inline:16px}
+  .footer-right{margin-left:0}
+}
+
+/* ── shared furniture ─────────────────────────────────────────────────────
+   The few things every content page needs; anything a single page needs stays
+   with that page. */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
+@media(max-width:860px){.wrap{padding-inline:16px}}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--gold-500);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -79,39 +79,6 @@ a:hover { text-decoration: underline; }
   border-bottom: 3px solid var(--gold-500);
   z-index: 1100;
 }
-.header-left {
-  display: flex; align-items: center; gap: 8px;
-  margin-left: calc(var(--sidebar-w) - 20px);
-}
-.header-logo {
-  height: 34px; width: auto; flex-shrink: 0;
-}
-.header-text {
-  display: flex; flex-direction: column; gap: 0; line-height: 1;
-}
-.header-title {
-  font-size: 22px; font-weight: 800; letter-spacing: -0.01em;
-  color: var(--gold-400); line-height: 1.1;
-}
-.header-tagline {
-  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.55);
-  letter-spacing: 0.06em; text-transform: uppercase;
-  margin-top: 1px;
-}
-.header-right {
-  display: flex; align-items: center; gap: 6px;
-}
-.header-link {
-  font-size: 12px; font-weight: 600;
-  color: rgba(255,255,255,0.6);
-  background: none; border: 1px solid rgba(255,255,255,0.15);
-  border-radius: var(--radius-sm); padding: 5px 12px;
-  cursor: pointer; font-family: inherit;
-  display: inline-flex; align-items: center; gap: 4px;
-  white-space: nowrap; transition: all 0.15s;
-  text-decoration: none;
-}
-.header-link:hover { color: var(--gold-300); border-color: var(--gold-500); background: rgba(255,255,255,0.05); text-decoration: none; }
 
 /* ── Mobile hamburger ──────────────────────────────────────────── */
 .mobile-menu-btn {
@@ -121,7 +88,6 @@ a:hover { text-decoration: underline; }
   color: rgba(255,255,255,0.7); cursor: pointer;
   transition: all 0.15s;
 }
-.mobile-menu-btn:hover { color: var(--gold-300); border-color: var(--gold-500); }
 
 /* Mobile nav drawer */
 .mobile-nav {
@@ -131,19 +97,6 @@ a:hover { text-decoration: underline; }
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.mobile-nav.hidden { display: none; }
-.mobile-nav-link {
-  padding: 10px 12px;
-  background: none; border: none;
-  color: rgba(255,255,255,0.7);
-  font-size: 14px; font-weight: 500;
-  font-family: inherit; cursor: pointer;
-  text-align: left;
-  border-radius: var(--radius-sm);
-  text-decoration: none; display: block;
-  transition: all 0.15s;
-}
-.mobile-nav-link:hover { background: rgba(255,255,255,0.08); color: var(--gold-300); text-decoration: none; }
 
 /* ── Summary stats bar ─────────────────────────────────────────── */
 .summary-bar {
@@ -481,9 +434,6 @@ select:focus, input:focus {
   flex-shrink: 0;
   border-top: 1px solid rgba(255,255,255,0.08);
 }
-.site-footer a { color: rgba(255,255,255,0.55); }
-.site-footer a:hover { color: var(--gold-300); text-decoration: none; }
-.footer-sep { color: rgba(255,255,255,0.2); }
 
 /* ── Modal ──────────────────────────────────────────────────────── */
 .modal-overlay {
@@ -827,7 +777,6 @@ select:focus, input:focus {
 
 /* Economy nav feature link (added for economic-complexity section) */
 .header-link-feature{background:var(--gold-500);color:var(--green-900)!important;font-weight:700;border-radius:8px;padding:6px 12px;}
-.header-link-feature:hover{background:var(--gold-400);}
 
 
 /* ===== Unified site header ===== */
@@ -836,22 +785,6 @@ select:focus, input:focus {
    get their own context). At 100 the header's "Data" dropdown was painted under
    the map. Stays below the modal overlay at 2000. */
 .site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
-.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-.header-logo{height:32px;width:auto}
-.header-text{display:flex;flex-direction:column;line-height:1}
-.header-title{font-size:20px;font-weight:800;color:var(--gold-400,#e8b92e);letter-spacing:-.01em}
-.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
-.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
-.header-link:hover{color:var(--gold-300,#f0cc5a);border-color:var(--gold-500,#d4a017);background:rgba(255,255,255,.05)}
-.header-link.active{color:var(--green-900,#0c3a1e);background:var(--gold-500,#d4a017);border-color:var(--gold-500,#d4a017)}
-.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
-.mobile-nav{background:var(--green-800,#145228);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
-.mobile-nav.hidden{display:none}
-.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
-.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
-.mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
-@media(max-width:900px){.header-nav{display:none}.mobile-menu-btn{display:block}}
 
 
 /* ===== Live-map additions: rankings panel, suppression notice, no-survey legend swatch ===== */
@@ -928,13 +861,10 @@ select:focus, input:focus {
   display: inline-block; width: 16px; height: 10px;
   background: #b0b8c1; border: 1.5px dashed #8a9480; border-radius: 2px;
   opacity: 0.5; flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
+}@media (max-width: 768px){
   /* Rankings & stats: mobile */
   .ranking-summary { padding: 12px 14px; min-height: 44px; font-size: 11px; }
-  .ranking-list { max-height: 180px; overflow-y: auto; }
-}
+  .ranking-list { max-height: 180px; overflow-y: auto; }}
 
 /* ── Poverty & Wealth layers (merged from the former poverty page) ── */
 .stat-active { background: #f7f3e6; margin: 0 -18px; padding: 6px 18px; border-radius: 6px; }
