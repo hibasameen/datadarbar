@@ -147,6 +147,26 @@ Shigar. And AJK's **Jhelum Valley district is universally called Hattian**,
 after Hattian Bala, its seat — no string similarity finds that pair, and the
 best fuzzy candidate is Thatta, in a different province.
 
+## The two censuses publish different indicators
+
+Not just different boundaries - different tables. Of **4,039 district cell
+definitions** (table x indicator x column heading), **34 exist in both
+censuses**; 58 if table numbering is ignored. At tehsil level it is 15 of
+1,094. The panels' own note says the same thing from the other end: only 50
+indicator labels match verbatim.
+
+**What this rules out:** a picker that treats the census year as a facet of a
+chosen indicator. For about 99 per cent of them the year is part of what the
+indicator *is*, because only one census published it. Offer the years a
+definition actually has, and expect that to be one.
+
+What *is* a real facet within a year: locality (all, rural, urban) and sex.
+Most definitions carry three variants and many carry nine.
+
+The curated survey indicators are the opposite case - they are built as
+2017/2023 pairs with a difference, so a year control works there. The 2017-2023
+comparison that always works is population, because PBS restates it itself.
+
 ## The oracle: check, do not argue
 
 **Census 2023 table 1 prints a `POPULATION 2017` column** — PBS's own

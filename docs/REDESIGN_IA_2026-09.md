@@ -203,6 +203,45 @@ something already in the list. Searching series would return the same
 indicator forty times and bury everything else. The facets belong on the
 chosen indicator, as controls.
 
+**Built 27 Sep, and one of the design's assumptions did not survive it.**
+`place_indicator_index` now holds one row per indicator per level - 5,431 rows,
+4,349 distinct indicators, which is the 4,347 above plus the two Migration
+series. Locality and sex are collected into lists on each row, as the design
+asks.
+
+The year could not be. The design says "the facets of the one you pick (census
+year, rural/urban, sex) are chosen after" - but of 4,039 district cell
+definitions, **34 exist in both censuses**. The two censuses did not publish the
+same tables, so for 99 per cent of census indicators the year is not a choice
+about the indicator; it is part of what the indicator is. The index records the
+years each definition actually has, and the picker must offer those rather than
+assume two. The 2017 . 2023 . Change control still works as designed for the
+curated survey indicators, which are built as pairs, and for population, which
+PBS restates itself.
+
+**Census is not a topic.** It was one in the first build, which filed 37,971
+series under a single heading and reproduced the source-oriented structure this
+redesign exists to remove. Census tables are now assigned by what they measure,
+in `etl/places/census_topics.py`, and both halves of the index read one topic
+vocabulary from `etl/places/topics.py` - the curated side had been carrying
+app.js's twelve topics, whose labels nearly but not quite matched the design's
+("Health" and "Children" against "Health & children"), so the picker showed
+both. Topic counts, with census mixed in:
+
+| topic | curated | census | total |
+|---|---:|---:|---:|
+| Demographics | 20 | 1,586 | 1,606 |
+| Housing & infrastructure | 18 | 1,373 | 1,391 |
+| Education | 44 | 1,281 | 1,325 |
+| Health & children | 41 | 713 | 754 |
+| Employment | 53 | 124 | 177 |
+| Household welfare | 18 | 56 | 74 |
+| Rural facilities (Mouza 2020) | 54 | - | 54 |
+| Schools & access to care | 32 | - | 32 |
+| Poverty & wealth | 10 | - | 10 |
+| Satellite & environment | 6 | - | 6 |
+| Migration | 2 | - | 2 |
+
 Topic counts, on the same basis, summing to 4,347:
 
 | topic | curated | census | total |

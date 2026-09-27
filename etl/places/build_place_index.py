@@ -103,45 +103,71 @@ def main():
                     (FORMAT PARQUET, COMPRESSION ZSTD, COMPRESSION_LEVEL 12)""")
 
     # ── index ───────────────────────────────────────────────────────────────
+    from census_topics import TOPIC_OF_TABLE
+    from topics import TOPICS, GROUP_TOPIC, ORDER
+    tvals = ', '.join(
+        "('" + t + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "')"
+        for t, k in sorted(TOPIC_OF_TABLE.items()))
+    # the curated side: group -> the same topic vocabulary
+    gvals = ', '.join(
+        "('" + g + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "', "
+        + str(ORDER.index(k)) + ")"
+        for g, k in sorted(GROUP_TOPIC.items()))
     con.execute(f"""CREATE TABLE place_indicator_index AS
-        WITH curated AS (
-          SELECT p.level, v.topic, v.topic_label, v.group_key, v.group_label,
+        WITH topics(table_id, topic, topic_label) AS (VALUES {tvals}),
+        gtopics(group_key, topic, topic_label, topic_order) AS (VALUES {gvals}),
+        curated AS (
+          SELECT p.level, gt.topic, gt.topic_label, v.group_key, v.group_label,
                  v.dataset, p.indicator, v.label,
                  nullif(v.dp, -1) AS dp,
-                 'place_indicators' AS source,
-                 count(DISTINCT p.year) FILTER (WHERE p.year IS NOT NULL) AS years,
+                 'place' AS source,
+                 list_sort(list_distinct(list(p.year) FILTER (WHERE p.year IS NOT NULL)))
+                   AS years,
+                 ['all'] AS localities, ['all'] AS sexes,
                  length(list_distinct(flatten(list(str_split(p.map_key, ' '))))) AS shapes,
                  count(DISTINCT p.source_key) AS units,
                  min(p.value) AS min_value, max(p.value) AS max_value
           FROM place_indicators p
           JOIN vocab v ON v.group_key = p.group_key AND v.indicator = p.indicator
+          JOIN gtopics gt ON gt.group_key = p.group_key
           WHERE p.value IS NOT NULL
           GROUP BY ALL),
         census AS (
-          SELECT unit_type AS level,
-                 'census' AS topic, 'Census' AS topic_label,
-                 'census' || census_year || CASE WHEN unit_type='district' THEN 'd' ELSE 't' END
-                   || '_t' || regexp_replace(table_id, '[^0-9a-z]', '', 'g') AS group_key,
-                 'Table ' || table_id || ' — ' || coalesce(table_title, '') AS group_label,
-                 'PBS Census ' || census_year AS dataset,
-                 indicator || '|' || coalesce(col_label, '') || '|' || locality || '|' || sex
-                   AS indicator,
-                 indicator || CASE WHEN col_label IS NOT NULL AND col_label <> indicator
-                                   THEN ' · ' || col_label ELSE '' END
-                   || CASE WHEN locality <> 'all' OR sex <> 'all'
-                           THEN ' (' || nullif(concat_ws(', ',
-                                nullif(locality,'all'), nullif(sex,'all')), '') || ')'
-                           ELSE '' END AS label,
-                 CASE WHEN is_rate THEN 2 END AS dp,
-                 'census_panel_' || census_year AS source,
-                 1 AS years, mappable_units AS shapes, units_with_value AS units,
-                 min_value, max_value
-          FROM '{a.census_index}')
+          -- One row per cell definition, not per series. The design picks an
+          -- c.indicator and then its facets, so c.locality and c.sex are collected
+          -- into lists here rather than multiplying the rows: 37,971 series are
+          -- 4,051 definitions. The year is collected the same way, but it is
+          -- rarely a real choice - only 34 district definitions exist in both
+          -- censuses - so `years` usually holds one, and the picker must offer
+          -- what is there rather than assuming two.
+          SELECT c.unit_type AS level,
+                 t.topic, t.topic_label,
+                 'census_t' || regexp_replace(c.table_id, '[^0-9a-z]', '', 'g') AS group_key,
+                 'Table ' || c.table_id || ' \u2014 ' || any_value(coalesce(c.table_title, ''))
+                   AS group_label,
+                 'PBS Census ' || string_agg(DISTINCT CAST(c.census_year AS TEXT), ' and '
+                                             ORDER BY CAST(c.census_year AS TEXT)) AS dataset,
+                 c.table_id || '|' || c.indicator || '|' || coalesce(c.col_label, '') AS indicator,
+                 c.indicator || CASE WHEN c.col_label IS NOT NULL AND c.col_label <> c.indicator
+                                   THEN ' \u00b7 ' || c.col_label ELSE '' END AS label,
+                 CASE WHEN bool_or(c.is_rate) THEN 2 END AS dp,
+                 'census' AS source,
+                 list_sort(list_distinct(list(CAST(c.census_year AS TEXT)))) AS years,
+                 list_sort(list_distinct(list(c.locality))) AS localities,
+                 list_sort(list_distinct(list(c.sex))) AS sexes,
+                 max(c.mappable_units) AS shapes,
+                 max(c.units_with_value) AS units,
+                 min(c.min_value) AS min_value, max(c.max_value) AS max_value
+          FROM '{a.census_index}' AS c
+          JOIN topics AS t ON t.table_id = c.table_id
+          GROUP BY c.unit_type, t.topic, t.topic_label, c.table_id, c.indicator, c.col_label)
         SELECT * FROM curated UNION ALL SELECT * FROM census""")
 
     out_i = pathlib.Path(a.out_index)
-    con.execute(f"""COPY (SELECT * FROM place_indicator_index
-                          ORDER BY topic, group_key, label, level)
+    ovals = ', '.join("('" + k + "', " + str(i) + ")" for i, k in enumerate(ORDER))
+    con.execute(f"""COPY (SELECT i.* FROM place_indicator_index i
+                          LEFT JOIN (VALUES {ovals}) AS o(topic, ord) ON o.topic = i.topic
+                          ORDER BY o.ord, i.group_key, i.label, i.level)
                     TO '{out_i.as_posix()}'
                     (FORMAT PARQUET, COMPRESSION ZSTD, COMPRESSION_LEVEL 12)""")
 
