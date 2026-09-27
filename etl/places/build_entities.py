@@ -92,7 +92,7 @@ def main():
                'Buildings & facilities (Census 2023)' AS topic_label,
                'facilities' AS group_key,
                'Enumerated structures — Census 2023' AS group_label,
-               'PBS Digital Census 2023, via economic.data.gov.pk' AS dataset,
+               'Census 2023 buildings & facilities' AS dataset,
                'entity_' || unit_id AS indicator,
                unit_type AS label,
                NULL::INTEGER AS dp, 'place' AS source,

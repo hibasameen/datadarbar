@@ -23,10 +23,12 @@ TOPICS = {
     'employment':   'Employment',
     'welfare':      'Household welfare',
     'poverty':      'Poverty & wealth',
-    'housing':      'Housing & infrastructure',
+    'housing':      'Housing',
+    'infrastructure': 'Infrastructure & utilities',
+    'economic':     'Economic activity',
     'health':       'Health & children',
     'access':       'Schools & access to care',
-    'rural':        'Rural facilities (Mouza 2020)',
+
     'satellite':    'Satellite & environment',
     'migration':    'Migration',
     'agriculture':  'Agriculture',
@@ -35,9 +37,9 @@ TOPICS = {
 
 # The order the picker lists them in: the big subject topics first, then the
 # ones that are about a particular source or instrument.
-ORDER = ['demographics', 'education', 'employment', 'welfare', 'poverty',
-         'housing', 'health', 'agriculture', 'migration', 'access',
-         'facilities', 'rural', 'satellite']
+ORDER = ['demographics', 'education', 'employment', 'economic', 'welfare',
+         'poverty', 'housing', 'infrastructure', 'health', 'agriculture',
+         'migration', 'access', 'facilities', 'satellite']
 
 # Curated group -> topic. Where a group sat under an app.js topic that the
 # design does not have, it moves to the nearest one the design does:
@@ -51,15 +53,21 @@ GROUP_TOPIC = {
     'education': 'education', 'pslmEducation': 'education',
 
     'employment': 'employment', 'pslmEmployment': 'employment',
-    'lfs': 'employment', 'lfs25': 'employment', 'econCensus': 'employment',
+    'lfs': 'employment', 'lfs25': 'employment',
+
+    # Who works, and what the work is, are different questions. Employment is
+    # about people; Economic activity is about establishments and the places
+    # that serve them.
+    'econCensus': 'economic',
 
     'pslmFies': 'welfare', 'hies': 'welfare',
     'pslmDigital': 'welfare', 'hiesIct': 'welfare',
 
     'mpi': 'poverty',
 
-    'micsWash': 'housing', 'pslmWash': 'housing',
-    'hiesHousing': 'housing', 'hiesWaste': 'housing',
+    'hiesHousing': 'housing',
+    'micsWash': 'infrastructure', 'pslmWash': 'infrastructure',
+    'hiesWaste': 'infrastructure',
 
     'micsMaternal': 'health', 'micsChildHealth': 'health',
     'micsNutrition': 'health', 'pslmHealth': 'health',
@@ -77,7 +85,17 @@ GROUP_TOPIC = {
     # share a method and its caveats rather than a subject.
     'rwi': 'satellite', 'satPop': 'satellite', 'nightlights': 'satellite',
 }
-for _g in ('electricity_energy', 'drinking_water', 'streets_roads', 'housing',
-           'schools', 'health', 'connectivity', 'cooking_fuel',
-           'markets_credit', 'hazards', 'settlement'):
-    GROUP_TOPIC['mouza_' + _g] = 'rural'
+# The Mouza census was its own topic, "Rural facilities (Mouza 2020)", which
+# is a source wearing a subject's clothes - the thing this file exists to stop.
+# Its groups file by what they measure, like every other source, and what they
+# mostly measure is infrastructure.
+for _g in ('electricity_energy', 'drinking_water', 'streets_roads',
+           'connectivity', 'cooking_fuel', 'hazards'):
+    GROUP_TOPIC['mouza_' + _g] = 'infrastructure'
+GROUP_TOPIC['mouza_housing'] = 'housing'
+GROUP_TOPIC['mouza_settlement'] = 'demographics'
+GROUP_TOPIC['mouza_markets_credit'] = 'economic'
+# A school or a clinic in the village is about reaching a service, which is
+# what the access topic is for.
+GROUP_TOPIC['mouza_schools'] = 'access'
+GROUP_TOPIC['mouza_health'] = 'access'

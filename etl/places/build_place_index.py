@@ -119,16 +119,19 @@ def main():
                dataset, indicator, label, '' AS raw_indicator, '' AS raw_col,
                dp, source, NULL AS families, years, localities, sexes,
                shapes, units, min_value, max_value FROM '%s'""" % x for x in a.extra_index)
+    # Keyed on (census_year, table_id): PBS renumbered between censuses, so
+    # table 16 is usual activity in 2017 and disability in 2023.
     tvals = ', '.join(
-        "('" + t + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "')"
-        for t, k in sorted(TOPIC_OF_TABLE.items()))
+        "('" + y + "', '" + t + "', '" + k + "', '"
+        + TOPICS[k].replace("'", "''") + "')"
+        for (y, t), k in sorted(TOPIC_OF_TABLE.items()))
     # the curated side: group -> the same topic vocabulary
     gvals = ', '.join(
         "('" + g + "', '" + k + "', '" + TOPICS[k].replace("'", "''") + "', "
         + str(ORDER.index(k)) + ")"
         for g, k in sorted(GROUP_TOPIC.items()))
     con.execute(f"""CREATE TABLE place_indicator_index AS
-        WITH topics(table_id, topic, topic_label) AS (VALUES {tvals}),
+        WITH topics(census_year, table_id, topic, topic_label) AS (VALUES {tvals}),
         gtopics(group_key, topic, topic_label, topic_order) AS (VALUES {gvals}),
         curated AS (
           SELECT p.level, gt.topic, gt.topic_label, v.group_key, v.group_label,
@@ -165,8 +168,7 @@ def main():
                  'census_t' || regexp_replace(c.table_id, '[^0-9a-z]', '', 'g') AS group_key,
                  'Table ' || c.table_id || ' \u2014 ' || any_value(coalesce(c.table_title, ''))
                    AS group_label,
-                 'PBS Census ' || string_agg(DISTINCT CAST(c.census_year AS TEXT), ' and '
-                                             ORDER BY CAST(c.census_year AS TEXT)) AS dataset,
+                 'Population Census' AS dataset,
                  c.table_id || '|' || c.indicator || '|' || coalesce(c.col_label, '') AS indicator,
                  c.indicator || CASE WHEN c.col_label IS NOT NULL AND c.col_label <> c.indicator
                                    THEN ' \u00b7 ' || c.col_label ELSE '' END AS label,
@@ -182,7 +184,9 @@ def main():
                  min(c.min_value) AS min_value, max(c.max_value) AS max_value
           FROM '{a.census_index}' AS c
           JOIN topics AS t ON t.table_id = c.table_id
-          GROUP BY c.unit_type, t.topic, t.topic_label, c.table_id, c.indicator, c.col_label)
+                          AND t.census_year = CAST(c.census_year AS TEXT)
+          GROUP BY c.unit_type, t.topic, t.topic_label, c.table_id, c.indicator,
+                   c.col_label)
         SELECT * FROM curated UNION ALL SELECT * FROM census{extra_index}""")
 
     out_i = pathlib.Path(a.out_index)
@@ -203,6 +207,44 @@ def main():
     con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_col')
     print(f'  {len(rows):,} census labels rewritten for reading; '
           f'PBS\u2019s own kept in label_source')
+
+    # Folding five census entries into one dataset puts six identical
+    # "Total Population, 50-54" rows in the Demographics list - one per table
+    # that happens to publish that cell. The table is what distinguishes them,
+    # so it is appended, and ONLY where the label is otherwise ambiguous:
+    # qualifying all 5,205 would make every name longer to fix 473.
+    con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+        WITH dup AS (
+          SELECT dataset, topic, level, label
+          FROM place_indicator_index
+          GROUP BY 1, 2, 3, 4 HAVING count(*) > 1)
+        SELECT i.* REPLACE (
+          CASE WHEN d.label IS NOT NULL AND i.group_key LIKE 'census\\_t%' ESCAPE '\\'
+               THEN i.label || ' \u00b7 table '
+                    || replace(i.group_key, 'census_t', '')
+               ELSE i.label END AS label)
+        FROM place_indicator_index i
+        LEFT JOIN dup d USING (dataset, topic, level, label)""")
+    # Some survive the table qualifier: the two censuses spell the same age
+    # bracket differently ("00 - 04" against "00 -- 04") and labels.py
+    # normalises both to "0-4", so one table yields two rows with one name.
+    # Those are separated by the census they come from.
+    con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+        WITH dup AS (
+          SELECT dataset, topic, level, label
+          FROM place_indicator_index
+          GROUP BY 1, 2, 3, 4 HAVING count(*) > 1)
+        SELECT i.* REPLACE (
+          CASE WHEN d.label IS NOT NULL AND len(i.years) > 0
+               THEN i.label || ' \u00b7 ' || list_aggregate(i.years, 'string_agg', '/')
+               ELSE i.label END AS label)
+        FROM place_indicator_index i
+        LEFT JOIN dup d USING (dataset, topic, level, label)""")
+    left = con.sql("""SELECT count(*) FROM (
+        SELECT 1 FROM place_indicator_index
+        GROUP BY dataset, topic, level, label HAVING count(*) > 1)""").fetchone()[0]
+    print(f'  ambiguous labels qualified by table, then census; '
+          f'{left} still duplicated')
 
     ovals = ', '.join("('" + k + "', " + str(i) + ")" for i, k in enumerate(ORDER))
     con.execute(f"""COPY (SELECT i.* FROM place_indicator_index i
