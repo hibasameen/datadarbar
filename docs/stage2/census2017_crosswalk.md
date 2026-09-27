@@ -82,6 +82,48 @@ A name pair whose populations disagree is pulled into the restructured group
 rather than reported as a match. That is the difference between a crosswalk that
 is honest about its residue and one that looks complete.
 
+## Resolving the restructured groups with geometry
+
+The census tables cannot separate those 39 groups — the populations balance
+under every pairing — so the question moved to boundaries. Three layers were
+tried and only one answers it:
+
+| Layer | Vintage | Verdict |
+|---|---|---|
+| geoBoundaries ADM3 | **2017** (their current Pakistan release) | this is the 2017 side |
+| COD-AB, OCHA/HDX | boundaries created 2 Sep 2022 | predates the census and uses a different sub-district scheme; has none of Peshawar's new tehsils, and one `Gujranwala` polygon where the census has City and Saddar |
+| **PBS Digital Census 2023** | 2023 | 591 polygons mapping one-to-one onto the census units by `dds_id` |
+
+The PBS layer is the piece nothing else had: it is the census's own frame, so a
+2023 unit and its polygon are the same object rather than two things matched by
+name.
+
+`resolve_restructured.py` measures each 2023 unit against **all 554** of the 2017
+polygons, not a name-filtered shortlist — a new tehsil need not carry any part of
+its parent's name, and Quetta's Panjpai scores 1% against the polygons whose
+names contain "Quetta" while sitting almost entirely in one that does not.
+
+| Verdict | Units |
+|---|---:|
+| settled — at least 75% inside one 2017 parent | **74** |
+| divided, with shares reported | 26 |
+| unreliable — the 2017 layer never drew a group member | 21 |
+
+**17 of the 39 groups are settled outright.** Hassan Khel reads 91% inside FR
+Peshawar, independently confirming a pairing the population had already made.
+
+Three things the method is careful about:
+
+- **Share is summed per parent**, not taken from the largest single polygon. The
+  2017 layer splits Peshawar into four, so Cham Kani reads 67% in Peshawar IV and
+  27% in Peshawar II while lying 94% inside the one census tehsil both belong to.
+- **A missing polygon is not a parent.** The 2017 layer has no Model Town, so
+  Model Town's ground sits inside LAHORE CANTT; crediting that share to Lahore
+  City would describe the gap in the layer, not the history of the territory.
+  Eight groups are in this position and are reported rather than answered.
+- **A divided unit stays divided.** A tehsil drawing a quarter of its area from a
+  second parent is not comparable to either alone. That is a finding.
+
 ## Exit test
 
 > Every 2017 unit carries a documented relationship to 2023, or an explicit
@@ -91,7 +133,9 @@ is honest about its residue and one that looks complete.
 **Met at both tiers.** 127 district groups and 510 sub-district groups, zero
 unbalanced, complete coverage of both sides.
 
-The one thing the crosswalk does not give is a within-group correspondence for
-the 39 restructured cases. Resolving those needs boundary geometry, not more
-arithmetic: the populations balance under every possible pairing, so nothing in
-the census tables can distinguish them.
+Within-group correspondence is now given for 17 of the 39 restructured cases and
+partly for the rest, from boundary geometry rather than arithmetic. What remains
+is 26 units genuinely divided between two 2017 parents, and 21 in eight groups
+where the 2017 layer never drew one of the units involved. The first is a fact
+about the territory; the second would need a 2017 boundary set more complete
+than geoBoundaries', which is the next thing to look for.
