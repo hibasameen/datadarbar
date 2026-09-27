@@ -506,12 +506,14 @@
           lyr.on('click', function () {
             state.place = g.key(f.properties);
             renderDetail(f.properties);
+            renderRanks();
             writeUrl();
           });
         },
       }).addTo(map);
       if (!map.__fitted) { map.fitBounds(layer.getBounds(), { padding: [12, 12] }); map.__fitted = true; }
       state.scale = sc;
+      renderRanks();
       buildProvinces(geo, g);
     });
   }
@@ -605,9 +607,69 @@
     $('legendNote').textContent = notes.length ? 'Also published by ' + notes.join('; ') : '';
   }
 
+  /* Top and bottom ten, as the live map has. The map shows the pattern; this
+     gives the order, which a choropleth genuinely cannot - two districts a
+     shade apart are indistinguishable by eye. Counts units rather than shapes,
+     because a district split after 2017 is drawn twice on the 2023 frame and
+     would otherwise appear twice in one list. */
+  /* Selecting from the list does what clicking the shape does, and moves the
+     map to it, so the two ways in agree. */
+  function pickPlace(key) {
+    var g = GEO[state.level], hit = null;
+    if (layer) {
+      layer.eachLayer(function (l) {
+        if (!hit && g.key(l.feature.properties) === key) hit = l;
+      });
+    }
+    state.place = key;
+    if (hit) {
+      map.fitBounds(hit.getBounds(), { padding: [40, 40] });
+      renderDetail(hit.feature.properties);
+    } else {
+      renderDetail(null);
+    }
+    renderRanks();
+    writeUrl();
+  }
+
+  function renderRanks() {
+    var box = $('ranks');
+    if (state.row == null || !state.values) { box.hidden = true; return; }
+    var dp = col('dp', state.row);
+    var seen = {}, rows = [];
+    Object.keys(state.values).forEach(function (k) {
+      var v = state.values[k];
+      if (v == null) return;
+      var name = nameFor(k);
+      if (seen[name]) return;
+      seen[name] = 1;
+      rows.push({ k: k, name: name, v: v });
+    });
+    if (rows.length < 4) { box.hidden = true; return; }
+    rows.sort(function (a, b) { return b.v - a.v; });
+    box.hidden = false;
+    fillRank($('rankTopList'), rows.slice(0, 10), dp, 1);
+    fillRank($('rankBottomList'), rows.slice(-10).reverse(), dp, rows.length, true);
+  }
+
+  function fillRank(host, rows, dp, from, up) {
+    host.innerHTML = '';
+    rows.forEach(function (r, n) {
+      var li = document.createElement('li');
+      li.className = 'rank-item' + (r.k === state.place ? ' is-on' : '');
+      li.innerHTML = '<span class="rank-n"></span><span class="rank-name"></span>'
+                   + '<span class="rank-v"></span>';
+      li.querySelector('.rank-n').textContent = up ? (from - n) : (from + n);
+      li.querySelector('.rank-name').textContent = r.name;
+      li.querySelector('.rank-v').textContent = fmt(r.v, dp);
+      li.onclick = function () { pickPlace(r.k); };
+      host.appendChild(li);
+    });
+  }
+
   /* ── detail ─────────────────────────────────────────────────────────────- */
   function renderDetail(props) {
-    var host = $('detail');
+    var host = $('detailBody');
     if (state.row == null) { return; }
     var g = GEO[state.level];
     if (!state.place) {
