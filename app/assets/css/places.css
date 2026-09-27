@@ -98,3 +98,23 @@
   .picker-list{max-height:40vh}
   .map-wrap{height:60vh}
 }
+
+/* ── facilities overlay ─────────────────────────────────────────────────── */
+.overlays{border-top:1px solid var(--line);padding:14px 16px;
+  display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.ov{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;
+  font-size:13px;color:var(--ink);cursor:pointer}
+.ov:hover{background:var(--green-100)}
+.ov input{accent-color:var(--green-700);width:15px;height:15px;margin:0}
+.ov span{flex-grow:1}
+.ov b{font-size:11px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.ov.is-off{cursor:default;opacity:.55}
+.ov.is-off:hover{background:none}
+.ov-key{display:flex;flex-wrap:wrap;gap:6px 14px;padding:2px 8px;
+  font-size:11px;color:var(--muted)}
+.ov-key span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;box-sizing:border-box}
+.dot.solid{background:#0c3a1e}
+.dot.hollow{border:1.5px solid #0c3a1e}
+:root[data-theme="dark"] .dot.solid{background:#9ed3b0}
+:root[data-theme="dark"] .dot.hollow{border-color:#9ed3b0}

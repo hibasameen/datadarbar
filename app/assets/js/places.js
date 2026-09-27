@@ -330,7 +330,8 @@
       state.meta = r.meta;
       return paint().then(function () {
         renderLegend();
-        renderDetail();
+        renderDetail(placeProps(state.place));
+        writeUrl();
       });
     }).catch(function (e) {
       $('legendSub').textContent = 'Could not load this indicator: ' + e.message;
@@ -401,6 +402,7 @@
           lyr.on('click', function () {
             state.place = g.key(f.properties);
             renderDetail(f.properties);
+            writeUrl();
           });
         },
       }).addTo(map);
@@ -540,6 +542,20 @@
     return out;
   }
 
+  /* The properties of a shape by key, so a shared link can open on a place
+     without the reader having clicked it. */
+  function placeProps(key) {
+    if (!key) return null;
+    var geo = geoCache[state.level], g = GEO[state.level];
+    if (!geo) return null;
+    var hit = null;
+    geo.features.some(function (f) {
+      if (g.key(f.properties) === key) { hit = f.properties; return true; }
+      return false;
+    });
+    return hit;
+  }
+
   var nameIndex = null;
   function nameFor(key) {
     if (!nameIndex) {
@@ -550,6 +566,170 @@
       });
     }
     return nameIndex[key] || key;
+  }
+
+
+  /* ── the schools overlay ─────────────────────────────────────────────────
+     121,020 points is far too many for one marker each, so they are drawn to a
+     canvas, and only the ones inside the current view. A school with a real fix
+     is a filled dot; one placed at a settlement or tehsil centroid is a hollow
+     ring, because a centroid is a claim about an area and not about a building.
+     Below the zoom where individual schools mean anything, the layer says how
+     many are in view rather than drawing a solid mass of ink. */
+  var SchoolLayer = L.Layer.extend({
+    onAdd: function (m) {
+      this._map = m;
+      this._c = L.DomUtil.create('canvas', 'leaflet-zoom-animated');
+      this._c.style.pointerEvents = 'none';
+      m.getPanes().overlayPane.appendChild(this._c);
+      m.on('moveend zoomend resize', this._draw, this);
+      this._draw();
+    },
+    onRemove: function (m) {
+      m.off('moveend zoomend resize', this._draw, this);
+      if (this._c && this._c.parentNode) this._c.parentNode.removeChild(this._c);
+      this._c = null;
+    },
+    _draw: function () {
+      var pts = window.DD_SCHOOL_POINTS;
+      if (!pts || !this._c) return;
+      var m = this._map, size = m.getSize(), tl = m.containerPointToLayerPoint([0, 0]);
+      L.DomUtil.setPosition(this._c, tl);
+      var dpr = window.devicePixelRatio || 1;
+      this._c.width = size.x * dpr; this._c.height = size.y * dpr;
+      this._c.style.width = size.x + 'px'; this._c.style.height = size.y + 'px';
+      var g = this._c.getContext('2d');
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.clearRect(0, 0, size.x, size.y);
+
+      var b = m.getBounds(), z = m.getZoom();
+      var s = Math.max(1, Math.min(3, (z - 5) * 0.8));
+      var ink = getComputedStyle(document.documentElement)
+        .getPropertyValue('--green-900').trim() || '#0c3a1e';
+      g.strokeStyle = ink; g.fillStyle = ink; g.lineWidth = 1;
+
+      var n = pts.n, LAT = pts.lat, LNG = pts.lng, F = pts.f;
+      var S = b.getSouth(), N = b.getNorth(), W = b.getWest(), E = b.getEast();
+      var cap = z < 8 ? 12000 : 60000;      // enough to read, not enough to blot
+
+      // Two passes. The points are stored in latitude order, so drawing the
+      // first `cap` of them would paint the southern third of the country and
+      // leave the north bare - a picture of the storage order, not of the
+      // schools. Count first, then take every stride-th, which thins the whole
+      // country evenly.
+      var la = 0, ln = 0, inView = 0, i, y, x;
+      for (i = 0; i < n; i++) {
+        la += LAT[i]; ln += LNG[i];
+        y = la / 1e4; x = ln / 1e4;
+        if (y >= S && y <= N && x >= W && x <= E) inView++;
+      }
+      var stride = Math.max(1, Math.ceil(inView / cap));
+
+      la = 0; ln = 0;
+      var drawn = 0, seen = 0;
+      for (i = 0; i < n; i++) {
+        la += LAT[i]; ln += LNG[i];
+        y = la / 1e4; x = ln / 1e4;
+        if (y < S || y > N || x < W || x > E) continue;
+        if (seen++ % stride) continue;
+        var p = m.latLngToContainerPoint([y, x]);
+        g.beginPath();
+        g.arc(p.x, p.y, s, 0, 6.283);
+        if (F[i] >= 100) { g.globalAlpha = .8; g.fill(); }
+        else { g.globalAlpha = .55; g.stroke(); }
+        drawn++;
+      }
+      g.globalAlpha = 1;
+      var note = document.getElementById('ovSchoolsN');
+      if (note) {
+        // say plainly when the map is showing a sample rather than everything
+        note.textContent = drawn < inView
+          ? '1 in ' + stride + ' of ' + inView.toLocaleString()
+          : inView.toLocaleString() + (inView >= n ? '' : ' in view');
+      }
+    },
+  });
+
+  var schoolLayer = null;
+
+  function toggleSchools(on) {
+    document.getElementById('ovKey').hidden = !on;
+    if (!on) {
+      if (schoolLayer) { map.removeLayer(schoolLayer); schoolLayer = null; }
+      document.getElementById('ovSchoolsN').textContent = '121k';
+      return;
+    }
+    var box = document.getElementById('ovSchools');
+    box.disabled = true;
+    document.getElementById('ovSchoolsN').textContent = 'loading\u2026';
+    script('data/places/overlay_schools.js').then(function () {
+      schoolLayer = new SchoolLayer();
+      map.addLayer(schoolLayer);
+    }).catch(function () {
+      document.getElementById('ovSchoolsN').textContent = 'could not load';
+      box.checked = false;
+    }).then(function () { box.disabled = false; });
+  }
+
+
+  /* ── sharing ─────────────────────────────────────────────────────────────
+     The URL carries what is on screen, so a link opens on the same indicator,
+     level, year and place. The indicator is identified by its group and id
+     rather than its position in the index, because the index is rebuilt every
+     time the data is and a row number would not survive that. */
+  function writeUrl() {
+    if (state.row == null) return;
+    var q = new URLSearchParams();
+    q.set('g', col('group_key', state.row));
+    q.set('i', col('indicator', state.row));
+    q.set('lv', state.level);
+    if (state.year) q.set('y', state.year);
+    if (state.locality !== 'all') q.set('loc', state.locality);
+    if (state.sex !== 'all') q.set('sex', state.sex);
+    if (state.place) q.set('p', state.place);
+    if (document.getElementById('ovSchools').checked) q.set('ov', 'schools');
+    history.replaceState(null, '', location.pathname + '?' + q.toString());
+  }
+
+  function readUrl() {
+    var q = new URLSearchParams(location.search);
+    var g = q.get('g'), ind = q.get('i');
+    if (q.get('lv') === 'tehsil') setLevel('tehsil');
+    if (!g || !ind) return false;
+    var row = -1;
+    for (var i = 0; i < N; i++) {
+      if (col('level', i) === state.level && col('group_key', i) === g
+          && col('indicator', i) === ind) { row = i; break; }
+    }
+    if (row < 0) return false;
+    if (q.get('y')) state.year = q.get('y');
+    if (q.get('loc')) state.locality = q.get('loc');
+    if (q.get('sex')) state.sex = q.get('sex');
+    state.place = q.get('p') || null;
+    state.openTopic = col('topic', row);
+    if (q.get('ov') === 'schools') {
+      var box = document.getElementById('ovSchools');
+      box.checked = true;
+      toggleSchools(true);
+    }
+    choose(row);
+    return true;
+  }
+
+  function share() {
+    writeUrl();
+    var btn = document.getElementById('shareBtn');
+    var said = function (t) {
+      btn.textContent = t;
+      setTimeout(function () { btn.textContent = 'Share'; }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href)
+        .then(function () { said('Link copied'); })
+        .catch(function () { said('Link is in the address bar'); });
+    } else {
+      said('Link is in the address bar');
+    }
   }
 
   /* ── boot ───────────────────────────────────────────────────────────────- */
@@ -565,8 +745,11 @@
     $('provFilter').onchange = function () { if (state.row != null) paint(); };
     $('placeSearch').oninput = function () { findPlace(this.value); };
     $('csvBtn').onclick = downloadCsv;
+    $('ovSchools').onchange = function () { toggleSchools(this.checked); writeUrl(); };
+    $('shareBtn').onclick = share;
 
     renderPicker();
+    readUrl();
   }
 
   function setLevel(lv) {
@@ -596,6 +779,7 @@
       map.fitBounds(hit.getBounds(), { padding: [40, 40] });
       state.place = g.key(hit.feature.properties);
       renderDetail(hit.feature.properties);
+      writeUrl();
     }
   }
 

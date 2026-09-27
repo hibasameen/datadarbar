@@ -43,6 +43,17 @@
       <p class="search-hint" id="searchHint">Searching every indicator. Boundaries: PBS Digital Census 2023.</p>
     </div>
     <div class="picker-list" id="pickerList"></div>
+    <div class="overlays">
+      <div class="eyebrow">Facilities on the map</div>
+      <label class="ov"><input type="checkbox" id="ovSchools"/>
+        <span>Government schools</span><b id="ovSchoolsN">121k</b></label>
+      <label class="ov is-off" title="No point layer for health facilities yet — the health tables are travel-time surfaces, not locations">
+        <input type="checkbox" disabled/><span>Health facilities</span><b>none yet</b></label>
+      <div class="ov-key" id="ovKey" hidden>
+        <span><i class="dot solid"></i>located on the school</span>
+        <span><i class="dot hollow"></i>placed at a centroid</span>
+      </div>
+    </div>
   </aside>
 
   <div class="map-wrap">
@@ -56,6 +67,7 @@
       <select class="tool" id="provFilter" aria-label="Province"><option value="">All provinces</option></select>
     </div>
     <div class="map-tools-right">
+      <button class="tool" id="shareBtn" type="button">Share</button>
       <button class="tool" id="csvBtn" type="button">CSV</button>
     </div>
 
