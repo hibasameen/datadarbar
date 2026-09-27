@@ -139,3 +139,54 @@ is 26 units genuinely divided between two 2017 parents, and 21 in eight groups
 where the 2017 layer never drew one of the units involved. The first is a fact
 about the territory; the second would need a 2017 boundary set more complete
 than geoBoundaries', which is the next thing to look for.
+
+## From crosswalk to map: the unit map
+
+The crosswalk establishes what happened to each unit. Drawing both censuses on
+one set of boundaries needs a second thing: a decision, per unit, about what a
+2017 figure drawn on a 2023 shape actually *means*. `build_unit_map_2023.py`
+writes those decisions to `census_unit_map.csv`, one row per unit, and the web
+warehouse joins it so the app never has to infer them.
+
+| relation | what is drawn | units |
+|---|---|---|
+| exact, renamed | the figure, unchanged, on the same ground | 113 districts · 471 sub-districts |
+| merged | the units added, or averaged on 2017 population for a rate | 12 districts on 6 shapes |
+| split | the parent's figure across every successor at once | 6 districts on 13 shapes · 18 sub-districts on 47 |
+| boundary transfer | the figure, flagged: same district, changed territory | 4 districts |
+| restructured | nothing | 47 sub-districts |
+
+Two of these deserve their reasoning written down.
+
+**A split parent is drawn across its successors.** The successors together are
+exactly the ground the parent covered — that is what the crosswalk's balance
+check proves — so one colour across the group states the published figure and
+claims nothing more. The alternative considered was to leave them blank, which
+would have cost Chitral, Kohistan, Kalat, Loralai, Killa Abdullah and Karachi
+West from the 2017 map entirely. What is *not* done is dividing the parent's
+count between its successors, which no evidence supports.
+
+Because a parent is then drawn more than once, anything that aggregates across
+the map has to count units, not shapes. The app carries a `_unit` key for this.
+Getting it wrong is not subtle: the 2017 district layer totalled 213.4M people
+against a published 207,684,626 until it did.
+
+**Many-to-many restructuring is left undrawn.** Where several 2017 units became
+several 2023 ones, the group balances but the correspondence inside it does not
+exist to be drawn. 47 sub-district units, and the note says so by name.
+
+Every 2017 district figure placed this way sums to **207,684,626** — the
+published 2017 total to the person — so the frame loses nobody.
+
+### What this opened up
+
+| | before | after |
+|---|---|---|
+| 2017 sub-district units drawable | 0 | 489 on 518 shapes |
+| 2017 district shapes | 123 | 136 |
+| 2023 district shapes | 128 | 136 |
+| mappable series in the index | 34,008 | 37,971 |
+
+2017's sub-district data had no map key of any kind: all 536 units and every one
+of their series were invisible to the map. That, rather than the district
+arithmetic, is the bulk of what the unit map bought.
