@@ -177,6 +177,28 @@ the byte stream moved, which is exactly the kind of difference that makes a rele
 hash useless for telling a real change from none. `src_row` and `own_id` are now part
 of the sort, which makes it total.
 
+## The map draws every sub-district unit
+
+The census map keyed its tehsil layer on `dd_id`, a geoBoundaries 2017 boundary,
+and could colour **331** shapes. Census 2023 subdivided much of that geography:
+51 of its units shared 23 of those polygons, and a unit sharing a shape cannot be
+coloured without choosing arbitrarily between it and its neighbour, so none of
+the 51 was drawn. A further 55 had no polygon at all.
+
+PBS's Digital Census 2023 tehsil layer carries `dds_id` — the identifier the
+panel already uses — so a unit and its polygon are the same object rather than
+two things matched by name. **All 591 sub-district units now draw**, and the
+tehsil layer's total reads 241,499,431, Pakistan's published 2023 population,
+where it read 161.4 million.
+
+Every tier below the district is one geography here: PBS publishes some units as
+tehsils, some as sub-divisions and some as sub-tehsils, and draws all 591 in one
+boundary set.
+
+The 2017 layer stays. The poverty, school and Mouza Census groups are built on
+it and it is the right geography for them; the 2023 layer is a second file,
+loaded only when a census tehsil view is opened.
+
 ## Other verification
 
 | Check | Result |
