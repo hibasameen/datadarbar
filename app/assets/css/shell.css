@@ -8,17 +8,38 @@
    what is common, and the markup it styles is written by etl/apply_shell.py so
    the two cannot drift apart again. */
 
+/* The full ramp, not a partial one. finance, money and trade each carried
+   their own :root that renamed half of these and gave --green-700 a DIFFERENT
+   VALUE (#186636), so the same token drew a different green depending on which
+   page you were on. Every step those pages actually needed is here now, under
+   the system's own names, so there is nothing left for a page to redefine. */
 :root{
   --green-900:#0c3a1e;  --green-800:#145228;  --green-700:#1e6b3e;
-  --green-100:#f0f9f4;
-  --gold-600:#b5860b;   --gold-500:#d4a017;   --gold-400:#e8b92e;
+  --green-600:#2a7d4c;  --green-500:#4d8a62;  --green-400:#7aa88c;
+  --green-300:#9dbfa9;  --green-200:#d6e8dc;  --green-100:#f0f9f4;
+  --gold-800:#6b5311;   --gold-700:#8a6a0d;   --gold-600:#b5860b;
+  --gold-500:#d4a017;   --gold-400:#e8b92e;   --gold-300:#f0cc5a;
   --gold-100:#fef6dc;
+  --teal-700:#0f6e78;   --teal-500:#3f9aa3;
   --ink:#17301f;        --body:#3d424d;       --muted:#6b7280;
+  --muted-2:#8b93a0;
   --ground:#faf7ef;     --surface:#ffffff;    --line:#dfe4df;  --line-strong:#c5cad3;
-  --header-h:56px;
+  /* One negative, in the family. The three Economy pages used #c0392b, a
+     generic alert red that sits badly on the cream ground. */
+  --negative:#9a2c1f;   --negative-100:#f7e4e1;
+  --radius:12px;        --radius-sm:8px;
+  --shadow:0 2px 10px rgba(12,58,30,.07);
+  --shadow-lg:0 8px 28px rgba(12,58,30,.12);
+  --header-h:56px;      --sidebar-w:250px;
+  /* The design system tells the three explorers apart by accent alone. Each
+     page sets --accent on :root and everything shared reads from it. */
+  --accent:var(--green-700);
   --sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 }
+:root[data-explorer="places"]{--accent:var(--green-700)}
+:root[data-explorer="economy"]{--accent:var(--gold-600)}
+:root[data-explorer="state"]{--accent:var(--teal-700)}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
