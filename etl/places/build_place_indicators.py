@@ -114,6 +114,37 @@ def main():
         JOIN m ON m.slug = d.district_key
         ORDER BY d.group_key, d.indicator, d.year, m.map_key""")
 
+    # Two curated district groups keep their values in tables of their own
+    # rather than in district_indicators, so they arrive column-shaped and have
+    # to be melted. They key on the same slug, so the same map applies.
+    EXTRA = {
+        'mpi': ('mpi_districts', 'Poverty & Wealth \u2014 PSLM 2019-20',
+                'PSLM 2019-20 \u00b7 Alkire\u2013Foster',
+                ['mpi', 'H', 'A', 'c_schooling', 'c_attendance', 'c_electricity',
+                 'c_cooking_fuel', 'c_sanitation', 'c_water', 'c_housing']),
+        'healthAccessDistrict': ('health_access_district',
+                'Travel Time to Care \u2014 district',
+                'Malaria Atlas accessibility surfaces 2019',
+                ['mot_popw_mean', 'mot_popw_median', 'wal_popw_mean', 'wal_popw_median',
+                 'mot_pct_pop_gt30', 'mot_pct_pop_gt60', 'mot_pct_pop_gt120',
+                 'wal_pct_pop_gt60', 'wal_pct_pop_gt120']),
+    }
+    for gk, (tbl, glabel, dataset, cols) in EXTRA.items():
+        have = {c[0] for c in con.sql(
+            f"DESCRIBE SELECT * FROM '{a.src}/{tbl}.parquet'").fetchall()}
+        for c in cols:
+            if c not in have:
+                print(f'  {gk}: no column {c} in {tbl}')
+                continue
+            con.execute(f"""INSERT INTO place_indicators
+                WITH m(slug, map_key, relation, note, pbs_name, pbs_prov) AS (VALUES {vals})
+                SELECT 'district', m.map_key, m.relation, nullif(m.note,''),
+                       t.district_key, m.pbs_name, m.pbs_prov,
+                       ?, ?, ?, ?, ?, NULL, 'indicator', ?, t.{c}, NULL
+                FROM '{a.src}/{tbl}.parquet' t JOIN m ON m.slug = t.district_key
+                WHERE t.{c} IS NOT NULL""",
+                [dataset, gk, glabel, c, c, c])
+
     out = pathlib.Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     con.execute(f"""COPY place_indicators TO '{out.as_posix()}'
