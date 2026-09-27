@@ -120,9 +120,19 @@
       anchor.parentNode.insertBefore(host, anchor);
     }
 
+    var moreEl = document.getElementById('more');
+    if (!moreEl) {
+      moreEl = document.createElement('div');
+      moreEl.className = 'xmore';
+      moreEl.id = 'more';
+      moreEl.hidden = true;
+      host.parentNode.insertBefore(moreEl, host.nextSibling);
+    }
+
     var state = { ds: index[0].ds, topic: index[0].topic, ind: index[0].ind };
     var rail = window.DDExplorer.mount({
       el: host, index: index, state: state,
+      labels: { ind: 'Chart' }, moreEl: moreEl,
       onChange: function (row) { go(row); },
     });
 

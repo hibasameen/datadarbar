@@ -85,3 +85,20 @@ a.tree-item{color:var(--green-800)}
 
 /* The card the rail just jumped to, so the eye lands in the right place. */
 .card.is-picked{box-shadow:0 0 0 2px var(--accent);transition:box-shadow .2s}
+
+/* ── "Other charts in this topic" ─────────────────────────────────────────
+   A topic is a subject rather than a table, so this lists everything filed
+   under the current topic whichever dataset it comes from. */
+.xmore{margin-top:.9rem}
+.xmore[hidden]{display:none}
+.xmore-label{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:var(--muted);margin-bottom:.45rem}
+.xmore-list{display:flex;flex-wrap:wrap;gap:.5rem}
+.xmore-item{display:flex;flex-direction:column;gap:.1rem;text-align:left;
+  font:inherit;cursor:pointer;padding:.45rem .65rem;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:var(--radius-sm);max-width:100%}
+.xmore-item:hover,.xmore-item:focus-visible{border-color:var(--accent);
+  box-shadow:var(--shadow)}
+.xmore-name{font-size:.82rem;font-weight:600;color:var(--ink)}
+.xmore-ds{font-size:.68rem;color:var(--muted);font-family:var(--mono)}

@@ -1,0 +1,61 @@
+/* Data Darbar — the landing page.
+   ------------------------------
+   Tokens only, no hex literals: the old index.html carried 3 KB of inline
+   <style> with seventeen hard-coded colours, four of which (#886608, #b8c8bd,
+   #f0cc5a, #f1f2f5) existed nowhere else in the system.
+
+   The design doc says one cream ground for the whole site, white only for
+   panels and cards, and the three explorers told apart by accent alone. The
+   cards carry that accent on a left rule; nothing else on the page is
+   coloured, so the eye goes to the three doors and not to the decoration. */
+
+.lwrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+.lhero{background:var(--green-900);color:var(--surface);
+  padding:clamp(2.4rem,6vw,4.2rem) 0 clamp(2rem,5vw,3.4rem);
+  border-bottom:3px solid var(--gold-500)}
+.leyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:700;color:var(--gold-400);margin-bottom:.6rem}
+.lhero h1{font-size:clamp(1.8rem,4.6vw,3rem);line-height:1.12;font-weight:800;
+  letter-spacing:-.02em;max-width:18ch}
+.llede{margin-top:.9rem;font-size:clamp(.98rem,1.6vw,1.12rem);line-height:1.6;
+  max-width:60ch;color:var(--green-200)}
+.llede a{color:var(--gold-400)}
+.lstat{margin-top:1.1rem;font-size:.9rem;color:var(--green-300);max-width:60ch}
+.lstat b{color:var(--surface);font-weight:700}
+
+.lsec{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin:2.4rem 0 .9rem}
+
+.lcards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+
+.lcard{display:flex;flex-direction:column;gap:.4rem;padding:1.15rem 1.15rem 1.25rem;
+  background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--card-accent,var(--line-strong));
+  border-radius:var(--radius);text-decoration:none;color:inherit;
+  box-shadow:var(--shadow);transition:box-shadow .16s,transform .16s}
+.lcard:hover,.lcard:focus-visible{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.lcard[data-accent="places"]{--card-accent:var(--green-700)}
+.lcard[data-accent="economy"]{--card-accent:var(--gold-600)}
+.lcard[data-accent="state"]{--card-accent:var(--teal-700)}
+.lcard[data-accent="neutral"]{--card-accent:var(--line-strong)}
+.lcard-tag{font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;color:var(--card-accent)}
+.lcard-title{font-size:1.16rem;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.lcard-desc{font-size:.88rem;line-height:1.5;color:var(--body);flex:1 1 auto}
+.lcard-stat{font-size:.76rem;color:var(--muted);border-top:1px solid var(--line);
+  padding-top:.6rem;margin-top:.3rem}
+.lcard-stat b{color:var(--ink);font-weight:700}
+
+.lnote{margin:2.6rem 0 3rem;padding:1.3rem 1.4rem;background:var(--green-100);
+  border:1px solid var(--green-200);border-radius:var(--radius)}
+.lnote h2{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.5rem}
+.lnote p{font-size:.88rem;line-height:1.6;color:var(--body);max-width:72ch;
+  margin-bottom:.6rem}
+.lnote a{color:var(--green-800);font-weight:600}
+.lgen{font-size:.76rem;color:var(--muted);margin-bottom:0}
+
+@media(max-width:640px){
+  .lhero{padding:2rem 0 1.6rem}
+  .lcards{grid-template-columns:1fr}
+}

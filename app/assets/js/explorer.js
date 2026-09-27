@@ -80,9 +80,14 @@
     el.innerHTML = '';
     el.className = 'xrail';
 
-    var ds = field('Dataset', 'xDataset');
-    var tp = field('Topic', 'xTopic');
-    var ind = field('Indicator', 'xIndicator');
+    /* Places picks a measured series and calls it an indicator. Economy and
+       State pick a whole chart - a stacked area, a drill-down, a matrix - and
+       calling those indicators overstates what they are, so the third field
+       is named by the page. */
+    var names = cfg.labels || {};
+    var ds = field(names.ds || 'Dataset', 'xDataset');
+    var tp = field(names.topic || 'Topic', 'xTopic');
+    var ind = field(names.ind || 'Indicator', 'xIndicator');
     [ds, tp, ind].forEach(function (f) { el.appendChild(f.wrap); });
 
     var meta = document.createElement('p');
@@ -121,10 +126,44 @@
       // two as you move between datasets reads as something having broken.
       tp.sel.disabled = topics.length < 2;
       ind.sel.disabled = pair.length < 2;
+      more(chosen);
       if (fire && cfg.onChange) cfg.onChange(chosen);
       return chosen;
     }
 
+
+    /* "Other charts in this topic", under the chart. A topic is a subject, not
+       a table, so the siblings are everything filed under this topic whatever
+       dataset it comes from - moving between them is the common case, and
+       making the reader go back up to a dropdown for it is the wrong shape.
+       Rendered from the same sync that fills the selects, so the strip and the
+       dropdowns cannot disagree about what else is here. */
+    function more(chosen) {
+      var el = cfg.moreEl;
+      if (!el || !chosen) return;
+      var sibs = index.filter(function (r) {
+        return r.topic === chosen.topic && r.ind !== chosen.ind;
+      });
+      if (!sibs.length) { el.innerHTML = ''; el.hidden = true; return; }
+      el.hidden = false;
+      el.innerHTML = '<div class="xmore-label">Other charts in this topic</div>'
+        + '<div class="xmore-list"></div>';
+      var list = el.querySelector('.xmore-list');
+      sibs.forEach(function (r) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'xmore-item';
+        b.innerHTML = '<span class="xmore-name"></span>'
+                    + '<span class="xmore-ds"></span>';
+        b.querySelector('.xmore-name').textContent = r.label;
+        b.querySelector('.xmore-ds').textContent = r.dsLabel;
+        b.onclick = function () {
+          state.ds = r.ds; state.topic = r.topic; state.ind = r.ind;
+          sync(true);
+        };
+        list.appendChild(b);
+      });
+    }
 
     /* fill() falls back to a list's first option when the held value did not
        survive the narrowing, so each handler only has to set and re-sync. */

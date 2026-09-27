@@ -16,6 +16,7 @@ Run after changing NAV or the footer:
     python3 etl/apply_shell.py --check    # fail if any page is out of date
 """
 import argparse, pathlib, re, sys
+import hashlib
 
 APP = pathlib.Path(__file__).resolve().parent.parent / 'app'
 
@@ -251,6 +252,37 @@ def ensure_script(text):
     return text, changed
 
 
+# Stylesheets and scripts are stamped with a hash of their own contents, so a
+# reader who has the old file gets the new one. Without this, changing a token
+# in shell.css reaches nobody who has visited before - which is exactly what
+# happened when the design-system tokens landed and --teal-700 came back empty
+# in a browser holding yesterday's copy.
+def asset_version(root):
+    h = hashlib.sha256()
+    for rel in sorted(['assets/css/shell.css', 'assets/css/explorer.css',
+                       'assets/css/charts.css', 'assets/css/landing.css',
+                       'assets/css/places.css', 'assets/css/research.css',
+                       'assets/js/explorer.js', 'assets/js/palette.js']):
+        f = root / rel
+        if f.exists():
+            h.update(f.read_bytes())
+    return h.hexdigest()[:8]
+
+
+def stamp_assets(text, ver):
+    """Put ?v=<hash> on our own css and js, never on anything off-site."""
+    def sub(m):
+        url = m.group(2)
+        if '//' in url:
+            return m.group(0)
+        url = re.sub(r'\?v=[0-9a-f]+', '', url)
+        return m.group(1) + url + '?v=' + ver + m.group(3)
+    before = text
+    text = re.sub(r'(href=")((?:\.\./)*assets/css/[^"]+?)(")', sub, text)
+    text = re.sub(r'(src=")((?:\.\./)*assets/js/[^"]+?)(")', sub, text)
+    return text, text != before
+
+
 def ensure_stylesheet(text):
     if 'assets/css/shell.css' in text:
         return text, False
@@ -277,6 +309,7 @@ def main():
 
     pages = sorted(p for p in APP.glob('*.html')
                    if 'http-equiv="refresh"' not in p.read_text())
+    ver = asset_version(APP)
     stale, report = [], []
     for p in pages:
         before = p.read_text()
@@ -289,6 +322,7 @@ def main():
         text, dup = drop_stray_mobile_nav(text)
         n += dup
         text, js = ensure_script(text)
+        text, stamped = stamp_assets(text, ver)
         if text != before:
             stale.append(p.name)
             if not a.check:
