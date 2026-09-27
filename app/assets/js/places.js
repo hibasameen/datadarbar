@@ -133,10 +133,15 @@
     return s;
   }
 
+  /* The list is now search results only. With no query there is nothing to
+     show, because the Topic dropdown is how you browse. */
   function renderPicker() {
     var host = $('pickerList');
     var rows = rowsForLevel();
     var q = state.query.trim().toLowerCase();
+
+    host.hidden = !q;
+    if (!q) { host.innerHTML = ''; return; }
 
     if (q) {
       var hits = rows.filter(function (i) { return matches(i, q); })
@@ -287,18 +292,42 @@
     // census: table|indicator|col_label, with the year and facets chosen
     var c = ind.split('|');
     var year = state.year || list('years', i)[0];
-    return engine().then(function (w) {
-      return w.query(
-        'SELECT map_key AS k, value AS v FROM census_panel_' + year
-        + ' WHERE table_id = ' + q(c[0])
-        + '   AND indicator = ' + q(c[1])
-        + "   AND coalesce(col_label, '') = " + q(c[2])
-        + '   AND locality = ' + q(state.locality)
-        + '   AND sex = ' + q(state.sex)
-        + (state.level === 'district' ? "   AND unit_type = 'district'"
-                                      : "   AND unit_type <> 'district'")
-        + '   AND map_key IS NOT NULL AND value IS NOT NULL');
-    }).then(toMap);
+
+    function censusYear(y) {
+      return engine().then(function (w) {
+        return w.query(
+          'SELECT map_key AS k, value AS v FROM census_panel_' + y
+          + ' WHERE table_id = ' + q(c[0])
+          + '   AND indicator = ' + q(c[1])
+          + "   AND coalesce(col_label, '') = " + q(c[2])
+          + '   AND locality = ' + q(state.locality)
+          + '   AND sex = ' + q(state.sex)
+          + (state.level === 'district' ? "   AND unit_type = 'district'"
+                                        : "   AND unit_type <> 'district'")
+          + '   AND map_key IS NOT NULL AND value IS NOT NULL');
+      }).then(toMap);
+    }
+
+    /* Change is computed here rather than stored, for the 34 cell definitions
+       PBS publishes on both censuses. It is a straight difference on the 2023
+       boundaries - which is the only reason it can be one, because both panels
+       are already drawn on that frame. A place missing from either year is
+       left out rather than treated as a zero: an absent 2017 figure would
+       otherwise read as growth equal to the whole 2023 value. */
+    if (/^\u0394/.test(year)) {
+      return Promise.all([censusYear('2017'), censusYear('2023')])
+        .then(function (both) {
+          var a = both[0].values, b = both[1].values;
+          var out = {};
+          Object.keys(b).forEach(function (k) {
+            if (a[k] != null && b[k] != null) out[k] = b[k] - a[k];
+          });
+          // Same shape every other route returns; a bare map here read as an
+          // undefined .values and the legend silently kept the old scale.
+          return { values: out, meta: {} };
+        });
+    }
+    return censusYear(year);
   }
 
   /* low_n and n_obs are filed under the survey family - dhs_fert - while the
@@ -362,10 +391,26 @@
      different tables. */
   var rail = null;
 
+  /* The years an indicator can be drawn for, which is not quite what the index
+     stores. Where both census panels carry the same cell, a change between
+     them is computable - both sit on the 2023 frame - so it is offered as a
+     third year. choose() and the legend both read this, because an earlier
+     version built the buttons from here and validated against the raw index:
+     the Change button appeared, and clicking it silently snapped back to
+     2023. */
+  function yearsFor(i) {
+    var yrs = list('years', i);
+    if (col('source', i) === 'census' && yrs.length === 2
+        && yrs[0] === '2017' && yrs[1] === '2023') {
+      return yrs.concat(['\u03942017-23']);
+    }
+    return yrs;
+  }
+
   function choose(i) {
     state.row = i;
     if (rail) rail.follow(i);
-    var yrs = list('years', i);
+    var yrs = yearsFor(i);
     // Default to the most recent actual year, not to the change. The curated
     // pairs carry a third entry - the difference between the censuses - and it
     // sorts last, so taking the last would open every indicator on a change of
@@ -501,9 +546,26 @@
     $('legendLo').textContent = sc ? fmt(sc.breaks[0], dp) : '';
     $('legendHi').textContent = sc ? fmt(sc.breaks[sc.breaks.length - 1], dp) : '';
 
-    var yrs = list('years', i), locs = list('localities', i), sexes = list('sexes', i);
+    var yrs = yearsFor(i), locs = list('localities', i), sexes = list('sexes', i);
     var h = '';
-    if (yrs.length > 1) {
+    /* Three shapes, because the series are three different lengths. The census
+       pairs have two years and a change; crops run to 39 fiscal years, and 39
+       buttons in a 616px card is not a control. Past five, it becomes a slider
+       with the year named beside it - the design's YEAR control. */
+    if (yrs.length > 5) {
+      var at = Math.max(0, yrs.indexOf(state.year));
+      h += '<div class="year-slide">'
+         + '<span class="year-slide-lab">Year</span>'
+         + '<input type="range" id="yearRange" min="0" max="' + (yrs.length - 1)
+         + '" value="' + at + '" step="1" aria-label="Year"/>'
+         + '<b id="yearNow">' + esc(yrs[at]) + '</b>'
+         + '<span class="year-slide-span">' + esc(yrs[0]) + ' to '
+         + esc(yrs[yrs.length - 1]) + '</span></div>';
+    } else if (yrs.length > 1) {
+      /* The two census panels both sit on the 2023 frame, so where a cell
+         exists in each the difference is meaningful and is offered. The
+         curated pairs already ship a stored change; these 34 get a computed
+         one, marked the same way. */
       h += yrs.map(function (y) {
         var lab = /^\u0394/.test(y) ? 'Change' : y;
         return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
@@ -523,6 +585,19 @@
     $('yearCtl').querySelectorAll('button[data-year]').forEach(function (b) {
       b.onclick = function () { state.year = b.dataset.year; choose(state.row); };
     });
+    var slider = document.getElementById('yearRange');
+    if (slider) {
+      /* Name the year as the handle moves, but only redraw on release: each
+         step is a fresh query over the warehouse, and re-running it for every
+         pixel of a drag makes the slider feel stuck. */
+      slider.oninput = function () {
+        document.getElementById('yearNow').textContent = yrs[+slider.value];
+      };
+      slider.onchange = function () {
+        state.year = yrs[+slider.value];
+        choose(state.row);
+      };
+    }
 
     var notes = [];
     if (locs.length > 1) notes.push(locs.join(' / '));

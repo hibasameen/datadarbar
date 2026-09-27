@@ -20,7 +20,17 @@
   --gold-800:#6b5311;   --gold-700:#8a6a0d;   --gold-600:#b5860b;
   --gold-500:#d4a017;   --gold-400:#e8b92e;   --gold-300:#f0cc5a;
   --gold-100:#fef6dc;
-  --teal-700:#0f6e78;   --teal-500:#3f9aa3;
+  --teal-700:#0f6e78;   --teal-500:#3f9aa3;   --teal-300:#8fbfc4;
+  /* Categorical hues. The ramp was green, gold and teal alone, which is fine
+     for three series and monotonous for fifteen - and worse, a mechanical
+     remap gave two sectors the same token. These are muted and earthy so they
+     still sit on cream beside the green chrome, and deliberately not the
+     default web palette: no electric blue, no violet. */
+  --plum:#6b4c7a;       --plum-300:#a98cb5;
+  --sienna:#b5651d;     --sienna-300:#dda878;
+  --slate:#2f5d7c;      --slate-300:#8fb0c6;
+  --olive:#5c6b3a;      --olive-300:#a9b789;
+  --rust:#a8452f;       --amber:#c98b2e;      --sand:#d8b48a;
   --ink:#17301f;        --body:#3d424d;       --muted:#6b7280;
   --muted-2:#8b93a0;
   --ground:#faf7ef;     --surface:#ffffff;    --line:#dfe4df;  --line-strong:#c5cad3;
@@ -54,21 +64,25 @@ a{color:var(--green-800)}
    Three explorers, then the analysts' shelf behind a divider. The old "Data ▾"
    dropdown held six products as peers; these are not peers, and the structure
    should say so. */
+/* Measured off darbar.adaad.org, value for value: 56px tall, a 3px gold rule
+   under it, 20px side padding, a 16px gap, a 32px logo 9px from a two-line
+   wordmark of 20/800/-0.2px gold over 11px/0.66px uppercase white at 55%. */
 .site-header{height:var(--header-h);background:var(--green-900);
   border-bottom:3px solid var(--gold-500);display:flex;align-items:center;
-  justify-content:space-between;padding:0 24px;position:sticky;
+  justify-content:space-between;gap:16px;padding:0 20px;position:sticky;
   top:env(safe-area-inset-top,0px);z-index:500}
-.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-.header-logo{height:30px;width:auto}
-.header-text{display:flex;flex-direction:column;line-height:1.05}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;
+  flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;gap:0;line-height:16px}
 /* Gold wordmark over the green, with the tagline under it in white at
    low opacity - the treatment the live site has always had. */
-.header-title{font-size:17px;font-weight:800;color:var(--gold-400);
-  letter-spacing:-.2px}
-.header-tagline{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(255,255,255,.55);font-weight:500}
+.header-title{font-size:20px;line-height:22px;font-weight:800;
+  color:var(--gold-400);letter-spacing:-.2px}
+.header-tagline{font-size:11px;line-height:11px;letter-spacing:.66px;
+  text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:400}
 
-.header-nav{display:flex;align-items:center;gap:4px}
+.header-nav{display:flex;align-items:center;justify-content:flex-end;gap:6px}
 .header-link{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:700;
   color:#fff;text-decoration:none;white-space:nowrap;transition:background .14s,color .14s}
 .header-link:hover{background:rgba(255,255,255,.1)}
@@ -103,26 +117,27 @@ a{color:var(--green-800)}
    taken out of flow, so --footer-h pads the bottom of the page behind it -
    without that the last line of a scrolling page sits underneath the bar and
    cannot be reached. */
+/* The live site's bar: one centred row, 11px, 6px/16px padding, 6px gap,
+   white at 45% with links at 55% and middots at 20%. Fixed rather than
+   static, which is the design's one change to it. */
 .site-footer{position:fixed;left:0;right:0;bottom:0;z-index:400;
-  background:var(--green-900);color:rgba(255,255,255,.45);
-  font-size:11px;padding:0 24px calc(0px + env(safe-area-inset-bottom,0px));
-  height:var(--footer-h);
-  display:flex;flex-wrap:nowrap;align-items:center;gap:6px 10px;
-  line-height:1.4;overflow:hidden}
+  background:var(--green-900);color:rgba(255,255,255,.45);font-size:11px;
+  padding:6px 16px calc(6px + env(safe-area-inset-bottom,0px));
+  min-height:var(--footer-h);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:6px;line-height:1.2}
 .site-footer a{color:rgba(255,255,255,.55);text-decoration:none}
 .site-footer a:hover{color:var(--gold-400);text-decoration:underline}
-.footer-sep{color:rgba(255,255,255,.22)}
+.footer-sep{color:rgba(255,255,255,.2)}
 .footer-right{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 10px}
 @media(max-width:860px){
-  .site-footer{padding-inline:14px;font-size:10px;gap:4px 7px}
+  .site-footer{padding-inline:12px;font-size:10px;gap:5px}
   .footer-right{margin-left:0}
 }
-/* On a narrow screen the bar cannot hold everything, so the parts that are
-   navigation stay and the licence text goes rather than wrapping the bar to
-   two lines over the content. */
-@media(max-width:700px){
-  .site-footer > span:not(.footer-right):not([data-research-links]){display:none}
-  .site-footer .footer-sep{display:none}
+/* The bar cannot hold four groups on a phone. The licence line goes and the
+   links stay, rather than the bar wrapping to three rows over the content. */
+@media(max-width:640px){
+  .site-footer > span:nth-child(-n+5){display:none}
 }
 
 /* ── shared furniture ─────────────────────────────────────────────────────

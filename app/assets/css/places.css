@@ -1,8 +1,14 @@
 /* Places — the three-panel explorer. Chrome comes from shell.css; this file
    owns the picker, the map frame and the detail panel. */
 
-.places{display:flex;height:calc(100dvh - var(--header-h));min-height:0}
-@supports not (height:100dvh){.places{height:calc(100vh - var(--header-h))}}
+/* The footer is a fixed bar, so a full-height shell has to subtract it as
+   well as the header. Without --footer-h the map ran to the bottom of the
+   viewport and the legend card, pinned 16px above its own bottom edge, was
+   cut off by 18px behind the bar. */
+.places{display:flex;min-height:0;
+  height:calc(100dvh - var(--header-h) - var(--footer-h))}
+@supports not (height:100dvh){
+  .places{height:calc(100vh - var(--header-h) - var(--footer-h))}}
 
 /* ── picker ─────────────────────────────────────────────────────────────── */
 .picker{width:320px;flex-shrink:0;background:var(--surface);
@@ -129,3 +135,14 @@
 .year-one{display:block;padding:6px 2px 0;font-size:11.5px;color:var(--muted);
   line-height:1.4}
 .year-ctl:has(.year-one){border:0;padding:0}
+
+/* A long series gets a slider rather than a row of buttons: crops run to 39
+   fiscal years, and 39 buttons is not a control. */
+.year-slide{display:flex;align-items:center;gap:8px;width:100%;padding:2px 0}
+.year-slide-lab{font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);flex-shrink:0}
+.year-slide input[type=range]{flex:1;min-width:0;accent-color:var(--green-700)}
+.year-slide b{font-size:12px;font-weight:700;color:var(--ink);flex-shrink:0;
+  font-variant-numeric:tabular-nums}
+.year-slide-span{font-size:10.5px;color:var(--muted);flex-shrink:0}
+.year-ctl:has(.year-slide){border:0;padding:0;display:block}

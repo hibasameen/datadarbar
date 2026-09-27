@@ -1,7 +1,9 @@
 /* The Economy and State explorers: a topic tree beside one chart card.
    Chrome comes from shell.css. */
-.explorer{display:flex;min-height:calc(100dvh - var(--header-h) - 90px)}
-@supports not (height:100dvh){.explorer{min-height:calc(100vh - var(--header-h) - 90px)}}
+.explorer{display:flex;
+  min-height:calc(100dvh - var(--header-h) - var(--footer-h) - 20px)}
+@supports not (height:100dvh){
+  .explorer{min-height:calc(100vh - var(--header-h) - var(--footer-h) - 20px)}}
 
 .tree,.xside{width:272px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--line);
   padding:18px 12px;display:flex;flex-direction:column;gap:14px}

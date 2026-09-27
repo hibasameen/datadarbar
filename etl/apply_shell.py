@@ -78,25 +78,29 @@ def header(here, root=''):
 
 
 def footer(root=''):
+    """The live site's bar, text for text.
+
+    Measured off darbar.adaad.org rather than rewritten: one centred row, the
+    licence first and the outbound links after, separated by middots. The only
+    change is that it is fixed to the bottom of the viewport, which is what
+    the design asks for.
+    """
+    sep = '<span class="footer-sep">&middot;</span>'
     return (
         f'{BEGIN_F}\n'
         '<footer class="site-footer">\n'
-        '  <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span>\n'
-        '  <span>Code <a href="https://opensource.org/licenses/MIT" target="_blank" '
-        'rel="noopener">MIT</a> &middot; derived data <a '
-        'href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
-        'rel="noopener">CC BY 4.0</a></span>\n'
-        '  <span class="footer-right">'
-        '<a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">PBS &#8599;</a>'
-        '<span class="footer-sep">&middot;</span>'
-        '<a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">SBP &#8599;</a>'
-        '<span class="footer-sep">&middot;</span>'
-        f'<a href="{root}methods.html">Methods</a>'
-        '<span class="footer-sep">&middot;</span>'
-        '<a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a>'
-        '<span class="footer-sep">&middot;</span>'
-        '<a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a>'
-        '</span>\n'
+        '  <span>&copy; 2026 Hiba Sameen</span>' + sep +
+        '<span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" '
+        'rel="noopener">Pakistan Bureau of Statistics</a></span>' + sep +
+        '<span>Code: <a href="https://opensource.org/licenses/MIT" '
+        'target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: '
+        '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
+        'rel="noopener">CC BY 4.0</a></span>' + sep +
+        '<span><a href="' + root + 'datasets/">Data Catalogue</a> &middot; '
+        '<a href="' + root + 'methods.html">Methods</a> &middot; '
+        '<a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> '
+        '&middot; <a href="https://aiwan.adaad.org/" target="_blank" '
+        'rel="noopener">Aiwan-e-Jamhoor</a></span>\n'
         '</footer>\n'
         f'{END_F}')
 

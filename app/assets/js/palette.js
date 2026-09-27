@@ -23,18 +23,29 @@
   'use strict';
 
   /* Distinguishable in order, so the first two series of any chart are the
-     most separated pair, not two neighbouring greens. */
+     most separated pair rather than two neighbouring greens - then widening
+     out, because a fifteen-sector chart drawn from three hues is unreadable
+     as well as dull. Muted and earthy so they hold together on cream beside
+     the green chrome, and deliberately not the default web palette: no
+     electric blue, no violet. Sixteen, because past sixteen a legend is the
+     wrong tool and the chart wants a different shape. */
   var CATEGORICAL = [
     '#0c3a1e', // green-900
     '#d4a017', // gold-500
     '#0f6e78', // teal-700
-    '#7aa88c', // green-400
+    '#9a2c1f', // brick
+    '#4d8a62', // green-500
+    '#6b4c7a', // plum
+    '#b5651d', // sienna
+    '#2f5d7c', // slate
     '#8a6a0d', // gold-700
-    '#2a7d4c', // green-600
     '#3f9aa3', // teal-500
-    '#e8b92e', // gold-400
+    '#5c6b3a', // olive
+    '#a8452f', // rust
+    '#7aa88c', // green-400
+    '#c98b2e', // amber
     '#9dbfa9', // green-300
-    '#9a2c1f', // negative, last so it is never an arbitrary series colour
+    '#d8b48a', // sand
   ];
 
   var GREEN = ['#f0f9f4', '#d6e8dc', '#9dbfa9', '#7aa88c', '#4d8a62',

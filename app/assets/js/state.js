@@ -897,10 +897,14 @@
   function muted() {
     return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();
   }
+  /* The shared sixteen, so a nine-force chart does not run out after seven
+     and start repeating. DDPalette cycles rather than returning undefined. */
   function palette(domain) {
-    return d3.scaleOrdinal().domain(domain)
-      .range(['#0c3a1e', '#1e6b3e', '#b5860b', '#4d8a62', '#d4a017', '#7aa88c',
-              '#886608', '#9dbfa9', '#0f6e78']);
+    var pick = window.DDPalette
+      ? window.DDPalette.ordinal(domain)
+      : d3.scaleOrdinal().domain(domain)
+          .range(['#0c3a1e', '#d4a017', '#0f6e78', '#9a2c1f', '#4d8a62']);
+    return function (k) { return pick(k); };
   }
   function shortNum(v) {
     if (v >= 1e6) return (v / 1e6).toFixed(1) + 'm';
