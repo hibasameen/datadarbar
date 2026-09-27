@@ -215,6 +215,52 @@ def main():
     print(f'  {len(rows):,} census labels rewritten for reading; '
           f'PBS\u2019s own kept in label_source')
 
+    # ── the same cell in both censuses ──────────────────────────────────
+    # A census cell keyed on PBS's raw strings cannot merge across censuses,
+    # because the two spell the same thing differently: "00 - 04" against
+    # "00 -- 04". So the identical measure appeared twice, once per census,
+    # and the year control - which exists to offer 2017, 2023 and the change -
+    # was disabled on both, each being a single-year row.
+    #
+    # Grouped on the NORMALISED measure and metric instead, 206 cells are the
+    # same cell in both censuses. Those merge into one row carrying both
+    # years, and the raw key for each year travels with it as
+    # "2017=<key>\x1f2023=<key>" so the query can still find the right cell.
+    # The other 4,361 are published in one census only - the two ask different
+    # questions - and stay as they are.
+    con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+        WITH merged AS (
+          SELECT level, topic, dataset, measure, metric,
+                 count(DISTINCT years[1]) AS n_years
+          FROM place_indicator_index
+          WHERE source = 'census' AND len(years) = 1
+          GROUP BY 1, 2, 3, 4, 5 HAVING count(DISTINCT years[1]) > 1)
+        SELECT i.level, i.topic, i.topic_label,
+               any_value(i.group_key) AS group_key,
+               any_value(i.group_label) AS group_label,
+               i.dataset,
+               CASE WHEN m.measure IS NULL THEN any_value(i.indicator)
+                    ELSE string_agg(i.years[1] || '=' || i.indicator, '\x1f'
+                                    ORDER BY i.years[1]) END AS indicator,
+               any_value(i.label) AS label, i.measure, i.metric,
+               any_value(i.dp) AS dp, i.source,
+               any_value(i.families) AS families,
+               list_sort(list_distinct(flatten(list(i.years)))) AS years,
+               any_value(i.localities) AS localities,
+               any_value(i.sexes) AS sexes,
+               max(i.shapes) AS shapes, max(i.units) AS units,
+               min(i.min_value) AS min_value, max(i.max_value) AS max_value,
+               any_value(i.label_source) AS label_source
+        FROM place_indicator_index i
+        LEFT JOIN merged m USING (level, topic, dataset, measure, metric)
+        GROUP BY i.level, i.topic, i.topic_label, i.dataset, i.measure,
+                 i.metric, i.source, m.measure,
+                 CASE WHEN m.measure IS NULL THEN i.indicator ELSE '' END""")
+    n_both = con.sql("""SELECT count(*) FROM place_indicator_index
+                        WHERE len(years) > 1 AND source = 'census'""").fetchone()[0]
+    print(f'  {n_both} census cells published in both censuses, merged into '
+          f'one row each with a year to pick')
+
     # Folding five census entries into one dataset puts six identical
     # "Total Population, 50-54" rows in the Demographics list - one per table
     # that happens to publish that cell. The table is what distinguishes them,

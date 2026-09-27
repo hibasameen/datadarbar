@@ -311,11 +311,23 @@
       }).then(toMap);
     }
 
-    // census: table|indicator|col_label, with the year and facets chosen
-    var c = ind.split('|');
+    // census: table|indicator|col_label, with the year and facets chosen.
+    // A cell published in both censuses carries a key per year, because PBS
+    // spells the same band differently in each - "2017=<key>\x1f2023=<key>".
     var year = state.year || list('years', i)[0];
 
+    function cellFor(y) {
+      if (ind.indexOf('=') < 0) return ind.split('|');
+      var want = null;
+      ind.split('\u001f').forEach(function (part) {
+        var at = part.indexOf('=');
+        if (part.slice(0, at) === String(y)) want = part.slice(at + 1);
+      });
+      return (want || ind.split('\u001f')[0].split('=').pop()).split('|');
+    }
+
     function censusYear(y) {
+      var c = cellFor(y);
       return engine().then(function (w) {
         return w.query(
           'SELECT map_key AS k, value AS v FROM census_panel_' + y
