@@ -25,7 +25,7 @@ APP = pathlib.Path(__file__).resolve().parent.parent / 'app'
 NAV = [
     {'href': 'places.html',   'label': 'Places',    'match': ('places.html',)},
     {'href': 'finance.html',  'label': 'Economy',   'match': ('finance.html', 'money.html', 'trade.html', 'economy.html')},
-    {'href': None,            'label': 'State',     'match': ()},
+    {'href': 'state.html',    'label': 'State',     'match': ('state.html',)},
 ]
 SHELF = [
     {'href': 'datasets/',     'label': 'Catalogue', 'match': ('datasets/',)},
