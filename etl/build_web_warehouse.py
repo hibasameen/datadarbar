@@ -1491,6 +1491,174 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="census units",
         )
 
+    # ── the State: courts, policing, energy, disasters ──────────────────────
+    # These were built long ago and never published. They live in the desktop
+    # warehouse under their own folders, which is why a search of app/data found
+    # nothing and the State page said "not collected" about four themes that
+    # were in fact collected.
+    print("courts, policing, energy and disasters\u2026")
+
+    def src_table(name, rel, desc, notes, cols, source, unit):
+        f = src / rel
+        if not f.exists():
+            print(f"  {name:<28} skipped (no {rel})")
+            return
+        register(name, desc, notes, cols, source,
+                 f"SELECT * FROM '{f.as_posix()}'", unit=unit)
+
+    src_table(
+        "ljcp_case_flows", "ljcp/annual_provinces.parquet",
+        "Cases pending, instituted and disposed by province, court tier and "
+        "category, 2020 to 2024.",
+        "The stock and the flow together: pending at the start, what came in, "
+        "what was decided, and what was left. clearance_rate_pct is disposals "
+        "over institutions \u2014 above 100 means the backlog fell that year. "
+        "stock_flow_check records whether opening plus instituted minus disposed "
+        "actually equals the closing figure PBS prints; where it does not, "
+        "transfers between courts usually explain it, and the residual columns "
+        "say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so "
+        "do not add the three together.",
+        {"year": "calendar year", "province": "province or area",
+         "category": "all, civil or criminal \u2014 these nest",
+         "court_tier": "which courts are counted",
+         "pending_start": "cases pending at the start of the year",
+         "instituted": "cases filed during the year",
+         "disposed": "cases decided during the year",
+         "pending_end": "cases pending at the end",
+         "clearance_rate_pct": "disposals as a percentage of institutions",
+         "backlog_change": "pending at the end minus pending at the start",
+         "stock_flow_check": "whether the stock and flow figures reconcile"},
+        "Law & Justice Commission of Pakistan, annual judicial statistics",
+        "cases")
+
+    src_table(
+        "ljcp_judicial_strength", "ljcp/judicial_strength_by_rank.parquet",
+        "Sanctioned, working and vacant judicial posts by rank and session "
+        "division.",
+        "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength "
+        "tables have not been extracted, so this is not a national picture and "
+        "should not be read as one. Within Balochistan it is complete: 337 posts "
+        "sanctioned in 2024 against 235 working.",
+        {"year": "calendar year", "province": "province",
+         "session_division": "the session division",
+         "sanctioned_judges": "posts on the establishment",
+         "working_judges": "posts filled", "vacant_judges": "posts unfilled",
+         "court_tier": "which courts", "rank_coverage": "which ranks are counted"},
+        "Law & Justice Commission of Pakistan", "judicial posts")
+
+    src_table(
+        "police_crime_annual", "regional_police/crime_annual.parquet",
+        "Reported offences by province, range and year, 2019 to 2024.",
+        "Nine reporting regions, and the geography is not uniform between them: "
+        "Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while "
+        "Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways "
+        "police report one figure each. So a district map of this covers KP and "
+        "AJK and nothing else. measure says what is counted \u2014 mostly "
+        "reported_offence_count, which is offences reported to police and not "
+        "crimes committed.",
+        {"source_family": "which force reported it", "region": "province or force",
+         "geography": "the place, where the force reports one",
+         "geography_level": "province, range, district or national",
+         "year": "calendar year", "measure": "what is counted",
+         "value": "the count"},
+        "Provincial and regional police annual reports", "offences")
+
+    src_table(
+        "police_crime_district", "regional_police/district_crime_annual.parquet",
+        "The same, at district level where a force publishes it.",
+        "Only Khyber Pakhtunkhwa and Azad Jammu & Kashmir publish district "
+        "figures; everywhere else the province is the finest grain available. "
+        "Joining this to a district map leaves most of the country empty, which "
+        "is a fact about police reporting rather than about crime.",
+        {"region": "province or force", "geography": "district",
+         "geography_id": "the force\u2019s own identifier",
+         "year": "calendar year", "measure": "what is counted",
+         "value": "the count"},
+        "Provincial and regional police annual reports", "offences")
+
+    src_table(
+        "sindh_crime_annual", "sindh_police/sindh_crime_annual.parquet",
+        "Sindh police reported crime by category and year, 2019 to 2025.",
+        "Sindh reports in more detail than the other provinces and separately "
+        "from the national compilation, so it is kept as its own table rather "
+        "than folded in. Every row carries the source document and how it was "
+        "extracted.",
+        {"reporting_year": "the year as the report labels it",
+         "year": "calendar year", "source_url": "the report it came from",
+         "extraction_method": "how the figure was read off the page"},
+        "Sindh Police", "offences")
+
+    src_table(
+        "sindh_fir_daily", "sindh_fir/sindh_fir_observations.parquet",
+        "First information reports registered in Sindh, daily and year to date, "
+        "by district and range.",
+        "A daily operational series rather than an annual statistical one, so it "
+        "moves for reasons that are about reporting as much as about crime. "
+        "ytd_firs is the running total from the start of the year, so it is not "
+        "additive across dates.",
+        {"report_date": "the date reported", "geography_name": "district or range",
+         "police_range": "the police range", "daily_firs": "FIRs that day",
+         "ytd_firs": "FIRs so far that year \u2014 a running total, do not add"},
+        "Sindh Police daily FIR reports", "reports")
+
+    src_table(
+        "nepra_plants", "nepra_plants.parquet",
+        "Power plants on the national grid, with fuel, technology and installed "
+        "capacity.",
+        "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, "
+        "furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, "
+        "for 1,885 MW. Installed capacity is nameplate and not what a plant "
+        "actually generates \u2014 see nepra_disco_annual for what was dispatched.",
+        {"plant_id": "NEPRA\u2019s own identifier", "plant_name": "the plant",
+         "name_variants": "other spellings in the source documents",
+         "technology": "how it generates", "fuel": "what it burns or uses",
+         "installed_mw": "nameplate capacity, megawatts",
+         "first_fy": "first year it appears", "last_fy": "last year it appears"},
+        "NEPRA State of Industry and performance reports", "megawatts")
+
+    src_table(
+        "nepra_disco_annual", "nepra_disco_annual.parquet",
+        "Distribution company performance by year, 2006\u201307 to 2024\u201325.",
+        "Read straight off NEPRA\u2019s tables, which is why row_label and col_label "
+        "are carried as printed rather than normalised: the tables change shape "
+        "between editions and a single schema across nineteen years would have "
+        "to invent correspondences. value_raw is the text as printed; filter on "
+        "series, table_no and row_label to pull one measure.",
+        {"series": "which NEPRA publication", "report_year": "the edition",
+         "table_no": "table within it", "title": "the table\u2019s title",
+         "disco": "distribution company", "fy": "fiscal year the row is about",
+         "row_label": "the row as printed", "col_label": "the column as printed",
+         "value_raw": "the cell as printed"},
+        "NEPRA State of Industry reports", "varies by row")
+
+    src_table(
+        "climate_events", "climate_events/climate_events.parquet",
+        "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
+        "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a "
+        "named episode with a start and end, and date_precision says how well "
+        "the dates are known. climate_impacts carries what each one did.",
+        {"record_id": "the event", "source": "who recorded it",
+         "hazard": "flood, drought or tropical cyclone", "subtype": "finer type",
+         "title": "how the source names it", "start_date": "when it began",
+         "end_date": "when it ended",
+         "date_precision": "how precisely the dates are known"},
+        "Reanalysis of published disaster reporting", "events")
+
+    src_table(
+        "climate_impacts", "climate_events/climate_impacts.parquet",
+        "What each event did: people affected, killed, displaced, and assets "
+        "damaged, by place where reported.",
+        "336 observations. The metric column says what is counted and the "
+        "figures come from whichever report covered that place, so coverage is "
+        "uneven between events and between places within one event. Do not read "
+        "a missing row as a zero.",
+        {"observation_id": "the observation", "report_id": "the report it came from",
+         "location_name": "the place as the report names it",
+         "admin_level": "how fine the place is", "metric": "what is counted",
+         "value": "the figure", "period_start": "start of the period covered",
+         "period_end": "end of the period covered"},
+        "Reanalysis of published disaster reporting", "people, assets")
+
     # ── the national series: Economy and State ──────────────────────────────
     print("national accounts, trade and tax\u2026")
     PULL = REPO.parent / "raw_data" / "pbs_insight_explorer"

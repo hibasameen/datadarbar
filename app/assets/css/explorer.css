@@ -40,8 +40,13 @@ a.tree-item{color:var(--green-800)}
 .seg{height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--line-strong);
   background:var(--surface);font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
 .seg[aria-pressed="true"]{background:var(--green-900);color:#fff;border-color:var(--green-900);font-weight:700}
-.chart{flex-grow:1;min-height:320px}
-.chart svg{width:100%;height:100%;display:block}
+.chart{flex-grow:1;min-height:320px;display:flex;flex-direction:column}
+.chart svg{width:100%;flex:1 1 auto;min-height:0;display:block}
+.chart-lede,.chart-foot{font-size:.74rem;line-height:1.4;color:var(--muted);
+  flex:0 0 auto}
+.chart-lede{margin-bottom:.35rem}
+.chart-foot{margin-top:.35rem}
+.chart-lede:empty,.chart-foot:empty{display:none}
 .card-note{margin:0;font-size:11.5px;color:var(--muted);line-height:1.5}
 
 .notice{border-left:3px solid var(--gold-500);background:var(--gold-100);padding:12px 16px;

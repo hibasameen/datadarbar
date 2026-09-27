@@ -99,6 +99,18 @@ DATASET_NAMES = {
     "tehsil_nightlights": "Pakistan tehsil night-time lights",
     "tehsil_satellite": "Pakistan tehsil wealth, population and satellite indicators",
     "trade_hs8": "Pakistan imports and exports by HS8 product and country",
+    # justice, policing, energy and disasters - published with the State
+    # explorer rather than held back in the desktop warehouse
+    "ljcp_case_flows": "Pakistan court case flows and pendency by province",
+    "ljcp_judicial_strength": "Pakistan judicial posts, filled and vacant",
+    "police_crime_annual": "Pakistan reported offences by police force and year",
+    "police_crime_district": "Pakistan reported offences by district",
+    "sindh_crime_annual": "Sindh reported crime by category and year",
+    "sindh_fir_daily": "Sindh first information reports, daily running totals",
+    "nepra_plants": "Pakistan power plants, fuel and installed capacity",
+    "nepra_disco_annual": "Pakistan electricity distribution companies, annual",
+    "climate_events": "Pakistan flood, drought and cyclone alerts since 2001",
+    "climate_impacts": "Pakistan monsoon deaths, injuries and damage, NDMA reports",
 }
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),

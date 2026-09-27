@@ -298,7 +298,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201163,
+   "bytes": 8201156,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -665,6 +665,215 @@
      "name": "weight",
      "type": "BIGINT",
      "description": "2017 population, for averaging a rate across combined units"
+    }
+   ]
+  },
+  {
+   "name": "climate_events",
+   "file": "climate_events.parquet",
+   "bytes": 7042,
+   "rows": 31,
+   "description": "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
+   "notes": "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a named episode with a start and end, and date_precision says how well the dates are known. climate_impacts carries what each one did.",
+   "unit": "events",
+   "source": "Reanalysis of published disaster reporting",
+   "columns": [
+    {
+     "name": "record_id",
+     "type": "VARCHAR",
+     "description": "the event"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "who recorded it"
+    },
+    {
+     "name": "source_event_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "country_iso3",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "hazard",
+     "type": "VARCHAR",
+     "description": "flood, drought or tropical cyclone"
+    },
+    {
+     "name": "subtype",
+     "type": "VARCHAR",
+     "description": "finer type"
+    },
+    {
+     "name": "title",
+     "type": "VARCHAR",
+     "description": "how the source names it"
+    },
+    {
+     "name": "start_date",
+     "type": "VARCHAR",
+     "description": "when it began"
+    },
+    {
+     "name": "end_date",
+     "type": "VARCHAR",
+     "description": "when it ended"
+    },
+    {
+     "name": "date_precision",
+     "type": "VARCHAR",
+     "description": "how precisely the dates are known"
+    },
+    {
+     "name": "start_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "glide",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "alert_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "deaths",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "affected",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "damage_usd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_modified",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "episode_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "retrieved_at",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "coverage_note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "name": "climate_impacts",
+   "file": "climate_impacts.parquet",
+   "bytes": 7050,
+   "rows": 336,
+   "description": "What each event did: people affected, killed, displaced, and assets damaged, by place where reported.",
+   "notes": "336 observations. The metric column says what is counted and the figures come from whichever report covered that place, so coverage is uneven between events and between places within one event. Do not read a missing row as a zero.",
+   "unit": "people, assets",
+   "source": "Reanalysis of published disaster reporting",
+   "columns": [
+    {
+     "name": "observation_id",
+     "type": "VARCHAR",
+     "description": "the observation"
+    },
+    {
+     "name": "report_id",
+     "type": "VARCHAR",
+     "description": "the report it came from"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "location_name",
+     "type": "VARCHAR",
+     "description": "the place as the report names it"
+    },
+    {
+     "name": "admin_level",
+     "type": "VARCHAR",
+     "description": "how fine the place is"
+    },
+    {
+     "name": "period_start",
+     "type": "VARCHAR",
+     "description": "start of the period covered"
+    },
+    {
+     "name": "period_end",
+     "type": "VARCHAR",
+     "description": "end of the period covered"
+    },
+    {
+     "name": "period_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measurement_note",
+     "type": "VARCHAR",
+     "description": ""
     }
    ]
   },
@@ -1599,6 +1808,285 @@
      "name": "release",
      "type": "VARCHAR",
      "description": "release tag"
+    }
+   ]
+  },
+  {
+   "name": "ljcp_case_flows",
+   "file": "ljcp_case_flows.parquet",
+   "bytes": 13724,
+   "rows": 75,
+   "description": "Cases pending, instituted and disposed by province, court tier and category, 2020 to 2024.",
+   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions \u2014 above 100 means the backlog fell that year. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so do not add the three together.",
+   "unit": "cases",
+   "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "all, civil or criminal \u2014 these nest"
+    },
+    {
+     "name": "court_tier",
+     "type": "VARCHAR",
+     "description": "which courts are counted"
+    },
+    {
+     "name": "pending_start",
+     "type": "BIGINT",
+     "description": "cases pending at the start of the year"
+    },
+    {
+     "name": "instituted",
+     "type": "BIGINT",
+     "description": "cases filed during the year"
+    },
+    {
+     "name": "transfers_in",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "transfers_out",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "disposed",
+     "type": "BIGINT",
+     "description": "cases decided during the year"
+    },
+    {
+     "name": "pending_end",
+     "type": "BIGINT",
+     "description": "cases pending at the end"
+    },
+    {
+     "name": "source_record_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_pages",
+     "type": "BIGINT[]",
+     "description": ""
+    },
+    {
+     "name": "method",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "scope_note",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "category_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "clearance_rate_pct",
+     "type": "DOUBLE",
+     "description": "disposals as a percentage of institutions"
+    },
+    {
+     "name": "backlog_change",
+     "type": "DOUBLE",
+     "description": "pending at the end minus pending at the start"
+    },
+    {
+     "name": "backlog_growth_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "stock_flow_residual",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "stock_flow_check",
+     "type": "VARCHAR",
+     "description": "whether the stock and flow figures reconcile"
+    },
+    {
+     "name": "unadjusted_flow_residual",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_values",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "raw_cells",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "table_index",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "row_index",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_record_id",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "name": "ljcp_judicial_strength",
+   "file": "ljcp_judicial_strength.parquet",
+   "bytes": 6759,
+   "rows": 266,
+   "description": "Sanctioned, working and vacant judicial posts by rank and session division.",
+   "notes": "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength tables have not been extracted, so this is not a national picture and should not be read as one. Within Balochistan it is complete: 337 posts sanctioned in 2024 against 235 working.",
+   "unit": "judicial posts",
+   "source": "Law & Justice Commission of Pakistan",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "as_of_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "session_division",
+     "type": "VARCHAR",
+     "description": "the session division"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts on the establishment"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "posts filled"
+    },
+    {
+     "name": "vacant_judges",
+     "type": "BIGINT",
+     "description": "posts unfilled"
+    },
+    {
+     "name": "court_tier",
+     "type": "VARCHAR",
+     "description": "which courts"
+    },
+    {
+     "name": "strength_date_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "rank_coverage",
+     "type": "VARCHAR",
+     "description": "which ranks are counted"
+    },
+    {
+     "name": "working_definition",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "inferred_zero_fields",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_record_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_pages",
+     "type": "BIGINT[]",
+     "description": ""
+    },
+    {
+     "name": "scope_note",
+     "type": "VARCHAR",
+     "description": ""
     }
    ]
   },
@@ -3060,6 +3548,145 @@
    ]
   },
   {
+   "name": "nepra_disco_annual",
+   "file": "nepra_disco_annual.parquet",
+   "bytes": 168943,
+   "rows": 20689,
+   "description": "Distribution company performance by year, 2006\u201307 to 2024\u201325.",
+   "notes": "Read straight off NEPRA\u2019s tables, which is why row_label and col_label are carried as printed rather than normalised: the tables change shape between editions and a single schema across nineteen years would have to invent correspondences. value_raw is the text as printed; filter on series, table_no and row_label to pull one measure.",
+   "unit": "varies by row",
+   "source": "NEPRA State of Industry reports",
+   "columns": [
+    {
+     "name": "series",
+     "type": "VARCHAR",
+     "description": "which NEPRA publication"
+    },
+    {
+     "name": "report_year",
+     "type": "BIGINT",
+     "description": "the edition"
+    },
+    {
+     "name": "table_no",
+     "type": "DOUBLE",
+     "description": "table within it"
+    },
+    {
+     "name": "title",
+     "type": "VARCHAR",
+     "description": "the table\u2019s title"
+    },
+    {
+     "name": "section",
+     "type": "INTEGER",
+     "description": ""
+    },
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year the row is about"
+    },
+    {
+     "name": "row_label",
+     "type": "VARCHAR",
+     "description": "the row as printed"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column as printed"
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": "the cell as printed"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "unit_hint",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "col",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "relabelled",
+     "type": "BOOLEAN",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "name": "nepra_plants",
+   "file": "nepra_plants.parquet",
+   "bytes": 7934,
+   "rows": 133,
+   "description": "Power plants on the national grid, with fuel, technology and installed capacity.",
+   "notes": "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, for 1,885 MW. Installed capacity is nameplate and not what a plant actually generates \u2014 see nepra_disco_annual for what was dispatched.",
+   "unit": "megawatts",
+   "source": "NEPRA State of Industry and performance reports",
+   "columns": [
+    {
+     "name": "plant_id",
+     "type": "VARCHAR",
+     "description": "NEPRA\u2019s own identifier"
+    },
+    {
+     "name": "plant_name",
+     "type": "VARCHAR",
+     "description": "the plant"
+    },
+    {
+     "name": "name_variants",
+     "type": "VARCHAR",
+     "description": "other spellings in the source documents"
+    },
+    {
+     "name": "technology",
+     "type": "VARCHAR",
+     "description": "how it generates"
+    },
+    {
+     "name": "fuel",
+     "type": "VARCHAR",
+     "description": "what it burns or uses"
+    },
+    {
+     "name": "installed_mw",
+     "type": "DOUBLE",
+     "description": "nameplate capacity, megawatts"
+    },
+    {
+     "name": "first_fy",
+     "type": "VARCHAR",
+     "description": "first year it appears"
+    },
+    {
+     "name": "last_fy",
+     "type": "VARCHAR",
+     "description": "last year it appears"
+    }
+   ]
+  },
+  {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
    "bytes": 107564,
@@ -3220,6 +3847,260 @@
      "name": "value",
      "type": "DOUBLE",
      "description": "the figure \u2014 unit depends on the indicator, see the index"
+    }
+   ]
+  },
+  {
+   "name": "police_crime_annual",
+   "file": "police_crime_annual.parquet",
+   "bytes": 21231,
+   "rows": 3210,
+   "description": "Reported offences by province, range and year, 2019 to 2024.",
+   "notes": "Nine reporting regions, and the geography is not uniform between them: Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways police report one figure each. So a district map of this covers KP and AJK and nothing else. measure says what is counted \u2014 mostly reported_offence_count, which is offences reported to police and not crimes committed.",
+   "unit": "offences",
+   "source": "Provincial and regional police annual reports",
+   "columns": [
+    {
+     "name": "source_family",
+     "type": "VARCHAR",
+     "description": "which force reported it"
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "province or force"
+    },
+    {
+     "name": "geography",
+     "type": "VARCHAR",
+     "description": "the place, where the force reports one"
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": "province, range, district or national"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "frequency",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "offence",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "offence_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "reporting_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value",
+     "type": "BIGINT",
+     "description": "the count"
+    },
+    {
+     "name": "raw_value",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_locator",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "edition_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "quality_flags",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "name": "police_crime_district",
+   "file": "police_crime_district.parquet",
+   "bytes": 16389,
+   "rows": 2358,
+   "description": "The same, at district level where a force publishes it.",
+   "notes": "Only Khyber Pakhtunkhwa and Azad Jammu & Kashmir publish district figures; everywhere else the province is the finest grain available. Joining this to a district map leaves most of the country empty, which is a fact about police reporting rather than about crime.",
+   "unit": "offences",
+   "source": "Provincial and regional police annual reports",
+   "columns": [
+    {
+     "name": "source_family",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "province or force"
+    },
+    {
+     "name": "geography",
+     "type": "VARCHAR",
+     "description": "district"
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": "the force\u2019s own identifier"
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "frequency",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "offence",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "offence_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "reporting_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value",
+     "type": "BIGINT",
+     "description": "the count"
+    },
+    {
+     "name": "raw_value",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_locator",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "edition_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "quality_flags",
+     "type": "VARCHAR",
+     "description": ""
     }
    ]
   },
@@ -3583,20 +4464,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RS_QGDP1516_Q",
-     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2015-09",
-     "upto": "2026-03"
-    },
-    {
      "code": "TS_GP_RLS_POLSALE_M",
      "name": "POL (Energy Products) Sales by Sector",
      "subject": "Real Sector",
      "series": 8,
      "since": "2013-07",
      "upto": "2026-05"
+    },
+    {
+     "code": "TS_GP_RS_QGDP1516_Q",
+     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2015-09",
+     "upto": "2026-03"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",
@@ -4936,6 +5817,305 @@
      "name": "release",
      "type": "VARCHAR",
      "description": "release tag of this table"
+    }
+   ]
+  },
+  {
+   "name": "sindh_crime_annual",
+   "file": "sindh_crime_annual.parquet",
+   "bytes": 150828,
+   "rows": 2205,
+   "description": "Sindh police reported crime by category and year, 2019 to 2025.",
+   "notes": "Sindh reports in more detail than the other provinces and separately from the national compilation, so it is kept as its own table rather than folded in. Every row carries the source document and how it was extracted.",
+   "unit": "offences",
+   "source": "Sindh Police",
+   "columns": [
+    {
+     "name": "observation_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "report_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_snapshot_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_snapshot_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": "the report it came from"
+    },
+    {
+     "name": "source_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "extraction_method",
+     "type": "VARCHAR",
+     "description": "how the figure was read off the page"
+    },
+    {
+     "name": "source_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "reporting_year",
+     "type": "BIGINT",
+     "description": "the year as the report labels it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_label_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "is_full_year",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "comparison_column",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_name",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_key",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "crime_category_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "category_group",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "crime_category_key",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "row_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "cases_reported",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_row",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_column",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "validation_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "selection_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "selection_eligible",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "source_document_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_document_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_archive_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "evidence_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "evidence_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "observation_metadata_json",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ]
+  },
+  {
+   "name": "sindh_fir_daily",
+   "file": "sindh_fir_daily.parquet",
+   "bytes": 9567,
+   "rows": 418,
+   "description": "First information reports registered in Sindh, daily and year to date, by district and range.",
+   "notes": "A daily operational series rather than an annual statistical one, so it moves for reasons that are about reporting as much as about crime. ytd_firs is the running total from the start of the year, so it is not additive across dates.",
+   "unit": "reports",
+   "source": "Sindh Police daily FIR reports",
+   "columns": [
+    {
+     "name": "report_date",
+     "type": "DATE",
+     "description": "the date reported"
+    },
+    {
+     "name": "ytd_start_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "ytd_end_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_name",
+     "type": "VARCHAR",
+     "description": "district or range"
+    },
+    {
+     "name": "police_range",
+     "type": "VARCHAR",
+     "description": "the police range"
+    },
+    {
+     "name": "daily_firs",
+     "type": "BIGINT",
+     "description": "FIRs that day"
+    },
+    {
+     "name": "ytd_firs",
+     "type": "BIGINT",
+     "description": "FIRs so far that year \u2014 a running total, do not add"
+    },
+    {
+     "name": "daily_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "ytd_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "daily_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "ytd_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "acquisition_method",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "sha256",
+     "type": "VARCHAR",
+     "description": ""
     }
    ]
   },

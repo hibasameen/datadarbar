@@ -108,7 +108,7 @@ them.
 | Curated map data | 296 indicators shipped as pre-baked JS: `census_data.js` is 1,826 KB of blocking script at first paint |
 | Site | 11 pages organised by source; two stylesheets plus inline `<style>` on six pages |
 | New data | ~79 MB from four PBS portals, pulled 27 Sep, none ingested |
-| State data | 4 pipelines exist unpublished (LJCP, regional police, Sindh police, Sindh FIR); NEPRA and disasters do not exist at all |
+| State data | 6 pipelines exist unpublished (LJCP, regional police, Sindh police, Sindh FIR, NEPRA, climate events and NDMA impacts) — all in `data_darbar_warehouse/`, none in `app/data/warehouse/` |
 
 ## The decision that ties it together
 
@@ -318,8 +318,17 @@ choropleth; fold `poverty.html` in and retire it.
 
 ## Phase 4 — Economy and State
 
-*Economy blocked by 0.3 and 2.4–2.5. State's Public money theme blocked only by
-2.6 — everything else in State is blocked on data that does not exist yet.*
+*Economy blocked by 0.3 and 2.4–2.5. State is not blocked at all: every one of
+its themes has data already collected.*
+
+> **Correction, 27 September.** The row above and items 4.4–4.5 below were
+> written on a search of `app/data/warehouse/` alone, and concluded that NEPRA
+> and disaster data "do not exist at all". They do. All six State pipelines —
+> LJCP, regional police, Sindh police, Sindh FIR, NEPRA and climate — are in
+> the desktop warehouse at `data_darbar_warehouse/`. The gap was publishing,
+> not collection, and there is no acquisition track to run. What follows is
+> corrected; the original wording is kept struck through so the mistake is
+> legible rather than quietly rewritten.
 
 **4.1 Economy** merges `finance.html`, `money.html` and `trade.html` onto the
 topic-tree and primary-card template: four themes, fifteen topics, one chart
@@ -333,16 +342,33 @@ the state's own accounts rather than a sector of the economy, and it is the only
 State theme whose data is published today, so State stops being blocked
 entirely. `budget_lines` plus 2.6.
 
-**4.4 State: publish the four existing pipelines.** LJCP, regional police, Sindh
-police, Sindh FIR all have ETL and none reaches the warehouse. This is the bulk
-of State and is ingestion work, not design work.
+**4.4 State: publish the existing pipelines.** LJCP, regional police, Sindh
+police and Sindh FIR all have ETL and none reaches the warehouse. This is the
+bulk of State and is ingestion work, not design work. **Done:** ten tables
+registered in `build_web_warehouse.py` and eight topics live on `state.html`.
 
-**4.5 State: NEPRA and weather disasters** do not exist in any form. Acquisition
-track, run separately, not allowed to block 4.1–4.4.
+**4.5 State: NEPRA and weather disasters.** ~~Do not exist in any form.
+Acquisition track, run separately.~~ These exist too: `nepra_plants` (133
+plants), `nepra_disco_annual` (20,689 rows), `climate_events` (31 GDACS alerts)
+and `climate_impacts` (NDMA monsoon situation reports). Published with 4.4.
 
-> **Exit test.** Economy and State on the same template as each other, each
-> theme either populated or visibly marked as not yet collected — with the
-> coverage strip the design calls for, since these series are patchy.
+Two things the data forces on the design, found while building the views:
+
+- **Events and impacts do not join.** GDACS alerts carry no casualty figures at
+  all, and the NDMA impacts cover one 2026 monsoon season rather than the 31
+  alerts. A first version joined `impacts.report_id` to `events.record_id`;
+  those keys never match, so the join produced a column of nulls that read on
+  the page as "no casualties" rather than "no such measurement". They are two
+  topics now, each saying what it measures.
+- **Khyber Pakhtunkhwa publishes no district crime total** — only seven named
+  serious offences, which come to 5,971 cases in 2024 against a provincial
+  total of 216,872. Summing them into a "district total" would be wrong by a
+  factor of 36. Only Azad Jammu & Kashmir's 10 districts have a real total.
+
+> **Exit test.** Economy and State on the same template as each other, every
+> State theme populated — with the coverage strip the design calls for, since
+> these series are patchy, and with each topic's note saying what its figures
+> do not cover.
 
 ## Phase 5 — The analysts' shelf
 
