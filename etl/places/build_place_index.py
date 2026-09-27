@@ -31,6 +31,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--districts', required=True)
     ap.add_argument('--tehsils', required=True)
+    ap.add_argument('--extra', nargs='*', default=[],
+                    help='further place-row parquets to union in')
     ap.add_argument('--census-index', required=True)
     ap.add_argument('--pbs', required=True)
     ap.add_argument('--out-values', required=True)
@@ -43,6 +45,11 @@ def main():
     # the curated vocabulary: which topic a group sits under, and what each
     # indicator is called
     groups = json.loads((HERE / 'curated_groups.json').read_text())
+    # groups ingested since, declared in the ETL rather than in app.js
+    import sys
+    sys.path.insert(0, str(HERE))
+    from extra_groups import GROUPS as EXTRA
+    groups = groups + EXTRA
     vals = []
     for g in groups:
         for ind, label in g['indicators'].items():
@@ -64,6 +71,14 @@ def main():
                      for f in g['features'] if f['properties'].get('dds_id')])
 
     # ── values ──────────────────────────────────────────────────────────────
+    # Sources ingested after the first two arrive already in this shape, so they
+    # union straight in rather than needing a branch of their own.
+    extra_sql = ''.join(
+        """
+        UNION ALL
+        SELECT level, map_key, source_key, relation, note,
+               group_key, indicator, year, value
+        FROM '%s'""" % x for x in a.extra)
     con.execute(f"""CREATE TABLE place_indicators AS
         SELECT 'district' AS level, map_key, source_key, relation, note,
                group_key, indicator, year, value
@@ -77,7 +92,8 @@ def main():
                          || 'shown across all of them rather than divided between them'
                END AS note,
                group_key, indicator, year, value
-        FROM '{a.tehsils}'""")
+        FROM '{a.tehsils}'
+        {extra_sql}""")
 
     out_v = pathlib.Path(a.out_values)
     out_v.parent.mkdir(parents=True, exist_ok=True)

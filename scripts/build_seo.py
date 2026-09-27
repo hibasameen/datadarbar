@@ -59,6 +59,7 @@ DATASET_NAMES = {
     "subdistrict_crosswalk_2017_2023": "Pakistan tehsil boundary changes, Census 2017 to 2023",
     "census_unit_map": "Pakistan census units mapped to 2023 boundaries",
     "geography_keys": "Pakistan place identifiers and which ones join safely",
+    "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
     "place_indicators": "Pakistan district and tehsil indicators on 2023 boundaries",
     "place_indicator_index": "Index of every Pakistan district and tehsil indicator",
     "lsm_qim": "Pakistan large-scale manufacturing index",

@@ -1524,6 +1524,36 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="census units",
         )
 
+    f = OUT / "diaspora_emigrants_district.parquet"
+    if f.exists():
+        register(
+            "diaspora_emigrants_district",
+            "Registered emigrants by district of origin, 2011\u20132024, from the Bureau "
+            "of Emigration & Overseas Employment.",
+            "Two things to know before using it. The year 'overall' is NOT the sum of "
+            "2011\u20132024: it is 9,858,937 against 8,663,198, because the Bureau\u2019s "
+            "register goes back well before 2011. is_cumulative marks it, and it is a "
+            "separate indicator in place_indicators for the same reason. And the frame "
+            "is partial \u2014 the file keys on PBS district codes and all 146 join "
+            "cleanly, but eleven PBS districts have no row of their own: Chaman, Duki, "
+            "Surab, Kharmang, Nagar, Shigar, Upper and Lower Kohistan, Upper Chitral "
+            "and Keamari. The register has followed some recent splits and not others "
+            "\u2014 Kolai Palas Kohistan and Lower Chitral appear, their siblings do not "
+            "\u2014 so those eleven sit inside a parent\u2019s figure rather than being absent, "
+            "and the parent is flagged in place_indicators.",
+            {"district_code": "PBS 2023 district code, joining to geography_keys",
+             "district": "district name as PBS\u2019s 2023 layer gives it",
+             "division": "division, as the register gives it",
+             "province": "province or area",
+             "year": "2011\u20132024, or 'overall' for the whole register",
+             "emigrants_registered": "people registered as emigrating in that period",
+             "is_cumulative": "TRUE on the 'overall' row \u2014 do not add it to the years"},
+            "Bureau of Emigration & Overseas Employment, read through PBS\u2019s diaspora "
+            "portal, pull of 2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="people",
+        )
+
     f = OUT / "geography_keys.parquet"
     if f.exists():
         register(

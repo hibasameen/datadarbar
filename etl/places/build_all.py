@@ -29,10 +29,16 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         d = pathlib.Path(tmp) / 'districts.parquet'
         t = pathlib.Path(tmp) / 'tehsils.parquet'
+        dia = pathlib.Path(tmp) / 'diaspora.parquet'
         run('build_place_indicators.py', '--src', APP / 'data' / 'warehouse',
             '--geo', APP / 'data' / 'districts_2023_geo.js', '--out', d)
         run('build_place_tehsils.py', '--src', APP / 'data' / 'warehouse',
             '--bridge', BRIDGE, '--pbs', PBS_T, '--out', t)
+        run('build_diaspora.py',
+            '--src', RAW / 'pbs_insight_explorer' / 'diaspora_2026-09-27',
+            '--geo', APP / 'data' / 'districts_2023_geo.js',
+            '--out-table', APP / 'data' / 'warehouse' / 'diaspora_emigrants_district.parquet',
+            '--out-places', dia)
         run('build_geography_keys.py', '--app', APP,
             '--pbs-d', RAW / 'geospatial' / 'boundaries' / 'pbs-census2023-2026-09-27'
                        / 'pbs_districts_2023.geojson',
@@ -42,7 +48,8 @@ def main():
             '--census-index', APP / 'data' / 'warehouse' / 'census_series_index.parquet',
             '--pbs', PBS_T,
             '--out-values', APP / 'data' / 'warehouse' / 'place_indicators.parquet',
-            '--out-index', APP / 'data' / 'warehouse' / 'place_indicator_index.parquet')
+            '--out-index', APP / 'data' / 'warehouse' / 'place_indicator_index.parquet',
+            '--extra', dia)
 
 
 if __name__ == '__main__':
