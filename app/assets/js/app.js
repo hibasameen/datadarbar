@@ -968,6 +968,24 @@ const GEOGRAPHIES = {
     // for a tehsil group come with the group (groupAssets), not the geography.
     assets: ['data/tehsils_geo.js'],
   },
+  // Census 2023's own sub-district frame. The layer above is geoBoundaries
+  // ADM3, which is 2017 vintage: 51 of 2023's units share 23 of its polygons
+  // because the tehsil was split after the shape was drawn, and a unit that
+  // shares a shape cannot be coloured without choosing between the two. PBS's
+  // Digital Census 2023 layer has one polygon per census unit under the same
+  // dds_id the panel uses, so all 591 are drawable. Kept separate rather than
+  // replacing the 2017 layer, which the poverty, school and Mouza groups are
+  // built on and which is the right geography for them.
+  tehsil2023: {
+    unit: 'tehsil', unitPlural: 'tehsils', UnitPlural: 'Tehsils',
+    placeholder: 'Search tehsils\u2026',
+    geo:  () => window.DD_GEO_T23,
+    rows: () => ({}),
+    key:  p => p.dds_id || '',
+    name: p => p.n || '',
+    prov: p => p.p || '',
+    assets: ['data/tehsils_2023_geo.js'],
+  },
 };
 
 // Payloads a group needs beyond its geography. The Mouza Census and the

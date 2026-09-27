@@ -28,7 +28,7 @@ window.DD_CENSUS = (function () {
     census2023d: { year: 2023, unit: 'district', geo: 'district',
                    label: 'Census 2023 — districts',
                    source: 'PBS Population and Housing Census 2023' },
-    census2023t: { year: 2023, unit: 'tehsil', geo: 'tehsil',
+    census2023t: { year: 2023, unit: 'tehsil', geo: 'tehsil2023',
                    label: 'Census 2023 — tehsils',
                    source: 'PBS Population and Housing Census 2023' },
   };
@@ -151,7 +151,11 @@ window.DD_CENSUS = (function () {
       return w.query(
         'SELECT map_key, value, unit, province_area FROM census_panel_' + L.year + ' ' +
         'WHERE table_id = ' + q(meta.tableId) +
-        '  AND unit_type = ' + q(L.unit) +
+        // The index collapses every tier below the district into one
+        // geography; the panel keeps PBS's own word for each unit, so the
+        // values query has to take all of them.
+        (L.unit === 'district' ? "  AND unit_type = 'district'"
+                               : "  AND unit_type <> 'district'") +
         '  AND indicator = ' + q(s.indicator) +
         "  AND coalesce(col_label, '') = " + q(s.col_label || '') +
         '  AND locality = ' + q(s.locality) +

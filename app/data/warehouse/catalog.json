@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-26",
+ "generated": "2026-09-27",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -251,7 +251,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8070444,
+   "bytes": 8070559,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -291,7 +291,7 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary"
+     "description": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary"
     },
     {
      "name": "locality",
@@ -333,7 +333,7 @@
   {
    "name": "census_panel_2023",
    "file": "census_panel_2023.parquet",
-   "bytes": 9236049,
+   "bytes": 9219475,
    "rows": 4599521,
    "description": "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure \u2014 that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id \u2014 the key the site's own tehsil geometry uses \u2014 is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
@@ -388,7 +388,7 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary"
+     "description": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary"
     },
     {
      "name": "locality",
@@ -445,8 +445,8 @@
   {
    "name": "census_series_index",
    "file": "census_series_index.parquet",
-   "bytes": 134338,
-   "rows": 33795,
+   "bytes": 134659,
+   "rows": 34008,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured \u2014 a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",

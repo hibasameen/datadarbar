@@ -1228,7 +1228,7 @@ def build(src: Path, district_only: bool = False) -> None:
             "census_panel_2023 by table_id or indicator is unsafe: the numbering differs and "
             "only 50 indicator labels match verbatim.",
             {**CENSUS_SHARED,
-             "map_key": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary",
+             "map_key": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary",
              "series_ambiguous": "the series key is not unique within this table (31,963 rows)"},
             "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
             f"""WITH xw(xunit, dkey) AS (VALUES {_xw17})
@@ -1263,7 +1263,7 @@ def build(src: Path, district_only: bool = False) -> None:
             "differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, "
             "including 'EDUCATOINAL ATTAINMENT'.",
             {**CENSUS_SHARED,
-             "map_key": "join key for the map\u2019s own geometry \u2014 the district polygon name on district rows, dd_id on tehsil rows, NULL where the unit has no boundary",
+             "map_key": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary",
              "dds_id": "Data Darbar sub-district identifier, present on every row",
              "dd_id": "identifier used by the site's tehsil geometry; NULL on district rows",
              "adm3_pcode": "COD-AB ADM3 code; NULL on district rows and on units without a match",
@@ -1272,28 +1272,18 @@ def build(src: Path, district_only: bool = False) -> None:
              "renderings_disagree": "PBS's two renderings of this table disagree here",
              "unit_source": "the district workbook this row was read from"},
             "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
-            f"""WITH xw(xunit, dkey) AS (VALUES {_xw23}),
-                     -- 51 census tehsils share 23 older polygons, because the
-                     -- tehsil was split after the boundary was drawn: Lahore
-                     -- City, Model Town, Raiwind and Shalimar all land on one
-                     -- 2015 Lahore shape. Painting one of them would show an
-                     -- arbitrary value and summing them would invent a figure
-                     -- for every rate, so a shape is only usable when exactly
-                     -- one unit claims it.
-                     sole AS (SELECT dd_id FROM '{p23.as_posix()}'
-                              WHERE unit_type = 'tehsil' AND dd_id IS NOT NULL
-                              GROUP BY 1
-                              -- district and unit, not unit alone: Sahiwal
-                              -- Tehsil exists in both Sahiwal and Sargodha and
-                              -- the two share a polygon, so keying on the name
-                              -- counts them as one place and lets a shape carry
-                              -- two different populations.
-                              HAVING count(DISTINCT district || '|' || unit) = 1)
+            f"""WITH xw(xunit, dkey) AS (VALUES {_xw23})
+                -- Sub-district units key on dds_id, the census's own unit id,
+                -- because PBS's Digital Census 2023 layer draws one polygon per
+                -- unit under that id. The map used to key on dd_id, a 2017
+                -- boundary, and 51 units shared 23 of those shapes: Lahore City,
+                -- Model Town, Raiwind and Shalimar all landed on one 2017 Lahore
+                -- polygon, so none of them could be drawn without choosing
+                -- arbitrarily between them. All 591 are now drawable.
                 SELECT 2023 AS census_year, province_area, table_id, dds_id, dd_id, adm3_pcode,
                        district, unit, unit_type,
                        CASE WHEN unit_type = 'district' THEN dkey
-                            WHEN unit_type = 'tehsil'
-                                 AND dd_id IN (SELECT dd_id FROM sole) THEN dd_id END AS map_key,
+                            ELSE dds_id END AS map_key,
                        locality, sex, indicator, col_label,
                        value, missing, is_rate, value_corrected, renderings_disagree, unit_source
                 FROM '{p23.as_posix()}' LEFT JOIN xw ON xunit = unit
@@ -1314,25 +1304,39 @@ def build(src: Path, district_only: bool = False) -> None:
         parts = []
         if p17:
             parts.append(f"""
-              SELECT 2017 AS census_year, table_id, unit_type, indicator, col_label,
+              SELECT 2017 AS census_year, table_id,
+                     CASE WHEN unit_type = 'district' THEN 'district'
+                          ELSE 'tehsil' END AS unit_type, indicator, col_label,
                      locality, sex, FALSE AS is_rate,
                      count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) AS mappable_units,
                      min(value) AS min_value, max(value) AS max_value
               FROM '{(OUT / 'census_panel_2017.parquet').as_posix()}'
-              WHERE unit_type IN ('district', 'tehsil')
+              -- Every unit below the district sits on one layer: PBS publishes
+              -- some as tehsils, some as sub-divisions and some as sub-tehsils,
+              -- and its own 2023 boundary file draws all 591 in a single set.
+              -- They are one geography for the map, whatever PBS calls them.
+              WHERE unit_type <> 'district'
+                 OR unit_type = 'district'
               GROUP BY ALL
               HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
                  AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
                    = count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
         if p23:
             parts.append(f"""
-              SELECT 2023 AS census_year, table_id, unit_type, indicator, col_label,
+              SELECT 2023 AS census_year, table_id,
+                     CASE WHEN unit_type = 'district' THEN 'district'
+                          ELSE 'tehsil' END AS unit_type, indicator, col_label,
                      locality, sex, bool_or(is_rate) AS is_rate,
                      count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) AS mappable_units,
                      min(value) AS min_value, max(value) AS max_value
               FROM '{(OUT / 'census_panel_2023.parquet').as_posix()}'
-              WHERE unit_type IN ('district', 'tehsil')
-              GROUP BY census_year, table_id, unit_type, indicator, col_label, locality, sex
+              -- Every unit below the district sits on one layer: PBS publishes
+              -- some as tehsils, some as sub-divisions and some as sub-tehsils,
+              -- and its own 2023 boundary file draws all 591 in a single set.
+              -- They are one geography for the map, whatever PBS calls them.
+              WHERE unit_type <> 'district'
+                 OR unit_type = 'district'
+              GROUP BY 1, 2, 3, 4, 5, locality, sex
               HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
                  AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
                    = count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
