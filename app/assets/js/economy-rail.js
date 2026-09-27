@@ -132,6 +132,7 @@
     var state = { ds: index[0].ds, topic: index[0].topic, ind: index[0].ind };
     var rail = window.DDExplorer.mount({
       el: host, index: index, state: state,
+      levels: ['topic', 'ds', 'ind'],
       labels: { ind: 'Chart' }, moreEl: moreEl,
       onChange: function (row) { go(row); },
     });

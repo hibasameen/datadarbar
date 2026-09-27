@@ -1163,6 +1163,7 @@
     readUrl();
     rail = window.DDExplorer.mount({
       el: $('rail'), index: D.index, state: state,
+      levels: ['topic', 'ds', 'ind'],
       labels: { ind: 'Chart' }, moreEl: $('more'),
       onChange: function (row) { render(row); writeUrl(); },
     });

@@ -360,8 +360,11 @@
      The year is offered only where the indicator has more than one; for most
      census series it has exactly one, because the two censuses published
      different tables. */
+  var rail = null;
+
   function choose(i) {
     state.row = i;
+    if (rail) rail.follow(i);
     var yrs = list('years', i);
     // Default to the most recent actual year, not to the change. The curated
     // pairs carry a third entry - the difference between the censuses - and it
@@ -809,7 +812,11 @@
     $('shareBtn').onclick = share;
 
     renderPicker();
-    readUrl();
+    rail = window.DDPlacesRail && window.DDPlacesRail.mount({
+      el: $('rail'), IX: IX, N: N, col: col, level: state.level,
+      row: state.row, onChange: choose,
+    });
+    if (!readUrl() && rail) rail.fire();
   }
 
   function setLevel(lv) {
@@ -818,6 +825,7 @@
     state.row = null; state.values = null; state.place = null; nameIndex = null;
     $('geoDistrict').setAttribute('aria-pressed', String(lv === 'district'));
     $('geoTehsil').setAttribute('aria-pressed', String(lv === 'tehsil'));
+    if (rail) rail.rebuild(lv, state.row);
     $('provFilter').removeAttribute('data-filled');
     $('provFilter').innerHTML = '<option value="">All provinces</option>';
     $('legend').hidden = true;

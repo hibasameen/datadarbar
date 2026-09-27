@@ -30,7 +30,7 @@
   --radius:12px;        --radius-sm:8px;
   --shadow:0 2px 10px rgba(12,58,30,.07);
   --shadow-lg:0 8px 28px rgba(12,58,30,.12);
-  --header-h:56px;      --sidebar-w:250px;
+  --header-h:56px;      --sidebar-w:250px;    --footer-h:34px;
   /* The design system tells the three explorers apart by accent alone. Each
      page sets --accent on :root and everything shared reads from it. */
   --accent:var(--green-700);
@@ -44,7 +44,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--sans);background:var(--ground);color:var(--ink);
-     line-height:1.55;-webkit-font-smoothing:antialiased}
+     line-height:1.55;-webkit-font-smoothing:antialiased;
+     padding-bottom:var(--footer-h)}
 img{max-width:100%}
 a{color:var(--green-800)}
 [hidden]{display:none!important}
@@ -60,9 +61,12 @@ a{color:var(--green-800)}
 .header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
 .header-logo{height:30px;width:auto}
 .header-text{display:flex;flex-direction:column;line-height:1.05}
-.header-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.2px}
-.header-tagline{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.7)}
+/* Gold wordmark over the green, with the tagline under it in white at
+   low opacity - the treatment the live site has always had. */
+.header-title{font-size:17px;font-weight:800;color:var(--gold-400);
+  letter-spacing:-.2px}
+.header-tagline{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);font-weight:500}
 
 .header-nav{display:flex;align-items:center;gap:4px}
 .header-link{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:700;
@@ -95,16 +99,30 @@ a{color:var(--green-800)}
 }
 
 /* ── footer ─────────────────────────────────────────────────────────────── */
-.site-footer{background:var(--green-900);color:rgba(255,255,255,.65);
-  font-size:12px;padding:18px 24px calc(18px + env(safe-area-inset-bottom,0px));
-  display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;line-height:1.5}
-.site-footer a{color:rgba(255,255,255,.72);text-decoration:none}
+/* A fixed bar across the bottom of every page, as the design shows. It is
+   taken out of flow, so --footer-h pads the bottom of the page behind it -
+   without that the last line of a scrolling page sits underneath the bar and
+   cannot be reached. */
+.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:400;
+  background:var(--green-900);color:rgba(255,255,255,.45);
+  font-size:11px;padding:0 24px calc(0px + env(safe-area-inset-bottom,0px));
+  height:var(--footer-h);
+  display:flex;flex-wrap:nowrap;align-items:center;gap:6px 10px;
+  line-height:1.4;overflow:hidden}
+.site-footer a{color:rgba(255,255,255,.55);text-decoration:none}
 .site-footer a:hover{color:var(--gold-400);text-decoration:underline}
 .footer-sep{color:rgba(255,255,255,.22)}
 .footer-right{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 10px}
 @media(max-width:860px){
-  .site-footer{padding-inline:16px}
+  .site-footer{padding-inline:14px;font-size:10px;gap:4px 7px}
   .footer-right{margin-left:0}
+}
+/* On a narrow screen the bar cannot hold everything, so the parts that are
+   navigation stay and the licence text goes rather than wrapping the bar to
+   two lines over the content. */
+@media(max-width:700px){
+  .site-footer > span:not(.footer-right):not([data-research-links]){display:none}
+  .site-footer .footer-sep{display:none}
 }
 
 /* ── shared furniture ─────────────────────────────────────────────────────
