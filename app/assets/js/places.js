@@ -448,6 +448,34 @@
      country, where a pale fill meets the page. The live map draws them in a
      grey-green that reads against both. */
   var BOUNDARY = '#8a9480';
+  /* The selected shape. Gold because it has to read against every one of the
+     13 ramps - a dark outline disappears into the dark end of the greens, a
+     white one into the pale end of all of them. It is also drawn thicker and
+     brought to the front, so a selected district is not half-hidden under its
+     neighbours' edges. */
+  var SELECTED = '#d4a017';
+
+  /* One place decides how a shape's edge is drawn, so the selected outline
+     cannot drift from the ordinary one. */
+  function edge(key) {
+    return key === state.place
+      ? { weight: 3, color: SELECTED, opacity: 1 }
+      : { weight: .6, color: BOUNDARY, opacity: 1 };
+  }
+
+  /* Restyle in place rather than rebuild the layer: redrawing 649 tehsils to
+     move one highlight is slow enough to feel like a stall. */
+  function paintSelection() {
+    if (!layer) return;
+    var g = GEO[state.level];
+    layer.eachLayer(function (l) {
+      var k = g.key(l.feature.properties);
+      var cur = l.options;
+      if (cur.fillOpacity === 0) return;          // filtered out by province
+      l.setStyle(edge(k));
+      if (k === state.place && l.bringToFront) l.bringToFront();
+    });
+  }
 
   function rampFor(row) {
     if (row == null || !window.DDMapScales) return ['#e6f4ec', '#145228'];
@@ -512,14 +540,15 @@
               : { fillColor: '#e2e5ea', fillOpacity: .5, weight: .6,
                   color: '#b9c2b9', opacity: 1 };
           }
-          return { fillColor: sc.colour(v), fillOpacity: .9, weight: .6,
-                   color: BOUNDARY, opacity: 1 };
+          return Object.assign(
+            { fillColor: sc.colour(v), fillOpacity: .9 }, edge(g.key(p)));
         },
         onEachFeature: function (f, lyr) {
           lyr.on('click', function () {
             state.place = g.key(f.properties);
             renderDetail(f.properties);
             renderRanks();
+            paintSelection();
             writeUrl();
           });
         },
@@ -527,6 +556,7 @@
       if (!map.__fitted) { map.fitBounds(layer.getBounds(), { padding: [12, 12] }); map.__fitted = true; }
       state.scale = sc;
       renderRanks();
+      paintSelection();
       buildProvinces(geo, g);
     });
   }
@@ -642,6 +672,7 @@
       renderDetail(null);
     }
     renderRanks();
+    paintSelection();
     writeUrl();
   }
 
@@ -1001,6 +1032,8 @@
       map.fitBounds(hit.getBounds(), { padding: [40, 40] });
       state.place = g.key(hit.feature.properties);
       renderDetail(hit.feature.properties);
+      renderRanks();
+      paintSelection();
       writeUrl();
     }
   }
