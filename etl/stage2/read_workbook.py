@@ -148,7 +148,36 @@ def numbered_columns(rows, a):
     if not nums:
         return 0, []
     stub = nums[0][0]
-    return stub, [c for c, _ in nums[1:]]
+    cols = [c for c, _ in nums[1:]]
+
+    # Most sheets number the stub column "1" and the data columns from "2".
+    # Kohistan's table 29 numbers only the data columns, starting "1" over the
+    # first of them, which put the stub one column too far right: the reader
+    # then read 219.0 as a row label, found no unit, and emitted nothing for the
+    # district. If the column taken as the stub carries numbers while one to its
+    # left carries text, the numbering covers the data alone and the real stub
+    # is that text column.
+    if stub > 0:
+        body = rows[a + 1:a + 40]
+
+        def texty(ci):
+            t = n = 0
+            for r in body:
+                v = r[ci] if ci < len(r) else None
+                if v is None or str(v).strip() == '':
+                    continue
+                if isinstance(v, str) and _colnum(v) is None:
+                    t += 1
+                else:
+                    n += 1
+            return t, n
+
+        st, sn = texty(stub)
+        for left in range(stub - 1, -1, -1):
+            lt, ln = texty(left)
+            if lt > ln and lt > st:
+                return left, [stub] + cols
+    return stub, cols
 
 
 def label_column(rows, a):
