@@ -53,7 +53,6 @@ the unit's trajectory and biggest-change ranking over the selected span.
 
 Sidebar = search + topic tree grouped by question:
 - Output & growth: Structure of GDP · Composition of growth · Industry & factories · How sectors feed each other
-- Public finances: The federal budget
 - Trade: What Pakistan trades · What's growing and shrinking · Trading partners
 - Prices & money: The rupee · Inflation · Interest rates · Money & banks
 - External balance: Reserves & the current account · Remittances
@@ -64,10 +63,16 @@ that swap into the primary slot. No long stacked scrolls. Phone: tree collapses 
 
 ## State (new explorer; same template as Economy)
 
+- Public money: The federal budget · What the state collects (FBR tax by head, 1992-2024)
 - Justice: Case flows · Pendency & disposal · What the courts hear · Judges & staffing (LJCP)
 - Crime & policing: Reported offences (by province/range) · FIRs registered
 - Energy: Power plants · Distribution companies (NEPRA)
 - Public services: Schools · Travel time to care · Weather disasters
+
+The budget moved here from Economy (27 Sep, agreed). It reads better as the state's own accounts
+than as a sector of the economy, and it has a second effect worth naming: it is the only State theme
+whose data is already published, so State stops being blocked entirely on ingestion. `budget_lines`
+is in the warehouse today; FBR tax collection arrived in the 27 Sep pull.
 Adds a coverage strip under the title (which years exist, what is scanned/unread, partial periods),
 because these series are patchy; interpolated stretches are drawn dashed. "By district, on the map"
 card hands off to Places.
@@ -222,4 +227,79 @@ not a small topic.
 Also corrected on the canvas: tehsils are **650** in PBS's layer, not 649, of
 which 591 are inside the census frame; and a census rank is out of the 136
 districts with census data, not the 157 drawn.
+
+## One data path for Places (decided 27 Sep)
+
+**Decision: Places reads everything from the warehouse.** Today it has two paths, and the curated
+half is the expensive one.
+
+Measured on map.html, first paint, own files only:
+
+| | today | warehouse |
+|---|---|---|
+| `census_data.js` (data + district geometry, blocking `<script>`) | 1,826 KB | — |
+| `district_indicators.parquet` (the same numbers) | — | 170 KB |
+| everything else (css, js, logo) | 94 KB | 94 KB |
+| **first paint** | **1,920 KB** | **~264 KB + engine** |
+
+The engine is the only thing that moves *earlier*, and it is not a new dependency: the census
+layers already load it, and the redesign puts them at the centre of Places. Its JS shim and Arrow
+come to ~220 KB decoded; the WASM module is instantiated inside a Worker, so it does not appear in
+the page's resource timing and was not measured here. That is the number to check before shipping.
+
+**Byte ranges work on the live host.** A `Range: bytes=0-99` on
+`darbar.adaad.org/data/warehouse/trade_hs8.parquet` returns **206** with `content-length: 100`, so
+the 8 and 9 MB census panels are never fetched whole in production — only the row groups a query
+touches. Locally they *are* fetched whole, because `python3 -m http.server` answers a range request
+with `HTTP/1.0 200` and the full length; `probeRanges()` sees that and correctly falls back. Any
+local timing of the panels is therefore meaningless — measure on the deployed site.
+
+### What the migration actually involves
+
+`district_indicators.parquet` is not a drop-in for `census_data.js`:
+
+- it holds 231 indicators × 147 districts against the map's 296 curated indicators;
+- it is district-only, so the tehsil layers (Mouza, poverty, satellite, school access) have no
+  equivalent and need building;
+- it is keyed on the 147-district 2015 frame and has to be re-keyed to the PBS 2023 district codes
+  the census layers now use — the unit map already does this for the census, and the same treatment
+  applies here;
+- the district geometry rides inside `census_data.js` today and becomes `districts_2023_geo.js`
+  (350 KB), which stays a plain file: geometry is not something to query.
+
+**Hold it to this test:** cold first paint on the deployed site, before and after. If the WASM boot
+is material, the map should draw its geometry uncoloured and fill values in when the engine is
+ready, rather than waiting.
+
+## New data, pull of 27 September
+
+~79 MB under `raw_data/pbs_insight_explorer/`, **none of it in the warehouse yet**. Four portals,
+each with a README recording what reconciles and what does not.
+
+**Places** — all three are district-keyed and join the PBS 2023 frame directly:
+
+| source | grain | size |
+|---|---|---|
+| `diaspora_…/diaspora_emigrants_by_district_2011_2024.csv` | district × year 2011–2024 + overall; 146 districts, 9.86M registered emigrants | 2,190 rows |
+| `national_accounts_…/crops_district_fy_long.parquet` | crop × FY × district: area, production, yield. 108 crops with data, 123 districts, majors from 1981-82 | 78,425 rows |
+| `economic_…/entities_ds.json`, `entities_th.json` | 24 enumerated unit types (school, hospital, factory, mosque, police station…) by district and by tehsil | 3,298 + 12,089 rows |
+
+The emigrant file carries `district_code` — the same PBS code the new district layer uses — so it
+needs no crosswalk. Crops are on a pre-2023 frame (Karachi as one district; no Duki, Surab, Chaman,
+Korangi, Keamari, the Kohistans or Upper Chitral), so it needs the unit map's treatment.
+
+**Economy**: GDP growth 1952–2025 with the government of the day labelled (74 rows); GVA by
+sector/subsector annual 2000–2026 (594) and quarterly 2016–2025 (880); GDP, NPI, per-capita income
+and the exchange rate (27); trade by partner country × FY × period (71,795 rows, 231 partners), by
+commodity group (3,680) and monthly totals 2003–2026 (275). The trade README is explicit that the
+portal's own whole-year rows overstate — 38.3 against a published 32.1 USD bn of exports for
+2024-25 — and ships `trade_reconciliation_fy_period.csv` to check any year total against. Read it
+before wiring the charts. This is FY/period aggregate trade and does not replace `trade_hs8`.
+
+**State**: `fbr_tax_collection_by_head_1992_2024.csv`, tax type × head × subhead, 264 rows.
+
+Also in the economic pull: `derived/census2023_units_to_pbs_geojson.csv`, which is what the
+sub-district frame was built from, and `cod_vs_pbs_district_iou.csv` comparing PBS's polygons with
+the COD-AB digitisation — median IoU 0.90, 5th percentile 0.62. They are different digitisations,
+not the same lines.
 
