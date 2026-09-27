@@ -15,10 +15,24 @@ Province/area → division → district → sub-district → (2017 only) localit
 
 **PBS's Digital Census 2023 boundary layer** is the frame to work on: 8
 provinces/areas, 38 divisions, **157 districts**, **650 tehsils**. Of those,
-**136 districts and 591 tehsils carry census data** (`in_census_2023`). The
-rest are Gilgit-Baltistan (10 districts, 26 tehsils), Azad Jammu & Kashmir (10,
-32) and one Occupied Kashmir polygon. Draw them, leave them uncoloured: the
-country does not stop at the census frame.
+**136 districts and 591 tehsils carry census data** (`in_census_2023`).
+
+**What Data Darbar draws is 156 districts and 649 tehsils**, and the rule is
+worth stating exactly because the counts look arbitrary otherwise:
+
+- **Azad Jammu & Kashmir and Gilgit-Baltistan are always drawn** — 20 districts
+  and 58 tehsils between them — whether or not the census reaches them. Neither
+  census panel has a single row for either, so they render grey. They are
+  greyed for want of data, not left off: a map of Pakistan that stops at the
+  census frame makes a different claim about the country.
+- **The one polygon PBS labels `OCCUPIED KASHMIR` is always excluded** — the
+  part of Jammu & Kashmir not under Pakistani administration, district code
+  `000`. It is the only thing dropped, which is why 157 becomes 156 and 650
+  becomes 649.
+
+A tehsil outside the census has no `dds_id`, so the map keys it on PBS's
+`tehsil_code` instead (`PBS-<code>`) and marks it `nc`. Nothing joins to that
+key, which is the point: the shape draws and stays grey.
 
 **The census areas are six in 2017 and five in 2023.** 2017:
 Punjab, Sindh, Khyber Pakhtunkhwa, Balochistan, **FATA**, Islamabad. FATA

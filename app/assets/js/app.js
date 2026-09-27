@@ -2,6 +2,9 @@
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
+// Stamped by the ETL whenever a file under app/data is rewritten, so a
+// returning visitor never holds a stale payload. Do not edit by hand.
+const ASSET_V = '2026-09-27b';
 const GEOJSON_PATH = 'data/pakistan_districts_province_boundries.geojson';
 const DATA_PATH    = 'data/districts.json';
 
@@ -1113,7 +1116,12 @@ function loadScriptOnce(src) {
   if (_assetsLoaded.has(src)) return Promise.resolve();
   return new Promise((resolve, reject) => {
     const el = document.createElement('script');
-    el.src = src; el.async = false;
+    // Data payloads are loaded by <script src> and would otherwise be cached
+    // indefinitely under a name that never changes: a returning visitor kept
+    // the old tehsil layer and saw 591 shapes where the file on disk had 649.
+    // ASSET_V is stamped by the builders that write these files.
+    el.src = src + (src.startsWith('data/') ? '?v=' + ASSET_V : '');
+    el.async = false;
     el.onload = () => { _assetsLoaded.add(src); resolve(); };
     el.onerror = () => reject(new Error('could not load ' + src));
     document.head.appendChild(el);
