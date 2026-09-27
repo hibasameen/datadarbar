@@ -251,7 +251,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8070559,
+   "bytes": 8200967,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -291,7 +291,27 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary"
+     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+    },
+    {
+     "name": "map_relation",
+     "type": "VARCHAR",
+     "description": "how this unit relates to the 2023 frame: exact, renamed, merged, split, boundary transfer, or restructured below the district"
+    },
+    {
+     "name": "map_comparable",
+     "type": "VARCHAR",
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+    },
+    {
+     "name": "map_note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+    },
+    {
+     "name": "map_weight",
+     "type": "DOUBLE",
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
     },
     {
      "name": "locality",
@@ -324,6 +344,11 @@
      "description": "the cell was printed as a dash rather than a number"
     },
     {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census\u2019s own statement"
+    },
+    {
      "name": "series_ambiguous",
      "type": "BOOLEAN",
      "description": "the series key is not unique within this table (31,963 rows)"
@@ -333,7 +358,7 @@
   {
    "name": "census_panel_2023",
    "file": "census_panel_2023.parquet",
-   "bytes": 9219475,
+   "bytes": 9229706,
    "rows": 4599521,
    "description": "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure \u2014 that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id \u2014 the key the site's own tehsil geometry uses \u2014 is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
@@ -388,7 +413,27 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "join key for the map\u2019s geometry \u2014 the district polygon name on district rows, dds_id on sub-district rows, NULL where the unit has no boundary"
+     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+    },
+    {
+     "name": "map_relation",
+     "type": "VARCHAR",
+     "description": "how this unit relates to the 2023 frame: exact, renamed, merged, split, boundary transfer, or restructured below the district"
+    },
+    {
+     "name": "map_comparable",
+     "type": "VARCHAR",
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+    },
+    {
+     "name": "map_note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+    },
+    {
+     "name": "map_weight",
+     "type": "DOUBLE",
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
     },
     {
      "name": "locality",
@@ -445,8 +490,8 @@
   {
    "name": "census_series_index",
    "file": "census_series_index.parquet",
-   "bytes": 134659,
-   "rows": 34008,
+   "bytes": 161410,
+   "rows": 37971,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured \u2014 a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
@@ -490,7 +535,12 @@
     {
      "name": "mappable_units",
      "type": "BIGINT",
-     "description": "units with both a value and a boundary \u2014 the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row"
+     "description": "shapes this series colours \u2014 shapes, not units: a 2017 unit that was later split is drawn across all of its successors, so it contributes several. Shapes with both a value and a boundary \u2014 the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row"
+    },
+    {
+     "name": "units_with_value",
+     "type": "BIGINT",
+     "description": "census units carrying a value, whether or not they can be drawn \u2014 larger than mappable_units where a unit was split or redrawn and so has no 2023 shape"
     },
     {
      "name": "min_value",

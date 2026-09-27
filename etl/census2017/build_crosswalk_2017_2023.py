@@ -143,8 +143,11 @@ def sub_units(con, panel, which):
                     AND NOT missing AND indicator='POPULATION 2017' GROUP BY 1,2,3"""
     out = collections.defaultdict(list)
     for dist, unit, ut, pop in con.sql(sql).fetchall():
-        out[dist].append((unit, ut, pop or 0))
+        out[dist].append((unit, ut, pop or 0, dist))
     return out
+
+
+DUPLICATES = []
 
 
 def sub_groups(groups, s17, s23):
@@ -169,8 +172,18 @@ def sub_groups(groups, s17, s23):
         a = [u for d in m17 for u in s17.get(d, [])]
         b = [u for d in m23 for u in s23.get(d, [])]
         gid = ' + '.join(sorted(m17)) or ' + '.join(sorted(m23))
-        by_a = {sub_norm(u): (u, t, p) for u, t, p in a}
-        by_b = {sub_norm(u): (u, t, p) for u, t, p in b}
+        def index(units):
+            ix, dup = {}, set()
+            for u in units:
+                k = sub_norm(u[0])
+                if k in ix:
+                    dup.add(k)
+                ix[k] = u
+            for k in dup:                 # ambiguous inside this group: pair by
+                ix.pop(k)                 # population or leave restructured
+                DUPLICATES.append((gid, k, [u for u in units if sub_norm(u[0]) == k]))
+            return ix
+        by_a, by_b = index(a), index(b)
         paired, left_a, left_b = [], dict(by_a), dict(by_b)
         for k in set(by_a) & set(by_b):
             paired.append((by_a[k], by_b[k], 'name'))
@@ -191,12 +204,15 @@ def sub_groups(groups, s17, s23):
                 open_a.append(ua); open_b.append(ub)
                 continue
             rows.append(dict(district_group=gid, relation='exact' if ua[0] == ub[0] else 'renamed',
-                             matched_by=how, units_2017=ua[0], units_2023=ub[0],
+                             matched_by=how,
+                             district_2017=ua[3], district_2023=ub[3],
+                             units_2017=ua[0], units_2023=ub[0],
                              population_2017=int(ua[2]), restated_2017=int(ub[2]),
                              balances='yes'))
         if open_a or open_b:
             x, y = sum(u[2] for u in open_a), sum(u[2] for u in open_b)
             rows.append(dict(district_group=gid, relation='restructured', matched_by='',
+                             district_2017='', district_2023='',
                              units_2017=' + '.join(sorted(u[0] for u in open_a)),
                              units_2023=' + '.join(sorted(u[0] for u in open_b)),
                              population_2017=int(x), restated_2017=int(y),
@@ -277,6 +293,11 @@ def main():
     else:
         print("\nevery group balances against PBS's own restated 2017 population")
 
+    if DUPLICATES:
+        print(f"\nnames that repeat inside a district group ({len(DUPLICATES)}), "
+              f"left to population or restructured:")
+        for gid, k, us in DUPLICATES:
+            print(f"   {gid}: {k} -> " + ', '.join(f"{u[0]} ({u[3]})" for u in us))
     print(f"\nsub-district groups {len(srows)}")
     for k, v in sorted(stally.items()):
         print(f"   {k:24s} {v}")
