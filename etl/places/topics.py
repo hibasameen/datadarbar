@@ -32,7 +32,11 @@ TOPICS = {
     'satellite':    'Satellite & environment',
     'migration':    'Migration',
     'agriculture':  'Agriculture',
-    'facilities':   'Buildings & facilities (Census 2023)',
+    # Premises, not utilities: the census counted structures and classified
+    # them, so a shop, a mosque and a cattle shed are one measurement. They
+    # stay together, but the topic no longer carries its source in its name -
+    # the same reason "Rural facilities (Mouza 2020)" was retired.
+    'facilities':   'Buildings & premises',
 }
 
 # The order the picker lists them in: the big subject topics first, then the

@@ -36,6 +36,9 @@ import duckdb
 TOO_SPARSE = {'1'}
 
 
+from topics import TOPICS
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--src', required=True)
@@ -89,7 +92,7 @@ def main():
 
     con.execute(f"""CREATE TABLE ix AS
         SELECT level, 'facilities' AS topic,
-               'Buildings & facilities (Census 2023)' AS topic_label,
+               '{TOPICS['facilities'].replace("'", "''")}' AS topic_label,
                'facilities' AS group_key,
                'Enumerated structures — Census 2023' AS group_label,
                'Census 2023 buildings & facilities' AS dataset,
