@@ -31,6 +31,9 @@ Left panel, top to bottom:
   list beneath (Demographics, Education, Employment, Household welfare, Poverty & wealth, Housing &
   infrastructure, Health & children, Schools & access to care, Rural facilities (Mouza 2020),
   Satellite & environment). Poverty & Wealth stops being a separate page.
+  **The field searches 4,347 indicators** — see "How many indicators" below. It searches indicator
+  names; the facets of the one you pick (census year, rural/urban, sex) are chosen after, not
+  searched through.
 - Facilities on the map: overlay toggles (Government schools 121k, Health facilities). Points draw
   over any choropleth; solid dot = school-level fix, hollow = placed at centroid (coord_precision);
   cluster at national zoom, resolve to points past tehsil zoom.
@@ -169,11 +172,54 @@ yet:
 - **Topics.** Census tables are not topics. Table 14 is "literate population
   10+ by level of educational attainment"; a reader wants "Education".
 
-### The question the mockup leaves open
+### How many indicators (settled 27 Sep)
 
-The picker says "Type to search 240 indicators"; there are 37,971 mappable
-series. The reading taken here is that the ~10 topics are curated and
-browsable while search reaches everything, so 240 is the browsable set and not
-a cap. Worth confirming before the picker is built, because it is the
-difference between a hand-written vocabulary and a generated one.
+The mockup said "Type to search 240 indicators". The real figure is **4,347**.
+The gap was not an error so much as a count of the wrong thing: the mockup
+counted the hand-written vocabulary as it stood, and the census had not yet
+been countable at all.
+
+| | count | what it is |
+|---|---|---|
+| Curated | 296 | the hand-written vocabulary, across 50 layers: PSLM, LFS, MPI, HIES, schools, health access, Mouza, satellite, and the derived census panel |
+| Census | 4,051 | PBS table × indicator × column heading — the distinct cell definitions in the two censuses |
+| **Searchable total** | **4,347** | what the field searches |
+| Mappable series | 37,971 | the census side once locality and sex are chosen |
+
+**Why table × indicator × column heading, and not something coarser.** PBS's
+`indicator` on its own is frequently `MALE`, `ALL SEXES` or `ALL AGES` — 789
+table×indicator pairs collapse to 482 distinct labels, so a list of labels
+would be mostly repeats with no subject in them. The column heading is what
+carries the definition. Coarser still would be the 41 tables, which is a good
+browsing unit but not a searchable one.
+
+**Why not 37,971.** 33,147 of those series are rural/urban and sex variants of
+something already in the list. Searching series would return the same
+indicator forty times and bury everything else. The facets belong on the
+chosen indicator, as controls.
+
+Topic counts, on the same basis, summing to 4,347:
+
+| topic | curated | census | total |
+|---|---:|---:|---:|
+| Demographics | 20 | 1,362 | 1,382 |
+| Education | 44 | 746 | 790 |
+| Employment | 53 | 115 | 168 |
+| Household welfare | 18 | 29 | 47 |
+| Poverty & wealth | 14 | – | 14 |
+| Housing & infrastructure | 18 | 1,318 | 1,336 |
+| Health & children | 41 | 481 | 522 |
+| Schools & access to care | 32 | – | 32 |
+| Rural facilities (Mouza 2020) | 54 | – | 54 |
+| Satellite & environment | 2 | – | 2 |
+| **Total** | **296** | **4,051** | **4,347** |
+
+Housing is the surprise: 16 of PBS's 41 tables are housing tables, almost all
+2017-only, and they carry more distinct cell definitions than education does.
+Worth knowing before the topic list is drawn — "Housing & infrastructure" is
+not a small topic.
+
+Also corrected on the canvas: tehsils are **650** in PBS's layer, not 649, of
+which 591 are inside the census frame; and a census rank is out of the 136
+districts with census data, not the 157 drawn.
 
