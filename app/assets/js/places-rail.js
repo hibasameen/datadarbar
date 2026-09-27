@@ -124,12 +124,26 @@
           st.topic = r.topic; st.ds = r.ds; st.ind = r.ind;
           rail.sync(false);
         },
-        rebuild: function (level, row) {
+        /* Switching district <-> tehsil rebuilds the index, because the two
+           levels carry different indicators. Two things were wrong here: it
+           re-mounted the rail but never fired, so the map went blank and
+           stayed blank; and having no held row it took index[0], which sorts
+           alphabetically - so the country opened on "Almond, area in thousand
+           hectares" or on "Bank".
+
+           Now it keeps the indicator you were looking at if the new level has
+           it, falls back to the preferred opener if not, and always draws. */
+        rebuild: function (level, key) {
+          var prev = index.filter(function (x) { return x.ind === st.ind; })[0];
           index = build(opts.IX, opts.N, opts.col, level);
-          var r = index.filter(function (x) { return x.ind === String(row); })[0]
-               || index[0];
-          if (!r) return;
-          st.topic = r.topic; st.ds = r.ds; st.ind = r.ind;
+          if (!index.length) return;
+
+          var same = prev && index.filter(function (x) {
+            return x.key === prev.key;
+          })[0];
+          var next = same || prefer(index) || index[0];
+          st.topic = next.topic; st.ds = next.ds; st.ind = next.ind;
+
           rail = window.DDExplorer.mount({
             el: host, index: index, state: st,
             levels: ['topic', 'ds', 'ind'],
@@ -137,6 +151,7 @@
             onChange: function (x) { if (x) opts.onChange(Number(x.ind)); },
           });
           rail.sync(false);
+          opts.onChange(Number(st.ind));
         },
       };
     },

@@ -1010,7 +1010,6 @@
     state.row = null; state.values = null; state.place = null; nameIndex = null;
     $('geoDistrict').setAttribute('aria-pressed', String(lv === 'district'));
     $('geoTehsil').setAttribute('aria-pressed', String(lv === 'tehsil'));
-    if (rail) rail.rebuild(lv, state.row);
     $('provFilter').removeAttribute('data-filled');
     $('provFilter').innerHTML = '<option value="">All provinces</option>';
     $('legend').hidden = true;
@@ -1018,6 +1017,10 @@
     map.__fitted = false;
     renderPicker();
     renderDetail();
+    // Last, and not before the teardown above: the rebuild draws the new
+    // level's default map, and running it first meant the lines below then
+    // hid the legend and removed the layer it had just made.
+    if (rail) rail.rebuild(lv);
   }
 
   function findPlace(q) {
