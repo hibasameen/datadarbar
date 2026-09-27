@@ -24,7 +24,7 @@
 (function () {
   'use strict';
 
-  function build(IX, N, col, level) {
+  function build(IX, N, col, level, list) {
     var index = [], seen = {};
     for (var i = 0; i < N; i++) {
       if (col('level', i) !== level) continue;
@@ -36,18 +36,59 @@
       var key = topic + '\u001f' + ds + '\u001f' + i;
       if (seen[key]) continue;
       seen[key] = 1;
+      /* The measure is the indicator and the breakdown is the metric, so
+         "Total Population" holds its 103 age bands instead of standing as 103
+         separate indicators. A cell with no breakdown gets one metric, "All",
+         rather than an empty dropdown. */
+      var measure = col('measure', i) || label;
+      var metric = col('metric', i) || '';
       index.push({
         topic: topic, topicLabel: col('topic_label', i) || topic,
         ds: ds, dsLabel: ds,
-        ind: String(i), label: label,
-        key: col('indicator', i),
+        ind: measure, label: measure,
+        metric: String(i), metricLabel: metric || 'All',
+        key: col('indicator', i), groupKey: col('group_key', i),
+        years: (list ? list('years', i) : []).join('/'),
+        row: i, fullLabel: label,
         rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
       });
     }
+    /* "Total Population" is published in several tables, each with its own
+       age bands, so the metric list showed "0-4" three times over. Where a
+       metric repeats within one measure, the table it came from is what
+       separates them - the same qualifier the full label uses. */
+    var byMeasure = {};
+    index.forEach(function (r) {
+      var k = r.topic + '\u001f' + r.ds + '\u001f' + r.ind + '\u001f' + r.metricLabel;
+      (byMeasure[k] = byMeasure[k] || []).push(r);
+    });
+    Object.keys(byMeasure).forEach(function (k) {
+      var group = byMeasure[k];
+      if (group.length < 2) return;
+      group.forEach(function (r) {
+        var t = /^census_t(.+)$/.exec(r.groupKey || '');
+        if (t) r.metricLabel += '\u2002\u00b7\u2002table ' + t[1];
+      });
+      // One table can still give two rows with one name, because the two
+      // censuses spell the same band differently and the labels normalise to
+      // the same string. The census separates those, as it does for labels.
+      var still = {};
+      group.forEach(function (r) {
+        (still[r.metricLabel] = still[r.metricLabel] || []).push(r);
+      });
+      Object.keys(still).forEach(function (lab) {
+        if (still[lab].length < 2) return;
+        still[lab].forEach(function (r) {
+          if (r.years) r.metricLabel += '\u2002\u00b7\u2002' + r.years;
+        });
+      });
+    });
+
     index.sort(function (a, b) {
       return a.topicLabel.localeCompare(b.topicLabel)
           || a.dsLabel.localeCompare(b.dsLabel)
-          || a.label.localeCompare(b.label);
+          || a.label.localeCompare(b.label)
+          || a.metricLabel.localeCompare(b.metricLabel, undefined, { numeric: true });
     });
     return index;
   }
@@ -79,11 +120,28 @@
     return index.filter(function (r) { return r.topic === best; })[0] || null;
   }
 
+  function hold(st, r) {
+    st.topic = r.topic; st.ds = r.ds; st.ind = r.ind; st.metric = r.metric;
+  }
+
+  /* The row the four held values resolve to, falling back up the cascade the
+     same way the rail itself does when a level's value did not survive. */
+  function pick(index, st) {
+    return index.filter(function (r) {
+      return r.topic === st.topic && r.ds === st.ds
+          && r.ind === st.ind && r.metric === st.metric;
+    })[0]
+    || index.filter(function (r) {
+      return r.topic === st.topic && r.ds === st.ds && r.ind === st.ind;
+    })[0]
+    || index.filter(function (r) { return r.topic === st.topic; })[0];
+  }
+
   window.DDPlacesRail = {
     mount: function (opts) {
       var host = opts.el;
       if (!host || !window.DDExplorer) return null;
-      var index = build(opts.IX, opts.N, opts.col, opts.level);
+      var index = build(opts.IX, opts.N, opts.col, opts.level, opts.list);
       if (!index.length) return null;
 
       /* Alphabetically first is "Agriculture / Almond, area in thousand
@@ -91,19 +149,19 @@
          population the way the live map does, and fall back by preference
          rather than to whatever sorts first. */
       var first = prefer(index) || index[0];
-      var st = { topic: first.topic, ds: first.ds, ind: first.ind };
+      var st = {};
+      hold(st, first);
       if (opts.row != null) {
-        var cur = index.filter(function (r) {
-          return r.ind === String(opts.row);
-        })[0];
-        if (cur) { st.topic = cur.topic; st.ds = cur.ds; st.ind = cur.ind; }
+        var cur = index.filter(function (r) { return r.row === opts.row; })[0];
+        if (cur) hold(st, cur);
       }
 
       var rail = window.DDExplorer.mount({
         el: host, index: index, state: st,
-        levels: ['topic', 'ds', 'ind'],
-        labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator' },
-        onChange: function (r) { if (r) opts.onChange(Number(r.ind)); },
+        levels: ['topic', 'ds', 'ind', 'metric'],
+        labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
+                  metric: 'Metric' },
+        onChange: function (r) { if (r) opts.onChange(r.row); },
       });
       rail.sync(false);
 
@@ -112,16 +170,16 @@
            the URL carried no indicator, so the page opens on a real map
            instead of a rail pointing at an empty one. */
         fire: function () {
-          var r = index.filter(function (x) { return x.ind === st.ind; })[0];
-          if (r) opts.onChange(Number(r.ind));
+          var r = pick(index, st);
+          if (r) opts.onChange(r.row);
         },
         /* The picker list and the rail are peers, so choosing from one moves
            the other. Without this they drift and the page shows a rail that
            disagrees with the indicator actually on the map. */
         follow: function (row) {
-          var r = index.filter(function (x) { return x.ind === String(row); })[0];
+          var r = index.filter(function (x) { return x.row === row; })[0];
           if (!r) return;
-          st.topic = r.topic; st.ds = r.ds; st.ind = r.ind;
+          hold(st, r);
           rail.sync(false);
         },
         /* Switching district <-> tehsil rebuilds the index, because the two
@@ -134,24 +192,26 @@
            Now it keeps the indicator you were looking at if the new level has
            it, falls back to the preferred opener if not, and always draws. */
         rebuild: function (level, key) {
-          var prev = index.filter(function (x) { return x.ind === st.ind; })[0];
-          index = build(opts.IX, opts.N, opts.col, level);
+          var prev = pick(index, st);
+          index = build(opts.IX, opts.N, opts.col, level, opts.list);
           if (!index.length) return;
 
           var same = prev && index.filter(function (x) {
             return x.key === prev.key;
           })[0];
           var next = same || prefer(index) || index[0];
-          st.topic = next.topic; st.ds = next.ds; st.ind = next.ind;
+          hold(st, next);
 
           rail = window.DDExplorer.mount({
             el: host, index: index, state: st,
-            levels: ['topic', 'ds', 'ind'],
-            labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator' },
-            onChange: function (x) { if (x) opts.onChange(Number(x.ind)); },
+            levels: ['topic', 'ds', 'ind', 'metric'],
+            labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
+                      metric: 'Metric' },
+            onChange: function (x) { if (x) opts.onChange(x.row); },
           });
           rail.sync(false);
-          opts.onChange(Number(st.ind));
+          var drawn = pick(index, st) || next;
+          opts.onChange(drawn.row);
         },
       };
     },

@@ -93,7 +93,7 @@ def main():
     order_vals = ', '.join("('" + t + "', " + str(i) + ")" for i, t in enumerate(ORDER))
     ix = con.sql(f"""
         SELECT level, topic, topic_label, group_key, group_label, dataset,
-               indicator, label, coalesce(dp, -1) AS dp, source,
+               indicator, label, measure, metric, coalesce(dp, -1) AS dp, source,
                coalesce(families, '') AS families,
                coalesce(years, []) AS years,
                coalesce(localities, ['all']) AS localities,
@@ -105,7 +105,7 @@ def main():
         -- alphabetically by their key
         ORDER BY o.ord, group_key, label, level""").fetchall()
     names = ('level topic topic_label group_key group_label dataset indicator label '
-             'dp source families years localities sexes shapes units '
+             'measure metric dp source families years localities sexes shapes units '
              'min_value max_value').split()
     # the list columns intern as a whole: a locality set repeats across thousands
     # of indicators, so the distinct combinations are a handful
@@ -113,7 +113,7 @@ def main():
     P = columnar(rows, names,
                  {'level', 'topic', 'topic_label', 'group_key', 'group_label',
                   'dataset', 'source', 'families', 'years', 'localities',
-                  'sexes', 'label', 'indicator'})
+                  'sexes', 'label', 'indicator', 'measure', 'metric'})
     n1 = write(out / 'places_index.js', 'DD_PLACES_IX', P,
                f'Places picker index, {len(ix):,} indicators')
 

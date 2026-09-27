@@ -193,15 +193,22 @@ def main():
     # PBS's own concatenation is the audit trail; the picker needs something a
     # reader can scan. labels.py changes case, dashes, the order of two parts
     # and a redundant repetition - never the words.
-    from labels import display
+    from labels import display, split
     rows = con.sql("""SELECT rowid, label, raw_indicator, raw_col
                       FROM place_indicator_index WHERE raw_indicator <> ''""").fetchall()
-    con.execute('CREATE TABLE relabel(rid BIGINT, lab TEXT)')
-    con.executemany('INSERT INTO relabel VALUES (?,?)',
-                    [(r[0], display(r[2], r[3] or None)) for r in rows])
+    # label is the whole cell, for the legend, the search and the CSV header.
+    # measure and metric are the same cell split in two, for the picker: one
+    # census topic held 1,525 entries, which is not a list anyone reads, and
+    # most of that is one measure repeated across its age bands.
+    con.execute('CREATE TABLE relabel(rid BIGINT, lab TEXT, meas TEXT, met TEXT)')
+    con.executemany('INSERT INTO relabel VALUES (?,?,?,?)',
+                    [(r[0], display(r[2], r[3] or None))
+                     + split(r[2], r[3] or None) for r in rows])
     con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
         SELECT i.* REPLACE (coalesce(r.lab, i.label) AS label),
-               nullif(i.label, coalesce(r.lab, i.label)) AS label_source
+               nullif(i.label, coalesce(r.lab, i.label)) AS label_source,
+               coalesce(r.meas, i.label) AS measure,
+               coalesce(r.met, '') AS metric
         FROM place_indicator_index i LEFT JOIN relabel r ON r.rid = i.rowid""")
     con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_indicator')
     con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_col')

@@ -22,8 +22,10 @@
 (function () {
   'use strict';
 
-  var CAPTION = { topic: 'Topic', ds: 'Dataset', ind: 'Indicator' };
-  var LABEL_OF = { topic: 'topicLabel', ds: 'dsLabel', ind: 'label' };
+  var CAPTION = { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
+                  metric: 'Metric' };
+  var LABEL_OF = { topic: 'topicLabel', ds: 'dsLabel', ind: 'label',
+                   metric: 'metricLabel' };
 
   function uniq(rows, key, labelKey) {
     var seen = {}, out = [];

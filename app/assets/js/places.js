@@ -998,7 +998,7 @@
 
     renderPicker();
     rail = window.DDPlacesRail && window.DDPlacesRail.mount({
-      el: $('rail'), IX: IX, N: N, col: col, level: state.level,
+      el: $('rail'), IX: IX, N: N, col: col, list: list, level: state.level,
       row: state.row, onChange: choose,
     });
     if (!readUrl() && rail) rail.fire();
