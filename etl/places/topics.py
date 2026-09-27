@@ -27,6 +27,10 @@ TOPICS = {
     'infrastructure': 'Infrastructure & utilities',
     'economic':     'Economic activity',
     'health':       'Health & children',
+    # Women's status, contraception and who decides. Maternal care stays in
+    # Health: it is a service women receive, and the live map has always
+    # coloured it as health while colouring women's status separately.
+    'women':        'Women & gender',
     'access':       'Schools & access to care',
 
     'satellite':    'Satellite & environment',
@@ -43,7 +47,7 @@ TOPICS = {
 # ones that are about a particular source or instrument.
 ORDER = ['demographics', 'education', 'employment', 'economic', 'welfare',
          'poverty', 'housing', 'infrastructure', 'health', 'agriculture',
-         'migration', 'access', 'facilities', 'satellite']
+         'migration', 'women', 'access', 'facilities', 'satellite']
 
 # Curated group -> topic. Where a group sat under an app.js topic that the
 # design does not have, it moves to the nearest one the design does:
@@ -75,9 +79,9 @@ GROUP_TOPIC = {
 
     'micsMaternal': 'health', 'micsChildHealth': 'health',
     'micsNutrition': 'health', 'pslmHealth': 'health',
-    'dhsFamilyPlanning': 'health', 'dhsFertility': 'health',
     'dhsMaternal': 'health', 'dhsImmunisation': 'health', 'dhsNutrition': 'health',
-    'micsWomen': 'health', 'hiesDecisions': 'health',
+    'micsWomen': 'women', 'hiesDecisions': 'women',
+    'dhsFamilyPlanning': 'women', 'dhsFertility': 'women',
     'micsProtection': 'health', 'micsEquity': 'health',
 
     # Distance and travel time are about reaching a service, not about the

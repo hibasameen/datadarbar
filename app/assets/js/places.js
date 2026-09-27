@@ -440,9 +440,22 @@
      A count of people or things is heavily skewed here, so counts get
      equal-count classes and rates the smooth ramp, the same rule the district
      map already uses. */
-  var RAMP = ['#e6f4ec', '#145228'];
+  /* One ramp for every indicator made the map say nothing about what it was
+     showing - literacy, night lights and travel time to a clinic all came out
+     the same green. The scale follows the indicator's group, as the live map
+     does. */
+  /* White boundaries disappeared into the cream ground at the edge of the
+     country, where a pale fill meets the page. The live map draws them in a
+     grey-green that reads against both. */
+  var BOUNDARY = '#8a9480';
 
-  function scaleFor(vals, isRate) {
+  function rampFor(row) {
+    if (row == null || !window.DDMapScales) return ['#e6f4ec', '#145228'];
+    return window.DDMapScales.for(col('group_key', row), col('topic', row));
+  }
+
+  function scaleFor(vals, isRate, ramp) {
+    var RAMP = ramp || rampFor(state.row);
     if (!vals.length) return null;
     var breaks = chroma.limits(vals, 'q', 5);
     if (isRate) {
@@ -500,7 +513,7 @@
                   color: '#b9c2b9', opacity: 1 };
           }
           return { fillColor: sc.colour(v), fillOpacity: .9, weight: .6,
-                   color: '#ffffff', opacity: 1 };
+                   color: BOUNDARY, opacity: 1 };
         },
         onEachFeature: function (f, lyr) {
           lyr.on('click', function () {
@@ -544,7 +557,7 @@
     var sc = state.scale;
     var dp = col('dp', i);
     $('legendRamp').style.background = 'linear-gradient(90deg,' +
-      chroma.scale(RAMP).colors(5).join(',') + ')';
+      chroma.scale(rampFor(i)).colors(5).join(',') + ')';
     $('legendLo').textContent = sc ? fmt(sc.breaks[0], dp) : '';
     $('legendHi').textContent = sc ? fmt(sc.breaks[sc.breaks.length - 1], dp) : '';
 
