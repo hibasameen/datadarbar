@@ -61,6 +61,7 @@ DATASET_NAMES = {
     "geography_keys": "Pakistan place identifiers and which ones join safely",
     "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
     "crops_district_fy": "Pakistan crop area, production and yield by district",
+    "census_entities": "Pakistan buildings and facilities counted by Census 2023",
     "place_indicators": "Pakistan district and tehsil indicators on 2023 boundaries",
     "place_indicator_index": "Index of every Pakistan district and tehsil indicator",
     "lsm_qim": "Pakistan large-scale manufacturing index",

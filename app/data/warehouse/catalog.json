@@ -249,9 +249,56 @@
    ]
   },
   {
+   "name": "census_entities",
+   "file": "census_entities.parquet",
+   "bytes": 61415,
+   "rows": 15387,
+   "description": "Census 2023\u2019s count of enumerated structures \u2014 24 kinds, from schools and hospitals to factories, mosques and police stations \u2014 by district and tehsil.",
+   "notes": "The only table here that covers the whole frame Data Darbar draws: 156 districts and 649 tehsils, every district of Azad Jammu & Kashmir and Gilgit-Baltistan included. Neither census panel has a row for either, so for those 58 tehsils these are the only values on the site. Two cautions. A missing row is not a zero \u2014 a district with no jail has no jail row \u2014 so coverage varies by kind: hostels, hotels and hospitals reach all 156 districts, universities 74, orphanages 66. And \u2018Home\u2019 is returned for 9 districts of 156; the portal\u2019s own documentation says to treat it as unavailable, so it is here but deliberately not offered as a map indicator. The district and tehsil aggregations agree exactly for all 24 kinds.",
+   "unit": "structures",
+   "source": "PBS Digital Census 2023 via economic.data.gov.pk, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil"
+    },
+    {
+     "name": "area_code",
+     "type": "VARCHAR",
+     "description": "PBS\u2019s own district or tehsil code"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the shape this is drawn on \u2014 district code, or dds_id below that, or PBS-<code> for a tehsil outside the census"
+    },
+    {
+     "name": "unit_id",
+     "type": "INTEGER",
+     "description": "PBS\u2019s own id for the kind of structure, 1\u201324"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "what the structure is"
+    },
+    {
+     "name": "area",
+     "type": "VARCHAR",
+     "description": "the area\u2019s name as the portal gives it"
+    },
+    {
+     "name": "count",
+     "type": "BIGINT",
+     "description": "structures enumerated"
+    }
+   ]
+  },
+  {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201164,
+   "bytes": 8201172,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -2642,8 +2689,8 @@
   {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
-   "bytes": 88676,
-   "rows": 5755,
+   "bytes": 89401,
+   "rows": 5801,
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
@@ -2739,8 +2786,8 @@
   {
    "name": "place_indicators",
    "file": "place_indicators.parquet",
-   "bytes": 274804,
-   "rows": 94505,
+   "bytes": 314011,
+   "rows": 109841,
    "description": "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
    "notes": "Values only \u2014 the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators \u2014 dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have no index entry.",
    "unit": "indicator values",
@@ -3153,20 +3200,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RS_QGDP1516_Q",
-     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2015-09",
-     "upto": "2026-03"
-    },
-    {
      "code": "TS_GP_RLS_POLSALE_M",
      "name": "POL (Energy Products) Sales by Sector",
      "subject": "Real Sector",
      "series": 8,
      "since": "2013-07",
      "upto": "2026-05"
+    },
+    {
+     "code": "TS_GP_RS_QGDP1516_Q",
+     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2015-09",
+     "upto": "2026-03"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",

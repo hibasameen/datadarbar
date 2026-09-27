@@ -31,6 +31,8 @@ def main():
         t = pathlib.Path(tmp) / 'tehsils.parquet'
         dia = pathlib.Path(tmp) / 'diaspora.parquet'
         cropix = pathlib.Path(tmp) / 'crops_index.parquet'
+        ent = pathlib.Path(tmp) / 'entities.parquet'
+        entix = pathlib.Path(tmp) / 'entities_index.parquet'
         run('build_place_indicators.py', '--src', APP / 'data' / 'warehouse',
             '--geo', APP / 'data' / 'districts_2023_geo.js', '--out', d)
         run('build_place_tehsils.py', '--src', APP / 'data' / 'warehouse',
@@ -46,6 +48,11 @@ def main():
             '--geo', APP / 'data' / 'districts_2023_geo.js',
             '--out-table', APP / 'data' / 'warehouse' / 'crops_district_fy.parquet',
             '--out-index', cropix)
+        run('build_entities.py',
+            '--src', RAW / 'pbs_insight_explorer' / 'economic_2026-09-27',
+            '--pbs-t', PBS_T,
+            '--out-table', APP / 'data' / 'warehouse' / 'census_entities.parquet',
+            '--out-places', ent, '--out-index', entix)
         run('build_geography_keys.py', '--app', APP,
             '--pbs-d', RAW / 'geospatial' / 'boundaries' / 'pbs-census2023-2026-09-27'
                        / 'pbs_districts_2023.geojson',
@@ -56,7 +63,7 @@ def main():
             '--pbs', PBS_T,
             '--out-values', APP / 'data' / 'warehouse' / 'place_indicators.parquet',
             '--out-index', APP / 'data' / 'warehouse' / 'place_indicator_index.parquet',
-            '--extra', dia, '--extra-index', cropix)
+            '--extra', dia, ent, '--extra-index', cropix, entix)
 
 
 if __name__ == '__main__':

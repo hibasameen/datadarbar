@@ -1524,6 +1524,37 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="census units",
         )
 
+    f = OUT / "census_entities.parquet"
+    if f.exists():
+        register(
+            "census_entities",
+            "Census 2023\u2019s count of enumerated structures \u2014 24 kinds, from schools "
+            "and hospitals to factories, mosques and police stations \u2014 by district "
+            "and tehsil.",
+            "The only table here that covers the whole frame Data Darbar draws: 156 "
+            "districts and 649 tehsils, every district of Azad Jammu & Kashmir and "
+            "Gilgit-Baltistan included. Neither census panel has a row for either, so "
+            "for those 58 tehsils these are the only values on the site. Two "
+            "cautions. A missing row is not a zero \u2014 a district with no jail has no "
+            "jail row \u2014 so coverage varies by kind: hostels, hotels and hospitals "
+            "reach all 156 districts, universities 74, orphanages 66. And \u2018Home\u2019 is "
+            "returned for 9 districts of 156; the portal\u2019s own documentation says to "
+            "treat it as unavailable, so it is here but deliberately not offered as "
+            "a map indicator. The district and tehsil aggregations agree exactly for "
+            "all 24 kinds.",
+            {"level": "district or tehsil",
+             "area_code": "PBS\u2019s own district or tehsil code",
+             "map_key": "the shape this is drawn on \u2014 district code, or dds_id "
+                        "below that, or PBS-<code> for a tehsil outside the census",
+             "unit_id": "PBS\u2019s own id for the kind of structure, 1\u201324",
+             "unit_type": "what the structure is",
+             "area": "the area\u2019s name as the portal gives it",
+             "count": "structures enumerated"},
+            "PBS Digital Census 2023 via economic.data.gov.pk, pull of 2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="structures",
+        )
+
     f = OUT / "crops_district_fy.parquet"
     if f.exists():
         register(

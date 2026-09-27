@@ -30,13 +30,14 @@ TOPICS = {
     'satellite':    'Satellite & environment',
     'migration':    'Migration',
     'agriculture':  'Agriculture',
+    'facilities':   'Buildings & facilities (Census 2023)',
 }
 
 # The order the picker lists them in: the big subject topics first, then the
 # ones that are about a particular source or instrument.
 ORDER = ['demographics', 'education', 'employment', 'welfare', 'poverty',
-         'housing', 'health', 'agriculture', 'migration', 'access', 'rural',
-         'satellite']
+         'housing', 'health', 'agriculture', 'migration', 'access',
+         'facilities', 'rural', 'satellite']
 
 # Curated group -> topic. Where a group sat under an app.js topic that the
 # design does not have, it moves to the nearest one the design does:
