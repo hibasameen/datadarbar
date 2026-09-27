@@ -33,6 +33,11 @@ def main():
             '--geo', APP / 'data' / 'districts_2023_geo.js', '--out', d)
         run('build_place_tehsils.py', '--src', APP / 'data' / 'warehouse',
             '--bridge', BRIDGE, '--pbs', PBS_T, '--out', t)
+        run('build_geography_keys.py', '--app', APP,
+            '--pbs-d', RAW / 'geospatial' / 'boundaries' / 'pbs-census2023-2026-09-27'
+                       / 'pbs_districts_2023.geojson',
+            '--pbs-t', PBS_T, '--bridge', BRIDGE,
+            '--out', APP / 'data' / 'warehouse' / 'geography_keys.parquet')
         run('build_place_index.py', '--districts', d, '--tehsils', t,
             '--census-index', APP / 'data' / 'warehouse' / 'census_series_index.parquet',
             '--pbs', PBS_T,

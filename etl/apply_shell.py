@@ -41,28 +41,31 @@ BEGIN_H, END_H = '<!-- dd:header -->', '<!-- /dd:header -->'
 BEGIN_F, END_F = '<!-- dd:footer -->', '<!-- /dd:footer -->'
 
 
-def link(item, here, cls):
+def link(item, here, cls, root=''):
     on = here in item['match']
     active = ' active' if on else ''
     if not item['href']:
         return (f'<span class="{cls}{active} soon" aria-disabled="true" '
                 f'title="Not collected yet">{item["label"]}</span>')
     aria = ' aria-current="page"' if on else ''
-    return f'<a href="{item["href"]}" class="{cls}{active}"{aria}>{item["label"]}</a>'
+    return (f'<a href="{root}{item["href"]}" class="{cls}{active}"{aria}>'
+            f'{item["label"]}</a>')
 
 
-def header(here):
-    nav = ''.join(link(i, here, 'header-link') for i in NAV)
+def header(here, root=''):
+    """The shared header. `root` prefixes every link and asset path, so a page
+    under /datasets/<slug>/ passes '/' and gets absolute paths."""
+    nav = ''.join(link(i, here, 'header-link', root) for i in NAV)
     nav += '<span class="header-sep"></span>'
-    nav += ''.join(link(i, here, 'header-link shelf') for i in SHELF)
-    mob = ''.join(link(i, here, 'mobile-nav-link') for i in NAV)
+    nav += ''.join(link(i, here, 'header-link shelf', root) for i in SHELF)
+    mob = ''.join(link(i, here, 'mobile-nav-link', root) for i in NAV)
     mob += '<div class="mobile-nav-label">For analysts</div>'
-    mob += ''.join(link(i, here, 'mobile-nav-link') for i in SHELF)
+    mob += ''.join(link(i, here, 'mobile-nav-link', root) for i in SHELF)
     return (
         f'{BEGIN_H}\n'
         '<header class="site-header">\n'
-        '  <a class="header-brand" href="index.html">'
-        '<img src="assets/img/logo.svg" class="header-logo" alt=""/>'
+        f'  <a class="header-brand" href="{root}index.html">'
+        f'<img src="{root}assets/img/logo.svg" class="header-logo" alt=""/>'
         '<span class="header-text"><span class="header-title">Data Darbar</span>'
         '<span class="header-tagline">Pakistan in numbers</span></span></a>\n'
         f'  <nav class="header-nav" aria-label="Sections">{nav}</nav>\n'
@@ -73,7 +76,7 @@ def header(here):
         f'{END_H}')
 
 
-def footer():
+def footer(root=''):
     return (
         f'{BEGIN_F}\n'
         '<footer class="site-footer">\n'
@@ -87,7 +90,7 @@ def footer():
         '<span class="footer-sep">&middot;</span>'
         '<a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">SBP &#8599;</a>'
         '<span class="footer-sep">&middot;</span>'
-        '<a href="methods.html">Methods</a>'
+        f'<a href="{root}methods.html">Methods</a>'
         '<span class="footer-sep">&middot;</span>'
         '<a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a>'
         '<span class="footer-sep">&middot;</span>'

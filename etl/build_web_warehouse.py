@@ -1434,6 +1434,185 @@ def build(src: Path, district_only: bool = False) -> None:
             unit="counts of units; the values themselves live in the panels",
         )
 
+    # ── geography: the frames, the crosswalks, and which key joins what ──────
+    print("geography\u2026")
+    XW = REPO / "etl" / "census2017"
+    PL = REPO / "etl" / "places"
+    CSV_OPTS = "header=true, quote='\"', escape='\"'"
+
+    if (XW / "district_crosswalk_2017_2023.csv").exists():
+        register(
+            "district_crosswalk_2017_2023",
+            "Every district-level relationship between Census 2017 and Census 2023, "
+            "as groups that cover the same ground.",
+            "A group is the smallest set of 2017 and 2023 units covering the same "
+            "territory, so a merge has two 2017 units and one 2023 unit and a split "
+            "has one and several. What makes this checkable rather than argued is the "
+            "balances column: Census 2023 table 1 prints PBS\u2019s own restatement of the "
+            "2017 population on 2023 boundaries, and for every group the 2017 units\u2019 "
+            "published population equals the 2023 units\u2019 restated figure. All 127 "
+            "groups balance. A group that did not would mean the relation asserted for "
+            "it is wrong.",
+            {"relation": "exact, renamed, merged, split, or boundary transfer",
+             "units_2017": "the 2017 district(s) in this group, joined by +",
+             "units_2023": "the 2023 district(s) in this group, joined by +",
+             "province_area": "province or area, as the census names it",
+             "population_2017": "the 2017 units\u2019 published 2017 population",
+             "restated_2017": "the 2023 units\u2019 POPULATION 2017, restated by PBS",
+             "population_2023": "the 2023 units\u2019 2023 population",
+             "balances": "yes where the two 2017 figures agree to the person"},
+            "Derived from census_panel_2017 and census_panel_2023; checked against "
+            "PBS\u2019s own restatement",
+            f"SELECT * FROM read_csv('{(XW / 'district_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
+            unit="districts and people",
+        )
+        register(
+            "subdistrict_crosswalk_2017_2023",
+            "The same thing one tier down: 510 groups over the 537 sub-districts of "
+            "2017 and the 591 of 2023.",
+            "Pairs are matched by name within a district group, or \u2014 where the names "
+            "give nothing \u2014 by a population that is identical and uniquely so within "
+            "the group; matched_by records which. Dera Bugti\u2019s Phelawagh Tehsil and "
+            "Qadirabad Sub-Division are one place under two names and only the 28,054 "
+            "says so. Where several 2017 units became several 2023 ones, the group is "
+            "marked restructured and the correspondence inside it is left open rather "
+            "than guessed: the group balances, but which unit became which does not "
+            "follow from that. The tier word is not a hierarchy \u2014 a unit published "
+            "as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
+            {"district_group": "the district group this sits inside",
+             "relation": "exact, renamed, or restructured",
+             "matched_by": "name, population, or blank for a restructured group",
+             "district_2017": "the district the 2017 unit belongs to",
+             "district_2023": "the district the 2023 unit belongs to",
+             "units_2017": "the 2017 unit(s), joined by +",
+             "units_2023": "the 2023 unit(s), joined by +",
+             "population_2017": "published 2017 population",
+             "restated_2017": "PBS\u2019s POPULATION 2017 for the 2023 units",
+             "balances": "yes where the two agree"},
+            "Derived from census_panel_2017 and census_panel_2023",
+            f"SELECT * FROM read_csv('{(XW / 'subdistrict_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
+            unit="sub-districts and people",
+        )
+    if (XW / "census_unit_map.csv").exists():
+        register(
+            "census_unit_map",
+            "One row per census unit saying which PBS 2023 shape it is drawn on, and "
+            "\u2014 where that is not a straight match \u2014 why.",
+            "This is the crosswalk turned into a decision. A crosswalk says what "
+            "happened to a unit; this says what a figure for it means when drawn on "
+            "the 2023 frame. comparable is the field to read: yes where the figure "
+            "belongs on the shape as published; combined where two 2017 units share "
+            "one 2023 shape and must be added, or averaged on weight for a rate; "
+            "parent where a unit was split and its figure is drawn across every "
+            "successor at once rather than divided between them; flagged where the "
+            "district persists but its territory changed; no where nothing can "
+            "honestly be drawn. map_key can therefore name several shapes, "
+            "space-separated. Anything that totals or ranks must count units and not "
+            "shapes: a parent drawn across its successors is visited once per shape, "
+            "which turns a national total of 207,684,626 into 213.4 million.",
+            {"census_year": "2017 or 2023",
+             "unit_type": "district, or tehsil for everything below it",
+             "district": "the district the unit sits in",
+             "unit": "the unit, as the census names it",
+             "map_key": "the PBS 2023 shape(s) it is drawn on, space-separated",
+             "relation": "how it relates to the 2023 frame",
+             "comparable": "yes, combined, parent, flagged, or no",
+             "note": "the reason, in words written for a reader",
+             "weight": "2017 population, for averaging a rate across combined units"},
+            "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+            f"SELECT * FROM read_csv('{(XW / 'census_unit_map.csv').as_posix()}', {CSV_OPTS})",
+            unit="census units",
+        )
+
+    f = OUT / "geography_keys.parquet"
+    if f.exists():
+        register(
+            "geography_keys",
+            "Which identifier names a Pakistani place, and which of them can safely "
+            "be joined on.",
+            "Six identifiers name places in this warehouse and they are not "
+            "interchangeable; unique_per_place is the column that decides whether a "
+            "join is safe. dd_id is the trap: 591 census sub-districts share 471 of "
+            "them, so joining on it and keeping one row per polygon returns a "
+            "plausible answer with units missing. Every count here is measured from "
+            "the boundary files rather than asserted.",
+            {"key": "the column name as it appears in the tables",
+             "level": "district or sub-district",
+             "what": "what the identifier is",
+             "distinct_values": "how many distinct values exist, measured",
+             "unique_per_place": "FALSE means one value can name several places \u2014 "
+                                 "do not join on it alone",
+             "frame": "the boundary set it belongs to",
+             "notes": "what to do about it"},
+            "Measured from the PBS Digital Census 2023 layers and the warehouse tables",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="identifiers",
+        )
+
+    PLACE_COLS = {
+        "place_indicators": {
+            "level": "district or tehsil",
+            "map_key": "the PBS 2023 shape(s) this row is drawn on, space-separated "
+                       "where a unit was later split",
+            "source_key": "the identifier the source table used \u2014 a district slug, a "
+                          "dd_id, or a PBS tehsil code",
+            "relation": "how the unit relates to the 2023 frame: exact, alias, split, "
+                        "or shared",
+            "note": "the reason, in words, for anything other than a straight match",
+            "group_key": "the indicator group, joining to place_indicator_index",
+            "indicator": "the indicator id within that group",
+            "year": "the year, where the series has one; NULL where it does not",
+            "value": "the figure \u2014 unit depends on the indicator, see the index",
+        },
+        "place_indicator_index": {
+            "level": "district or tehsil \u2014 the geography this indicator draws on",
+            "topic": "the topic it browses under",
+            "topic_label": "that topic, as a reader sees it",
+            "group_key": "the group, joining to place_indicators.group_key",
+            "group_label": "that group, as a reader sees it",
+            "dataset": "the source dataset and release",
+            "indicator": "the indicator id, joining to place_indicators.indicator",
+            "label": "the indicator, as a reader sees it",
+            "dp": "decimal places to show; NULL for a count",
+            "source": "where the values are: place_indicators, or a census panel",
+            "years": "how many years the series has",
+            "shapes": "PBS 2023 shapes this indicator colours",
+            "units": "census units carrying a value \u2014 differs from shapes wherever a "
+                     "unit is drawn across the shapes that replaced it",
+            "min_value": "smallest value",
+            "max_value": "largest value",
+        },
+    }
+    for name, desc, notes, src in [
+        ("place_indicators",
+         "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
+         "Values only \u2014 the words belong to place_indicator_index, because "
+         "repeating a label 90,000 times is most of what makes a payload large. "
+         "map_key names the PBS 2023 shape(s) a row is drawn on and follows the same "
+         "convention as census_unit_map: a unit that was later split names all of its "
+         "successors, so count units and not shapes when totalling. 73 of the fields "
+         "here are provenance rather than indicators \u2014 dhs_coverage, "
+         "hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have "
+         "no index entry.",
+         "place_indicators"),
+        ("place_indicator_index",
+         "One row per indicator Places can draw, curated and census alike.",
+         "The picker reads this and nothing else: 296 curated indicators beside "
+         "37,971 census series, with the words a reader sees and the number of shapes "
+         "behind each. source says where the values are \u2014 place_indicators, or a "
+         "census panel \u2014 which is what lets one list cover both without copying 17 MB "
+         "of census into a table it does not fit. shapes counts shapes and units "
+         "counts census units; they differ wherever a unit is drawn across its "
+         "successors.",
+         "place_indicator_index"),
+    ]:
+        f = OUT / f"{src}.parquet"
+        if f.exists():
+            register(name, desc, notes, PLACE_COLS.get(name, {}),
+                     "Built by etl/places/build_all.py",
+                     f"SELECT * FROM '{f.as_posix()}'",
+                     unit="indicator values" if src == "place_indicators" else "indicators")
+
     if p17 or p23:
         EXAMPLES.extend(CENSUS_PANEL_EXAMPLES)
     else:

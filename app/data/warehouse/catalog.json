@@ -251,7 +251,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201156,
+   "bytes": 8201164,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -565,6 +565,115 @@
    ]
   },
   {
+   "name": "census_unit_map",
+   "file": "census_unit_map.parquet",
+   "bytes": 14750,
+   "rows": 1398,
+   "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and \u2014 where that is not a straight match \u2014 why.",
+   "notes": "This is the crosswalk turned into a decision. A crosswalk says what happened to a unit; this says what a figure for it means when drawn on the 2023 frame. comparable is the field to read: yes where the figure belongs on the shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on weight for a rate; parent where a unit was split and its figure is drawn across every successor at once rather than divided between them; flagged where the district persists but its territory changed; no where nothing can honestly be drawn. map_key can therefore name several shapes, space-separated. Anything that totals or ranks must count units and not shapes: a parent drawn across its successors is visited once per shape, which turns a national total of 207,684,626 into 213.4 million.",
+   "unit": "census units",
+   "source": "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "BIGINT",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, or tehsil for everything below it"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "the district the unit sits in"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the unit, as the census names it"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS 2023 shape(s) it is drawn on, space-separated"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "how it relates to the 2023 frame"
+    },
+    {
+     "name": "comparable",
+     "type": "VARCHAR",
+     "description": "yes, combined, parent, flagged, or no"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "the reason, in words written for a reader"
+    },
+    {
+     "name": "weight",
+     "type": "BIGINT",
+     "description": "2017 population, for averaging a rate across combined units"
+    }
+   ]
+  },
+  {
+   "name": "district_crosswalk_2017_2023",
+   "file": "district_crosswalk_2017_2023.parquet",
+   "bytes": 4739,
+   "rows": 127,
+   "description": "Every district-level relationship between Census 2017 and Census 2023, as groups that cover the same ground.",
+   "notes": "A group is the smallest set of 2017 and 2023 units covering the same territory, so a merge has two 2017 units and one 2023 unit and a split has one and several. What makes this checkable rather than argued is the balances column: Census 2023 table 1 prints PBS\u2019s own restatement of the 2017 population on 2023 boundaries, and for every group the 2017 units\u2019 published population equals the 2023 units\u2019 restated figure. All 127 groups balance. A group that did not would mean the relation asserted for it is wrong.",
+   "unit": "districts and people",
+   "source": "Derived from census_panel_2017 and census_panel_2023; checked against PBS\u2019s own restatement",
+   "columns": [
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "exact, renamed, merged, split, or boundary transfer"
+    },
+    {
+     "name": "units_2017",
+     "type": "VARCHAR",
+     "description": "the 2017 district(s) in this group, joined by +"
+    },
+    {
+     "name": "units_2023",
+     "type": "VARCHAR",
+     "description": "the 2023 district(s) in this group, joined by +"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province or area, as the census names it"
+    },
+    {
+     "name": "population_2017",
+     "type": "BIGINT",
+     "description": "the 2017 units\u2019 published 2017 population"
+    },
+    {
+     "name": "restated_2017",
+     "type": "BIGINT",
+     "description": "the 2023 units\u2019 POPULATION 2017, restated by PBS"
+    },
+    {
+     "name": "population_2023",
+     "type": "BIGINT",
+     "description": "the 2023 units\u2019 2023 population"
+    },
+    {
+     "name": "balances",
+     "type": "BOOLEAN",
+     "description": "yes where the two 2017 figures agree to the person"
+    }
+   ]
+  },
+  {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
    "bytes": 167765,
@@ -700,6 +809,53 @@
      "name": "parsed_into_db",
      "type": "BOOLEAN",
      "description": "TRUE if its contents are in a table here"
+    }
+   ]
+  },
+  {
+   "name": "geography_keys",
+   "file": "geography_keys.parquet",
+   "bytes": 2790,
+   "rows": 6,
+   "description": "Which identifier names a Pakistani place, and which of them can safely be joined on.",
+   "notes": "Six identifiers name places in this warehouse and they are not interchangeable; unique_per_place is the column that decides whether a join is safe. dd_id is the trap: 591 census sub-districts share 471 of them, so joining on it and keeping one row per polygon returns a plausible answer with units missing. Every count here is measured from the boundary files rather than asserted.",
+   "unit": "identifiers",
+   "source": "Measured from the PBS Digital Census 2023 layers and the warehouse tables",
+   "columns": [
+    {
+     "name": "key",
+     "type": "VARCHAR",
+     "description": "the column name as it appears in the tables"
+    },
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or sub-district"
+    },
+    {
+     "name": "what",
+     "type": "VARCHAR",
+     "description": "what the identifier is"
+    },
+    {
+     "name": "distinct_values",
+     "type": "BIGINT",
+     "description": "how many distinct values exist, measured"
+    },
+    {
+     "name": "unique_per_place",
+     "type": "BOOLEAN",
+     "description": "FALSE means one value can name several places \u2014 do not join on it alone"
+    },
+    {
+     "name": "frame",
+     "type": "VARCHAR",
+     "description": "the boundary set it belongs to"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "what to do about it"
     }
    ]
   },
@@ -2380,6 +2536,150 @@
    ]
   },
   {
+   "name": "place_indicator_index",
+   "file": "place_indicator_index.parquet",
+   "bytes": 336826,
+   "rows": 38267,
+   "description": "One row per indicator Places can draw, curated and census alike.",
+   "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
+   "unit": "indicators",
+   "source": "Built by etl/places/build_all.py",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil \u2014 the geography this indicator draws on"
+    },
+    {
+     "name": "topic",
+     "type": "VARCHAR",
+     "description": "the topic it browses under"
+    },
+    {
+     "name": "topic_label",
+     "type": "VARCHAR",
+     "description": "that topic, as a reader sees it"
+    },
+    {
+     "name": "group_key",
+     "type": "VARCHAR",
+     "description": "the group, joining to place_indicators.group_key"
+    },
+    {
+     "name": "group_label",
+     "type": "VARCHAR",
+     "description": "that group, as a reader sees it"
+    },
+    {
+     "name": "dataset",
+     "type": "VARCHAR",
+     "description": "the source dataset and release"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator id, joining to place_indicators.indicator"
+    },
+    {
+     "name": "label",
+     "type": "VARCHAR",
+     "description": "the indicator, as a reader sees it"
+    },
+    {
+     "name": "dp",
+     "type": "INTEGER",
+     "description": "decimal places to show; NULL for a count"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "where the values are: place_indicators, or a census panel"
+    },
+    {
+     "name": "years",
+     "type": "BIGINT",
+     "description": "how many years the series has"
+    },
+    {
+     "name": "shapes",
+     "type": "BIGINT",
+     "description": "PBS 2023 shapes this indicator colours"
+    },
+    {
+     "name": "units",
+     "type": "BIGINT",
+     "description": "census units carrying a value \u2014 differs from shapes wherever a unit is drawn across the shapes that replaced it"
+    },
+    {
+     "name": "min_value",
+     "type": "DOUBLE",
+     "description": "smallest value"
+    },
+    {
+     "name": "max_value",
+     "type": "DOUBLE",
+     "description": "largest value"
+    }
+   ]
+  },
+  {
+   "name": "place_indicators",
+   "file": "place_indicators.parquet",
+   "bytes": 267896,
+   "rows": 92315,
+   "description": "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
+   "notes": "Values only \u2014 the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators \u2014 dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have no index entry.",
+   "unit": "indicator values",
+   "source": "Built by etl/places/build_all.py",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS 2023 shape(s) this row is drawn on, space-separated where a unit was later split"
+    },
+    {
+     "name": "source_key",
+     "type": "VARCHAR",
+     "description": "the identifier the source table used \u2014 a district slug, a dd_id, or a PBS tehsil code"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "how the unit relates to the 2023 frame: exact, alias, split, or shared"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match"
+    },
+    {
+     "name": "group_key",
+     "type": "VARCHAR",
+     "description": "the indicator group, joining to place_indicator_index"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator id within that group"
+    },
+    {
+     "name": "year",
+     "type": "VARCHAR",
+     "description": "the year, where the series has one; NULL where it does not"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure \u2014 unit depends on the indicator, see the index"
+    }
+   ]
+  },
+  {
    "name": "sbp_observations",
    "file": "sbp_observations.parquet",
    "bytes": 994032,
@@ -2739,20 +3039,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RLS_POLSALE_M",
-     "name": "POL (Energy Products) Sales by Sector",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2013-07",
-     "upto": "2026-05"
-    },
-    {
      "code": "TS_GP_RS_QGDP1516_Q",
      "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
      "subject": "Real Sector",
      "series": 8,
      "since": "2015-09",
      "upto": "2026-03"
+    },
+    {
+     "code": "TS_GP_RLS_POLSALE_M",
+     "name": "POL (Energy Products) Sales by Sector",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2013-07",
+     "upto": "2026-05"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",
@@ -4092,6 +4392,68 @@
      "name": "release",
      "type": "VARCHAR",
      "description": "release tag of this table"
+    }
+   ]
+  },
+  {
+   "name": "subdistrict_crosswalk_2017_2023",
+   "file": "subdistrict_crosswalk_2017_2023.parquet",
+   "bytes": 15774,
+   "rows": 510,
+   "description": "The same thing one tier down: 510 groups over the 537 sub-districts of 2017 and the 591 of 2023.",
+   "notes": "Pairs are matched by name within a district group, or \u2014 where the names give nothing \u2014 by a population that is identical and uniquely so within the group; matched_by records which. Dera Bugti\u2019s Phelawagh Tehsil and Qadirabad Sub-Division are one place under two names and only the 28,054 says so. Where several 2017 units became several 2023 ones, the group is marked restructured and the correspondence inside it is left open rather than guessed: the group balances, but which unit became which does not follow from that. The tier word is not a hierarchy \u2014 a unit published as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
+   "unit": "sub-districts and people",
+   "source": "Derived from census_panel_2017 and census_panel_2023",
+   "columns": [
+    {
+     "name": "district_group",
+     "type": "VARCHAR",
+     "description": "the district group this sits inside"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "exact, renamed, or restructured"
+    },
+    {
+     "name": "matched_by",
+     "type": "VARCHAR",
+     "description": "name, population, or blank for a restructured group"
+    },
+    {
+     "name": "district_2017",
+     "type": "VARCHAR",
+     "description": "the district the 2017 unit belongs to"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "the district the 2023 unit belongs to"
+    },
+    {
+     "name": "units_2017",
+     "type": "VARCHAR",
+     "description": "the 2017 unit(s), joined by +"
+    },
+    {
+     "name": "units_2023",
+     "type": "VARCHAR",
+     "description": "the 2023 unit(s), joined by +"
+    },
+    {
+     "name": "population_2017",
+     "type": "BIGINT",
+     "description": "published 2017 population"
+    },
+    {
+     "name": "restated_2017",
+     "type": "BIGINT",
+     "description": "PBS\u2019s POPULATION 2017 for the 2023 units"
+    },
+    {
+     "name": "balances",
+     "type": "BOOLEAN",
+     "description": "yes where the two agree"
     }
    ]
   },
