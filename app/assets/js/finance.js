@@ -95,7 +95,7 @@ function standDown(){
 let E,ST,IND;
 let selYear,selSector='all',arcYears=[],arcData=[],shareYears=[],lsmSeries={},lsmColors={},lsmSel;
 function start(){
- if(!window.ECON){return setTimeout(start,30);}
+ if(!window.ECON||!window.DD_GROWTH){return setTimeout(start,30);}
  E=window.ECON;ST=E.structure;IND=E.industry;
  prepData();
  buildSectorSelect();
@@ -747,17 +747,26 @@ const DETAIL_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust
  'var(--negative)','var(--mauve)','var(--amber)','var(--green-500)',
  'var(--grey-blue)','var(--teal-300)','var(--sand)','var(--green-800)',
  'var(--plum-300)','var(--slate-300)','var(--sienna-300)'];
+/* The decomposition comes from build_growth_payload.py now, not from the
+   structure block. It is computed from constant-price LEVELS, so the parts
+   sum to headline growth by construction; the old one multiplied real growth
+   rates by current-price shares and listed Crops beside Cotton Ginning, which
+   sits inside Crops, and in 2022-23 its parts came to -0.934pp against a
+   headline of -0.210. */
+const GROWTH=()=>window.DD_GROWTH||{contrib:{},total:[]};
+const gContrib=()=>GROWTH().contrib;
+const gTotal=()=>GROWTH().total;
 function contribKeys(){
- const ks=Object.keys(ST.contrib||{});
+ const ks=Object.keys(gContrib());
  const order={agri:0,ind:1,serv:2};
- return ks.sort((a,b)=>order[ST.contrib[a].parent]-order[ST.contrib[b].parent]||a.localeCompare(b));
+ return ks.sort((a,b)=>order[gContrib()[a].parent]-order[gContrib()[b].parent]||a.localeCompare(b));
 }
 let detailColor={};
 function contribRows(year,group){
  // returns [{key,label,parent,v}] for one year at the chosen aggregation
  const out={};
  contribKeys().forEach(k=>{
-  const c=ST.contrib[k],p=c.points.find(q=>q.year===year);
+  const c=gContrib()[k],p=c.points.find(q=>q.year===year);
   if(!p)return;
   if(group==='broad'){
    out[c.parent]=out[c.parent]||{key:c.parent,label:MACRO[c.parent].label,parent:c.parent,v:0};
@@ -766,10 +775,10 @@ function contribRows(year,group){
  });
  return Object.values(out);
 }
-function contribYears(){return (ST.contrib_gdp||[]).map(p=>p.year);}
+function contribYears(){return gTotal().map(p=>p.year);}
 function initContrib(){
  contribKeys().forEach((k,i)=>detailColor[k]=DETAIL_PALETTE[i%DETAIL_PALETTE.length]);
- cYear=lastPt(ST.contrib_gdp).year;
+ cYear=lastPt(gTotal()).year;
  d3.selectAll('#cView button').on('click',function(){setCView(this.dataset.cv);});
  d3.selectAll('#cGroup button').on('click',function(){setCGroup(this.dataset.g);});
  drawComposition();drawCYear();drawCEras();
@@ -830,7 +839,7 @@ function drawContrib(){
   });
  });
  // headline GDP growth line
- const gdp=ST.contrib_gdp;
+ const gdp=gTotal();
  const lx=yr=>x(yr)+x.bandwidth()/2;
  svg.append('path').datum(gdp).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-width',2)
   .attr('d',d3.line().x(p=>lx(p.year)).y(p=>y(p.value)));
@@ -843,7 +852,7 @@ function drawContrib(){
  // legend
  const lg=d3.select('#contribLegend');
  const items=(cGroup==='broad'?['agri','ind','serv']:contribKeys())
-  .map(k=>cGroup==='broad'?{key:k,label:MACRO[k].label,parent:k}:{key:k,label:ST.contrib[k].label,parent:ST.contrib[k].parent});
+  .map(k=>cGroup==='broad'?{key:k,label:MACRO[k].label,parent:k}:{key:k,label:gContrib()[k].label,parent:gContrib()[k].parent});
  lg.selectAll('span.it').data(items,d=>d.key).join('span').attr('class','it')
   .html(d=>`<i style="width:11px;height:11px;border-radius:3px;background:${contribColor(d)}"></i>${d.label}`);
  lg.selectAll('span.gdpk').data([0]).join('span').attr('class','gdpk')
@@ -887,7 +896,7 @@ function drawCYear(){
   .attr('x',d=>d.v>=0?x(d.v)+5:zero+5)
   .attr('fill',d=>d.v>=0?'var(--green-600)':RED).text(d=>(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2));
  const tot=d3.sum(rows,r=>r.v);
- const gdpP=(ST.contrib_gdp.find(p=>p.year===cYear)||{}).value;
+ const gdpP=(gTotal().find(p=>p.year===cYear)||{}).value;
  svg.append('text').attr('x',lblW).attr('y',H-6).attr('text-anchor','end').attr('font-size',11).attr('font-weight',800).attr('fill','var(--body)').text('Sum');
  svg.append('text').attr('x',zero+5).attr('y',H-6).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
   .text(`${tot>=0?'+':'−'}${Math.abs(tot).toFixed(2)} pp` + (gdpP!=null?`  ·  published GDP growth ${fmtPct(gdpP)}`:''));
@@ -917,10 +926,10 @@ function drawCEras(){
   keys.forEach(k=>{
    const v=d[k];if(!v)return;
    const y0=v>=0?up:dn,y1=y0+v;if(v>=0)up=y1;else dn=y1;
-   const label=cGroup==='broad'?MACRO[k].label:ST.contrib[k].label;
+   const label=cGroup==='broad'?MACRO[k].label:gContrib()[k].label;
    svg.append('rect').attr('x',x(d.label)).attr('width',x.bandwidth())
     .attr('y',Math.min(y(y0),y(y1))).attr('height',Math.abs(y(y1)-y(y0)))
-    .attr('fill',contribColor({key:k,parent:cGroup==='broad'?k:ST.contrib[k].parent}))
+    .attr('fill',contribColor({key:k,parent:cGroup==='broad'?k:gContrib()[k].parent}))
     .on('mousemove',e=>showTip(`<b>${label}</b> · ${d.label}<br>${(v>=0?'+':'')+v.toFixed(2)} pp per year`,e)).on('mouseleave',hideTip);
   });
   svg.append('text').attr('x',x(d.label)+x.bandwidth()/2).attr('y',y(up)-6).attr('text-anchor','middle')
@@ -1440,14 +1449,14 @@ const CSV={
    if(cView==='growth'){const gs=growthSeries(selSector);
      return [`Pakistan_real_growth_${selSector}.csv`,(gs.pts||[]).map(p=>({fiscal_year:p.year,series:gs.lbl,real_growth_pct:p.value}))];}
    const out=[];contribYears().forEach(y=>contribRows(y,cGroup).forEach(r=>out.push({fiscal_year:y,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)})));
-   (ST.contrib_gdp||[]).forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (published GDP growth)',broad_sector:'',contribution_pp:round2(p.value)}));
+   gTotal().forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (GVA growth, all parts)',broad_sector:'',contribution_pp:round2(p.value)}));
    return [`Pakistan_growth_contributions_${cGroup}.csv`,out];},
  cyear:()=>[`Pakistan_growth_breakdown_${cYear||selYear}.csv`,
    contribRows(cYear,cGroup).sort((a,b)=>b.v-a.v).map(r=>({fiscal_year:cYear,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)}))],
  ceras:()=>{const keys=cGroup==='broad'?['agri','ind','serv']:contribKeys();const out=[];
    CERAS.forEach(([label,y0,y1])=>{const yrs=contribYears().filter(y=>y>=y0&&y<=y1);
      keys.forEach(k=>{const vals=yrs.map(y=>{const r=contribRows(y,cGroup).find(r=>r.key===k);return r?r.v:0;});
-       const lbl=cGroup==='broad'?MACRO[k].label:ST.contrib[k].label;
+       const lbl=cGroup==='broad'?MACRO[k].label:gContrib()[k].label;
        out.push({era:label,years:`${y0}–${y1}`,sector:lbl,avg_contribution_pp:round2(d3.mean(vals)||0)});});});
    return ['Pakistan_growth_by_era.csv',out];},
  lsm:()=>{const out=[];Object.keys(lsmSeries).filter(c=>lsmSel.has(c)).forEach(c=>lsmSeries[c].forEach(p=>

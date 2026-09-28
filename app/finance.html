@@ -4,12 +4,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=553ff1fb"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=553ff1fb"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=553ff1fb"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=ab54715a"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=ab54715a"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=ab54715a"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=553ff1fb"></script>
-<script src="assets/js/palette.js?v=553ff1fb"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=ab54715a"></script>
+<script src="assets/js/palette.js?v=ab54715a"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -130,7 +130,7 @@
   <div id="contrib"></div>
   <div id="cgrowth" style="display:none"></div>
   <span id="cgrowthLbl" style="display:none"></span>
-  <div class="note" id="compNote">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Contributions sum to headline GDP growth up to a small residual (mean 0.2pp) from rounding and the taxes-less-subsidies bridge between GVA and GDP. Available from 2000-01, when PBS's detailed sector growth series begins. <b>Growth rate</b> shows the "growth" factor behind these contributions for the sector focused in the sidebar.</div>
+  <div class="note" id="compNote">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Each activity’s contribution is its own change in output over last year’s total, both at constant 2015-16 prices, so <b>the parts sum to the headline exactly</b> rather than approximately — to within a billionth of a percentage point, which the build checks and fails on. Eighteen activities, none of them inside another: the earlier version listed Crops beside Cotton Ginning, which is one of the three things Crops is made of, and multiplied real growth rates by current-price shares, so in 2022-23 its parts came to −0.93 points against a headline of −0.21. The headline here is growth in gross value added at basic prices, which is what these activities add up to; GDP adds taxes less subsidies on top and is a slightly different number. Available from 2000-01, the first year with a previous year to compare against.</div>
  </div>
 
  <div class="grid2" data-topic="growth" id="sec-cyear">
@@ -429,21 +429,22 @@
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=553ff1fb"></script>
-<script src="data/money_data.js?v=553ff1fb"></script>
-<script src="data/migration_data.js?v=553ff1fb"></script>
-<script src="data/recon_data.js?v=553ff1fb"></script>
-<script src="assets/js/econ_data.js?v=553ff1fb"></script>
-<script src="assets/js/econ-shell.js?v=553ff1fb"></script>
-<script type="module" src="assets/js/finance.js?v=553ff1fb"></script>
-<script type="module" src="assets/js/money.js?v=553ff1fb"></script>
-<script type="module" src="assets/js/trade.js?v=553ff1fb"></script>
-<script src="assets/js/explorer.js?v=553ff1fb"></script>
-<script src="assets/js/economy-rail.js?v=553ff1fb"></script>
-<script src="assets/js/sidebar-mobile.js?v=553ff1fb"></script>
-<script src="assets/js/shell.js?v=553ff1fb"></script>
-<script src="assets/js/modals.js?v=553ff1fb"></script>
-<script src="assets/js/analytics.js?v=553ff1fb"></script>
+<script src="data/macro_data.js?v=ab54715a"></script>
+<script src="data/growth_data.js?v=ab54715a"></script>
+<script src="data/money_data.js?v=ab54715a"></script>
+<script src="data/migration_data.js?v=ab54715a"></script>
+<script src="data/recon_data.js?v=ab54715a"></script>
+<script src="assets/js/econ_data.js?v=ab54715a"></script>
+<script src="assets/js/econ-shell.js?v=ab54715a"></script>
+<script type="module" src="assets/js/finance.js?v=ab54715a"></script>
+<script type="module" src="assets/js/money.js?v=ab54715a"></script>
+<script type="module" src="assets/js/trade.js?v=ab54715a"></script>
+<script src="assets/js/explorer.js?v=ab54715a"></script>
+<script src="assets/js/economy-rail.js?v=ab54715a"></script>
+<script src="assets/js/sidebar-mobile.js?v=ab54715a"></script>
+<script src="assets/js/shell.js?v=ab54715a"></script>
+<script src="assets/js/modals.js?v=ab54715a"></script>
+<script src="assets/js/analytics.js?v=ab54715a"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
