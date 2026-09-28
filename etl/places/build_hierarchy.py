@@ -38,6 +38,76 @@ WHOLE_POP = re.compile(
     r'^population[\s\-–—]*(20\d\d)?(\s*[—-]\s*all sexes)?$', re.I)
 
 
+# ── corrections to the proposal's mapping ──────────────────────────────────
+# Applied here rather than by editing hierarchy.json, which is generated: a
+# correction is a decision and belongs where it can be read and argued with.
+# Each is keyed on the compound source key, and every one must match a row or
+# the build fails - a correction that silently stops applying is worse than
+# none, because it looks like the fix is still in place.
+#
+# TABLE 33 IS A CROSS-TAB, AND ITS TENURE MARGIN IS NOT A MATERIAL.
+# "Table 33 - 2017: units by tenure and material of walls and roofs" has 84
+# rows in the index. Eighty of them are a wall or roof material cross-tabbed
+# by tenure, and "Housing materials and quality" is right for those: the thing
+# being counted is a material. Four are not. They carry no material at all -
+# the key says HOUSING UNITS BY TENURE / OWNED - and they are the table's
+# tenure margin, which is a different subject that happened to be printed on
+# the same page.
+#
+# The census settles it rather than the wording: across every district the
+# three counts add to the table's own total exactly - Lahore 1,158,614 owned
+# plus 491,303 rented plus 94,838 rent-free is 1,744,755, which is the total
+# row - so they partition housing units by tenure and nothing else. Two thirds
+# of Lahore's housing units are owner-occupied and 28 per cent rented; that
+# belongs under Tenure & ownership, where a reader looking for it will go.
+#
+# The fourth, HOUSING UNITS / PERCENT, moves with them because it sits in the
+# same block, but it is marked rather than trusted: it is the percent column's
+# own total, which is 100.0 in 382 districts, 0 in 19 and 97.18 in one. It is
+# not a tenure share. The real tenure percentages are a separate PERCENT row
+# in the census panel and are not in the index at all.
+#
+# AND THE THREE COUNTS ARE EACH THREE ROWS. Refiling them made that visible.
+# census_panel_2017 holds three rows per district for each one - Lasbela gives
+# 28,675, 50,989 and 79,664 - identical on every key column including
+# locality, which all three call "all". They are rural, urban and total: in
+# 133 of the 133 districts that carry all three, the two smaller add to the
+# largest. So the map shows whichever the lookup reaches first and the totals
+# strip sums all three, reading 52.16 million owned housing units against a
+# true figure near 25.85 million.
+#
+# The warehouse already knows: every one of these rows carries
+# series_ambiguous. That flag stops at the panel - census_series_index does
+# not carry it, so neither does the picker index - and 561 of the 2,928
+# series in the 2017 panel are affected, not only these. Threading it through
+# is a change to the census pipeline rather than to this mapping, so what is
+# done here is the honest minimum: the three rows whose arithmetic has
+# actually been checked say so, and the rest are reported rather than
+# quietly marked or quietly trusted.
+TENURE = ('Housing & buildings', 'Tenure & ownership',
+          'Housing tenure and ownership',
+          'Owned/rented/rent-free; owner sex; rooms; residence')
+DEGENERATE_TOTAL = (
+    'Column total rather than a measure; retain original selectable entry; '
+    'the source prints it as 100 per cent where the table has data')
+TRIPLED = (
+    'Unresolved source label; retain original selectable entry; the panel '
+    'holds three rows per district under one locality - rural, urban and '
+    'total - so a map of this series shows one of the three and a national '
+    'total of it double counts')
+
+CORRECTIONS = {
+    'district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / OWNED|OWNED': {
+        'to': TENURE, 'review': TRIPLED},
+    'district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / RENTED|RENTED': {
+        'to': TENURE, 'review': TRIPLED},
+    'district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / RENT-FREE|RENT-FREE': {
+        'to': TENURE, 'review': TRIPLED},
+    'district\u001fcensus_t33\u001f33|HOUSING UNITS / PERCENT|PERCENT': {
+        'to': TENURE, 'review': DEGENERATE_TOTAL},
+}
+
+
 def countable(o):
     measure = o.get('measure') or o.get('label') or ''
     metric = o.get('metric') or ''
@@ -81,28 +151,38 @@ def main():
             v.append(value)
         return v.index(value)
 
-    out, seen = {}, set()
+    out, seen, applied = {}, set(), set()
     for m in mapping:
         o = m['original']
         key = SEP.join((o['level'], o['group_key'], o['indicator']))
         assert key not in seen, f'duplicate compound key: {key!r}'
         seen.add(key)
-        assert m['proposed_topic'] in topics, \
-            f'row maps to a topic not in the topic list: {m["proposed_topic"]!r}'
+        topic, sub = m['proposed_topic'], m['proposed_subtopic']
+        family, controls = m['indicator_family'], m['suggested_controls']
+        review = m['definition_review']
+        fix = CORRECTIONS.get(key)
+        if fix:
+            topic, sub, family, controls = fix['to']
+            review = fix.get('review', review)
+            applied.add(key)
+        assert topic in topics, f'row maps to an unknown topic: {topic!r}'
         out[key] = [
-            topics.index(m['proposed_topic']),
-            idx('sub', m['proposed_subtopic']),
-            idx('family', m['indicator_family']),
-            idx('metric', m['metric_form']),
-            idx('controls', m['suggested_controls']),
-            idx('review', m['definition_review']),
+            topics.index(topic), idx('sub', sub), idx('family', family),
+            idx('metric', m['metric_form']), idx('controls', controls),
+            idx('review', review),
         ]
+
+    unmatched = set(CORRECTIONS) - applied
+    assert not unmatched, (
+        f'{len(unmatched)} corrections matched no row - the index or the '
+        f'crosswalk moved under them: {sorted(unmatched)[0]!r}')
 
     # Which review strings mean "we could not resolve this label". The proposal
     # requires those to stay selectable and to be visibly marked, not dropped,
     # so the flag travels with the row rather than being recomputed in JS.
     unresolved = [i for i, r in enumerate(vocab['review'])
-                  if 'Unresolved source label' in r or 'Generic measure label' in r]
+                  if 'Unresolved source label' in r or 'Generic measure label' in r
+                  or 'Column total rather than a measure' in r]
 
     payload = {
         'generated_from': pathlib.Path(a.crosswalk).name,
@@ -122,6 +202,7 @@ def main():
     print(f'  {sum(1 for v in out.values() if v[5] in unresolved):,} rows '
           f'marked "definition needs review"')
     print(f'  per-head modes agree with places-rail.js on all {len(mapping):,} rows')
+    print(f'  {len(applied)} corrections applied to the proposal\'s mapping')
     print(f'  -> {dest} ({dest.stat().st_size/1e6:.2f} MB)')
 
 

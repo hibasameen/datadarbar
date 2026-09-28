@@ -251,6 +251,8 @@
    "Generic measure label; inspect table before extracting dimensions",
    "Unresolved source label; retain original selectable entry; Do not assign a guessed breakdown",
    "Unresolved source label; retain original selectable entry; Generic measure label; inspect table before extracting dimensions; Do not assign a guessed breakdown",
+   "Unresolved source label; retain original selectable entry; the panel holds three rows per district under one locality - rural, urban and total - so a map of this series shows one of the three and a national total of it double counts",
+   "Column total rather than a measure; retain original selectable entry; the source prints it as 100 per cent where the table has data",
    "Check duplicate-looking crop labels against source crop IDs; retain separately",
    "Unresolved source label; retain original selectable entry"
   ]
@@ -259,7 +261,9 @@
   1,
   2,
   3,
-  5
+  4,
+  5,
+  7
  ],
  "map": {
   "district\u001fcensus_t1\u001f1|1998-2017 AVERAGE ANNUAL GROWTH RATE|1998-2017 AVERAGE ANNUAL GROWTH RATE": [
@@ -24560,35 +24564,35 @@
   ],
   "district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / OWNED|OWNED": [
    5,
-   26,
-   39,
+   24,
+   36,
    2,
-   37,
-   0
+   34,
+   4
   ],
   "district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / RENT-FREE|RENT-FREE": [
    5,
-   26,
-   39,
+   24,
+   36,
    2,
-   37,
-   0
+   34,
+   4
   ],
   "district\u001fcensus_t33\u001f33|HOUSING UNITS BY TENURE / RENTED|RENTED": [
    5,
-   26,
-   39,
+   24,
+   36,
    2,
-   37,
-   0
+   34,
+   4
   ],
   "district\u001fcensus_t33\u001f33|HOUSING UNITS / PERCENT|PERCENT": [
    5,
-   26,
-   39,
+   24,
+   36,
    6,
-   37,
-   0
+   34,
+   5
   ],
   "district\u001fcensus_t33\u001f33|ROOF / CEMENT / IRON SHEETS|OWNED": [
    5,
@@ -37732,7 +37736,7 @@
    60,
    12,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|8|production_000t": [
    9,
@@ -37740,7 +37744,7 @@
    60,
    13,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|8|yield_t_per_ha": [
    9,
@@ -37748,7 +37752,7 @@
    60,
    14,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|112|area_000ha": [
    9,
@@ -37996,7 +38000,7 @@
    60,
    12,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|117|production_000t": [
    9,
@@ -38004,7 +38008,7 @@
    60,
    13,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|117|yield_t_per_ha": [
    9,
@@ -38012,7 +38016,7 @@
    60,
    14,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|30|area_000ha": [
    9,
@@ -38020,7 +38024,7 @@
    60,
    12,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|30|production_000t": [
    9,
@@ -38028,7 +38032,7 @@
    60,
    13,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|30|yield_t_per_ha": [
    9,
@@ -38036,7 +38040,7 @@
    60,
    14,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|3|area_000ha": [
    9,
@@ -38140,7 +38144,7 @@
    60,
    12,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|118|production_000t": [
    9,
@@ -38148,7 +38152,7 @@
    60,
    13,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|118|yield_t_per_ha": [
    9,
@@ -38156,7 +38160,7 @@
    60,
    14,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|32|area_000ha": [
    9,
@@ -38260,7 +38264,7 @@
    60,
    12,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|124|production_000t": [
    9,
@@ -38268,7 +38272,7 @@
    60,
    13,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|124|yield_t_per_ha": [
    9,
@@ -38276,7 +38280,7 @@
    60,
    14,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|125|area_000ha": [
    9,
@@ -38284,7 +38288,7 @@
    60,
    12,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|125|production_000t": [
    9,
@@ -38292,7 +38296,7 @@
    60,
    13,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|125|yield_t_per_ha": [
    9,
@@ -38300,7 +38304,7 @@
    60,
    14,
    58,
-   5
+   7
   ],
   "district\u001fcrops\u001fcrop|95|area_000ha": [
    9,
@@ -38692,7 +38696,7 @@
    60,
    12,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|123|production_000t": [
    9,
@@ -38700,7 +38704,7 @@
    60,
    13,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|123|yield_t_per_ha": [
    9,
@@ -38708,7 +38712,7 @@
    60,
    14,
    58,
-   4
+   6
   ],
   "district\u001fcrops\u001fcrop|52|area_000ha": [
    9,
