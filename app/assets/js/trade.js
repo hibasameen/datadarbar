@@ -224,8 +224,20 @@ const pYears=()=>Object.keys(E.partners[pDir]).sort();
 const prYears=()=>Object.keys(E.products[prDir]).sort();
 function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();}
 function initProducts(){d3.selectAll('#prDir button').on('click',function(){d3.selectAll('#prDir button').classed('on',false);d3.select(this).classed('on',true);prDir=this.dataset.d;setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();});setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();}
-function drawPartners(){const ys=pYears();const y=ys[+d3.select('#pYr').property('value')||ys.length-1];hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'var(--negative)');}
-function drawProducts(){const ys=prYears();const y=ys[+d3.select('#prYr').property('value')||ys.length-1];hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
+/* A slider index of zero is a valid selection, and `+value || last` is not a
+   way to read one: 0 is falsy, so choosing the FIRST year silently drew the
+   LAST. Top partners at 2015-16 showed US exports of Rs1.6tn and China
+   Rs662bn - the 2024-25 figures - while the label said 2015-16; the real
+   values are Rs366.73bn and Rs175.70bn. The same expression sat in the two
+   charts and their two CSV handlers, so the export and the shared link
+   repeated the error rather than contradicting it. */
+function yearAt(sel, ys){
+ const raw = d3.select(sel).property('value');
+ const i = raw === null || raw === '' ? ys.length - 1 : Number(raw);
+ return ys[Number.isInteger(i) && i >= 0 && i < ys.length ? i : ys.length - 1];
+}
+function drawPartners(){const ys=pYears();const y=yearAt('#pYr',ys);hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'var(--negative)');}
+function drawProducts(){const ys=prYears();const y=yearAt('#prYr',ys);hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
 function hbar(elSel,rows,label,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,12);
  const W=el.node().clientWidth||500,rh=26,H=rows.length*rh+14,lblW=Math.max(96,Math.min(170,W*0.42)),maxc=Math.max(9,Math.floor(lblW/7.3));
@@ -380,11 +392,11 @@ const CSV={
    secs.forEach(s=>s.chapters.forEach(c=>c.products.forEach(p=>out.push({
      direction:dDir,year:yr,section:s.section,section_name:s.name,chapter_code:c.code,chapter:c.name,hs8:p.hs8,product:p.name,rs_bn:r2(p.bn)}))));
    return [`Pakistan_trade_${dDir}_products_${yr}.csv`,out.sort((a,b)=>b.rs_bn-a.rs_bn)];},
- products:()=>{const ys=prYears(),yr=ys[+d3.select('#prYr').property('value')||ys.length-1];
+ products:()=>{const ys=prYears(),yr=yearAt('#prYr',ys);
    return [`Pakistan_top_products_${prDir}_${yr}.csv`,(E.products[prDir][yr]||[]).map(p=>({direction:prDir,year:yr,product:p.name,section:p.section,rs_bn:r2(p.bn)}))];},
  totals:()=>{const T=E.totals;
    return ['Pakistan_trade_over_time.csv',T.years.map(y=>({year:y,exports_rs_bn:r2(T.export[y]),imports_rs_bn:r2(T.import[y]),balance_rs_bn:r2(T.balance[y])}))];},
- partners:()=>{const ys=pYears(),yr=ys[+d3.select('#pYr').property('value')||ys.length-1];
+ partners:()=>{const ys=pYears(),yr=yearAt('#pYr',ys);
    return [`Pakistan_top_partners_${pDir}_${yr}.csv`,(E.partners[pDir][yr]||[]).map(p=>({direction:pDir,year:yr,partner:p.country,rs_bn:r2(p.bn)}))];},
  movers:()=>{const arr=moverList(),w=currentWindow();
    return [`Pakistan_trade_movers_${mDir}_${tLevel}_${w.key}.csv`,arr.slice().sort((a,b)=>b.delta-a.delta).map(r=>({
