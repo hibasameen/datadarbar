@@ -269,10 +269,19 @@ def asset_version(root):
     left the stamp unchanged, so browsers kept serving the old file and the
     edit reached nobody. That is worse than no versioning at all: it looks
     like cache-busting while silently doing nothing.
+
+    data/ is in here for the same reason and a sharper one. The payloads under
+    it were stamped by nothing at all, so a returning reader kept whichever
+    copy they had. A stale number would be bad; a stale payload is worse,
+    because the code that reads it is versioned and the payload is not. Adding
+    the distribution-loss block to state_data.js meant state.js began reading
+    D.discos, and a reader holding yesterday's payload would have got a
+    TypeError and an empty page rather than an out-of-date chart. The two are
+    one deployable and now share one hash.
     """
     h = hashlib.sha256()
     files = []
-    for d in ('assets/css', 'assets/js'):
+    for d in ('assets/css', 'assets/js', 'data'):
         base = root / d
         if base.is_dir():
             files.extend(sorted(base.rglob('*.css')) + sorted(base.rglob('*.js')))
@@ -293,6 +302,7 @@ def stamp_assets(text, ver):
     before = text
     text = re.sub(r'(href=")((?:\.\./)*assets/css/[^"]+?)(")', sub, text)
     text = re.sub(r'(src=")((?:\.\./)*assets/js/[^"]+?)(")', sub, text)
+    text = re.sub(r'(src=")((?:\.\./)*data/[^"]+?\.js)(")', sub, text)
     return text, text != before
 
 

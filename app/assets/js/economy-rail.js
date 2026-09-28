@@ -21,6 +21,8 @@
 
   var DATASET = {
     // finance
+    'sec-macro': ['gdp_indicators', 'GDP, income per person and the rupee'],
+    'sec-qtr': ['gva_by_activity_quarterly', 'Value added by sector, quarterly'],
     'sec-arc': ['gva_by_activity_annual', 'Value added by sector, annual'],
     'sec-mix': ['gva_by_activity_annual', 'Value added by sector, annual'],
     'sec-contrib': ['gdp_growth', 'GDP growth by sector since 1951'],
@@ -47,6 +49,7 @@
     'sec-products': ['trade_by_group', 'Imports and exports by commodity group'],
     'sec-movers': ['trade_by_group', 'Imports and exports by commodity group'],
     'sec-totals': ['trade_monthly_totals', 'Monthly trade totals since 2003'],
+    'sec-recon': ['trade_reconciliation', 'Trade totals reconciled against their parts'],
     'sec-partners': ['trade_by_country', 'Imports and exports by trading partner'],
   };
 

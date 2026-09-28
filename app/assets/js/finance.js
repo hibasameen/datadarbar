@@ -54,7 +54,7 @@ const TOPICS=[
   lede:'Where the federal government’s money comes from and where current spending goes, budget year by budget year.',
   desc:'The federal budget as a treemap: receipts and current expenditure.',
   meta:'Finance Division: Budget in Brief & Explanatory Memorandum on Federal Receipts, FY2009-10→2026-27.'}];
-const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
+const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();drawMacro();drawQtr();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
 // meaningful groupings for the sidebar (plus an "Everything" shortcut at the top)
 const TOPIC_GROUPS=[
  {label:null,keys:['all']},
@@ -73,7 +73,7 @@ function start(){
  buildSectorSelect();
  initArc();initMix();initContrib();
  initLsm();drawQim();drawWeights();initCmi();
- initIO();initBudget();initCsv();
+ initIO();initBudget();initMacro();initQtr();initCsv();
  initTopics();
  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(topic==='all')drawAll();else if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
 }
@@ -366,6 +366,228 @@ function drawArcLines(){
   const row=arcData.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);setYear(row.year);};
  svg.call(d3.drag().on('start drag',pick));
  svg.on('click',pick);
+}
+
+/* ================= 1b. headline macro series ================= */
+/* window.DD_MACRO, from gdp_indicators. Four series that everything else on
+   this page is implicitly divided or deflated by, and which nothing drew: the
+   econ_data.js `indicators` block has carried eleven of them since the site
+   began and uses two, invisibly, to build the budget deflator. */
+const MACRO_SERIES=[
+ {k:'gdp_tn', lbl:'GDP',                 c:'var(--pine)',      unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
+ {k:'gni_tn', lbl:'Gross national income',c:'var(--teal-500)', unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
+ {k:'pci',    lbl:'Real income per person',c:'var(--gold-600)',unit:'Rs',    fmt:v=>'Rs '+Math.round(v).toLocaleString()},
+ {k:'usd',    lbl:'Rupees per US dollar', c:'var(--rust)',     unit:'Rs/$',  fmt:v=>v.toFixed(0)}];
+let macroView='index',macroRows=[];
+function initMacro(){
+ macroRows=rowsOf(window.DD_MACRO&&window.DD_MACRO.headline);
+ d3.select('#macroView').selectAll('button').on('click',function(){
+  d3.select('#macroView').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  macroView=this.dataset.mv;drawMacro();});
+ drawMacro();
+}
+/* Every payload block is {cols,rows}; this is the one place that shape is
+   turned into objects, so a column added upstream needs no change here. */
+function rowsOf(block){
+ if(!block)return [];
+ return block.rows.map(r=>{const o={};block.cols.forEach((c,i)=>o[c]=r[i]);return o;});
+}
+function drawMacro(){macroView==='index'?drawMacroIndex():drawMacroLevels();}
+function drawMacroIndex(){
+ const el=d3.select('#macro');el.selectAll('*').remove();
+ if(!macroRows.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(340,W*0.3)),m={t:18,r:112,b:26,l:44};
+ const base={};MACRO_SERIES.forEach(s=>{const f=macroRows.find(r=>r[s.k]!=null);base[s.k]=f?f[s.k]:null;});
+ const idx=(r,s)=>r[s.k]==null||!base[s.k]?null:100*r[s.k]/base[s.k];
+ const all=[];macroRows.forEach(r=>MACRO_SERIES.forEach(s=>{const v=idx(r,s);if(v!=null)all.push(v);}));
+ const x=d3.scaleLinear().domain(d3.extent(macroRows,r=>r.fy_end)).range([m.l,W-m.r]);
+ const y=d3.scaleLinear().domain([0,d3.max(all)*1.06]).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ MACRO_SERIES.forEach(s=>{
+  const pts=macroRows.filter(r=>idx(r,s)!=null);
+  if(!pts.length)return;
+  const line=d3.line().x(r=>x(r.fy_end)).y(r=>y(idx(r,s))).curve(d3.curveMonotoneX);
+  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',s.c).attr('stroke-width',2.6);
+  const l=pts[pts.length-1];
+  svg.append('circle').attr('cx',x(l.fy_end)).attr('cy',y(idx(l,s))).attr('r',3.4).attr('fill',s.c);
+  svg.append('text').attr('x',x(l.fy_end)+7).attr('y',y(idx(l,s))+4).attr('font-size',11).attr('font-weight',800).attr('fill',s.c).text(Math.round(idx(l,s)));
+ });
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(10,Math.floor(W/95))).tickFormat(n=>fyLbl(n)));
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5));
+ svg.on('mousemove',function(e){
+  const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
+  const r=macroRows.reduce((a,b)=>Math.abs(b.fy_end-n)<Math.abs(a.fy_end-n)?b:a);
+  showTip(`<b>${r.fy}</b><br>`+MACRO_SERIES.map(s=>r[s.k]==null?null:
+    `${s.lbl} ${s.fmt(r[s.k])} <span style="opacity:.7">(${Math.round(idx(r,s))})</span>`).filter(Boolean).join('<br>'),e);
+ }).on('mouseleave',hideTip);
+ d3.select('#macroLegend').html(MACRO_SERIES.map(s=>
+  `<div class="li"><span class="sw" style="background:${s.c}"></span>${s.lbl}</div>`).join(''));
+}
+function drawMacroLevels(){
+ const el=d3.select('#macro');el.selectAll('*').remove();
+ if(!macroRows.length)return;
+ d3.select('#macroLegend').html('');
+ const W=el.node().clientWidth||1100,cols=W<640?1:2,cw=W/cols,ch=Math.max(150,Math.min(190,cw*0.5));
+ const PANELS=[
+  {lbl:'Output and national income', unit:'Rs trillion, 2015-16 prices',
+   ks:[MACRO_SERIES[0],MACRO_SERIES[1]]},
+  {lbl:'Real income per person', unit:'rupees, 2015-16 prices', ks:[MACRO_SERIES[2]]},
+  {lbl:'The rupee', unit:'rupees per US dollar, annual average', ks:[MACRO_SERIES[3]]},
+  {lbl:'Net primary income from abroad', unit:'Rs trillion — mostly remittances',
+   ks:[{k:'npi_tn',lbl:'Net primary income',c:'var(--plum)',fmt:v=>v.toFixed(2)+' tn'}]}];
+ const svg=el.append('svg').attr('width',W).attr('height',ch*Math.ceil(PANELS.length/cols)).style('display','block');
+ PANELS.forEach((p,i)=>{
+  const gx=(i%cols)*cw,gy=Math.floor(i/cols)*ch,m={t:30,r:16,b:22,l:52};
+  const g=svg.append('g').attr('transform',`translate(${gx},${gy})`);
+  const vals=[];macroRows.forEach(r=>p.ks.forEach(s=>{if(r[s.k]!=null)vals.push(r[s.k]);}));
+  if(!vals.length)return;
+  const lo=Math.min(0,d3.min(vals)),hi=d3.max(vals);
+  const x=d3.scaleLinear().domain(d3.extent(macroRows,r=>r.fy_end)).range([m.l,cw-m.r]);
+  const y=d3.scaleLinear().domain([lo,hi*1.06]).nice().range([ch-m.b,m.t]);
+  g.append('text').attr('x',m.l).attr('y',13).attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--ink)').text(p.lbl);
+  g.append('text').attr('x',m.l).attr('y',24).attr('font-size',10).attr('fill','var(--muted)').text(p.unit);
+  if(lo<0)g.append('line').attr('x1',m.l).attr('x2',cw-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
+  p.ks.forEach(s=>{
+   const pts=macroRows.filter(r=>r[s.k]!=null);
+   if(!pts.length)return;
+   const line=d3.line().x(r=>x(r.fy_end)).y(r=>y(r[s.k])).curve(d3.curveMonotoneX);
+   g.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',s.c).attr('stroke-width',2.4);
+   const l=pts[pts.length-1];
+   g.append('circle').attr('cx',x(l.fy_end)).attr('cy',y(l[s.k])).attr('r',3).attr('fill',s.c);
+   g.append('text').attr('x',x(l.fy_end)-4).attr('y',y(l[s.k])-7).attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800).attr('fill',s.c).text(s.fmt(l[s.k]));
+  });
+  /* Where real income per person turned. Marked, because it is the one thing
+     on this card a reader will not find anywhere else on the site. */
+  if(p.ks[0].k==='pci'){
+   const pts=macroRows.filter(r=>r.pci!=null),pk=pts.reduce((a,b)=>b.pci>a.pci?b:a);
+   g.append('line').attr('x1',x(pk.fy_end)).attr('x2',x(pk.fy_end)).attr('y1',m.t).attr('y2',ch-m.b).attr('stroke','var(--muted)').attr('stroke-dasharray','2 3').attr('opacity',.8);
+   g.append('text').attr('x',x(pk.fy_end)-5).attr('y',m.t+11).attr('text-anchor','end').attr('font-size',10).attr('font-style','italic').attr('fill','var(--muted)').text('peak '+pk.fy);
+  }
+  g.append('g').attr('transform',`translate(0,${ch-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(6,Math.floor(cw/110))).tickFormat(n=>fyLbl(n)));
+  g.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')));
+ });
+}
+
+/* ================= 1c. quarterly national accounts ================= */
+/* gva_by_activity_quarterly: the only quarterly output series Pakistan
+   publishes, and the only chart on the site in which the lockdown quarter is
+   an event rather than a slightly worse year. */
+let qtrView='stack',qtrLevel='sector',qtrRows=[];
+const QTR_NAME={1:'Jul–Sep',2:'Oct–Dec',3:'Jan–Mar',4:'Apr–Jun'};
+function initQtr(){
+ qtrRows=rowsOf(window.DD_MACRO&&window.DD_MACRO.quarterly);
+ d3.select('#qtrView').selectAll('button').on('click',function(){
+  d3.select('#qtrView').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  qtrView=this.dataset.qv;drawQtr();});
+ d3.select('#qtrLevel').selectAll('button').on('click',function(){
+  d3.select('#qtrLevel').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  qtrLevel=this.dataset.ql;drawQtr();});
+ drawQtr();
+}
+function qtrKey(r){return r.fy+' Q'+r.quarter;}
+/* One pass over the 880 rows produces the quarter list, the series names and
+   the series-by-quarter totals for whichever level is showing. */
+function qtrShape(){
+ const qs=[],seen=new Set(),by={},names=[];
+ qtrRows.forEach(r=>{
+  const k=qtrKey(r);
+  if(!seen.has(k)){seen.add(k);qs.push({k:k,fy:r.fy,n:r.fy_end,q:r.quarter});}
+  const s=r[qtrLevel];
+  if(names.indexOf(s)<0)names.push(s);
+  (by[s]=by[s]||{})[k]=(by[s][k]||0)+r.gva_mn/1e6;
+ });
+ qs.sort((a,b)=>a.n-b.n||a.q-b.q);
+ /* Largest first, so the stack reads top-down by size and the legend matches
+    the picture rather than the source's row order. */
+ const tot=s=>qs.reduce((a,q)=>a+(by[s][q.k]||0),0);
+ names.sort((a,b)=>tot(b)-tot(a));
+ const color=qtrLevel==='sector'
+  ? s=>({Agriculture:MACRO.agri.c,Industry:MACRO.ind.c,Service:MACRO.serv.c}[s]||'var(--slate)')
+  : s=>LSM_PALETTE[names.indexOf(s)%LSM_PALETTE.length];
+ return {qs:qs,names:names,by:by,color:color};
+}
+function drawQtr(){qtrView==='stack'?drawQtrStack():drawQtrLines();}
+function drawQtrStack(){
+ const el=d3.select('#qtr');el.selectAll('*').remove();
+ const S=qtrShape();if(!S.qs.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(280,Math.min(360,W*0.32)),m={t:16,r:14,b:38,l:46};
+ const x=d3.scaleBand().domain(S.qs.map(q=>q.k)).range([m.l,W-m.r]).padding(.12);
+ const stack=d3.stack().keys(S.names).value((q,s)=>S.by[s][q.k]||0)(S.qs);
+ const y=d3.scaleLinear().domain([0,d3.max(stack[stack.length-1],d=>d[1])*1.04]).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ stack.forEach(layer=>svg.append('g').attr('fill',S.color(layer.key)).selectAll('rect').data(layer).join('rect')
+  .attr('x',(d,i)=>x(S.qs[i].k)).attr('width',x.bandwidth())
+  .attr('y',d=>y(d[1])).attr('height',d=>Math.max(0,y(d[0])-y(d[1]))));
+ /* One transparent plate answers the mouse and finds the nearest quarter. A
+    handler per rect would report the layer under the pointer, which is not
+    what a reader hovering a stacked quarter is asking. */
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',H-m.b-m.t)
+  .attr('fill','transparent')
+  .on('mousemove',function(e){
+   const px=d3.pointer(e,svg.node())[0];
+   const q=S.qs.reduce((a,b)=>Math.abs(x(b.k)+x.bandwidth()/2-px)<Math.abs(x(a.k)+x.bandwidth()/2-px)?b:a);
+   const tot=S.names.reduce((a,s)=>a+(S.by[s][q.k]||0),0);
+   const parts=S.names.filter(s=>S.by[s][q.k]).slice(0,8).map(s=>
+    `<span class="sw" style="background:${S.color(s)}"></span>${s} ${(S.by[s][q.k]).toFixed(2)}tn`);
+   showTip(`<b>${q.fy} Q${q.q}</b> <span style="opacity:.7">${QTR_NAME[q.q]}</span><br>`
+    +`Total ${tot.toFixed(2)} tn<br>`+parts.join('<br>')
+    +(S.names.length>8?`<br><span style="opacity:.6">+${S.names.length-8} more</span>`:''),e);
+  }).on('mouseleave',hideTip);
+ markLockdown(svg,x,m,H);
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis')
+  .call(d3.axisBottom(x).tickValues(S.qs.filter(q=>q.q===1).map(q=>q.k)).tickFormat(k=>k.slice(0,7)))
+  .selectAll('text').attr('transform','rotate(-30)').attr('text-anchor','end').attr('dx','-4').attr('dy','6');
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'tn'));
+ qtrLegend(S);
+}
+function drawQtrLines(){
+ const el=d3.select('#qtr');el.selectAll('*').remove();
+ const S=qtrShape();if(!S.qs.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(280,Math.min(360,W*0.32)),m={t:16,r:14,b:38,l:46};
+ const x=d3.scalePoint().domain(S.qs.map(q=>q.k)).range([m.l,W-m.r]);
+ const base={};S.names.forEach(s=>{const f=S.qs.find(q=>S.by[s][q.k]);base[s]=f?S.by[s][f.k]:null;});
+ const vals=[];S.names.forEach(s=>S.qs.forEach(q=>{if(S.by[s][q.k]&&base[s])vals.push(100*S.by[s][q.k]/base[s]);}));
+ const y=d3.scaleLinear().domain(d3.extent(vals)).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ markLockdown(svg,x,m,H);
+ S.names.forEach(s=>{
+  if(!base[s])return;
+  const pts=S.qs.filter(q=>S.by[s][q.k]);
+  const line=d3.line().x(q=>x(q.k)).y(q=>y(100*S.by[s][q.k]/base[s])).curve(d3.curveMonotoneX);
+  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',S.color(s))
+   .attr('stroke-width',qtrLevel==='sector'?2.6:1.6).attr('opacity',qtrLevel==='sector'?1:.85);
+ });
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',H-m.b-m.t).attr('fill','transparent')
+  .on('mousemove',function(e){
+   const px=d3.pointer(e,svg.node())[0];
+   const q=S.qs.reduce((a,b)=>Math.abs(x(b.k)-px)<Math.abs(x(a.k)-px)?b:a);
+   const list=S.names.filter(s=>S.by[s][q.k]&&base[s])
+    .map(s=>({s:s,v:100*S.by[s][q.k]/base[s]})).sort((a,b)=>b.v-a.v).slice(0,8);
+   showTip(`<b>${q.fy} Q${q.q}</b> <span style="opacity:.7">${QTR_NAME[q.q]}</span><br>`
+    +`<span style="opacity:.7">indexed, first quarter = 100</span><br>`
+    +list.map(r=>`<span class="sw" style="background:${S.color(r.s)}"></span>${r.s} ${r.v.toFixed(0)}`).join('<br>'),e);
+  }).on('mouseleave',hideTip);
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis')
+  .call(d3.axisBottom(x).tickValues(S.qs.filter(q=>q.q===1).map(q=>q.k)).tickFormat(k=>k.slice(0,7)))
+  .selectAll('text').attr('transform','rotate(-30)').attr('text-anchor','end').attr('dx','-4').attr('dy','6');
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5));
+ qtrLegend(S);
+}
+/* April-June 2020 is Q4 of 2019-20, and it is why this table is worth
+   publishing, so it is labelled rather than left for the reader to find. */
+function markLockdown(svg,x,m,H){
+ const k='2019-20 Q4',cx=x.bandwidth?x(k)+x.bandwidth()/2:x(k);
+ if(cx==null||isNaN(cx))return;
+ svg.append('line').attr('x1',cx).attr('x2',cx).attr('y1',m.t).attr('y2',H-m.b)
+  .attr('stroke','var(--ink)').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.55).attr('pointer-events','none');
+ svg.append('text').attr('x',cx-5).attr('y',m.t+11).attr('text-anchor','end').attr('font-size',10)
+  .attr('font-style','italic').attr('fill','var(--muted)').attr('pointer-events','none').text('lockdown');
+}
+function qtrLegend(S){
+ d3.select('#qtrLegend').html(S.names.map(s=>
+  `<div class="li"><span class="sw" style="background:${S.color(s)}"></span>${s}</div>`).join(''));
 }
 
 /* ================= 2a. mix in selected year ================= */
@@ -1162,6 +1384,13 @@ function downloadCSV(name,rows){
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
 }
 const CSV={
+ macro:()=>['Pakistan_macro_indicators_2000-2026.csv',
+   macroRows.map(r=>({fiscal_year:r.fy,gdp_constant_rs_tn:r.gdp_tn,gni_constant_rs_tn:r.gni_tn,
+     net_primary_income_abroad_rs_tn:r.npi_tn,real_income_per_person_rs:r.pci,rupees_per_usd:r.usd}))],
+ qtr:()=>[`Pakistan_quarterly_gva_by_${qtrLevel}.csv`,
+   qtrRows.map(r=>({fiscal_year:r.fy,quarter:'Q'+r.quarter,months:QTR_NAME[r.quarter],
+     sector:r.sector,subsector:r.subsector,activity:r.category,
+     value_added_rs_mn_2015_16_prices:r.gva_mn}))],
  arc:()=>['Pakistan_sector_shares_1952-2026.csv',
    arcData.map(d=>({fiscal_year:d.year,agriculture_pct:round2(d.agri),industry_pct:round2(d.ind),services_pct:round2(d.serv),manufacturing_pct:round2(d.mfg),source:d.back?'backcast':'published'}))],
  mix:()=>[`Pakistan_sector_mix_${selYear}.csv`,

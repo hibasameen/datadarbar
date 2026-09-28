@@ -12,7 +12,8 @@ level, which is why a search of app/data alone found nothing.
   Crime          reported offences by force and year, 2019 to 2024, with the
                  eleven-offence breakdown PBS publishes for every force, and
                  district figures where a force publishes them.
-  Energy         133 power plants with fuel and installed capacity.
+  Energy         133 power plants with fuel and installed capacity, and
+                 nineteen years of distribution losses by company.
   Disasters      31 GDACS alerts since 2001, and NDMA's monsoon impacts.
 
 Four things the shape of these tables forces on the queries below:
@@ -43,7 +44,11 @@ Four things the shape of these tables forces on the queries below:
    the latest report is carried, and the country row is kept apart from the
    provinces rather than added to them.
 
-The federal budget is in the warehouse as budget_lines and is not a series yet.
+The federal budget is in the warehouse as budget_lines. It IS a series now -
+finance.html draws it as a treemap and a trend, deflated - so this page points
+at that chart instead of repeating the claim that it cannot be drawn. What
+stays true is the caveat: the item labels drift between documents, so the
+crosswalk behind that chart is a reading of them, not a fact about them.
 It is 18 years of budget documents whose item labels drift between them -
 "EXPENDITURE (I + II)" one year, "Current Exp. on Revenue Receipts" another,
 some carrying figures inside the label - so no item name spans more than five of
@@ -54,9 +59,13 @@ produce a line that looks continuous and is not.
 Usage:
   build_state_payload.py --warehouse <dir> --out <js>
 """
-import argparse, json, pathlib
+import argparse, json, pathlib, sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import duckdb
+
+from build_disco_payload import AREA as DISCO_AREA, COLS as DISCO_COLS, losses
 
 # NEPRA's technology strings distinguish things that are the same fuel and spell
 # the same fuel two ways ('Coal' and 'THERMAL- COAL'). Group for the chart; the
@@ -223,6 +232,15 @@ def main():
                count(DISTINCT item)
         FROM '{W_}/budget_lines.parquet'""").fetchone()
 
+    # ── electricity distribution losses ────────────────────────────────────
+    # The crosswalk lives in build_disco_payload so this page and the exporter
+    # cannot drift apart. What comes back is one row per company-year, with
+    # the national total printed under PESCO's name in 2019-20 already thrown
+    # out and the loss rate computed from the GWh rather than taken from a
+    # percentage column that contradicts them.
+    disco_rows, disco_dropped, disco_disagree = losses(a.warehouse)
+    assert disco_rows, 'the distribution crosswalk produced nothing'
+
     # ── the indicator index ────────────────────────────────────────────────
     # One row per dataset x topic x indicator: what the three dropdowns offer
     # and what each one draws. Nothing here is a claim about the data - the
@@ -237,7 +255,8 @@ def main():
         ('fbr_tax_collection', 'tax', 'share', 'Each head as a share of the total',
          'taxShare', 'tax', 'fy_end'),
         ('budget_lines', 'budget', 'panel',
-         'What eighteen budget documents contain', 'budgetPanel', None, None),
+         'What eighteen budget documents contain, and where it is drawn',
+         'budgetPanel', None, None),
         ('ljcp_case_flows', 'courts', 'pending', 'Cases pending at year end',
          'courtsPending', 'courts', 'year'),
         ('ljcp_case_flows', 'courts', 'clearance', 'Clearance rate',
@@ -277,9 +296,15 @@ def main():
         ('nepra_plants', 'plants', 'reports',
          'Plants in NEPRA\u2019s reports, by fiscal year', 'plantsReports',
          'plants', None),
-        ('nepra_disco_annual', 'discos', 'panel',
-         'Why the distribution tables are not a series yet', 'discoPanel',
-         None, None),
+        ('nepra_disco_annual', 'discos', 'losses',
+         'Losses as a share of units bought, by company', 'discoLosses',
+         'discos', 'fy_end'),
+        ('nepra_disco_annual', 'discos', 'latest',
+         'The latest year, companies ranked', 'discoLatest', 'discos',
+         'fy_end'),
+        ('nepra_disco_annual', 'discos', 'units',
+         'Units bought, units billed, units lost', 'discoUnits', 'discos',
+         'fy_end'),
         ('climate_events', 'events', 'timeline', 'Alerts by hazard and year',
          'eventsTimeline', 'events', None),
         ('climate_impacts', 'impacts', 'deaths_total', 'Deaths by province',
@@ -340,6 +365,8 @@ def main():
             'rows': budget[0], 'docs': budget[1],
             'first': budget[2], 'last': budget[3], 'items': budget[4],
         },
+        'discos': {'rows': disco_rows, 'cols': DISCO_COLS, 'areas': DISCO_AREA,
+                   'rejected': disco_dropped, 'disagreements': disco_disagree},
     }
     def span(block, field):
         """The years a block actually covers, read off the block itself."""

@@ -46,6 +46,7 @@
   var crimeDistricts = asObjects(D.crimeDistricts);
   var sindhCrime = asObjects(D.sindhCrime), firs = asObjects(D.firs);
   var plants = asObjects(D.plants), events = asObjects(D.events);
+  var discos = asObjects(D.discos);
   var impacts = asObjects(D.impacts);
 
   var TOPICS = {
@@ -63,9 +64,10 @@
     budget: {
       theme: 'Public money',
       title: 'The federal budget',
-      dek: 'Eighteen years of budget documents are in the warehouse. They are '
-         + 'not yet a series.',
-      note: '',
+      dek: 'Eighteen years of budget documents, drawn on the Economy page as '
+         + 'a treemap and a trend.',
+      note: 'What the documents contain, and what had to be decided before '
+          + 'they could be charted.',
     },
     courts: {
       theme: 'Justice',
@@ -136,15 +138,23 @@
     },
     discos: {
       theme: 'Energy',
-      title: 'Electricity distribution',
-      dek: 'Nineteen years of NEPRA\u2019s distribution tables for 25 companies, '
-         + 'published and queryable but not yet a series.',
-      note: 'The year lives in a row label that is a calendar year in some '
-          + 'editions and a fiscal year in others, and the consumer categories '
-          + 'drift between editions \u2014 \u2018Agricultural\u2019 in one table and '
-          + '\u2018Agricu- ltural\u2019 in the next, where a column header wrapped in '
-          + 'the PDF. Charting it needs a label crosswalk across the editions, '
-          + 'the same work the budget documents need.',
+      title: 'Electricity distribution losses',
+      dek: 'The share of the electricity each distribution company buys that '
+         + 'it never bills anyone for, 2006-07 to 2024-25. In the last year '
+         + 'that is 8.4 per cent in Islamabad and 38.8, 38.4 and 39.0 per '
+         + 'cent in Peshawar, Quetta and Sukkur \u2014 two units in every five.',
+      note: 'Losses here are technical and commercial together: electricity '
+          + 'lost in the wires and electricity delivered but never paid for. '
+          + 'NEPRA\u2019s published figure does not separate them, so neither '
+          + 'does this. Rates are computed from the units bought and units '
+          + 'sold printed in the same row rather than from the percentage '
+          + 'column beside them, which contradicts its own row for PESCO in '
+          + 'the 2011 edition. The 2024 edition prints the whole system\u2019s '
+          + 'figures under PESCO\u2019s name for 2019-20 \u2014 114,360 GWh against '
+          + 'its own 14,750 \u2014 and that row is rejected. Company names in '
+          + 'the source run to five spellings of K-Electric and one that is '
+          + 'not a name at all; those are crosswalked, and the totals rows '
+          + 'are kept apart from the companies.',
     },
     plants: {
       theme: 'Energy',
@@ -221,7 +231,9 @@
     plantsFuel: function () { renderPlants('fuel'); },
     plantsLargest: function () { renderPlants('largest'); },
     plantsReports: function () { renderPlants('reports'); },
-    discoPanel: renderDiscoPanel,
+    discoLosses: renderDiscoLosses,
+    discoLatest: renderDiscoLatest,
+    discoUnits: renderDiscoUnits,
     eventsTimeline: renderEvents,
     impactsMetric: renderImpacts,
   };
@@ -741,28 +753,190 @@
            + 'closed.');
   }
 
-  function renderDiscoPanel() {
-    cover(['25 distribution companies', '19 fiscal years', '20,689 rows',
-           'not a series yet']);
-    var host = $('chart');
-    host.className = 'chart panel';
-    host.innerHTML =
-      '<h2>Nineteen years of distribution tables, and no series in them yet</h2>'
-      + '<p>NEPRA\u2019s state-of-industry reports carry 20,689 rows for 25 '
-      + 'distribution companies, and they cannot be charted as they stand. The '
-      + 'year sits in a row label that is sometimes a calendar year '
-      + '(<code>2016</code>) and sometimes a fiscal one (<code>2022-23</code>), '
-      + 'so the same company\u2019s history is split across two spellings of '
-      + 'time. The consumer categories drift between editions as well \u2014 '
-      + '<code>Agricultural</code> in one table and <code>Agricu- ltural</code> '
-      + 'in the next, where a column header wrapped in the PDF.</p>'
-      + '<p>Charting it needs a label crosswalk across the editions, the same '
-      + 'work the budget documents need and the census districts needed. '
-      + 'Inventing one here would produce a line that looks continuous and is '
-      + 'not, so the table is downloadable and documented and this page does '
-      + 'not draw it.</p>'
-      + '<p><a href="/datasets/nepra-disco-annual/">Dataset page and field '
-      + 'definitions</a></p>';
+
+  /* ── electricity distribution losses ─────────────────────────────────── */
+  /* Nineteen editions of NEPRA's state-of-industry report, crosswalked in
+     etl/economy/build_disco_payload.py. What this page said for as long as it
+     existed - that the distribution tables are not a series yet - was true of
+     the rows as extracted and is no longer true of them as read. */
+  var DISCO_AREA = (D.discos && D.discos.areas) || {};
+
+  function discoArea(u) {
+    return DISCO_AREA[u] ? u + ' · ' + DISCO_AREA[u] : u;
+  }
+  function discoYears() {
+    return Array.from(new Set(discos.map(function (d) { return d.fy_end; })))
+      .sort(d3.ascending);
+  }
+  /* K-Electric generates most of what it sells, so its "purchased" column is
+     grid imports alone and the three quantities do not decompose. It keeps its
+     loss rate and is left out of anything that adds them up. */
+  function discoUnitsOnly() {
+    return discos.filter(function (d) {
+      return d.unit !== 'ALL' && d.unit !== 'K-Electric';
+    });
+  }
+  function discoCover(extra) {
+    var ys = discoYears(), last = ys[ys.length - 1];
+    var n = new Set(discos.filter(function (d) { return d.unit !== 'ALL'; })
+      .map(function (d) { return d.unit; })).size;
+    cover([n + ' companies', ys[0] - 1 + '-' + String(ys[0]).slice(2)
+           + ' to ' + (last - 1) + '-' + String(last).slice(2)]
+          .concat(extra || []));
+  }
+
+  function renderDiscoLosses() {
+    var ys = discoYears();
+    var rows = discos.filter(function (d) {
+      return d.unit !== 'ALL' && d.loss_pct != null;
+    }).map(function (d) {
+      return { k: d.unit, year: d.fy_end, value: d.loss_pct };
+    });
+    var keys = Array.from(new Set(rows.map(function (d) { return d.k; })))
+      .sort(function (a, b) {
+        var la = rows.filter(function (d) { return d.k === a; }).pop();
+        var lb = rows.filter(function (d) { return d.k === b; }).pop();
+        return (lb ? lb.value : 0) - (la ? la.value : 0);
+      });
+    var sys = discos.filter(function (d) {
+      return d.unit === 'ALL' && d.loss_pct != null;
+    }).sort(function (a, b) { return a.fy_end - b.fy_end; }).pop();
+    discoCover(['worst ' + rows.filter(function (d) {
+      return d.year === ys[ys.length - 1];
+    }).reduce(function (a, b) { return b.value > a.value ? b : a; }).value.toFixed(1)
+      + '%', sys ? 'system ' + sys.loss_pct.toFixed(1) + '% in ' + sys.fy : '']
+      .filter(Boolean));
+    lineChart(rows, keys, ys, 'value', 'losses, % of units bought',
+      function (v) { return v.toFixed(0) + '%'; },
+      { gaps: true,
+        lede: 'The share of the electricity each company buys that it never '
+            + 'bills anyone for — technical losses in the wires, and '
+            + 'electricity delivered but not paid for, which the published '
+            + 'figure does not separate.',
+        foot: 'Computed from the units bought and units sold printed in the '
+            + 'same row, not from the percentage column beside them: for '
+            + 'PESCO in 2006-07 to 2009-10 that column reads 54 to 64 per '
+            + 'cent where its own GWh give 32 to 35, and the 2015 edition '
+            + 'restates 2010-11 at 37.96 where 2011 printed 62.35. '
+            + 'K-Electric’s rate is as published, because it generates '
+            + 'most of what it sells and its purchased column is grid '
+            + 'imports only.' });
+  }
+
+  function renderDiscoLatest() {
+    var ys = discoYears(), last = ys[ys.length - 1];
+    var rows = discos.filter(function (d) {
+      return d.unit !== 'ALL' && d.fy_end === last && d.loss_pct != null;
+    }).sort(function (a, b) { return b.loss_pct - a.loss_pct; });
+    if (!rows.length) return renderDiscoLosses();
+    var fy = rows[0].fy;
+    discoCover([fy, rows.length + ' companies reporting']);
+    barChart(rows, function (d) { return discoArea(d.unit); },
+      function (d) { return d.loss_pct; },
+      'Losses in ' + fy + ', % of units bought',
+      'The spread is the story: the same regulator, the same tariff, and a '
+      + 'range from under nine per cent to nearly forty. Bars are ordered '
+      + 'worst first.',
+      function (d) {
+        return d.loss_gwh != null
+          ? d.loss_gwh.toLocaleString() + ' GWh lost' : '';
+      },
+      function (d) { return d.loss_pct.toFixed(1) + '%'; });
+  }
+
+  function renderDiscoUnits() {
+    var rows = discoUnitsOnly().filter(function (d) {
+      return d.purchased != null && d.sold != null && d.loss_gwh != null;
+    });
+    var ys = Array.from(new Set(rows.map(function (d) { return d.fy_end; })))
+      .sort(d3.ascending);
+    /* Summed across the companies rather than read off NEPRA's own system
+       row, which stops in 2022-23. Where both exist the two agree to within
+       0.13 per cent, which is the check on the whole crosswalk.
+
+       But the set of companies is not constant: SEPCO first reports in
+       2011-12 and TESCO in 2010-11, so the earliest bars are eight companies
+       and the latest are ten. Part of the step up in 2010-11 is a company
+       arriving, not demand growing. Short years are drawn faded and say so
+       rather than being quietly summed alongside full ones. */
+    var full = 0, by = {};
+    rows.forEach(function (d) {
+      var t = by[d.fy_end] || (by[d.fy_end] = { fy: d.fy, year: d.fy_end,
+                                                sold: 0, lost: 0, n: 0 });
+      t.sold += d.sold; t.lost += d.loss_gwh; t.n += 1;
+      if (t.n > full) full = t.n;
+    });
+    var years = ys.map(function (y) { return by[y]; });
+    var last = years[years.length - 1];
+    var short = years.filter(function (d) { return d.n < full; });
+    discoCover([last.fy + ': ' + Math.round(last.sold + last.lost).toLocaleString()
+                + ' GWh bought',
+                Math.round(last.lost).toLocaleString() + ' GWh lost',
+                'excludes K-Electric']);
+
+    var host = chartHost();
+    var W = host.w, H = host.h, svg = host.svg;
+    var m = fit({ top: 16, right: 130, bottom: 26, left: 58 }, W);
+    var x = d3.scaleBand().domain(ys).range([m.left, W - m.right]).padding(.18);
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(years, function (d) { return d.sold + d.lost; })]).nice()
+      .range([H - m.bottom, m.top]);
+    var LAYERS = [
+      { k: 'sold', label: 'billed to someone', c: 'var(--pine)' },
+      { k: 'lost', label: 'lost or unbilled', c: 'var(--rust)' }];
+    var acc = {};
+    LAYERS.forEach(function (L) {
+      svg.append('g').attr('fill', L.c).selectAll('rect')
+        .data(years).join('rect')
+        .attr('x', function (d) { return x(d.year); })
+        .attr('width', x.bandwidth())
+        .attr('y', function (d) {
+          var base = acc[d.year] || 0;
+          return y(base + d[L.k]);
+        })
+        .attr('height', function (d) {
+          var base = acc[d.year] || 0;
+          return Math.max(0, y(base) - y(base + d[L.k]));
+        })
+        .attr('opacity', function (d) { return d.n < full ? 0.45 : 1; })
+        .append('title').text(function (d) {
+          return d.fy + '\n' + L.label + ': '
+               + Math.round(d[L.k]).toLocaleString() + ' GWh\n'
+               + (100 * d.lost / (d.sold + d.lost)).toFixed(1) + '% lost overall\n'
+               + d.n + ' of ' + full + ' companies reporting';
+        });
+      years.forEach(function (d) {
+        acc[d.year] = (acc[d.year] || 0) + d[L.k];
+      });
+    });
+    svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
+      .call(d3.axisBottom(x).tickValues(ys.filter(function (v, i) {
+        return i % Math.ceil(ys.length / 8) === 0;
+      })).tickFormat(function (v) { return (v - 1) + '-' + String(v).slice(2); }))
+      .attr('color', muted()).attr('font-size', 11);
+    svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
+      .call(d3.axisLeft(y).ticks(6).tickFormat(function (v) {
+        return (v / 1000).toFixed(0) + 'k';
+      })).attr('color', muted()).attr('font-size', 11);
+    svg.append('text').attr('x', m.left).attr('y', m.top - 2)
+      .attr('font-size', 10.5).attr('fill', muted()).text('GWh bought');
+    legend(svg, LAYERS.map(function (L) { return L.label; }),
+      d3.scaleOrdinal().domain(LAYERS.map(function (L) { return L.label; }))
+        .range(LAYERS.map(function (L) { return L.c; })), W, m);
+    host.say('Every unit the distribution companies bought, split into the '
+      + 'units they billed and the units they did not.',
+      'Faded bars are years when fewer than ' + full + ' companies reported — '
+      + (short.length
+          ? short[0].fy + ' to ' + short[short.length - 1].fy + ', before '
+            + 'SEPCO and TESCO appear in the tables — so part of the step up '
+            + 'in 2010-11 is a company arriving rather than demand growing. '
+          : '')
+      + 'K-Electric is excluded throughout because it generates most of what '
+      + 'it sells, so its purchased column is grid imports rather than '
+      + 'supply. Where NEPRA prints its own system total, these companies '
+      + 'add up to it to within 0.13 per cent. Three company-years have no '
+      + 'printed loss column and take the difference between bought and '
+      + 'sold, which is what that column holds wherever it is printed.');
   }
 
   function renderPlants(mode) {
@@ -1071,15 +1245,21 @@
       + '<span>' + b.items.toLocaleString() + ' distinct item labels</span>';
     $('chart').className = 'chart panel';
     $('chart').innerHTML =
-      '<div class="notice"><p><b>' + b.docs + ' years of budget documents are in the '
-      + 'warehouse, and they are not yet a series.</b></p>'
-      + '<p>The item labels drift between documents — <i>EXPENDITURE (I + II)</i> one '
-      + 'year, <i>Current Exp. on Revenue Receipts</i> another, some carrying figures '
-      + 'inside the label — so no item name spans more than five of the eighteen '
-      + 'years. Charting them as they stand would draw a line that looks continuous '
-      + 'and is not.</p>'
-      + '<p>What it needs is an item crosswalk across the documents, checked the way '
-      + 'the census districts were. Until then the table is published and queryable: '
+      '<div class="notice"><p><b>' + b.docs + ' years of budget documents, and the '
+      + 'chart is on the Economy page.</b></p>'
+      + '<p><a href="finance.html#t=budget">Receipts and current expenditure</a> as a '
+      + 'treemap of any one budget year, or a trend across all ' + b.docs + ', with a '
+      + 'toggle that deflates to 2015-16 rupees. Receipts run from the '
+      + '<i>Explanatory Memorandum on Federal Receipts</i>, expenditure from '
+      + '<i>Budget in Brief</i>; development spending is budgeted separately and is '
+      + 'not in it.</p>'
+      + '<p>What made that chart slow to arrive is still worth knowing before reading '
+      + 'it. The item labels drift between documents — <i>EXPENDITURE (I + II)</i> '
+      + 'one year, <i>Current Exp. on Revenue Receipts</i> another, some carrying '
+      + 'figures inside the label — so no raw item name spans more than five of the '
+      + b.docs + ' years, and every line on that chart rests on a crosswalk between '
+      + 'them. It is a reading of the documents, not a fact about them.</p>'
+      + '<p>The rows underneath are published either way: '
       + '<a href="datasets/budget-lines/">budget_lines</a> in the catalogue, or '
       + '<a href="query.html">query it directly</a>.</p></div>';
     $('cardNote').textContent = '';
