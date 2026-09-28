@@ -1153,7 +1153,7 @@
        whether the label happens to contain the word "mean". */
     var rate = !state.norm && col('h_sum', state.row) !== 1;
 
-    var figure, caption;
+    var figure, caption, rangeTitle = '';
     if (state.norm) {
       var f = normFactor(), suffix = state.norm === 'pct' ? '%' : '';
       if (keep.length && keep[0].d2 !== undefined) {
@@ -1181,11 +1181,36 @@
         caption = normLabel().replace(/^%/, 'Share') + ' \u00b7 ' + where;
       }
     } else if (rate) {
-      var vals = keep.map(function (u) { return u.v; }).sort(function (a, b) { return a - b; });
-      figure = vals.length
-        ? fmt(vals[0], dpFor(state.row)) + ' to ' + fmt(vals[vals.length - 1], dpFor(state.row))
-        : '\u2014';
-      caption = 'Range across ' + g.noun + 's \u00b7 a rate cannot be totalled';
+      /* A rate or a proportion cannot be totalled, but a RANGE is not the
+         summary a reader wants at the top of the map: two extremes say
+         nothing about the middle, and the top bar is where the eye goes for
+         "so what is it, roughly".
+
+         This is the plain average of the places on the map, not a national
+         rate, and the caption says so. It is unweighted on purpose: the
+         numerator and denominator behind a stored rate are not in the
+         payload, and weighting every rate by total population would be wrong
+         for any whose denominator is not population - a literacy rate is out
+         of those aged ten and over, an unemployment rate out of the labour
+         force. Where the page computes a share itself it has both parts and
+         does weight it, which is the branch above.
+
+         The range is kept on hover, so nothing that was there is lost. */
+      var vals = keep.map(function (u) { return u.v; })
+        .filter(function (v) { return v != null && isFinite(v); })
+        .sort(function (a, b) { return a - b; });
+      var dp = dpFor(state.row);
+      if (!vals.length) { figure = '\u2014'; caption = 'No values'; }
+      else {
+        var mean = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+        figure = fmt(mean, dp);
+        caption = 'Average ' + g.noun + ' \u00b7 unweighted';
+        rangeTitle = 'Range across the ' + vals.length + ' ' + g.noun
+          + 's shown: ' + fmt(vals[0], dp) + ' to '
+          + fmt(vals[vals.length - 1], dp)
+          + '. This average gives every ' + g.noun
+          + ' equal weight, so it is not a national rate.';
+      }
     } else {
       figure = big(keep.reduce(function (a, u) { return a + u.v; }, 0));
       caption = 'Total \u00b7 ' + where;
@@ -1204,7 +1229,8 @@
       + '<b>' + n + (!prov && whole && n < whole ? ' of ' + whole : '')
       + '</b></div>'
       + (figure === null ? ''
-         : '<div class="tot"><span class="tot-k">' + esc(caption) + '</span>'
+         : '<div class="tot"' + (rangeTitle ? ' title="' + esc(rangeTitle) + '"' : '')
+           + '><span class="tot-k">' + esc(caption) + '</span>'
            + '<b>' + esc(figure) + '</b></div>')
       + '<div class="tot"><span class="tot-k">' + esc(state.norm ? 'Showing' : 'Year')
       + '</span><b>' + esc(state.norm ? normLabel()

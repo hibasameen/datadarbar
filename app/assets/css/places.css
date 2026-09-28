@@ -225,3 +225,12 @@
 /* A source total is a different kind of caveat from an unresolved label: the
    row is understood, it is just not a measure anyone browses to. */
 .ind-total{color:var(--slate,#5a6b7a);background:var(--green-100)}
+
+/* Leaflet draws its zoom control in the map's own top-left corner, which is
+   exactly where the totals bar and the tools row are drawn over the map, so
+   it sat on top of both and the district count was unreadable behind it. The
+   chrome above the map is ours; the control moves below it, and moves again
+   when the totals bar appears, which is the same offset .map-tools already
+   takes. */
+.leaflet-top.leaflet-left{top:44px}
+.map-wrap:has(.totals:not([hidden])) .leaflet-top.leaflet-left{top:80px}
