@@ -1,22 +1,32 @@
 /*
-   places-rail.js — Topic, then Dataset, then Indicator.
+   places-rail.js — Topic, subtopic, family, source, indicator, metric.
 
-   The order matters and is not the same as Economy's. Someone coming to
-   Places has a subject in mind and wants to know who measured it:
+   The hierarchy is the one proposed in places-hierarchy-proposal.md and
+   joined onto the index by etl/places/build_payload.py on the compound source
+   key. Eleven topics, 49 subtopics, 76 families over the same 5,201 entries;
+   nothing is merged, renamed or dropped, and every original series keeps its
+   own row.
 
-     Education  ->  Census 2023  ->  Literacy rate, 10+
-     Education  ->  PSLM 2019-20 ->  Literacy rate, 10+
+   Why a subject tree and not the flat topic list it replaces: the old rail
+   asked for a topic and then a dataset, and between them they had to carry
+   1,391 population entries or 1,040 education ones. "Education & schools"
+   is a shelf, not a choice - what a reader wants is attainment, or
+   attendance, or distance to a school, and those were only reachable by
+   scrolling a list of several hundred or by already knowing the wording.
 
-   The same indicator name genuinely exists under several datasets, measured
-   differently and years apart, and the old picker made that collision almost
-   impossible to see: it listed 5,801 indicators grouped by topic with the
-   source only in small print, so three datasets' literacy rates sat next to
-   each other looking like three unrelated rows. Naming the dataset as its own
-   step makes choosing between them deliberate.
+     Education & schools -> Educational attainment -> Highest education
+       attained -> Population Census -> Matric -> Female, urban
 
-   It is also what makes Economic Census 2023 (8 indicators), Mouza Census 2020
-   (54) and the agriculture pull (324) reachable at all. All three were in the
-   index the whole time and could only be found by typing the right word.
+   Source stays a step rather than becoming a filter in small print, because
+   the collision it was added for is still real: three datasets publish a
+   literacy rate for the same district, measured differently and years apart.
+   It sits after the family now, which is where the choice actually arises -
+   only 24 of the 76 families have more than one source, and in the other 52
+   the step collapses rather than asking a question with one answer.
+
+   Levels that offer no choice are hidden, not greyed. Thirty-five of the 50
+   subtopics hold exactly one family; six visible dropdowns would be five
+   more than most of the index needs.
 
    The search box and the grouped list stay exactly as they were. This is
    another way in, not a replacement, and both end at the same choose(row).
@@ -128,17 +138,30 @@
         || RATE_WORDS.test(measure) || RATE_WORDS.test(metric || '');
       var countable = !isRate && !WHOLE_POP.test(measure) && !/^area\b/i.test(measure);
 
-      index.push({
-        topic: topic, topicLabel: col('topic_label', i) || topic,
+      /* The hierarchy's topic, not the index's own. The original topic
+         column stays on the row as `srcTopic` because heading() keys census
+         table numbers on it - PBS reused number 22 for homelessness in 2017
+         and cooking fuel in 2023 - and because the map colour scales fall
+         back to it. Navigation moved; identity did not. */
+      var hTopic = col('h_topic', i) || col('topic_label', i) || topic;
+      var base = {
+        topic: hTopic, topicLabel: hTopic,
+        sub: col('h_sub', i) || hTopic, subLabel: col('h_sub', i) || hTopic,
+        fam: col('h_family', i) || '', famLabel: col('h_family', i) || '',
+        mform: col('h_metric', i) || '',
+        review: col('h_review', i) === 1,
+        srcTopic: topic,
         ds: ds, dsLabel: ds,
         ind: measure, label: measure,
-        metric: String(i), metricLabel: metric || 'All',
         key: col('indicator', i), groupKey: col('group_key', i),
         tableLabel: heading(col('group_key', i), col('group_label', i), topic),
         years: (list ? list('years', i) : []).join('/'),
         row: i, fullLabel: label,
         rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
-      });
+      };
+      index.push(Object.assign({}, base, {
+        metric: String(i), metricLabel: metric || 'All',
+      }));
       /* Two ways to read a count against the population, because they suit
          different sizes. A share is the natural reading of mother tongue or
          religion, where the categories partition the population; per 1,000
@@ -146,18 +169,11 @@
          0.006% and unreadable. Both use the same denominator. */
       NORMS.forEach(function (n) {
         if (!countable) return;
-        index.push({
-          topic: topic, topicLabel: col('topic_label', i) || topic,
-          ds: ds, dsLabel: ds,
-          ind: measure, label: measure,
+        index.push(Object.assign({}, base, {
           metric: n.id + i,
           metricLabel: (metric || 'All') + '\u2002\u00b7\u2002' + n.label,
-          key: col('indicator', i), groupKey: col('group_key', i),
-        tableLabel: heading(col('group_key', i), col('group_label', i), topic),
-          years: (list ? list('years', i) : []).join('/'),
-          row: i, norm: n.mode, fullLabel: label + ', ' + n.label,
-          rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
-        });
+          norm: n.mode, fullLabel: label + ', ' + n.label,
+        }));
       });
     }
     /* "Total Population" is published in several tables, each with its own
@@ -193,8 +209,21 @@
 
     nameHeadings(index);
 
+    /* Topics in the order the proposal gives - general subjects first, so a
+       reader opening the list meets Population before Agriculture - and the
+       order travels in the payload rather than being inferred here from
+       whichever topic happens to hold the first row. Anything the payload
+       does not name sorts after the named ones rather than first. */
+    var ORDER = (IX.h_topic_order || []);
+    var rank = function (t) {
+      var i = ORDER.indexOf(t);
+      return i < 0 ? ORDER.length : i;
+    };
     index.sort(function (a, b) {
-      return a.topicLabel.localeCompare(b.topicLabel)
+      return rank(a.topic) - rank(b.topic)
+          || a.topic.localeCompare(b.topic)
+          || a.subLabel.localeCompare(b.subLabel)
+          || a.famLabel.localeCompare(b.famLabel)
           || a.dsLabel.localeCompare(b.dsLabel)
           || a.label.localeCompare(b.label)
           || a.metricLabel.localeCompare(b.metricLabel, undefined, { numeric: true });
@@ -229,33 +258,69 @@
     return index.filter(function (r) { return r.topic === best; })[0] || null;
   }
 
-  /* The dataset defaults to all of them, so opening a topic shows every
+  /* The source defaults to all of them, so opening a family shows every
      indicator in it whoever measured it - and picking one narrows rather than
      being the price of entry. */
-  /* Keep an "All" that the reader chose. follow() runs after every draw, and
-     an earlier version rewrote topic and dataset from the drawn row - so
-     picking All topics lasted exactly one redraw before snapping back to the
-     topic of whatever was on screen. */
   var ALL = function () { return window.DDExplorer.ALL; };
 
+  /* An "All" the reader chose survives a redraw; everything else follows the
+     row on screen. follow() runs after every draw, and an earlier version
+     rewrote topic and dataset from the drawn row - so picking All topics
+     lasted exactly one redraw before snapping back to the topic of whatever
+     was showing. Subtopic and family behave the same way, because with All
+     topics chosen they are the only levels left to browse across. */
   function hold(st, r) {
+    var keep = function (held, next) {
+      return held === ALL() || held === undefined ? ALL() : next;
+    };
     st.topic = st.topic === ALL() ? ALL() : r.topic;
-    st.ds = st.ds === ALL() || st.ds === undefined ? ALL() : r.ds;
+    st.sub = st.sub === ALL() ? ALL() : r.sub;
+    st.fam = st.fam === ALL() ? ALL() : r.fam;
+    st.ds = keep(st.ds, r.ds);
     st.ind = r.ind; st.metric = r.metric;
   }
 
   /* The row the four held values resolve to, falling back up the cascade the
      same way the rail itself does when a level's value did not survive. */
   function pick(index, st) {
-    var anyDs = st.ds === ALL(), anyTopic = st.topic === ALL();
+    var at = function (lv, r) { return st[lv] === ALL() || r[lv] === st[lv]; };
     var inScope = function (r) {
-      return (anyTopic || r.topic === st.topic) && (anyDs || r.ds === st.ds);
+      return at('topic', r) && at('sub', r) && at('fam', r) && at('ds', r);
     };
     return index.filter(function (r) {
       return inScope(r) && r.ind === st.ind && r.metric === st.metric;
     })[0]
     || index.filter(function (r) { return inScope(r) && r.ind === st.ind; })[0]
     || index.filter(inScope)[0];
+  }
+
+
+  /* One config, used by both the first mount and the rebuild that follows a
+     district/tehsil switch. They were two copies of the same object literal,
+     which is two places to forget a level. */
+  var LEVELS = ['topic', 'sub', 'fam', 'ds', 'ind', 'metric'];
+
+  function railCfg(host, index, st, onRow) {
+    return {
+      el: host, index: index, state: st,
+      levels: LEVELS,
+      /* Topic, subtopic, family and source can all be left at All, so a
+         reader who knows only the source - or only the wording - can get to a
+         series without first guessing which subject tree it was filed under.
+         Indicator and metric are the series itself and always resolve. */
+      optional: { topic: true, sub: true, fam: true, ds: true },
+      /* ...and the three middle ones disappear when they offer one answer.
+         35 of the 50 subtopics hold a single family, and 52 of the 76
+         families have a single source. */
+      hideSingle: { sub: true, fam: true, ds: true },
+      groupOf: { ind: 'tableLabel', fam: 'subLabel' },
+      labelOf: { sub: 'subLabel', fam: 'famLabel' },
+      labels: { topic: 'Topic', sub: 'Subtopic', fam: 'Indicator family',
+                ds: 'Source', ind: 'Indicator', metric: 'Metric' },
+      allLabel: { topic: 'All topics', sub: 'All subtopics',
+                  fam: 'All families', ds: 'All sources' },
+      onChange: onRow,
+    };
   }
 
   window.DDPlacesRail = {
@@ -286,15 +351,8 @@
         if (cur) hold(st, cur);
       }
 
-      var rail = window.DDExplorer.mount({
-        el: host, index: index, state: st,
-        levels: ['topic', 'ds', 'ind', 'metric'],
-        optional: { topic: true, ds: true },
-        groupOf: { ind: 'tableLabel' },
-        labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
-                  metric: 'Metric' },
-        onChange: function (r) { if (r) opts.onChange(r.row, r.norm || ''); },
-      });
+      var emit = function (r) { if (r) opts.onChange(r.row, r.norm || ''); };
+      var rail = window.DDExplorer.mount(railCfg(host, index, st, emit));
       rail.sync(false);
 
       return {
@@ -334,15 +392,7 @@
           var next = same || prefer(index) || index[0];
           hold(st, next);
 
-          rail = window.DDExplorer.mount({
-            el: host, index: index, state: st,
-            levels: ['topic', 'ds', 'ind', 'metric'],
-            optional: { topic: true, ds: true },
-            groupOf: { ind: 'tableLabel' },
-            labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
-                      metric: 'Metric' },
-            onChange: function (x) { if (x) opts.onChange(x.row, x.norm || ''); },
-          });
+          rail = window.DDExplorer.mount(railCfg(host, index, st, emit));
           rail.sync(false);
           var drawn = pick(index, st) || next;
           opts.onChange(drawn.row, drawn.norm || '');

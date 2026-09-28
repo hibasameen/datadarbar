@@ -28,6 +28,14 @@
   var LABEL_OF = { topic: 'topicLabel', ds: 'dsLabel', ind: 'label',
                    metric: 'metricLabel' };
 
+  /* A level whose name is not one of the four above brings its own label
+     field and caption: Places added subtopic, family and source when it took
+     the proposed hierarchy, and a level with no entry here would have shown
+     its raw key as every option. */
+  function labelKey(lv, cfg) {
+    return (cfg.labelOf && cfg.labelOf[lv]) || LABEL_OF[lv] || lv;
+  }
+
   function uniq(rows, key, labelKey, groupKey) {
     var seen = {}, out = [];
     rows.forEach(function (r) {
@@ -125,6 +133,14 @@
     var ALL = window.DDExplorer.ALL;
     var optional = cfg.optional || {};
     var groupOf = cfg.groupOf || {};
+    var hideSingle = cfg.hideSingle || {};
+    /* "All families", not "All familys". The fallback pluralises the caption,
+       which is right for topics and datasets and wrong for anything else, so
+       a page with its own levels names its own. */
+    function allLabel(lv) {
+      return (cfg.allLabel && cfg.allLabel[lv]) || ALL_LABEL[lv]
+          || ('All ' + (names[lv] || CAPTION[lv] || lv).toLowerCase() + 's');
+    }
 
     function sync(fire) {
       var rows = index;
@@ -132,16 +148,20 @@
         /* A level can group its options under headings. 180 census indicators
            in one flat list is unreadable; the same 180 under the eight tables
            that published them is a list you can scan. */
-        var opts = uniq(rows, lv, LABEL_OF[lv], groupOf[lv]);
+        var opts = uniq(rows, lv, labelKey(lv, cfg), groupOf[lv]);
+        /* Whether this level is worth a row of the rail, decided on the real
+           options before All is added - otherwise every optional level has
+           two entries and none ever collapses. */
+        var forced = !!hideSingle[lv] && opts.length < 2;
         // Always, not only when there is a choice. With the All option
         // dropped on a single-dataset topic, fill() fell back to that one
         // dataset and wrote it into state - so an All that the reader never
         // cancelled was lost the moment they passed through such a topic,
         // and every topic after it showed one table's charts.
-        if (optional[lv]) {
-          opts = [{ value: ALL, label: ALL_LABEL[lv]
-                     || ('All ' + (names[lv] || CAPTION[lv] || lv).toLowerCase()
-                         + 's') }].concat(opts);
+        // A forced level is the exception: an All nobody can see is an All
+        // nobody can cancel, and with one option it means the same thing.
+        if (optional[lv] && !forced) {
+          opts = [{ value: ALL, label: allLabel(lv) }].concat(opts);
         }
         if (lv === listLevel) {
           state[lv] = drawList(rows, lv, state[lv]);
@@ -151,6 +171,13 @@
           // A select with one option stays visible but disabled, so the rail
           // keeps its shape as you move between datasets.
           f.sel.disabled = opts.length < 2;
+          /* Unless the page asks for it to go. A level that offers no choice
+             is a row of furniture on Economy, where the rail is three fields
+             deep; on Places it is six deep and 35 of the 50 subtopics hold
+             exactly one family, so the Family row would sit there forced and
+             greyed for most of the index. It still sets state - the cascade
+             is unchanged - it just does not take a line. */
+          f.wrap.hidden = forced;
           f.cap.textContent = (names[lv] || CAPTION[lv] || lv)
             + (opts.length > 1 ? '\u2002\u00b7\u2002' + opts.length : '');
         }
@@ -173,7 +200,7 @@
        makes you lose your place in it. */
     function drawList(rows, lv, held) {
       var host = cfg.listEl;
-      var opts = uniq(rows, lv, LABEL_OF[lv]);
+      var opts = uniq(rows, lv, labelKey(lv, cfg));
       var value = opts.some(function (o) { return o.value === held; })
         ? held : (opts[0] && opts[0].value);
       if (!host) return value;

@@ -46,7 +46,6 @@
     values: null,       // map_key -> number
     meta: null,         // map_key -> {relation, note}
     place: null,        // selected map key
-    openTopic: null,
     query: '',
   };
 
@@ -106,9 +105,15 @@
     return (plain.length ? plain : yrs)[(plain.length ? plain : yrs).length - 1];
   }
 
+  /* The hierarchy's words are searchable alongside the source's own, so
+     "attainment", "disability" or "tenure" find the series filed under them
+     even though no published label uses those words. The source label stays
+     searchable exactly as it is: an alias is a way in, not a rename. */
   function matches(i, q) {
     return (col('label', i) + ' ' + col('group_label', i) + ' ' +
-            col('topic_label', i)).toLowerCase().indexOf(q) >= 0;
+            col('topic_label', i) + ' ' + col('h_topic', i) + ' ' +
+            col('h_sub', i) + ' ' + col('h_family', i))
+      .toLowerCase().indexOf(q) >= 0;
   }
 
   /* Relevance, because the census outnumbers everything else forty to one and
@@ -144,52 +149,22 @@
     host.hidden = !q;
     if (!q) { host.innerHTML = ''; return; }
 
-    if (q) {
-      var hits = rows.filter(function (i) { return matches(i, q); })
-        .map(function (i) { return { i: i, s: score(i, q) }; })
-        .sort(function (a, b) { return b.s - a.s; })
-        .map(function (x) { return x.i; });
-      $('searchHint').textContent = hits.length
-        ? hits.length.toLocaleString() + ' of ' + rows.length.toLocaleString()
-          + ' ' + GEO[state.level].noun + ' indicators match'
-        : 'Nothing matches. Try a shorter word.';
-      host.innerHTML = hits.length
-        ? '<div class="topic-items" style="margin-left:0;border:0;padding-left:0">'
-          + hits.slice(0, 200).map(indHtml).join('')
-          + (hits.length > 200
-             ? '<p class="empty">' + (hits.length - 200).toLocaleString()
-               + ' more — keep typing to narrow it.</p>' : '')
-          + '</div>'
-        : '<p class="empty">No indicator matches “' + esc(state.query) + '”.</p>';
-      bind(host);
-      return;
-    }
-
-    $('searchHint').textContent = rows.length.toLocaleString() + ' '
-      + GEO[state.level].noun + ' indicators. Boundaries: PBS Digital Census 2023.';
-
-    var order = [], seen = {};
-    rows.forEach(function (i) {
-      var t = col('topic', i);
-      if (!seen[t]) { seen[t] = []; order.push(t); }
-      seen[t].push(i);
-    });
-
-    host.innerHTML = order.map(function (t) {
-      var items = seen[t], open = state.openTopic === t;
-      var h = '<button class="topic" type="button" data-topic="' + esc(t) + '"'
-            + ' aria-expanded="' + open + '"><span>' + esc(col('topic_label', items[0]))
-            + '</span><span class="n">' + items.length.toLocaleString() + '</span></button>';
-      if (open) {
-        h += '<div class="topic-items">'
-           + items.slice(0, 60).map(indHtml).join('')
-           + (items.length > 60
-              ? '<button class="more" type="button" data-all="' + esc(t) + '">'
-                + (items.length - 60).toLocaleString() + ' more…</button>' : '')
-           + '</div>';
-      }
-      return h;
-    }).join('');
+    var hits = rows.filter(function (i) { return matches(i, q); })
+      .map(function (i) { return { i: i, s: score(i, q) }; })
+      .sort(function (a, b) { return b.s - a.s; })
+      .map(function (x) { return x.i; });
+    $('searchHint').textContent = hits.length
+      ? hits.length.toLocaleString() + ' of ' + rows.length.toLocaleString()
+        + ' ' + GEO[state.level].noun + ' indicators match'
+      : 'Nothing matches. Try a shorter word.';
+    host.innerHTML = hits.length
+      ? '<div class="topic-items" style="margin-left:0;border:0;padding-left:0">'
+        + hits.slice(0, 200).map(indHtml).join('')
+        + (hits.length > 200
+           ? '<p class="empty">' + (hits.length - 200).toLocaleString()
+             + ' more — keep typing to narrow it.</p>' : '')
+        + '</div>'
+      : '<p class="empty">No indicator matches “' + esc(state.query) + '”.</p>';
     bind(host);
   }
 
@@ -199,30 +174,26 @@
     if (yrs.length === 1) bits.push(yrs[0]);
     else if (yrs.length > 1) bits.push(yrs[0] + '–' + yrs[yrs.length - 1]);
     bits.push(col('shapes', i).toLocaleString() + ' shapes');
+    /* The family first, then where the figure was published. The source
+       table stays visible: it is the provenance, and the family is only a
+       shelf we put it on. */
+    var fam = col('h_family', i);
     return '<button class="ind" type="button" data-row="' + i + '"'
          + (state.row === i ? ' aria-current="true"' : '') + '>'
          + esc(col('label', i))
-         + '<span class="meta">' + esc(col('group_label', i)) + ' · '
+         + (col('h_review', i) === 1
+            ? ' <span class="ind-flag" title="The source label for this series'
+              + ' is ambiguous and has not been resolved. It is kept exactly as'
+              + ' published rather than guessed at.">definition needs review</span>'
+            : '')
+         + '<span class="meta">' + (fam ? esc(fam) + ' · ' : '')
+         + esc(col('group_label', i)) + ' · '
          + bits.join(' · ') + '</span></button>';
   }
 
   function bind(host) {
-    host.querySelectorAll('.topic').forEach(function (b) {
-      b.onclick = function () {
-        state.openTopic = state.openTopic === b.dataset.topic ? null : b.dataset.topic;
-        renderPicker();
-      };
-    });
     host.querySelectorAll('.ind').forEach(function (b) {
       b.onclick = function () { choose(Number(b.dataset.row)); };
-    });
-    host.querySelectorAll('.more').forEach(function (b) {
-      b.onclick = function () {
-        state.query = col('topic_label', rowsForLevel().find(function (i) {
-          return col('topic', i) === b.dataset.all; }));
-        $('indSearch').value = state.query;
-        renderPicker();
-      };
     });
   }
 
@@ -1246,7 +1217,6 @@
     state.norm = ['pct', 'per1000'].indexOf(q.get('n')) >= 0 ? q.get('n') : '';
     if (q.get('sex')) state.sex = q.get('sex');
     state.place = q.get('p') || null;
-    state.openTopic = col('topic', row);
     if (q.get('ov') === 'schools') {
       var box = document.getElementById('ovSchools');
       box.checked = true;

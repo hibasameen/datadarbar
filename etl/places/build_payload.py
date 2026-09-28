@@ -35,6 +35,8 @@ Usage:
 """
 import argparse, json, pathlib, re
 
+HERE_PLACES = pathlib.Path(__file__).resolve().parent
+
 import duckdb
 
 
@@ -110,10 +112,55 @@ def main():
     # the list columns intern as a whole: a locality set repeats across thousands
     # of indicators, so the distinct combinations are a handful
     rows = [tuple('\u001f'.join(x) if isinstance(x, list) else x for x in r) for r in ix]
+
+    # ── the navigation hierarchy ───────────────────────────────────────────
+    # Topic / subtopic / family / metric form, joined on the compound source
+    # key. The original topic column stays exactly as it was: it keys the map
+    # colour scales (DDMapScales.for) and disambiguates census table numbers
+    # that PBS reused between the two censuses, neither of which is a
+    # navigation question. This adds a way to find a series; it does not
+    # rename one.
+    HK = ('level', 'group_key', 'indicator')
+    hier = json.loads((HERE_PLACES / 'hierarchy.json').read_text())
+    hmap, hv = hier['map'], hier['vocab']
+    at = {n: names.index(n) for n in HK}
+    keys = ['\u001f'.join(str(r[at[n]]) for n in HK) for r in rows]
+
+    # Both directions, loudly. A row with no destination would otherwise fall
+    # into whichever bucket sorted first and be findable only by knowing its
+    # name; a destination with no row means the hierarchy is describing an
+    # index that no longer exists. Either way the fix is to regenerate the
+    # crosswalk, not to paper over it here.
+    missing = [k for k in keys if k not in hmap]
+    stale = set(hmap) - set(keys)
+    assert not missing, (
+        f'{len(missing)} index rows have no place in the hierarchy, e.g. '
+        f'{missing[0]!r}')
+    assert not stale, (
+        f'{len(stale)} hierarchy entries match no index row, e.g. '
+        f'{sorted(stale)[0]!r}')
+    assert len(set(keys)) == len(keys), 'the compound source key is not unique'
+
+    unresolved = set(hier['unresolved_review'])
+    hcols = ('h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls')
+    for j, n in enumerate(hcols):
+        names.append(n)
+    names.append('h_review')
+    rows = [r + tuple(hv[k][hmap[keys[i]][j]] for j, k in enumerate(
+                ('topic', 'sub', 'family', 'metric', 'controls')))
+              + (1 if hmap[keys[i]][5] in unresolved else 0,)
+            for i, r in enumerate(rows)]
+
     P = columnar(rows, names,
                  {'level', 'topic', 'topic_label', 'group_key', 'group_label',
                   'dataset', 'source', 'families', 'years', 'localities',
-                  'sexes', 'label', 'indicator', 'measure', 'metric'})
+                  'sexes', 'label', 'indicator', 'measure', 'metric',
+                  'h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls'})
+    # The rows stay in the order the old topic list wants, because that list
+    # is still drawn from them. The hierarchy's own order - general subjects
+    # first, so Places does not open on Agriculture - travels beside them
+    # rather than being inferred from whichever topic happens to appear first.
+    P['h_topic_order'] = hv['topic']
     n1 = write(out / 'places_index.js', 'DD_PLACES_IX', P,
                f'Places picker index, {len(ix):,} indicators')
 
