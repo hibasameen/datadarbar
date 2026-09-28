@@ -150,18 +150,22 @@ def main():
     #           PEOPLE). Both are decided in build_hierarchy.py from the
     #           crosswalk's metric form, which types the quantity rather than
     #           guessing at its wording.
-    names += ['h_review', 'h_sum', 'h_norm']
+    # h_note: what this percentage is a percentage OF, where the source's own
+    #         denominator needs saying. Empty for everything else.
+    names += ['h_review', 'h_sum', 'h_norm', 'h_note']
     rows = [r + tuple(hv[k][hmap[keys[i]][j]] for j, k in enumerate(
                 ('topic', 'sub', 'family', 'metric', 'controls')))
               + (1 if hmap[keys[i]][5] in unresolved else 0,
-                 hmap[keys[i]][6], hmap[keys[i]][7])
+                 hmap[keys[i]][6], hmap[keys[i]][7],
+                 hv['note'][hmap[keys[i]][8]])
             for i, r in enumerate(rows)]
 
     P = columnar(rows, names,
                  {'level', 'topic', 'topic_label', 'group_key', 'group_label',
                   'dataset', 'source', 'families', 'years', 'localities',
                   'sexes', 'label', 'indicator', 'measure', 'metric',
-                  'h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls'})
+                  'h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls',
+                  'h_note'})
     # The rows stay in the order the old topic list wants, because that list
     # is still drawn from them. The hierarchy's own order - general subjects
     # first, so Places does not open on Agriculture - travels beside them

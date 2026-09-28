@@ -25,7 +25,7 @@ regenerated, this fails rather than silently redefining a denominator.
 
 Usage: build_hierarchy.py --crosswalk <json> --out etl/places/hierarchy.json
 """
-import argparse, hashlib, json, pathlib, re
+import argparse, hashlib, json, pathlib, re, sys
 
 SEP = '\u001f'
 
@@ -173,6 +173,45 @@ METRIC_FORM_OVERRIDE = {
 }
 
 
+# ── what each percentage is a percentage OF ────────────────────────────────
+# The Mouza Census asks its questions in blocks, and the blocks disagree about
+# how many mouzas answered. build_payload divides by one of three things and
+# they are not interchangeable:
+#
+#   block  a set of mutually exclusive categories - these do sum to 100
+#   pair   the yes and the no for one question - these do too
+#   base   the MODAL denominator across the blocks, used where the question
+#          has no denominator of its own
+#
+# The last of those is where 176 observations above 100 per cent come from -
+# dirt streets in Keti Bunder at 176, river and canal water in Usta Muhammad
+# at 171.7 - and they are not errors to be clipped. A mouza can have more than
+# one kind of street and more than one source of water, and the base is not a
+# count of unique mouzas. What was missing is that the page said none of this
+# and drew them as ordinary percentages.
+#
+# Read from the ETL's own IND table rather than listed here, so a question
+# that changes denominator changes its note with it.
+def mouza_notes():
+    here = pathlib.Path(__file__).resolve().parents[1] / 'mouza2020'
+    if not (here / 'build_payload.py').exists():
+        return {}
+    sys.path.insert(0, str(here))
+    import build_payload as mz
+    say = {
+        'block': 'A share of one set of mutually exclusive categories, so the '
+                 'categories in that set add to 100%.',
+        'pair': 'A share of the mouzas that answered this question either way, '
+                'so it is bounded by 100%.',
+        'base': 'A share of the mouzas that answered, which is NOT the number '
+                'of mouzas in the tehsil: the survey\u2019s question blocks '
+                'disagree about how many responded, and a mouza can fall into '
+                'more than one category here. Figures above 100% follow from '
+                'that and are not errors.',
+    }
+    return {ind: say[den[0]] for ind, (cols, den) in mz.IND.items()}
+
+
 def countable(o):
     measure = o.get('measure') or o.get('label') or ''
     metric = o.get('metric') or ''
@@ -216,6 +255,8 @@ def main():
             v.append(value)
         return v.index(value)
 
+    notes = mouza_notes()
+    vocab['note'] = ['']
     out, seen, applied = {}, set(), set()
     for m in mapping:
         o = m['original']
@@ -249,6 +290,8 @@ def main():
             idx('review', review),
             1 if SUM_OK[form] else 0,
             1 if (POP_OK.get(form, False) and countable(o)) else 0,
+            idx('note', (notes.get(o['indicator'], '')
+                         if str(o['group_key']).startswith('mouza') else '')),
         ]
 
     unmatched = set(CORRECTIONS) - applied
@@ -280,6 +323,8 @@ def main():
           f'{len(vocab["family"])} families, {len(vocab["metric"])} metric forms')
     print(f'  {sum(1 for v in out.values() if v[5] in unresolved):,} rows '
           f'marked "definition needs review"')
+    n_note = sum(1 for v in out.values() if vocab['note'][v[8]])
+    print(f'  {n_note} entries carry a denominator note')
     n_sum = sum(v[6] for v in out.values())
     n_norm = sum(v[7] for v in out.values())
     print(f'  {n_sum:,} entries can be totalled; {n_norm:,} can be read per head')

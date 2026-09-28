@@ -998,6 +998,17 @@
     if (locs.length > 1) notes.push(locs.join(' / '));
     if (sexes.length > 1) notes.push(sexes.join(' / '));
     $('legendNote').textContent = notes.length ? 'Also published by ' + notes.join('; ') : '';
+
+    /* What this percentage is a percentage OF, where the source's own
+       denominator needs saying. The Mouza Census divides by one of three
+       different things and only two of them are bounded by 100, so dirt
+       streets in Keti Bunder read 176% and the page said nothing about why. */
+    var note = col('h_note', i);
+    var box = $('legendDef');
+    if (box) {
+      box.textContent = note || '';
+      box.hidden = !note;
+    }
   }
 
   /* The strip over the map: how many places are showing, and what they come

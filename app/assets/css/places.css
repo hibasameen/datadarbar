@@ -208,3 +208,9 @@
    absent total with no explanation reads as a page that failed to load. */
 .tot-warn .tot-k{color:var(--sienna,#8a5a3b)}
 .tot-warn b{color:var(--sienna,#8a5a3b);font-weight:700}
+
+/* The denominator behind a published percentage, where the source's own is
+   not the obvious one. Set apart from the coverage line above it because it
+   changes what the number means, not just how much of it there is. */
+.legend-def{margin-top:4px;padding-top:4px;border-top:1px solid var(--line);
+  color:var(--sienna,#8a5a3b)}
