@@ -1325,6 +1325,29 @@ function setBView(v){bView=v;d3.selectAll('#bView button').classed('on',function
 function setBPrice(p){bPrice=p;d3.selectAll('#bPrice button').classed('on',function(){return this.dataset.p===p;});drawBudgetTrend();writeHash();}
 function setBTrendMode(m){bTrendMode=m;d3.selectAll('#bTrendMode button').classed('on',function(){return this.dataset.tm===m;});drawBudgetTrend();writeHash();}
 function setBYear(y){const i=bYears.indexOf(y);if(i>=0){bYi=i;d3.select('#bYr').property('value',i);d3.select('#bYrLbl').text(y);drawBudget();writeHash();}}
+/* BUDGET ESTIMATES, AND A DEFLATOR THAT RUNS OUT. Every figure in this block
+   is the document's own-year Budget Estimate - what was proposed, not what
+   was spent - so the meta line says so wherever the chart is drawn rather
+   than leaving it to a footnote.
+
+   deflForYears extrapolates past the last published deflator, which is how a
+   2026-27 point can appear in "Real 2015-16" prices at all. That point is an
+   estimate resting on an estimate, and it is now drawn hollow on a dashed
+   segment and named under the chart instead of sitting on the line looking
+   like the years either side of it. */
+function estDeflYears(years){
+ const known=deflator();
+ return years.filter(y=>known[y]==null);
+}
+function budgetMetaText(years,real){
+ const est=real?estDeflYears(years):[];
+ return `${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'}`
+  + ` by category, ${years[0]}\u2013${years[years.length-1]}`
+  + ` \u00b7 budget estimates, not outturn`
+  + ` \u00b7 ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'}`
+  + (est.length?` \u00b7 deflator estimated for ${est.join(', ')}`:'')
+  + ` \u00b7 ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`;
+}
 function drawBudgetTrend(){bTrendMode==='lines'?drawBudgetTrendLines():drawBudgetTrendStack();}
 function drawBudgetTrendStack(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
@@ -1345,13 +1368,27 @@ function drawBudgetTrendStack(){
  svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','var(--line)');
  svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
  svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
+ /* Years whose deflator was extrapolated. A stacked area cannot go hollow,
+    so the span is shaded instead and named under the chart. */
+ const est=new Set(real?estDeflYears(years):[]);
+ if(est.size){
+  const xs=years.filter(yy=>est.has(yy)).map(yy=>x(yy));
+  const x0=Math.min(...xs)-((W-M.r-M.l)/(years.length-1))/2;
+  svg.append('rect').attr('x',Math.max(M.l,x0)).attr('y',M.t)
+    .attr('width',Math.max(0,(W-M.r)-Math.max(M.l,x0))).attr('height',H-M.b-M.t)
+    .attr('fill','var(--muted-2)').attr('opacity',.14);
+ }
  const stack=d3.stack().keys(keys)(rows);
  const area=d3.area().x((d,i)=>x(years[i])).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
  svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','var(--surface)').attr('stroke-width',.4)
   .on('mousemove',function(e,s){const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));const yr=years[Math.max(0,Math.min(years.length-1,xi))];const v=rows.find(r=>r.year===yr)[s.key];showTip(`<b>${s.key}</b><br>${yr}: ${fmtRs(v)}`,e);}).on('mouseleave',hideTip);
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ if(est.size)el.append('div').attr('class','note').html(
+   '<b>Shaded: ' + Array.from(est).join(', ') + '.</b> The GDP deflator is '
+   + 'not published that far ahead, so the real value there rests on an '
+   + 'extrapolation of it. The nominal view needs no such assumption.');
+ d3.select('#budgetMeta').text(budgetMetaText(years,real));
 }
 function drawBudgetTrendLines(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
@@ -1373,11 +1410,20 @@ function drawBudgetTrendLines(){
  svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
  svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
  const line=d3.line().x((d,i)=>x(years[i])).y(d=>y(d.v)).curve(d3.curveMonotoneX);
+ /* The years whose deflator was extrapolated, drawn as what they are. In
+    nominal terms there are none, so this is empty and nothing changes. */
+ const est=new Set(real?estDeflYears(years):[]);
+ const firstEst=years.findIndex(yy=>est.has(yy));
+ const cut=firstEst<0?years.length-1:Math.max(0,firstEst-1);
  keys.forEach(k=>{
   const pts=rows.map(r=>({year:r.year,v:r[k]}));
-  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('opacity',.92);
+  svg.append('path').attr('d',line(pts.slice(0,cut+1))).attr('fill','none').attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('opacity',.92);
+  if(cut<years.length-1)svg.append('path').attr('d',line(pts.slice(cut))).attr('fill','none')
+    .attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('stroke-dasharray','5 4').attr('opacity',.55);
   const lp=pts[pts.length-1];
-  svg.append('circle').attr('cx',x(lp.year)).attr('cy',y(lp.v)).attr('r',3.2).attr('fill',colOf[k]);
+  svg.append('circle').attr('cx',x(lp.year)).attr('cy',y(lp.v)).attr('r',3.2)
+    .attr('fill',est.has(lp.year)?'var(--card,#fff)':colOf[k])
+    .attr('stroke',colOf[k]).attr('stroke-width',est.has(lp.year)?1.6:0);
   svg.append('text').attr('x',x(lp.year)+7).attr('y',y(lp.v)+3.5).attr('font-size',10.5).attr('font-weight',700).attr('fill',colOf[k]).text(k.length>16?k.slice(0,15)+'…':k);
  });
  // hover guideline
@@ -1392,7 +1438,11 @@ function drawBudgetTrendLines(){
   }).on('mouseleave',function(){focus.style('opacity',0);hideTip();});
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ if(est.size)el.append('div').attr('class','note').html(
+   '<b>Dashed, hollow: ' + Array.from(est).join(', ') + '.</b> The GDP '
+   + 'deflator is not published that far ahead, so the real value rests on '
+   + 'an extrapolation of it. The nominal view needs no such assumption.');
+ d3.select('#budgetMeta').text(budgetMetaText(years,real));
 }
 function drawBudget(){
  const el=d3.select('#budget');el.selectAll('*').remove();
@@ -1415,7 +1465,7 @@ function drawBudget(){
    s.append('text').attr('class','cl').attr('x',5).attr('y',15).style('fill',c.l>62?'var(--ink)':'var(--surface)').text(d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name);
    if((d.y1-d.y0)>34)s.append('text').attr('class','cv').attr('x',5).attr('y',29).style('fill',c.l>62?'var(--body)':'rgba(255,255,255,.85)').text(`${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(0)}%`);
  });
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure (function-wise)':'Tax & non-tax receipts'} ${yr} · total ${fmtRs(total)} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure (function-wise)':'Tax & non-tax receipts'} ${yr} \u00b7 budget estimate, not outturn \u00b7 total ${fmtRs(total)} \u00b7 ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
 }
 
 /* ================= CSV export ================= */

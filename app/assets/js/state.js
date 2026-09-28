@@ -285,8 +285,13 @@
   function renderTax(mode) {
     state.mode = mode;
     var years = Array.from(new Set(tax.map(function (d) { return d.fyEnd; }))).sort(d3.ascending);
+    /* "latest in this dataset", not "latest". FBR's own revenue-collection
+       page lists FY2024-25; this extract stops at FY2023-24, and a coverage
+       line reading "to 2023-24" invites the reader to conclude the later
+       year does not exist rather than that we have not pulled it. */
     $('coverage').innerHTML = '<b>Coverage</b>'
-      + '<span>' + tax[0].fy + ' to ' + tax[tax.length - 1].fy + '</span>'
+      + '<span>' + tax[0].fy + ' to ' + tax[tax.length - 1].fy
+      + ' (latest in this dataset)</span>'
       + '<span>' + years.length + ' fiscal years</span>'
       + '<span>' + new Set(tax.map(function (d) { return d.head; })).size + ' heads</span>'
       + '<span style="margin-left:auto">Nominal rupees, not inflation-adjusted</span>';
@@ -297,17 +302,45 @@
       v.forEach(function (d) { o[d.head] = (o[d.head] || 0) + d.mn; });
       return o;
     }, function (d) { return d.fyEnd; });
+    /* ABSENT IS NOT ZERO. `|| 0` turned a head FBR stopped reporting into a
+       head that collected nothing: wealth tax has no row from 2016 and was
+       drawn as a flat zero line for nine years, which reads as a tax that
+       raised nothing rather than one that no longer exists. Not a single row
+       in this dataset is reported as zero, so every zero on the chart was
+       manufactured by that expression.
+
+       The value stays null where there is no row. A stack still needs a
+       number and zero is right for the TOTAL - an abolished tax does
+       contribute nothing to it - so the stacking value is kept separately
+       from the value read out, which says "not reported". */
     var data = years.map(function (y) {
-      var o = { year: y };
-      heads.forEach(function (h) { o[h] = (byYear.get(y) || {})[h] || 0; });
-      o.total = d3.sum(heads, function (h) { return o[h]; });
+      var o = { year: y }, got = byYear.get(y) || {};
+      heads.forEach(function (h) {
+        o[h] = got[h] == null ? null : got[h];
+        o['_' + h] = o[h] == null ? 0 : o[h];
+      });
+      o.total = d3.sum(heads, function (h) { return o['_' + h]; });
       return o;
     });
+    var absent = heads.filter(function (h) {
+      return data.some(function (d) { return d[h] == null; });
+    });
+    if (absent.length) {
+      var gapYears = {};
+      absent.forEach(function (h) {
+        var g = data.filter(function (d) { return d[h] == null; })
+          .map(function (d) { return d.year; });
+        gapYears[h] = g[0] + (g.length > 1 ? '\u2013' + g[g.length - 1] : '');
+      });
+      $('coverage').innerHTML += '<span class="cov-gap">not reported: '
+        + absent.map(function (h) { return h + ' ' + gapYears[h]; }).join(', ')
+        + '</span>';
+    }
 
-    draw(data, heads, years);
+    draw(data, heads, years, absent);
   }
 
-  function draw(data, heads, years) {
+  function draw(data, heads, years, absent) {
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 12, right: 132, bottom: 26, left: 52 }, W);
@@ -328,18 +361,22 @@
       heads.forEach(function (h) {
         svg.append('path').datum(data)
           .attr('fill', 'none').attr('stroke', colour(h)).attr('stroke-width', 2)
-          .attr('d', d3.line().x(function (d) { return x(d.year); })
+          /* defined() is what turns "no row" into a gap instead of a line
+             running along the axis. */
+          .attr('d', d3.line().defined(function (d) { return d[h] != null; })
+                              .x(function (d) { return x(d.year); })
                               .y(function (d) { return y(d[h]); }));
       });
     } else {
-      var stack = d3.stack().keys(heads)
+      var stack = d3.stack().keys(heads.map(function (h) { return '_' + h; }))
         .offset(share ? d3.stackOffsetExpand : d3.stackOffsetNone);
       series = stack(data);
       y = d3.scaleLinear()
         .domain([0, share ? 1 : d3.max(data, function (d) { return d.total; })])
         .nice().range([H - m.bottom, m.top]);
       svg.selectAll('path.area').data(series).join('path')
-        .attr('class', 'area').attr('fill', function (d) { return colour(d.key); })
+        .attr('class', 'area')
+        .attr('fill', function (d) { return colour(d.key.slice(1)); })
         .attr('opacity', .92)
         .attr('d', d3.area().x(function (d) { return x(d.data.year); })
                             .y0(function (d) { return y(d[0]); })
@@ -359,14 +396,22 @@
       .text(share ? 'share of collection' : 'trillion rupees');
 
     var last = data[data.length - 1];
-    var order = heads.slice().sort(function (a, b) { return last[b] - last[a]; });
+    var order = heads.slice().sort(function (a, b) {
+      return (last[b] == null ? -1 : last[b]) - (last[a] == null ? -1 : last[a]);
+    });
     var lg = svg.append('g').attr('transform', 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
     order.forEach(function (h, i) {
+      var absentNow = last[h] == null;
       var g = lg.append('g').attr('transform', 'translate(0,' + i * 17 + ')');
-      g.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2).attr('fill', colour(h));
+      g.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
+        .attr('fill', absentNow ? 'none' : colour(h))
+        .attr('stroke', absentNow ? colour(h) : 'none').attr('stroke-width', 1.4);
       g.append('text').attr('x', 15).attr('y', 9).attr('font-size', 11.5)
         .attr('fill', getComputedStyle(document.documentElement).getPropertyValue('--body').trim())
-        .text(h + '  ' + fmtTn(last[h]));
+        .attr('opacity', absentNow ? .6 : 1)
+        /* Not "0.00 tn": FBR does not report this head any more, and a zero
+           here would be a number nobody published. */
+        .text(h + '  ' + (absentNow ? 'not reported' : fmtTn(last[h])));
     });
   }
 

@@ -4,12 +4,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=e1caaa83"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=e1caaa83"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=e1caaa83"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=bef25648"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=bef25648"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=bef25648"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=e1caaa83"></script>
-<script src="assets/js/palette.js?v=e1caaa83"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=bef25648"></script>
+<script src="assets/js/palette.js?v=bef25648"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -236,8 +236,8 @@
 
  <div class="card" data-topic="rupee" id="sec-reer">
   <button class="csvbtn" data-csv="reer">CSV</button>
-  <h2>Is the rupee over- or under-valued? <span class="unit">— effective exchange rate indices, 2010 = 100</span></h2>
-  <div class="desc">The nominal effective rate (NEER) tracks the rupee against a trade-weighted basket. The real rate (REER) adjusts for inflation differences — above 100 means the rupee is dearer than the 2010 benchmark in real terms, which makes exports harder.</div>
+  <h2>The real trade-weighted rupee <span class="unit">— effective exchange rate indices, 2010 = 100</span></h2>
+  <div class="desc">The nominal effective rate (NEER) tracks the rupee against a trade-weighted basket. The real rate (REER) adjusts for inflation differences. Both are indices against their own 2010 base: above 100 means the rupee is dearer <em>than it was in 2010</em> in real terms, which makes exports harder than they were then. It does not mean the rupee is overvalued: an index measures distance from its own base year, not from a fair value, and nothing on this page estimates one.</div>
   <div class="chips" id="chips-reer"></div>
   <div id="chReer"></div>
   <div class="src">SBP, nominal and real effective exchange rate indices (base 2010), monthly from July 2001.</div>
@@ -362,13 +362,13 @@
   </div>
   <div class="crumb" id="crumb"></div>
   <div id="drill"></div>
-  <div class="src" id="drillMeta"></div>
+  <div class="hint" id="drillMeta"></div><div class="gapnote" id="drillGap" hidden></div>
  </div>
 
  <div class="card" data-topic="basket" id="sec-products">
   <button class="csvbtn" data-csv="products" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <h2>Top products <span class="unit">— largest single commodities</span></h2>
-  <div class="controls"><div class="seg" id="prDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="prYr"/><span class="yr-lbl" id="prYrLbl">—</span></span></div><div id="products"></div></div>
+  <div class="controls"><div class="seg" id="prDir"><button data-d="export" class="on">Exports</button><button data-d="import">Imports</button></div><span class="yr-wrap" style="flex:0 1 240px"><input type="range" id="prYr"/><span class="yr-lbl" id="prYrLbl">—</span></span></div><div id="products"></div><div class="gapnote" id="prodGap" hidden></div></div>
 
  <!-- movers -->
  <div class="card" data-topic="movers" id="sec-movers">
@@ -429,26 +429,26 @@
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=e1caaa83"></script>
-<script src="data/growth_data.js?v=e1caaa83"></script>
-<script src="data/structure_data.js?v=e1caaa83"></script>
-<script src="data/money_data.js?v=e1caaa83"></script>
-<script src="data/migration_data.js?v=e1caaa83"></script>
-<script src="data/recon_data.js?v=e1caaa83"></script>
-<script src="data/provenance.js?v=e1caaa83"></script>
-<script src="data/trade_data.js?v=e1caaa83"></script>
-<script src="assets/js/provenance.js?v=e1caaa83"></script>
-<script src="assets/js/econ_data.js?v=e1caaa83"></script>
-<script src="assets/js/econ-shell.js?v=e1caaa83"></script>
-<script type="module" src="assets/js/finance.js?v=e1caaa83"></script>
-<script type="module" src="assets/js/money.js?v=e1caaa83"></script>
-<script type="module" src="assets/js/trade.js?v=e1caaa83"></script>
-<script src="assets/js/explorer.js?v=e1caaa83"></script>
-<script src="assets/js/economy-rail.js?v=e1caaa83"></script>
-<script src="assets/js/sidebar-mobile.js?v=e1caaa83"></script>
-<script src="assets/js/shell.js?v=e1caaa83"></script>
-<script src="assets/js/modals.js?v=e1caaa83"></script>
-<script src="assets/js/analytics.js?v=e1caaa83"></script>
+<script src="data/macro_data.js?v=bef25648"></script>
+<script src="data/growth_data.js?v=bef25648"></script>
+<script src="data/structure_data.js?v=bef25648"></script>
+<script src="data/money_data.js?v=bef25648"></script>
+<script src="data/migration_data.js?v=bef25648"></script>
+<script src="data/recon_data.js?v=bef25648"></script>
+<script src="data/provenance.js?v=bef25648"></script>
+<script src="data/trade_data.js?v=bef25648"></script>
+<script src="assets/js/provenance.js?v=bef25648"></script>
+<script src="assets/js/econ_data.js?v=bef25648"></script>
+<script src="assets/js/econ-shell.js?v=bef25648"></script>
+<script type="module" src="assets/js/finance.js?v=bef25648"></script>
+<script type="module" src="assets/js/money.js?v=bef25648"></script>
+<script type="module" src="assets/js/trade.js?v=bef25648"></script>
+<script src="assets/js/explorer.js?v=bef25648"></script>
+<script src="assets/js/economy-rail.js?v=bef25648"></script>
+<script src="assets/js/sidebar-mobile.js?v=bef25648"></script>
+<script src="assets/js/shell.js?v=bef25648"></script>
+<script src="assets/js/modals.js?v=bef25648"></script>
+<script src="assets/js/analytics.js?v=bef25648"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

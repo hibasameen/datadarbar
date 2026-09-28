@@ -159,9 +159,12 @@ CHARTS = {
          'policy, not market calm.'),
  'sec-reer': dict(table='sbp_observations', publication='Nominal and real effective exchange rate indices, base 2010',
     selection='NEER and REER, monthly from July 2001',
-    note='An index against its own 2010 base. SBP cautions that 100 is not an '
-         'equilibrium rate, so a reading above or below it measures movement '
-         'since the base year, not over- or undervaluation.'),
+    note='An index against its own 2010 base, so a reading above or below '
+         '100 measures movement since 2010, not distance from a fair value. '
+         'Nothing here estimates an equilibrium rate, and the chart is not '
+         'titled as though it did. SBP publishes a methodology note making '
+         'the same point; neither of its published URLs served the document '
+         'when this was checked on 2026-09-29, so it is not linked.'),
  'sec-cpi': dict(table='sbp_observations', publication='Consumer price index, 2015-16 base',
     selection='headline CPI', calc='year-on-year percentage change'),
  'sec-food': dict(table='sbp_observations', publication='CPI components, 2015-16 base',
@@ -254,9 +257,13 @@ CHARTS = {
 STATE = {
  'taxStack': dict(publication='Revenue collection by head',
     selection='all heads, every fiscal year',
-    calc='stacked to the annual total',
-    note='Nominal rupees, not inflation-adjusted. 42 of 264 source cells are '
-         'absent, mostly historical wealth tax and CVT; absent is not zero.'),
+    calc='stacked to the annual total, which is the total of the heads '
+         'present that year',
+    note='Nominal rupees, not inflation-adjusted. FY2023-24 is the latest '
+         'year in this extract, not the latest FBR publishes - its own '
+         'revenue-collection page lists FY2024-25. Wealth tax has no row '
+         'from 2016 and is drawn as absent rather than as zero; no row in '
+         'this dataset is reported as zero.'),
  'taxLines': dict(publication='Revenue collection by head',
     selection='each head as its own line', note='Nominal rupees.'),
  'taxShare': dict(publication='Revenue collection by head',

@@ -170,3 +170,7 @@ a.tree-item{color:var(--green-800)}
 .ctl-lbl{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--muted);font-weight:700;margin-right:.3rem}
 .ctl-row .seg{height:26px;padding:0 9px;font-size:.78rem}
+
+/* Coverage chips that name what is absent rather than leaving it to be read
+   off a flat line at zero. */
+.coverage .cov-gap{color:var(--rust,#b5502a);font-weight:600}

@@ -201,6 +201,7 @@ function drawDrill(){
    bc.append('span').attr('class','cr'+(actionable?'':' on')).text(x.t).style('cursor',actionable?'pointer':'default')
      .attr('role',actionable?'button':null).attr('tabindex',actionable?0:null)
      .on('click',goBack).on('keydown',e=>{if(actionable&&(e.key==='Enter'||e.key===' ')){e.preventDefault();goBack();}});});
+ showGap('#drillGap', dDir, dYears[dYi]);
  d3.select('#drillMeta').text(`${dDir==='export'?'Exports':'Imports'} ${dYears[dYi]} · ${dPath.length===0?(overview?'sector overview — select a sector for products':'all products, grouped by section'):'section '+dPath[0]+', by chapter'} · total ${fmtRs(total)}`);
 }
 /* ---------- trade over time ---------- */
@@ -271,8 +272,30 @@ function yearAt(sel, ys){
  const i = raw === null || raw === '' ? ys.length - 1 : Number(raw);
  return ys[Number.isInteger(i) && i >= 0 && i < ys.length ? i : ys.length - 1];
 }
+/* A PROXY MARKED WHERE IT IS USED. PBS did not publish 8-digit exports for
+   2017-18, so that year of the treemap is UN Comtrade's calendar-2018
+   filing: a different source, a different twelve months, and only to section
+   level. The footnote said so; the chart did not, and a reader who slid the
+   year to 2017-18 saw bars like any other year's. E.meta.trade_gap_fill is
+   the record of which years those are, so this reads it rather than
+   hard-coding a year that could change under it. */
+function gapFill(dir, year){
+ const g = (E.meta && E.meta.trade_gap_fill) || {};
+ return g[dir + '_' + year] || null;
+}
+function showGap(sel, dir, year){
+ const el = d3.select(sel);
+ if(el.empty()) return;
+ const note = gapFill(dir, year);
+ el.attr('hidden', note ? null : true)
+   .html(note ? '<b>' + (dir === 'export' ? 'Exports' : 'Imports') + ' ' +
+         year + ' are not PBS 8-digit data.</b> ' + note.replace(/</g,'&lt;') +
+         ' Treat this year as a different series, not a continuation.' : '');
+}
 function drawPartners(){const ys=pYears();const y=yearAt('#pYr',ys);hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'var(--negative)');}
-function drawProducts(){const ys=prYears();const y=yearAt('#prYr',ys);hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
+function drawProducts(){const ys=prYears();const y=yearAt('#prYr',ys);
+ showGap('#prodGap', prDir, y);
+ hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
 function hbar(elSel,rows,label,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,12);
  const W=el.node().clientWidth||500,rh=26,H=rows.length*rh+14,lblW=Math.max(96,Math.min(170,W*0.42)),maxc=Math.max(9,Math.floor(lblW/7.3));
@@ -429,10 +452,11 @@ const CSV={
    reconRows().map(r=>({fiscal_year:r.fy,basis:rcBasis.toUpperCase(),months_covered:r.months,
      imports_named_by_partner_pct:r.c_imp,exports_named_by_partner_pct:r.c_exp,
      imports_in_commodity_groups_pct:r.g_imp,exports_in_commodity_groups_pct:r.g_exp}))],
- drill:()=>{const yr=dYears[dYi],secs=E.tree[dDir][yr]||[],out=[];
+ drill:()=>{const yr=dYears[dYi],secs=E.tree[dDir][yr]||[],out=[],gap=gapFill(dDir,yr);
    secs.forEach(s=>s.chapters.forEach(c=>c.products.forEach(p=>out.push({
      direction:dDir,year:yr,section:s.section,section_name:s.name,chapter_code:c.code,chapter:c.name,hs8:p.hs8,product:p.name,rs_bn:r2(p.bn)}))));
-   return [`Pakistan_trade_${dDir}_products_${yr}.csv`,out.sort((a,b)=>b.rs_bn-a.rs_bn)];},
+   return [`Pakistan_trade_${dDir}_products_${yr}.csv`,out.sort((a,b)=>b.rs_bn-a.rs_bn),
+     gap?{'not PBS 8-digit':gap}:null];},
  products:()=>{const ys=prYears(),yr=yearAt('#prYr',ys);
    return [`Pakistan_top_products_${prDir}_${yr}.csv`,(E.products[prDir][yr]||[]).map(p=>({direction:prDir,year:yr,product:p.name,section:p.section,rs_bn:r2(p.bn)}))];},
  totals:()=>{const T=E.totals;

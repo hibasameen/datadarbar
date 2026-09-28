@@ -82,7 +82,7 @@ const TOPICS = [
   desc:'Every topic on one page, top to bottom.',
   meta:'All series come from the State Bank of Pakistan’s EasyData portal. Full sources are listed at the foot of the page.'},
  {k:'rupee', label:'The rupee',
-  desc:'The exchange rate since 1947, and whether the rupee is over-valued in real terms.',
+  desc:'The exchange rate since 1947, and how the rupee has moved against its trading partners in real terms.',
   meta:'SBP bank floating average exchange rates (monthly, from Aug-1947) and the nominal/real effective exchange rate indices, base 2010 (from Jul-2001).'},
  {k:'prices', label:'Prices',
   desc:'Consumer price inflation, its components, and the gap between town and country.',
@@ -229,9 +229,63 @@ function chips(chart, onChange) {
   });
 }
 /* Generic multi-line time chart used by most panels. */
+/* SIX END DATES UNDER ONE BADGE. The payload is stamped 2026-08-28 and its
+   49 series end on six different dates, from 2026-08-31 back to 2020-02-04.
+   A single "latest" date would have been wrong for 43 of them.
+
+   KIBOR 2 years and 3 years are the sharp case: SBP stopped publishing those
+   tenors in February 2020, and 3 years is in this chart's DEFAULT selection,
+   so the page opened on a line six years dead drawn beside live ones with
+   nothing to say so.
+
+   Frequency decides what a last date means. An As-Needed series like the
+   policy rate has not gone stale when it has not moved - its last
+   observation is the last DECISION - so it is reported that way and never
+   flagged. Everything else is measured against the newest series on the same
+   chart, and anything more than a year behind it is named. */
+const STALE_DAYS = 400;
+function freshLine(chart, keys) {
+  const M = D.meta || {};
+  const rows = keys.map(k => {
+    const pts = S[k];
+    if (!pts || !pts.length) return null;
+    return { k: k, end: pts[pts.length - 1][0],
+             asNeeded: /as.?needed/i.test((M[k] || {}).freq || '') };
+  }).filter(Boolean);
+  if (!rows.length) return;
+  const dated = rows.filter(r => !r.asNeeded);
+  const newest = dated.length
+    ? dated.reduce((a, b) => (b.end > a.end ? b : a)).end : null;
+  const stale = newest ? dated.filter(r =>
+    (dt(newest) - dt(r.end)) / 86400000 > STALE_DAYS) : [];
+  let html = '';
+  if (newest) html += 'Observations to <b>' + newest + '</b>.';
+  const asn = rows.filter(r => r.asNeeded);
+  if (asn.length) html += (html ? ' ' : '')
+    + 'Set as needed, so the last date is the last change: '
+    + asn.map(r => lbl(r.k) + ' ' + r.end).join(', ') + '.';
+  if (stale.length) html += ' <span class="fresh-stale"><b>Ended: </b>'
+    + stale.map(r => lbl(r.k) + ' after ' + r.end).join(', ')
+    + ' \u2014 no longer published, not a flat line.</span>';
+  /* Every chart key is its card's suffix except this one, and relying on the
+     coincidence meant the money-supply chart silently got no freshness line
+     at all. Named, so the next mismatch fails visibly instead. */
+  const CARD_OF = { money: 'sec-m' };
+  const card = document.querySelector('#' + (CARD_OF[chart] || 'sec-' + chart));
+  if (!card) { console.warn('freshLine: no card for chart', chart); return; }
+  let el = card.querySelector('.freshness');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'freshness';
+    const src = card.querySelector(':scope > .src');
+    card.insertBefore(el, src || null);
+  }
+  el.innerHTML = html;
+}
 function multiLine(chart, sel, opts) {
   const keys = CH[chart].avail.filter(k => SEL[chart].has(k) && S[k] && S[k].length);
   if (!keys.length) return nodata(sel, 'Pick at least one series.');
+  freshLine(chart, keys);
   const f = frame(sel, opts.hFrac || 0.27, opts.m || { t: 16, r: 110, b: 28, l: 46 });
   const all = keys.flatMap(k => S[k]);
   const x = xTime(f, d3.extent(all, p => dt(p[0])));
@@ -301,6 +355,11 @@ function drawPolicy() {
   chips('policy', drawPolicy);
   const keys = CH.policy.avail.filter(k => SEL.policy.has(k) && S[k]);
   if (!keys.length) return nodata('#chPolicy', 'Pick at least one series.');
+  /* Drawn by hand rather than through multiLine, so it needs the freshness
+     line explicitly. These are As-Needed series and the helper reports them
+     as a last change rather than a stale end, which is the whole reason the
+     distinction exists. */
+  freshLine('policy', keys);
   const f = frame('#chPolicy', 0.28, { t: 16, r: 150, b: 28, l: 44 });
   const all = keys.flatMap(k => S[k]);
   const x = xTime(f, d3.extent(all, p => dt(p[0])));
