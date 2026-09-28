@@ -113,6 +113,31 @@ def main():
     # of indicators, so the distinct combinations are a handful
     rows = [tuple('\u001f'.join(x) if isinstance(x, list) else x for x in r) for r in ix]
 
+    # ── PBS's typing, corrected for display only ───────────────────────────
+    # AFGHANI for Afghan, BANGALI for Bengali, KOHIOSTANI, Intermidiate,
+    # REALATIONSHIP, HOUSE HOLD. The rule and its limits live in labels.py;
+    # what matters here is WHERE it is applied. Only the three columns a
+    # reader sees are changed. The indicator key, the catalogue table and the
+    # raw_indicator/raw_col columns beside them keep PBS's own spelling, so
+    # the series is still findable by what was printed and the audit trail is
+    # unbroken.
+    sys.path.insert(0, str(HERE_PLACES))
+    from labels import fix_words
+    at = {n: names.index(n) for n in ('label', 'measure', 'metric')}
+    fixed = 0
+    def _fix(r):
+        nonlocal fixed
+        r = list(r)
+        for j in at.values():
+            if r[j]:
+                v = fix_words(r[j])
+                if v != r[j]:
+                    r[j] = v
+                    fixed += 1
+        return tuple(r)
+    rows = [_fix(r) for r in rows]
+    print(f'  {fixed} display labels corrected for PBS spelling slips')
+
     # ── the navigation hierarchy ───────────────────────────────────────────
     # Topic / subtopic / family / metric form, joined on the compound source
     # key. The original topic column stays exactly as it was: it keys the map

@@ -110,9 +110,14 @@
      even though no published label uses those words. The source label stays
      searchable exactly as it is: an alias is a way in, not a rename. */
   function matches(i, q) {
+    /* The indicator key is searched too, and it holds PBS's own spelling.
+       The display label corrects the handful of slips - AFGHANI for Afghan,
+       HOUSE HOLD for Household - and someone who knows the series by what was
+       printed must still be able to type it and find it. */
     return (col('label', i) + ' ' + col('group_label', i) + ' ' +
             col('topic_label', i) + ' ' + col('h_topic', i) + ' ' +
-            col('h_sub', i) + ' ' + col('h_family', i))
+            col('h_sub', i) + ' ' + col('h_family', i) + ' ' +
+            col('indicator', i))
       .toLowerCase().indexOf(q) >= 0;
   }
 

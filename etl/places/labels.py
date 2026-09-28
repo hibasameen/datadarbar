@@ -8,10 +8,30 @@ put the measure second, 825 use a double hyphen for a dash, and 316 have a
 column heading that is a bare number.
 
 What is changed here is presentation: case, dashes, the order of two parts, and
-a redundant repetition. What is not changed is the words. PBS's own spellings
-survive - REALATIONSHIP, HOUSE HOLD - because the label is how a reader finds
-the series in PBS's published table, and silently correcting it would break
-that. The raw label is kept alongside for the same reason.
+a redundant repetition. What is not changed is the words, with one narrow
+exception below: PBS's own spellings survive because the label is how a reader
+finds the series in PBS's published table, and silently correcting it would
+break that. The raw label is kept alongside for the same reason.
+
+THE EXCEPTION IS MISSPELLINGS WHOSE INTENDED WORD IS CERTAIN. PBS writes
+AFGHANI for the Afghan nationality, KOHIOSTANI for Kohistani, Intermidiate for
+Intermediate, REALATIONSHIP and HOUSE HOLD. Those are typing, not terminology,
+and reproducing them makes the site look like it does not know the words.
+WORD_FIX corrects exactly those and nothing else - the source spelling stays
+in the indicator key, in the catalogue table, in the CSV and in search, so the
+series is still findable by what PBS printed.
+
+BANGALI is corrected to Bengali on the same ground. It is not a transliteration
+anyone uses: the English is Bengali and the endonym is Bangla, and Bangali is
+neither. PBS lists it among nationalities, where Bangladeshi would be the
+stricter word, but the site is in English and Bengali is what the column is
+read as.
+
+What is deliberately NOT corrected is transliteration. PUSHTO and BRAHVI are
+how these are commonly written in Pakistan; Pashto and Brahui are how they are
+commonly written elsewhere, and neither is a typo. Choosing between them is an
+editorial decision about audience, not a correction, so the source's own
+spelling stands.
 """
 import re
 
@@ -23,6 +43,44 @@ KEEP_UPPER = {
 }
 LOWER_WORDS = {'a', 'an', 'and', 'as', 'at', 'by', 'for', 'from', 'in', 'of',
                'on', 'or', 'per', 'the', 'to', 'with'}
+
+# Misspellings, not terminology. Matched case-insensitively on whole words and
+# replaced with the spelling PBS meant. Keep this list to words where there is
+# no second reading - a transliteration is not a typo and does not belong here.
+WORD_FIX = {
+    'afghani': 'Afghan',
+    'bangali': 'Bengali',
+    'kohiostani': 'Kohistani',
+    'intermidiate': 'Intermediate',
+    'realationship': 'Relationship',
+}
+# Two words PBS splits that are one word. Applied before the word pass, and
+# carrying the plural through: the table says both "House Hold" and
+# "House Holds", and a pattern anchored after "hold" left the plural behind.
+PHRASE_FIX = [(re.compile(r'\bhouse\s+(holds?)\b', re.I),
+               lambda m: 'Household' + ('s' if m.group(1).lower().endswith('s') else ''))]
+
+
+def fix_words(t):
+    """Correct PBS's typing, never its terminology. See the module docstring.
+
+    The correction keeps the shape of what it replaces - SHOUTED stays
+    shouted - because this runs before the casing pass and handing it a
+    Title Case word inside an all-capitals heading makes case() leave a
+    mixed-case label behind.
+    """
+    if not t:
+        return t
+
+    def shaped(src, to):
+        return to.upper() if src.isupper() else to
+
+    for pat, to in PHRASE_FIX:
+        t = pat.sub(lambda m: shaped(m.group(0), to(m) if callable(to) else to), t)
+    return re.sub(r"[A-Za-z][A-Za-z'\u2019]*",
+                  lambda m: shaped(m.group(0),
+                                   WORD_FIX.get(m.group(0).lower(), m.group(0))),
+                  t)
 
 # A band, not only an age band. PBS puts the banded dimension in the row for
 # age AND for locality size ("1,000 -- 1,999" in table 3), and both are a
