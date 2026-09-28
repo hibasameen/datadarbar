@@ -215,6 +215,41 @@ def main():
     print(f'  {len(rows):,} census labels rewritten for reading; '
           f'PBS\u2019s own kept in label_source')
 
+    # ── the total of a partition tells you nothing ──────────────────────
+    # A table that splits the population by mother tongue, religion or
+    # nationality also carries the total of those parts, which is just the
+    # population again under another name. It is dropped where the table
+    # genuinely partitions something - three or more sibling measures - and
+    # kept otherwise, because "Total Population" in the homeless table is the
+    # homeless total and is the whole point of that table.
+    # Bare - "Total", "All" - and qualified: "Population by Mother Tongue -
+    # Total" is the same thing wearing its table's name, and PBS writes it
+    # both ways. The guard is on siblings: drop only where three or more other
+    # measures share the table, so a table whose whole point is a total keeps
+    # it.
+    TOTALISH = """(lower(measure) IN ('total', 'all', 'total population')
+          OR lower(measure) LIKE '%\u2014 total'
+          OR lower(measure) LIKE '%\u2014 all'
+          OR lower(measure) LIKE '%\u2014 total population')"""
+    con.execute(f"""CREATE OR REPLACE TABLE _drop AS
+        SELECT DISTINCT i.level, i.group_key, i.measure
+        FROM place_indicator_index i
+        WHERE i.source = 'census' AND {TOTALISH.replace('measure', 'i.measure')}
+          AND (SELECT count(DISTINCT j.measure) FROM place_indicator_index j
+               WHERE j.group_key = i.group_key AND j.level = i.level
+                 AND NOT {TOTALISH.replace('measure', 'j.measure')}) >= 3""")
+    gone = con.sql('SELECT count(*) FROM place_indicator_index i JOIN _drop d '
+                   'USING (level, group_key, measure)').fetchone()[0]
+    names = con.sql('SELECT DISTINCT measure FROM _drop ORDER BY 1').fetchall()
+    con.execute("""DELETE FROM place_indicator_index i
+        WHERE EXISTS (SELECT 1 FROM _drop d WHERE d.level = i.level
+                      AND d.group_key = i.group_key AND d.measure = i.measure)""")
+    con.execute('DROP TABLE _drop')
+    print(f'  {gone} rows dropped as the total of their own table '
+          f'({len(names)} measures):')
+    for (nm,) in names:
+        print(f'      {nm}')
+
     # ── the same cell in both censuses ──────────────────────────────────
     # A census cell keyed on PBS's raw strings cannot merge across censuses,
     # because the two spell the same thing differently: "00 - 04" against

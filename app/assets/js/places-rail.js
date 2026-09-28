@@ -28,6 +28,21 @@
      the measure and the breakdown, because either half can carry it. */
   var RATE_WORDS = /%|\brates?\b|\bratios?\b|\bper\b|averag|\bavg\b|\bmedian\b|\bmean\b|\bindex\b|proportion|\bshare\b|\bpct\b|per cent|percent|\bdensity\b/i;
 
+  /* The population itself, which is the denominator and cannot be normalised
+     by itself. Only the WHOLE population: an earlier rule excluded anything
+     starting with "Population", which silently took out every mother tongue -
+     they are published as "Population by Mother Tongue - Balochi" - and those
+     are exactly the counts a share is wanted for. Male and female populations
+     stay in, because the share of a district that is female is a real
+     question; the derived columns beside them (sex ratio, density, urban
+     proportion, household size) are caught as rates by their own names. */
+  var WHOLE_POP = /^population[\s\-\u2013\u2014]*(20\d\d)?(\s*[\u2014-]\s*all sexes)?$/i;
+
+  var NORMS = [
+    { id: 'p', mode: 'pct', label: '% of population' },
+    { id: 'n', mode: 'per1000', label: 'per 1,000 people' },
+  ];
+
   function build(IX, N, col, level, list) {
     var index = [], seen = {};
     for (var i = 0; i < N; i++) {
@@ -63,7 +78,7 @@
       // crop area carries dp 1 and is a count of hectares, not a rate.
       var isRate = (census && dp > 0)
         || RATE_WORDS.test(measure) || RATE_WORDS.test(metric || '');
-      var countable = !isRate && !/^(population|area)\b/i.test(measure);
+      var countable = !isRate && !WHOLE_POP.test(measure) && !/^area\b/i.test(measure);
 
       index.push({
         topic: topic, topicLabel: col('topic_label', i) || topic,
@@ -75,19 +90,25 @@
         row: i, fullLabel: label,
         rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
       });
-      if (countable) {
+      /* Two ways to read a count against the population, because they suit
+         different sizes. A share is the natural reading of mother tongue or
+         religion, where the categories partition the population; per 1,000
+         is the natural reading of something rare, where the share would be
+         0.006% and unreadable. Both use the same denominator. */
+      NORMS.forEach(function (n) {
+        if (!countable) return;
         index.push({
           topic: topic, topicLabel: col('topic_label', i) || topic,
           ds: ds, dsLabel: ds,
           ind: measure, label: measure,
-          metric: 'n' + i,
-          metricLabel: (metric || 'All') + '\u2002\u00b7\u2002per 1,000 people',
+          metric: n.id + i,
+          metricLabel: (metric || 'All') + '\u2002\u00b7\u2002' + n.label,
           key: col('indicator', i), groupKey: col('group_key', i),
           years: (list ? list('years', i) : []).join('/'),
-          row: i, norm: true, fullLabel: label + ', per 1,000 people',
+          row: i, norm: n.mode, fullLabel: label + ', ' + n.label,
           rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
         });
-      }
+      });
     }
     /* "Total Population" is published in several tables, each with its own
        age bands, so the metric list showed "0-4" three times over. Where a
@@ -174,6 +195,15 @@
   }
 
   window.DDPlacesRail = {
+    /* Exposed because the totals strip needs the same answer. It once used dp
+       alone and so totalled a contraceptive-prevalence rate across 128
+       districts to 3,635 - a number that means nothing. One test, one
+       answer. */
+    isRate: function (census, dp, measure, metric) {
+      return (census && dp > 0)
+          || RATE_WORDS.test(measure || '') || RATE_WORDS.test(metric || '');
+    },
+
     mount: function (opts) {
       var host = opts.el;
       if (!host || !window.DDExplorer) return null;
@@ -197,7 +227,7 @@
         levels: ['topic', 'ds', 'ind', 'metric'],
         labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                   metric: 'Metric' },
-        onChange: function (r) { if (r) opts.onChange(r.row, !!r.norm); },
+        onChange: function (r) { if (r) opts.onChange(r.row, r.norm || ''); },
       });
       rail.sync(false);
 
@@ -207,7 +237,7 @@
            instead of a rail pointing at an empty one. */
         fire: function () {
           var r = pick(index, st);
-          if (r) opts.onChange(r.row, !!r.norm);
+          if (r) opts.onChange(r.row, r.norm || '');
         },
         /* The picker list and the rail are peers, so choosing from one moves
            the other. Without this they drift and the page shows a rail that
@@ -243,11 +273,11 @@
             levels: ['topic', 'ds', 'ind', 'metric'],
             labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                       metric: 'Metric' },
-            onChange: function (x) { if (x) opts.onChange(x.row, !!x.norm); },
+            onChange: function (x) { if (x) opts.onChange(x.row, x.norm || ''); },
           });
           rail.sync(false);
           var drawn = pick(index, st) || next;
-          opts.onChange(drawn.row, !!drawn.norm);
+          opts.onChange(drawn.row, drawn.norm || '');
         },
       };
     },

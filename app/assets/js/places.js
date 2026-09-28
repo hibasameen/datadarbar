@@ -42,7 +42,7 @@
     year: null,
     locality: 'all',
     sex: 'all',
-    norm: false,        // showing the per-1,000 twin of a count
+    norm: '',           // '', 'pct' or 'per1000' - how a count is read
     values: null,       // map_key -> number
     meta: null,         // map_key -> {relation, note}
     place: null,        // selected map key
@@ -265,11 +265,7 @@
       return Promise.all([rawValues(i), population('2023',
                                                    'POPULATION-2023 / ALL SEXES')])
         .then(function (both) {
-          var v = both[0].values || both[0], pop = both[1], out = {};
-          Object.keys(v).forEach(function (k) {
-            if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * 1000;
-          });
-          return { values: out, meta: {} };
+          return perThousand(both[0], both[1]);
         });
     }
     return rawValues(i);
@@ -282,7 +278,7 @@
       var fams = (col('families', i) || '').split(' ').filter(Boolean);
       return Promise.all([loadGroup(gk), fams.length ? loadProvenance() : null])
         .then(function (both) {
-          var blob = both[0], d = blob.d, out = {}, meta = {};
+          var blob = both[0], d = blob.d, out = {}, meta = {}, seenUnit = {};
           var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
           for (var r = 0; r < d.value.length; r++) {
             if (get(d.level, r) !== state.level) continue;
@@ -290,13 +286,18 @@
             if (state.year && get(d.year, r) !== state.year) continue;
             var keys = String(get(d.map_key, r)).split(' ');
             var note = get(d.note, r), rel = get(d.relation, r);
+            seenUnit[String(get(d.map_key, r))] = { keys: keys, v: d.value[r] };
             for (var k = 0; k < keys.length; k++) {
               out[keys[k]] = d.value[r];
               if (note) meta[keys[k]] = { relation: rel, note: note };
             }
           }
           applyFlags(gk, fams, out, meta);
-          return { values: out, meta: meta };
+          var units = [];
+          Object.keys(seenUnit).forEach(function (u) {
+            units.push({ keys: seenUnit[u].keys, v: seenUnit[u].v });
+          });
+          return { values: out, meta: meta, units: units };
         });
     }
 
@@ -389,12 +390,31 @@
         : censusYear(year),
       population(popYear, popInd),
     ]).then(function (both) {
-      var v = both[0].values, pop = both[1], out = {};
-      Object.keys(v).forEach(function (k) {
-        if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * 1000;
-      });
-      return { values: out, meta: {} };
+      return perThousand(both[0], both[1]);
     });
+  }
+
+  /* The count over the population, per unit - and the two parts kept, so the
+     strip can total them. Adding up district rates and dividing by 136 would
+     give every district equal weight and is not the country's rate. */
+  function normFactor() { return state.norm === 'pct' ? 100 : 1000; }
+  function normLabel() {
+    return state.norm === 'pct' ? '% of population' : 'per 1,000 people';
+  }
+
+  function perThousand(res, pop) {
+    var v = res.values || res, out = {}, units = [], f = normFactor();
+    Object.keys(v).forEach(function (k) {
+      if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * f;
+    });
+    (res.units || []).forEach(function (u) {
+      var den = null;
+      u.keys.some(function (k) { if (pop[k]) { den = pop[k]; return true; } return false; });
+      if (u.v != null && den) {
+        units.push({ keys: u.keys, v: u.v / den * f, num: u.v, den: den });
+      }
+    });
+    return { values: out, meta: {}, units: units };
   }
 
   /* The place's population, from table 1 of the same census, at the same
@@ -465,12 +485,20 @@
       + 'survey\u2019s reliability threshold, so read it as indicative.';
   }
 
+  /* `units` is the rows as published, one per unit. `values` spreads each
+     onto every shape that unit is drawn as - which is not the same list.
+     Six districts split after 2017 are drawn twice on the 2023 frame and
+     carry the same pre-split figure on both halves, so adding up the shapes
+     gives 214,818,543 for the 2017 population against a true 207,684,626.
+     Anything that totals must use units. */
   function toMap(res) {
-    var out = {};
+    var out = {}, units = [];
     res.rows.forEach(function (r) {
-      String(r.k).split(' ').forEach(function (k) { out[k] = r.v; });
+      var keys = String(r.k).split(' ');
+      keys.forEach(function (k) { out[k] = r.v; });
+      units.push({ keys: keys, v: r.v });
     });
-    return { values: out, meta: {} };
+    return { values: out, meta: {}, units: units };
   }
 
   /* ── choosing ───────────────────────────────────────────────────────────
@@ -497,7 +525,7 @@
 
   function choose(i, norm) {
     state.row = i;
-    if (norm !== undefined) state.norm = !!norm;
+    if (norm !== undefined) state.norm = norm || '';
     if (rail) rail.follow(i);
     var yrs = yearsFor(i);
     // Default to the most recent actual year, not to the change. The curated
@@ -515,8 +543,10 @@
     fetchValues(i).then(function (r) {
       state.values = r.values;
       state.meta = r.meta;
+      state.units = r.units || null;
       return paint().then(function () {
         renderLegend();
+        renderTotals();
         renderDetail(placeProps(state.place));
         writeUrl();
       });
@@ -679,7 +709,7 @@
     var i = state.row;
     if (i == null) return;
     $('legendTitle').textContent = (col('label', i))
-      + (state.norm ? ', per 1,000 people' : '');
+      + (state.norm ? ', ' + normLabel() : '');
     var n = state.values ? Object.keys(state.values).length : 0;
     $('legendSub').textContent = col('group_label', i) + (n ? ' · ' + n.toLocaleString()
       + ' ' + GEO[state.level].noun + 's' : '');
@@ -748,6 +778,99 @@
     if (locs.length > 1) notes.push(locs.join(' / '));
     if (sexes.length > 1) notes.push(sexes.join(' / '));
     $('legendNote').textContent = notes.length ? 'Also published by ' + notes.join('; ') : '';
+  }
+
+  /* The strip over the map: how many places are showing, and what they come
+     to. It follows the province filter, so picking Punjab totals Punjab.
+
+     Two things it must not do. It must not add up shapes - six districts that
+     split after 2017 are drawn twice on the 2023 frame and carry the same
+     pre-split figure on each half, which turns a 2017 population of
+     207,684,626 into 214,818,543 - so it adds units. And it must not add up
+     rates: a total literacy rate is not a number. A per-1,000 view is totalled
+     as the whole count over the whole population, which is the only honest
+     aggregate of it; a published rate gets its range instead. */
+  function renderTotals() {
+    var box = $('totals');
+    if (!box) return;
+    if (state.row == null || !state.units) { box.hidden = true; return; }
+    var g = GEO[state.level], prov = $('provFilter').value;
+    var keep = state.units.filter(function (u) {
+      if (u.v == null || isNaN(u.v)) return false;
+      if (!prov) return true;
+      return u.keys.some(function (k) {
+        var p = placeProps(k);
+        return p && g.prov(p) === prov;
+      });
+    });
+    var n = keep.length;
+    var where = prov || 'Pakistan';
+    // dp is is_rate only for census rows; elsewhere it is decimal places.
+    // The rail already decides this, so ask it rather than guess again.
+    var rate = !state.norm && (window.DDPlacesRail
+      ? window.DDPlacesRail.isRate(col('source', state.row) === 'census',
+                                   col('dp', state.row),
+                                   col('measure', state.row),
+                                   col('metric', state.row))
+      : col('dp', state.row) > 0);
+
+    var figure, caption;
+    if (state.norm) {
+      var num = 0, den = 0;
+      keep.forEach(function (u) { num += (u.num || 0); den += (u.den || 0); });
+      figure = den ? (num / den * normFactor()).toFixed(2)
+                     + (state.norm === 'pct' ? '%' : '') : '\u2014';
+      caption = normLabel().replace(/^%/, 'Share') + ' \u00b7 ' + where;
+    } else if (rate) {
+      var vals = keep.map(function (u) { return u.v; }).sort(function (a, b) { return a - b; });
+      figure = vals.length
+        ? fmt(vals[0], dpFor(state.row)) + ' to ' + fmt(vals[vals.length - 1], dpFor(state.row))
+        : '\u2014';
+      caption = 'Range across ' + g.noun + 's \u00b7 a rate cannot be totalled';
+    } else {
+      figure = big(keep.reduce(function (a, u) { return a + u.v; }, 0));
+      caption = 'Total \u00b7 ' + where;
+    }
+
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="tot"><span class="tot-k">' + esc(g.noun + 's showing') + '</span>'
+      + '<b>' + n + '</b></div>'
+      + (figure === null ? ''
+         : '<div class="tot"><span class="tot-k">' + esc(caption) + '</span>'
+           + '<b>' + esc(figure) + '</b></div>')
+      + '<div class="tot"><span class="tot-k">' + esc(state.norm ? 'Showing' : 'Year')
+      + '</span><b>' + esc(state.norm ? normLabel()
+                                      : (yearLabel() || '\u2014')) + '</b></div>';
+  }
+
+  /* Fit the map to the chosen province, and back to the country when the
+     filter is cleared. The shapes outside it are drawn with no fill, so
+     without this you are looking at a mostly empty Pakistan. */
+  function zoomProvince() {
+    if (!layer || !map) return;
+    var g = GEO[state.level], prov = $('provFilter').value, bounds = null;
+    layer.eachLayer(function (l) {
+      if (prov && g.prov(l.feature.properties) !== prov) return;
+      bounds = bounds ? bounds.extend(l.getBounds()) : L.latLngBounds(l.getBounds());
+    });
+    if (bounds && bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [24, 24] });
+    }
+  }
+
+  function yearLabel() {
+    if (!state.year) return '';
+    return /^\u0394/.test(state.year) ? 'Change 2017\u201323' : state.year;
+  }
+
+  /* 241,499,431 reads as noise in a strip; 241.5m reads as a number. */
+  function big(v) {
+    var a = Math.abs(v);
+    if (a >= 1e9) return (v / 1e9).toFixed(2) + 'bn';
+    if (a >= 1e6) return (v / 1e6).toFixed(1) + 'm';
+    if (a >= 1e4) return Math.round(v).toLocaleString();
+    return fmt(v, dpFor(state.row));
   }
 
   /* Top and bottom ten, as the live map has. The map shows the pattern; this
@@ -1032,7 +1155,7 @@
     q.set('i', col('indicator', state.row));
     q.set('lv', state.level);
     if (state.year) q.set('y', state.year);
-    if (state.norm) q.set('n', '1');
+    if (state.norm) q.set('n', state.norm);
     if (state.locality !== 'all') q.set('loc', state.locality);
     if (state.sex !== 'all') q.set('sex', state.sex);
     if (state.place) q.set('p', state.place);
@@ -1053,7 +1176,7 @@
     if (row < 0) return false;
     if (q.get('y')) state.year = q.get('y');
     if (q.get('loc')) state.locality = q.get('loc');
-    state.norm = q.get('n') === '1';
+    state.norm = ['pct', 'per1000'].indexOf(q.get('n')) >= 0 ? q.get('n') : '';
     if (q.get('sex')) state.sex = q.get('sex');
     state.place = q.get('p') || null;
     state.openTopic = col('topic', row);
@@ -1092,7 +1215,10 @@
     $('geoDistrict').onclick = function () { setLevel('district'); };
     $('geoTehsil').onclick = function () { setLevel('tehsil'); };
     $('indSearch').oninput = function () { state.query = this.value; renderPicker(); };
-    $('provFilter').onchange = function () { if (state.row != null) paint(); };
+    $('provFilter').onchange = function () {
+      if (state.row != null) paint().then(function () { renderTotals(); zoomProvince(); });
+      else zoomProvince();
+    };
     $('placeSearch').oninput = function () { findPlace(this.value); };
     $('csvBtn').onclick = downloadCsv;
     $('ovSchools').onchange = function () { toggleSchools(this.checked); writeUrl(); };
@@ -1102,7 +1228,7 @@
     rail = window.DDPlacesRail && window.DDPlacesRail.mount({
       el: $('rail'), IX: IX, N: N, col: col, list: list, level: state.level,
       row: state.row,
-      onChange: function (row, norm) { state.norm = !!norm; choose(row); },
+      onChange: function (row, norm) { state.norm = norm || ''; choose(row); },
     });
     if (!readUrl() && rail) rail.fire();
   }

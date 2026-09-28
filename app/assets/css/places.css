@@ -184,3 +184,24 @@
 .rank-v{color:var(--body);font-variant-numeric:tabular-nums;font-weight:600}
 
 .detail{display:flex;flex-direction:column}
+
+/* The strip over the map: how many places are showing and what they come to,
+   following the province filter. */
+.totals{position:absolute;top:0;left:0;right:0;z-index:450;display:flex;
+  gap:0;background:var(--surface);border-bottom:1px solid var(--line)}
+.totals[hidden]{display:none}
+.tot{flex:1;min-width:0;padding:7px 14px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:1px}
+.tot:last-child{border-right:0}
+.tot-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.tot b{font-size:15px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+/* The map tools sit below the strip rather than under it. */
+.totals:not([hidden]) ~ .map-tools,
+.totals:not([hidden]) ~ .map-tools-right{top:52px}
+@media(max-width:700px){
+  .tot{padding:5px 9px}
+  .tot b{font-size:13px}
+}
