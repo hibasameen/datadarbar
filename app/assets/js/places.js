@@ -302,7 +302,11 @@
       var c = cellFor(y);
       return engine().then(function (w) {
         return w.query(
-          'SELECT map_key AS k, value AS v FROM census_panel_' + y
+          /* unit, because a shape and a source row are not the same thing and
+             two different faults look identical without it. One unit twice is
+             an ambiguous source cell; two units once each is a district that
+             merged. The first must not be added up, the second must be. */
+          'SELECT map_key AS k, value AS v, unit AS u FROM census_panel_' + y
           + ' WHERE table_id = ' + q(c[0])
           + '   AND indicator = ' + q(c[1])
           + "   AND coalesce(col_label, '') = " + q(c[2])
@@ -342,7 +346,10 @@
           });
           // Same shape every other route returns; a bare map here read as an
           // undefined .values and the legend silently kept the old scale.
-          return { values: out, meta: {}, units: units };
+          // A change inherits either year's ambiguity: subtracting a figure
+          // we cannot pin down does not pin it down.
+          return { values: out, meta: {}, units: units,
+                   ambiguous: (both[0].ambiguous || 0) + (both[1].ambiguous || 0) };
         });
     }
     if (!state.norm) return censusYear(year);
@@ -394,7 +401,8 @@
                        n1: prev.num, d1: prev.den, k1: prev.denKey,
                        n2: u.num, d2: u.den, k2: u.denKey });
         });
-        return { values: out, meta: {}, units: units };
+        return { values: out, meta: {}, units: units,
+                 ambiguous: (a.ambiguous || 0) + (c2.ambiguous || 0) };
       });
   }
 
@@ -423,7 +431,8 @@
                      num: u.v, den: den, denKey: denKey });
       }
     });
-    return { values: out, meta: {}, units: units };
+    return { values: out, meta: {}, units: units,
+             ambiguous: (res.ambiguous || 0) };
   }
 
   /* The place's population, from table 1 of the same census, at the same
@@ -506,14 +515,43 @@
      carry the same pre-split figure on both halves, so adding up the shapes
      gives 214,818,543 for the 2017 population against a true 207,684,626.
      Anything that totals must use units. */
+  /* One row per source unit, not per row returned.
+
+     PBS's 2017 panel carries the same cell more than once for a unit, and the
+     warehouse flags 561 series where those copies disagree. Lasbela's owned
+     housing units come back as 28,675, 50,989 and 79,664 - rural, urban and
+     the total, all three labelled locality "all". Pushing every row put all
+     three into the totals strip, so the national figure for owned homes read
+     52.2 million against a true figure near half that, and the map drew
+     whichever row happened to arrive last.
+
+     Where the copies agree - and 563 series repeat a value up to fifteen
+     times - collapsing them is not a judgement, it is the same observation
+     counted once, and the total is simply right afterwards.
+
+     Where they disagree there is no rule here that could pick the right one;
+     different tables would need different ones. So the value is drawn, the
+     reader is told, and the figures that would be wrong - the total and the
+     ranking - are withheld rather than guessed. */
   function toMap(res) {
-    var out = {}, units = [];
+    var out = {}, units = [], byUnit = {}, conflict = {}, ambiguous = 0;
     res.rows.forEach(function (r) {
+      var id = r.u == null ? String(r.k) : String(r.u);
+      if (byUnit[id] !== undefined) {
+        // Counted once per place, not once per discarded row: a district with
+        // three disagreeing copies is one district we cannot pin down.
+        if (byUnit[id].v !== r.v && !conflict[id]) {
+          conflict[id] = 1;
+          ambiguous += 1;
+        }
+        return;
+      }
       var keys = String(r.k).split(' ');
+      byUnit[id] = { keys: keys, v: r.v, u: id };
       keys.forEach(function (k) { out[k] = r.v; });
-      units.push({ keys: keys, v: r.v });
+      units.push(byUnit[id]);
     });
-    return { values: out, meta: {}, units: units };
+    return { values: out, meta: {}, units: units, ambiguous: ambiguous };
   }
 
   /* ── choosing ───────────────────────────────────────────────────────────
@@ -579,6 +617,7 @@
       state.values = r.values;
       state.meta = r.meta;
       state.units = r.units || null;
+      state.ambiguous = r.ambiguous || 0;
       return paint().then(function () {
         renderLegend();
         renderTotals();
@@ -844,6 +883,25 @@
     });
     var n = keep.length;
     var where = prov || 'Pakistan';
+
+    /* The source gave more than one figure for the same place and they do not
+       agree. Adding them up, or ranking places by whichever arrived last, is
+       a number nobody published. The map still shows what is there and the
+       coverage count still says how many places reported; the two figures
+       that would be invented are not shown. */
+    if (state.ambiguous) {
+      box.hidden = false;
+      box.innerHTML =
+        '<div class="tot"><span class="tot-k">' + esc(g.noun + 's showing') + '</span>'
+        + '<b>' + n + '</b></div>'
+        + '<div class="tot tot-warn"><span class="tot-k">Not totalled or ranked'
+        + '</span><b>' + state.ambiguous + ' ' + esc(g.noun)
+        + (state.ambiguous === 1 ? '' : 's') + ' with conflicting source rows</b>'
+        + '</div>'
+        + '<div class="tot"><span class="tot-k">Year</span><b>'
+        + esc(yearLabel() || '\u2014') + '</b></div>';
+      return;
+    }
     /* A mean, a rate, an index or a distance cannot be totalled across
        places. Decided in the build from the kind of quantity, not from
        whether the label happens to contain the word "mean". */
@@ -957,6 +1015,9 @@
   function renderRanks() {
     var box = $('ranks');
     if (state.row == null || !state.values) { box.hidden = true; return; }
+    // Ranking places by a figure the source states more than one way orders
+    // them by which row arrived last. Withheld with the total.
+    if (state.ambiguous) { box.hidden = true; return; }
     var dp = dpFor(state.row);
     var seen = {}, rows = [];
     Object.keys(state.values).forEach(function (k) {

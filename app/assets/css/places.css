@@ -202,3 +202,9 @@
   .tot{padding:5px 9px}
   .tot b{font-size:13px}
 }
+
+/* The source states this place's figure more than one way, so the total and
+   the ranking are withheld rather than invented. Marked, not hidden: an
+   absent total with no explanation reads as a page that failed to load. */
+.tot-warn .tot-k{color:var(--sienna,#8a5a3b)}
+.tot-warn b{color:var(--sienna,#8a5a3b);font-weight:700}
