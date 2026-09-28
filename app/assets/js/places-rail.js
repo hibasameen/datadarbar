@@ -177,21 +177,33 @@
     return index.filter(function (r) { return r.topic === best; })[0] || null;
   }
 
+  /* The dataset defaults to all of them, so opening a topic shows every
+     indicator in it whoever measured it - and picking one narrows rather than
+     being the price of entry. */
+  /* Keep an "All" that the reader chose. follow() runs after every draw, and
+     an earlier version rewrote topic and dataset from the drawn row - so
+     picking All topics lasted exactly one redraw before snapping back to the
+     topic of whatever was on screen. */
+  var ALL = function () { return window.DDExplorer.ALL; };
+
   function hold(st, r) {
-    st.topic = r.topic; st.ds = r.ds; st.ind = r.ind; st.metric = r.metric;
+    st.topic = st.topic === ALL() ? ALL() : r.topic;
+    st.ds = st.ds === ALL() || st.ds === undefined ? ALL() : r.ds;
+    st.ind = r.ind; st.metric = r.metric;
   }
 
   /* The row the four held values resolve to, falling back up the cascade the
      same way the rail itself does when a level's value did not survive. */
   function pick(index, st) {
+    var anyDs = st.ds === ALL(), anyTopic = st.topic === ALL();
+    var inScope = function (r) {
+      return (anyTopic || r.topic === st.topic) && (anyDs || r.ds === st.ds);
+    };
     return index.filter(function (r) {
-      return r.topic === st.topic && r.ds === st.ds
-          && r.ind === st.ind && r.metric === st.metric;
+      return inScope(r) && r.ind === st.ind && r.metric === st.metric;
     })[0]
-    || index.filter(function (r) {
-      return r.topic === st.topic && r.ds === st.ds && r.ind === st.ind;
-    })[0]
-    || index.filter(function (r) { return r.topic === st.topic; })[0];
+    || index.filter(function (r) { return inScope(r) && r.ind === st.ind; })[0]
+    || index.filter(inScope)[0];
   }
 
   window.DDPlacesRail = {
@@ -225,6 +237,7 @@
       var rail = window.DDExplorer.mount({
         el: host, index: index, state: st,
         levels: ['topic', 'ds', 'ind', 'metric'],
+        optional: { topic: true, ds: true },
         labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                   metric: 'Metric' },
         onChange: function (r) { if (r) opts.onChange(r.row, r.norm || ''); },
@@ -271,6 +284,7 @@
           rail = window.DDExplorer.mount({
             el: host, index: index, state: st,
             levels: ['topic', 'ds', 'ind', 'metric'],
+            optional: { topic: true, ds: true },
             labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                       metric: 'Metric' },
             onChange: function (x) { if (x) opts.onChange(x.row, x.norm || ''); },

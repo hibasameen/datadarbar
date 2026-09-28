@@ -24,6 +24,7 @@
 
   var CAPTION = { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                   metric: 'Metric' };
+  var ALL_LABEL = { topic: 'All topics', ds: 'All datasets' };
   var LABEL_OF = { topic: 'topicLabel', ds: 'dsLabel', ind: 'label',
                    metric: 'metricLabel' };
 
@@ -115,10 +116,23 @@
     meta.className = 'xrail-meta';
     el.appendChild(meta);
 
+    /* A level marked optional gets an "All" entry that does not narrow. The
+       cascade was hiding most of a topic behind a choice nobody knew they had
+       to make: Women & gender holds 18 indicators over three surveys, and the
+       dataset step showed whichever sorted first, so you saw DHS's five and
+       had no sign the other thirteen existed. */
+    var ALL = window.DDExplorer.ALL;
+    var optional = cfg.optional || {};
+
     function sync(fire) {
       var rows = index;
       levels.forEach(function (lv, i) {
         var opts = uniq(rows, lv, LABEL_OF[lv]);
+        if (optional[lv] && opts.length > 1) {
+          opts = [{ value: ALL, label: ALL_LABEL[lv]
+                     || ('All ' + (names[lv] || CAPTION[lv] || lv).toLowerCase()
+                         + 's') }].concat(opts);
+        }
         if (lv === listLevel) {
           state[lv] = drawList(rows, lv, state[lv]);
         } else {
@@ -130,7 +144,9 @@
           f.cap.textContent = (names[lv] || CAPTION[lv] || lv)
             + (opts.length > 1 ? '\u2002\u00b7\u2002' + opts.length : '');
         }
-        rows = rows.filter(function (r) { return r[lv] === state[lv]; });
+        if (state[lv] !== ALL) {
+          rows = rows.filter(function (r) { return r[lv] === state[lv]; });
+        }
       });
 
       var chosen = rows[0] || index[0];
@@ -273,5 +289,5 @@
     };
   }
 
-  window.DDExplorer = { mount: mount };
+  window.DDExplorer = { mount: mount, ALL: '\u0000all' };
 })();
