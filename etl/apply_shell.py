@@ -29,6 +29,9 @@ NAV = [
     {'href': 'state.html',    'label': 'State',     'match': ('state.html',)},
 ]
 SHELF = [
+    # The explorer sits with the analyst tools rather than in the main nav:
+    # it is where you go once you know which series you want, not the way in.
+    {'href': 'explore.html',  'label': 'Compare',   'match': ('explore.html',)},
     {'href': 'datasets/',     'label': 'Catalogue', 'match': ('datasets/',)},
     {'href': 'query.html',    'label': 'Query',     'match': ('query.html', 'dictionary.html')},
     {'href': 'methods.html',  'label': 'Methods',   'match': ('methods.html', 'about.html', 'methodology.html')},

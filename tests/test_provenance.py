@@ -67,3 +67,31 @@ def test_provenance_builds_and_covers_every_chart():
             assert rec['table'] in tables, f'{cid} names {rec["table"]}'
         else:
             assert rec.get('origin'), f'{cid} has no table and does not say so'
+
+
+def test_explorer_series_declare_what_makes_them_comparable():
+    """Unit, kind, frequency and year basis are what the explorer refuses on.
+
+    A series missing any of them would silently become comparable with
+    everything, which is the failure the explorer exists to prevent: two
+    series in different units on one axis is a coincidence of scale, not a
+    comparison.
+    """
+    s = (APP / 'data/explore_data.js').read_text()
+    D = json.loads(s[s.index('{'):s.rindex(';')])
+    idx, ser = D['index'], D['series']
+    assert len(idx) > 60, f'only {len(idx)} series'
+
+    cat = json.loads((APP / 'data/warehouse/catalog.json').read_text())
+    tables = {t['name'] for t in cat['tables']}
+    for r in idx:
+        for f in ('unit', 'kind', 'freq', 'basis', 'source', 'label'):
+            assert r.get(f), f'{r["key"]} has no {f}'
+        assert r['kind'] in ('level', 'rate', 'index', 'pct'), r['key']
+        assert r['basis'] in ('fiscal', 'calendar'), r['key']
+        assert r['source'] in tables, f'{r["key"]} names {r["source"]}'
+        pts = ser.get(r['key'])
+        assert pts and len(pts) == r['n'], r['key']
+        # Ordered, so a gap is a gap and not an out-of-order point.
+        assert all(pts[i][0] < pts[i + 1][0] for i in range(len(pts) - 1)), \
+            f'{r["key"]} is not in period order'
