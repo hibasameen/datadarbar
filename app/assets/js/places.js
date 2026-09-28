@@ -711,6 +711,21 @@
     return yrs;
   }
 
+  /* Keep what the reader chose if this series has it; otherwise the series'
+     own default, which is not always "all".
+
+     Falling back to "all" unconditionally was how 136 advertised 2017 district
+     series opened on an empty map: "Percent - Rooms per Housing Unit" is
+     published for rural mouzas only, its available list is ["rural"], and
+     asking the warehouse for locality "all" returned nothing at all. A series
+     with no "all" is not a series with no data. */
+  function pickFacet(avail, held) {
+    if (!avail.length) return 'all';
+    if (avail.indexOf(held) >= 0) return held;
+    if (avail.indexOf('all') >= 0) return 'all';
+    return avail[0];
+  }
+
   /* Bumped by every choose(); a response carrying a stale token is dropped. */
   var drawSeq = 0;
 
@@ -734,8 +749,8 @@
     // -21 to 13 rather than on a level.
     state.year = yrs.length ? (yrs.indexOf(state.year) >= 0 ? state.year : latestYear(yrs))
                             : null;
-    state.locality = list('localities', i).indexOf(state.locality) >= 0 ? state.locality : 'all';
-    state.sex = list('sexes', i).indexOf(state.sex) >= 0 ? state.sex : 'all';
+    state.locality = pickFacet(list('localities', i), state.locality);
+    state.sex = pickFacet(list('sexes', i), state.sex);
     renderPicker();
     renderLegend();
     $('legend').hidden = false;
@@ -925,7 +940,15 @@
   function renderLegend() {
     var i = state.row;
     if (i == null) return;
+    /* The facets belong in the title. A map of 18 transgender Afghans aged
+       15-19 headed "Afghani, 15-19" is a map of the wrong thing, and the
+       reader has no other place to read what they are looking at once they
+       scroll past the controls. */
+    var picked = [];
+    if (state.locality && state.locality !== 'all') picked.push(state.locality);
+    if (state.sex && state.sex !== 'all') picked.push(state.sex);
     $('legendTitle').textContent = (col('label', i))
+      + (picked.length ? ' \u00b7 ' + picked.join(', ') : '')
       + (state.norm
          ? (/^\u0394/.test(state.year || '') ? ', change in ' : ', ')
            + normLabel()
@@ -994,10 +1017,45 @@
       };
     }
 
-    var notes = [];
-    if (locs.length > 1) notes.push(locs.join(' / '));
-    if (sexes.length > 1) notes.push(sexes.join(' / '));
-    $('legendNote').textContent = notes.length ? 'Also published by ' + notes.join('; ') : '';
+    /* Residence and sex as controls, not as a sentence. The legend used to
+       say "Also published by all / rural / urban" and leave it there: 4,258
+       entries advertised a breakdown the reader had no way to select, and
+       naming a thing you cannot reach is worse than not naming it. The
+       buttons offer only what this series actually publishes, so a
+       rural-only series shows one button and says so rather than offering a
+       choice that returns nothing. */
+    var FACET_LABEL = { all: 'All', rural: 'Rural', urban: 'Urban',
+                        male: 'Male', female: 'Female',
+                        transgender: 'Transgender' };
+    var lab = function (v) {
+      return FACET_LABEL[v] || v.charAt(0).toUpperCase() + v.slice(1);
+    };
+    var group = function (name, key, avail, held) {
+      if (avail.length < 2) {
+        return avail.length === 1 && avail[0] !== 'all'
+          ? '<span class="year-one">' + esc(name) + ': ' + esc(lab(avail[0]))
+            + ' \u00b7 the only one published</span>'
+          : '';
+      }
+      return '<span class="facet-lab">' + esc(name) + '</span>'
+        + avail.map(function (v) {
+            return '<button type="button" data-facet="' + esc(key) + '"'
+              + ' data-val="' + esc(v) + '" aria-pressed="' + (v === held)
+              + '">' + esc(lab(v)) + '</button>';
+          }).join('');
+    };
+    var fh = group('Residence', 'locality', locs, state.locality)
+           + group('Sex', 'sex', sexes, state.sex);
+    $('facetCtl').innerHTML = fh;
+    $('facetCtl').hidden = !fh;
+    $('facetCtl').querySelectorAll('button[data-facet]').forEach(function (b) {
+      b.onclick = function () {
+        state[b.dataset.facet] = b.dataset.val;
+        choose(state.row);
+      };
+    });
+
+    $('legendNote').textContent = '';
 
     /* What this percentage is a percentage OF, where the source's own
        denominator needs saying. The Mouza Census divides by one of three

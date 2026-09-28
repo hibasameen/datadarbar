@@ -214,3 +214,10 @@
    changes what the number means, not just how much of it there is. */
 .legend-def{margin-top:4px;padding-top:4px;border-top:1px solid var(--line);
   color:var(--sienna,#8a5a3b)}
+
+/* Residence and sex, beside the year. Each group is named because two runs of
+   unlabelled buttons read as one control with too many options in it. */
+.facet-ctl{margin-top:4px}
+.facet-lab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.04em;margin-right:4px;align-self:center}
+.facet-ctl .year-one{margin-left:0}
