@@ -302,7 +302,13 @@ def stamp_assets(text, ver):
     before = text
     text = re.sub(r'(href=")((?:\.\./)*assets/css/[^"]+?)(")', sub, text)
     text = re.sub(r'(src=")((?:\.\./)*assets/js/[^"]+?)(")', sub, text)
-    text = re.sub(r'(src=")((?:\.\./)*data/[^"]+?\.js)(")', sub, text)
+    # The ?v= has to be inside the match or the stamp freezes. Anchored on
+    # \.js alone this matched data/money_data.js once, and never again -
+    # data/money_data.js?v=abc123 does not end in .js - so every payload kept
+    # whatever stamp it was first given while the assets beside it moved on.
+    # The assets pattern above has no such anchor, which is why it was right.
+    text = re.sub(r'(src=")((?:\.\./)*data/[^"?]+?\.js(?:\?v=[0-9a-f]+)?)(")',
+                  sub, text)
     return text, text != before
 
 

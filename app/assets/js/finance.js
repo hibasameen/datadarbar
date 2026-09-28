@@ -1,6 +1,14 @@
 /* Data Darbar — GDP & Budget: interactive structure-of-the-economy dashboard.
    D3 v7 + window.ECON.{structure,industry,budget,indicators,io}. Linked views:
-   selYear (year cursor) and selSector (macro focus) drive the top panels. */
+   selYear (year cursor) and selSector (macro focus) drive the top panels.
+
+   An ES module since Economy became one page. Nothing below was renamed to
+   make that work: module scope keeps this file's TOPICS, start, writeHash,
+   tip and the twenty-five other names it shares with money.js and trade.js
+   to itself. What changed is that it no longer assumes the page is its own -
+   it registers its topics with econ-shell.js, and when the hash names a
+   topic belonging to another module it hides its own cards and panels
+   instead of drawing over them. */
 const fmtBn=v=>v==null?'—':(Math.abs(v)>=1000?(v/1000).toFixed(v>=10000?0:1)+' tn':Math.round(v).toLocaleString()+' bn');
 const fmtRs=v=>v==null?'—':'Rs '+fmtBn(v);
 const fmtPct=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(1)+'%';
@@ -64,6 +72,26 @@ const TOPIC_GROUPS=[
 const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
 let topic='structure',applyingHash=false,_lastNavHash='';
 
+/* The topics this module answers for. "all" is not among them: Everything
+   meant everything on this page, and across the merged section it would be
+   27 charts and three modules each believing they owned the view. */
+const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+/* Sidebar panels this module owns. Another module's applyTopic cannot know
+   to hide them, so they are hidden here when the topic is not ours. */
+const MY_PANELS=['sideYear','sideSector','foot-finance'];
+function standDown(){
+ /* Forget the last hash we wrote. _lastNavHash exists so this module ignores
+    a hashchange it caused itself, and on a page of its own that was safe -
+    leaving a topic and coming back to the very same one could not happen.
+    It can now: go to Trading partners and back to Structural change and the
+    hash matches what we last wrote, so the guard returned early and the
+    cards we hid on the way out never came back. */
+ _lastNavHash='';
+ MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+ d3.selectAll('[data-topic]').filter(function(){return MINE.indexOf(this.dataset.topic)>=0;})
+   .classed('topic-hidden',true);
+}
+
 let E,ST,IND;
 let selYear,selSector='all',arcYears=[],arcData=[],shareYears=[],lsmSeries={},lsmColors={},lsmSel;
 function start(){
@@ -75,20 +103,13 @@ function start(){
  initLsm();drawQim();drawWeights();initCmi();
  initIO();initBudget();initMacro();initQtr();initCsv();
  initTopics();
- let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(topic==='all')drawAll();else if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
+ let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
+  if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
+  if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
 }
 function initTopics(){
- // grouped topic list (replaces the old dropdown + duplicate list)
- const list=d3.select('#topicList');list.selectAll('*').remove();
- TOPIC_GROUPS.forEach((g,gi)=>{
-  if(g.label)list.append('div').attr('class','topic-group'+(gi===0?' first':'')).text(g.label);
-  g.keys.forEach(k=>{
-   const t=TOPICS.find(x=>x.k===k);if(!t)return;
-   list.append('button').attr('class','topic-item'+(k==='all'?' all':'')).attr('data-k',k)
-    .html(`<span class="t-dot"></span>${t.label}`)
-    .on('click',()=>applyTopic(k,true));
-  });
- });
+ // The topic list is the shell's: one list, fifteen topics, three modules.
+ window.DDEcon.register({topics:TOPICS,groups:TOPIC_GROUPS});
  d3.select('#sectorSelect').on('change',function(){setSector(this.value);});
  window.addEventListener('hashchange',()=>{if(!applyingHash)applyStateFromHash();});
  window.addEventListener('popstate',()=>{if(!applyingHash)applyStateFromHash();});
@@ -109,13 +130,15 @@ function writeHash(push){
 }
 function readHash(){
  let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}
- if(!h)return {t:'structure'};
+ if(!h)return {t:window.DDEcon.defaultTopic};
  if(!h.includes('='))return {t:h};
  const o={};new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t='structure';return o;
 }
 function applyStateFromHash(){
  if('#'+new URLSearchParams(readHashRaw()).toString()===_lastNavHash&&_lastNavHash)return;
- const o=readHash();const k=TOPICS.some(t=>t.k===o.t)?o.t:'structure';
+ const o=readHash();const k=window.DDEcon.current();
+ if(MINE.indexOf(k)<0){standDown();return;}
+ (document.getElementById('foot-finance')||{style:{}}).style.display='';
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
@@ -1430,7 +1453,11 @@ const CSV={
 };
 function round2(v){return v==null?null:Math.round(v*100)/100;}
 function initCsv(){
- d3.selectAll('.csvbtn').on('click',function(e){
+ /* Filtered, not guarded. d3's .on() REPLACES the handler, so binding every
+    .csvbtn and bailing inside on an unknown key would leave the other two
+    modules' buttons bound to a handler that does nothing. */
+ d3.selectAll('.csvbtn').filter(function(){return this.dataset.csv in CSV;})
+  .on('click',function(e){
   e.stopPropagation();
   const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
   try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}

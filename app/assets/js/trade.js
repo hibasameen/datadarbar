@@ -33,6 +33,19 @@ const TOPIC_GROUPS=[
  {label:'With whom',keys:['partners']}];
 const TOPIC_DRAWS={basket:()=>{drawDrill();drawProducts();},movers:()=>drawMovers(),overtime:()=>{drawTotals();drawRecon();},partners:()=>{drawPartners();drawCountry();}};
 const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
+
+/* An ES module since Economy became one page. Module scope keeps this file's
+   TOPICS, start, writeHash, fmtBn and the rest to itself - fmtBn here prints
+   sub-billion values to one decimal where finance.js rounds them, which is a
+   difference worth keeping rather than reconciling. MINE is what this module
+   answers for; on another module's topic it hides its own cards and panels. */
+const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+const MY_PANELS=['sideCountry','sideLevel','foot-trade'];
+function standDown(){
+ MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+ d3.selectAll('[data-topic]').filter(function(){return MINE.indexOf(this.dataset.topic)>=0;})
+   .classed('topic-hidden',true);
+}
 let topic='basket',tCountry='all',tLevel='section',mDir='export',mMeasure='abs',mMode='span',mWinIdx=0,applyingHash=false;
 const LEVEL_LABEL={section:'HS section',chapter:'HS chapter',product:'8-digit product'};
 
@@ -41,17 +54,14 @@ function start(){
  E=window.ECON;D.ser={};E.indicators.series.forEach(s=>D.ser[s.key]=s);
  TX=E.trade_extra||{sel:[],country:{},movers:{},meta:{}};
  initDrill();initPartners();initProducts();drawTotals();initMovers();initCountry();initRecon();initCsv();initTopics();
- let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(topic==='all')drawAll();else if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
+ let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
+  if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
+  if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
 }
 function lastPt(k){const s=D.ser[k];return s&&s.points.length?s.points[s.points.length-1]:null;}
 function initTopics(){
- const list=d3.select('#topicList');list.selectAll('*').remove();
- TOPIC_GROUPS.forEach((g,gi)=>{
-  if(g.label)list.append('div').attr('class','topic-group'+(gi===0?' first':'')).text(g.label);
-  g.keys.forEach(k=>{const t=TOPICS.find(x=>x.k===k);if(!t)return;
-   list.append('button').attr('class','topic-item'+(k==='all'?' all':'')).attr('data-k',k)
-    .html(`<span class="t-dot"></span>${t.label}`).on('click',()=>applyTopic(k,true));});
- });
+ // The topic list is the shell's: one list, fifteen topics, three modules.
+ window.DDEcon.register({topics:TOPICS,groups:TOPIC_GROUPS});
  window.addEventListener('hashchange',()=>{if(!applyingHash)applyStateFromHash();});
  window.addEventListener('popstate',()=>{if(!applyingHash)applyStateFromHash();});
  initShare();applyStateFromHash();
@@ -66,9 +76,12 @@ function writeHash(push){
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
 }
 function readHash(){let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}
- if(!h)return {t:'basket'};if(!h.includes('='))return {t:h};const o={};new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t='basket';return o;}
+ if(!h)return {t:window.DDEcon.defaultTopic};if(!h.includes('='))return {t:h};const o={};
+ new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t=window.DDEcon.defaultTopic;return o;}
 function applyStateFromHash(){
- const o=readHash();const k=TOPICS.some(t=>t.k===o.t)?o.t:'basket';
+ const o=readHash();const k=window.DDEcon.current();
+ if(MINE.indexOf(k)<0){standDown();return;}
+ (document.getElementById('foot-trade')||{style:{}}).style.display='';
  applyingHash=true;
  applyTopic(k,false);
  if(o.lvl){tLevel=o.lvl;d3.select('#tLevel').property('value',o.lvl);}
@@ -381,13 +394,15 @@ const CSV={
    return [`Pakistan_trade_with_${tCountry}.csv`,out];}
 };
 function initCsv(){
- d3.selectAll('.csvbtn').on('click',function(e){
+ /* Filtered, not guarded: d3's .on() replaces the handler, so binding every
+    .csvbtn would leave the other two modules' buttons doing nothing. */
+ d3.selectAll('.csvbtn').filter(function(){return this.dataset.csv in CSV;})
+  .on('click',function(e){
   e.stopPropagation();const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
   try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}
  });
 }
 
-if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
 
 /* ================= trade coverage ================= */
 /* window.DD_RECON, from trade_reconciliation: what share of each published
@@ -466,3 +481,13 @@ function drawRecon(){
  d3.select('#reconLegend').html(RC_SERIES.map(s=>
   `<div class="li"><span class="sw" style="background:${s.c}"></span>${s.lbl}</div>`).join(''));
 }
+
+/* Last line on purpose. As a module this file is deferred, so document is
+   already parsed when it runs and start() fires here and now rather than on
+   DOMContentLoaded. Left where it was - two thirds of the way down, above
+   the trade-coverage block - start() called initRecon() before `let rcBasis`
+   below it had been initialised, and the whole module died in the temporal
+   dead zone. Classic scripts hid this: mid-parse readyState is "loading", so
+   the old build always waited for DOMContentLoaded and the file was fully
+   evaluated by then. */
+if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);

@@ -139,7 +139,13 @@
     var search, list;
     if (side) {
       side.classList.add('xside');
-      side.innerHTML = '';
+      /* Inserted at the top, not in place of everything. This used to be
+         side.innerHTML = '' - which took the rail's own panel and every
+         panel under it, so the year slider, the sector focus, the log/linear
+         toggle, the fiscal-year select, the country and the detail level
+         were all removed from the page the moment the rail mounted. The
+         code that drives them kept running against elements that no longer
+         existed, which d3 does silently, so nothing complained. */
       var lab = document.createElement('label');
       lab.className = 'xsearch';
       lab.innerHTML =
@@ -148,12 +154,15 @@
         + '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>'
         + '<input id="xFind" type="search" placeholder="Find a series\u2026" '
         + 'aria-label="Find a series" autocomplete="off"/>';
-      side.appendChild(lab);
-      side.appendChild(host);
       list = document.createElement('div');
       list.className = 'xlist';
       list.id = 'chartList';
-      side.appendChild(list);
+      var panel = document.createElement('div');
+      panel.className = 'eco-panel xpanel';
+      panel.appendChild(lab);
+      panel.appendChild(host);
+      panel.appendChild(list);
+      side.insertBefore(panel, side.firstChild);
       search = lab.querySelector('#xFind');
     } else {
       var anchor = document.querySelector('.card[data-topic]');
@@ -181,8 +190,15 @@
        topic showed only the charts of whichever table sorted first: External
        balance listed the two SBP charts and hid both remittances and
        emigration, which are the two anyone comes to that topic for. */
-    var state = { ds: window.DDExplorer.ALL, topic: index[0].topic,
-                  ind: index[0].ind };
+    /* Booted from the hash, not from index[0]. The rail has always had a
+       hashchange listener, but a page opened AT a topic - a shared link, or
+       the money.html and trade.html redirects - fires no such event, so the
+       dropdown opened on whichever topic sorted first while the cards below
+       it were the ones the link asked for. */
+    var want = new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
+    var at = index.filter(function (r) { return r.topic === want; })[0]
+          || index[0];
+    var state = { ds: window.DDExplorer.ALL, topic: at.topic, ind: at.ind };
     var rail = window.DDExplorer.mount({
       el: host, index: index, state: state,
       levels: ['topic', 'ds', 'ind'],

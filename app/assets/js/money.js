@@ -111,6 +111,26 @@ const TOPIC_GROUPS = [
  {label:'The outside world', keys:['external']}];
 const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
 
+/* An ES module since Economy became one page. Nothing here was renamed:
+   module scope keeps this file's TOPICS, start, writeHash, toCSV and the
+   rest to itself, including the ones that genuinely differ from finance.js
+   and trade.js - toCSV takes rows of arrays here and rows of objects there.
+   MINE is what this module answers for; when the hash names another
+   module's topic it hides its own cards, panels and KPI strip. */
+const MINE = TOPICS.map(t => t.k).filter(k => k !== 'all');
+const MY_PANELS = ['sideScale', 'sideFy', 'kpis', 'pageFoot'];
+function standDown() {
+  /* Forget the last hash we wrote - see finance.js. Leaving these topics and
+     returning to the same one matched _lastNavHash, so this module returned
+     early and its cards stayed hidden. */
+  _lastNavHash = '';
+  MY_PANELS.forEach(id => { const el = document.getElementById(id);
+    if (el) el.style.display = 'none'; });
+  d3.selectAll('[data-topic]')
+    .filter(function () { return MINE.indexOf(this.dataset.topic) >= 0; })
+    .classed('topic-hidden', true);
+}
+
 /* ---------------- chart scaffolding ---------------- */
 function frame(sel, hFrac, m, fallbackH) {
   const el = d3.select(sel); el.selectAll('*').remove();
@@ -755,7 +775,21 @@ const CSV = {
                 : ['balance-of-payments-monthly', pairTable(['gx','gm','sx','sm','pic','pid','sic','remit_bop','sid','ca'])],
   remit:  () => ['remittances-by-source', [['source', 'fiscal_year', 'mn_usd'], ...D.remit]],
   money:  () => ['monetary-aggregates', pairTable(CH.money.avail)],
-  npl:    () => ['non-performing-loans', pairTable(['npl_ratio', 'npl_level'])]
+  npl:    () => ['non-performing-loans', pairTable(['npl_ratio', 'npl_level'])],
+  /* The emigration card shipped with a CSV button and no entry here, so the
+     button did nothing. It was not visible as a fault: the old initCsv bound
+     every .csvbtn and returned quietly on a key it did not know, and only
+     filtering the binding per module made the gap show up as an unbound
+     button. Exports whichever of the three views is on screen, as bop does. */
+  emig:   () => {
+    const M = window.DD_MIGRATION || {};
+    if (emigMode === 'skill') return ['emigrants-by-skill',
+      [['year', 'mode', 'skill_level', 'emigrants'], ...(M.skill || {}).rows || []]];
+    if (emigMode === 'occ') return ['emigrants-by-occupation',
+      [['occupation', 'emigrants'], ...(M.occupation || {}).rows || []]];
+    return ['emigrants-by-destination-cumulative',
+      [['country', 'continent', 'emigrants'], ...(M.total || {}).rows || []]];
+  }
 };
 const toCSV = rows => rows.map(r => r.map(v => { const s = v == null ? '' : String(v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n');
@@ -766,7 +800,10 @@ function downloadCSV(name, rows) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function initCsv() {
-  d3.selectAll('.csvbtn').on('click', function () {
+  /* Filtered, not guarded: d3's .on() replaces the handler, so binding every
+     .csvbtn would leave the other two modules' buttons doing nothing. */
+  d3.selectAll('.csvbtn').filter(function () { return this.dataset.csv in CSV; })
+    .on('click', function () {
     const f = CSV[this.dataset.csv]; if (!f) return; const [name, rows] = f(); downloadCSV(name, rows);
   });
 }
@@ -774,6 +811,7 @@ function initCsv() {
 /* ---------------- share ---------------- */
 function initShare() {
   document.querySelectorAll('.card[id]').forEach(card => {
+    if (card.querySelector('.sharebtn')) return;   // another module got there
     const b = document.createElement('button');
     b.className = 'sharebtn'; b.textContent = 'Share';
     b.style.right = card.querySelector('.csvbtn') ? '76px' : '14px';
@@ -848,14 +886,16 @@ function readHashRaw() { let h = '';
   try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch (e) { h = location.hash.replace(/^#/, ''); }
   return h.includes('=') ? h : (h ? 't=' + h : ''); }
 function readHash() {
-  const raw = readHashRaw(); if (!raw) return { t: 'rupee' };
+  const raw = readHashRaw(); if (!raw) return { t: window.DDEcon.defaultTopic };
   const o = {}; new URLSearchParams(raw).forEach((v, k) => o[k] = v);
-  if (!o.t) o.t = 'rupee'; return o;
+  if (!o.t) o.t = window.DDEcon.defaultTopic; return o;
 }
 function applyStateFromHash() {
   if (_lastNavHash && '#' + new URLSearchParams(readHashRaw()).toString() === _lastNavHash) return;
   const o = readHash();
-  const k = TOPICS.some(t => t.k === o.t) ? o.t : 'rupee';
+  const k = window.DDEcon.current();
+  if (MINE.indexOf(k) < 0) { standDown(); return; }
+  (document.getElementById('pageFoot')||{style:{}}).style.display='';
   applyingHash = true;
   Object.keys(CH).forEach(c => {
     const v = o['c_' + c];
@@ -877,15 +917,8 @@ function applyStateFromHash() {
     if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140); }
 }
 function initTopics() {
-  const list = d3.select('#topicList'); list.selectAll('*').remove();
-  TOPIC_GROUPS.forEach((g, gi) => {
-    if (g.label) list.append('div').attr('class', 'topic-group' + (gi === 0 ? ' first' : '')).text(g.label);
-    g.keys.forEach(k => {
-      const t = TOPICS.find(x => x.k === k); if (!t) return;
-      list.append('button').attr('class', 'topic-item' + (k === 'all' ? ' all' : '')).attr('data-k', k)
-        .html(`<span class="t-dot"></span>${t.label}`).on('click', () => applyTopic(k, true));
-    });
-  });
+  // The topic list is the shell's: one list, fifteen topics, three modules.
+  window.DDEcon.register({ topics: TOPICS, groups: TOPIC_GROUPS });
   d3.selectAll('#scaleSeg button').on('click', function () { setScale(this.dataset.sc); });
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
   d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
@@ -930,7 +963,8 @@ function start() {
   initTopics();          // last: it triggers the first render via applyStateFromHash()
   let rt;
   window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
-    if (topic === 'all') drawAll(); else if (TOPIC_DRAWS[topic]) TOPIC_DRAWS[topic]();
+    if (MINE.indexOf(window.DDEcon.current()) < 0) return;   // another module's view
+    if (TOPIC_DRAWS[topic]) TOPIC_DRAWS[topic]();
     drawKpis();
   }, 150); });
 }
