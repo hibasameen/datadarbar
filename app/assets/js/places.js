@@ -183,15 +183,24 @@
        table stays visible: it is the provenance, and the family is only a
        shelf we put it on. */
     var fam = col('h_family', i);
+    var red = col('redundant', i) === 1;
     return '<button class="ind" type="button" data-row="' + i + '"'
          + (state.row === i ? ' aria-current="true"' : '') + '>'
          + esc(col('label', i))
+         + (red
+            ? ' <span class="ind-flag ind-total" title="This is a total or a'
+              + ' column heading from the source table rather than a measure'
+              + ' of its own - usually the denominator its siblings are'
+              + ' shares of. Kept because a denominator should not disappear'
+              + ' for looking like a total.">source total</span>'
+            : '')
          + (col('h_review', i) === 1
             ? ' <span class="ind-flag" title="The source label for this series'
               + ' is ambiguous and has not been resolved. It is kept exactly as'
               + ' published rather than guessed at.">definition needs review</span>'
             : '')
-         + '<span class="meta">' + (fam ? esc(fam) + ' · ' : '')
+         + '<span class="meta">'
+         + (fam ? esc(fam) + ' · ' : red ? 'Source total · ' : '')
          + esc(col('group_label', i)) + ' · '
          + bits.join(' · ') + '</span></button>';
   }

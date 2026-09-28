@@ -100,7 +100,8 @@ def main():
                coalesce(years, []) AS years,
                coalesce(localities, ['all']) AS localities,
                coalesce(sexes, ['all']) AS sexes,
-               shapes, units, min_value, max_value
+               shapes, units, min_value, max_value,
+               CASE WHEN redundant THEN 1 ELSE 0 END AS redundant
         FROM '{(W / 'place_indicator_index.parquet').as_posix()}' ix
         LEFT JOIN (VALUES {order_vals}) AS o(t, ord) ON o.t = ix.topic
         -- the picker lists topics in the order the design gives, not
@@ -108,7 +109,7 @@ def main():
         ORDER BY o.ord, group_key, label, level""").fetchall()
     names = ('level topic topic_label group_key group_label dataset indicator label '
              'measure metric dp source families years localities sexes shapes units '
-             'min_value max_value').split()
+             'min_value max_value redundant').split()
     # the list columns intern as a whole: a locality set repeats across thousands
     # of indicators, so the distinct combinations are a handful
     rows = [tuple('\u001f'.join(x) if isinstance(x, list) else x for x in r) for r in ix]
@@ -150,14 +151,20 @@ def main():
     hmap, hv = hier['map'], hier['vocab']
     at = {n: names.index(n) for n in HK}
     keys = ['\u001f'.join(str(r[at[n]]) for n in HK) for r in rows]
+    # The 463 source totals and column headings are in the catalogue but not
+    # in the subject tree: the hierarchy proposal describes the 5,201 series a
+    # reader browses, and a table's own total is not one of them. They are
+    # reachable by search and carry no topic.
+    red = names.index('redundant')
+    browsable = [i for i, r in enumerate(rows) if not r[red]]
 
     # Both directions, loudly. A row with no destination would otherwise fall
     # into whichever bucket sorted first and be findable only by knowing its
     # name; a destination with no row means the hierarchy is describing an
     # index that no longer exists. Either way the fix is to regenerate the
     # crosswalk, not to paper over it here.
-    missing = [k for k in keys if k not in hmap]
-    stale = set(hmap) - set(keys)
+    missing = [keys[i] for i in browsable if keys[i] not in hmap]
+    stale = set(hmap) - {keys[i] for i in browsable}
     assert not missing, (
         f'{len(missing)} index rows have no place in the hierarchy, e.g. '
         f'{missing[0]!r}')
@@ -178,11 +185,23 @@ def main():
     # h_note: what this percentage is a percentage OF, where the source's own
     #         denominator needs saying. Empty for everything else.
     names += ['h_review', 'h_sum', 'h_norm', 'h_note']
-    rows = [r + tuple(hv[k][hmap[keys[i]][j]] for j, k in enumerate(
-                ('topic', 'sub', 'family', 'metric', 'controls')))
-              + (1 if hmap[keys[i]][5] in unresolved else 0,
-                 hmap[keys[i]][6], hmap[keys[i]][7],
-                 hv['note'][hmap[keys[i]][8]])
+    # A source total sits outside the subject tree and so has no metric form,
+    # but it is still almost always a count - it is the total OF counts - and
+    # leaving h_sum at 0 made the strip announce "a rate cannot be totalled"
+    # over a headcount. For census rows dp carries the panel's own is_rate
+    # flag, which is the signal the tree itself used before the crosswalk
+    # existed, so it is what these fall back to. They stay out of the per-head
+    # conversions, which need a numerator universe nobody has assigned them.
+    dp_at, src_at = names.index('dp'), names.index('source')
+    def blank_for(r):
+        is_rate = r[src_at] == 'census' and r[dp_at] is not None and r[dp_at] > 0
+        return ('', '', '', '', '', 0, 0 if is_rate else 1, 0, '')
+    rows = [r + (tuple(hv[k][hmap[keys[i]][j]] for j, k in enumerate(
+                     ('topic', 'sub', 'family', 'metric', 'controls')))
+                 + (1 if hmap[keys[i]][5] in unresolved else 0,
+                    hmap[keys[i]][6], hmap[keys[i]][7],
+                    hv['note'][hmap[keys[i]][8]])
+                 if keys[i] in hmap else blank_for(r))
             for i, r in enumerate(rows)]
 
     P = columnar(rows, names,

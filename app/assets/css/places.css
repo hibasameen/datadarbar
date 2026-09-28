@@ -221,3 +221,7 @@
 .facet-lab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
   letter-spacing:.04em;margin-right:4px;align-self:center}
 .facet-ctl .year-one{margin-left:0}
+
+/* A source total is a different kind of caveat from an unresolved label: the
+   row is understood, it is just not a measure anyone browses to. */
+.ind-total{color:var(--slate,#5a6b7a);background:var(--green-100)}

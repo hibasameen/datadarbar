@@ -99,6 +99,12 @@
     var index = [], seen = {};
     for (var i = 0; i < N; i++) {
       if (col('level', i) !== level) continue;
+      /* A table's own total is in the catalogue but not in the subject tree.
+         "Population by Mother Tongue - Total" is the population again under
+         its table's name, and 463 rows like it would put a duplicate at the
+         top of every family. They are reachable by search, where someone
+         looking for a denominator will look. */
+      if (col('redundant', i) === 1) continue;
       var topic = col('topic', i);
       var ds = col('dataset', i) || 'Unattributed';
       var label = col('label', i) || col('indicator', i);

@@ -212,6 +212,10 @@ def main():
         FROM place_indicator_index i LEFT JOIN relabel r ON r.rid = i.rowid""")
     con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_indicator')
     con.execute('ALTER TABLE place_indicator_index DROP COLUMN raw_col')
+    # Redundant for browsing, not absent from the catalogue. Set by the two
+    # rules below; everything else stays false.
+    con.execute('ALTER TABLE place_indicator_index '
+                'ADD COLUMN redundant BOOLEAN DEFAULT FALSE')
     print(f'  {len(rows):,} census labels rewritten for reading; '
           f'PBS\u2019s own kept in label_source')
 
@@ -241,11 +245,16 @@ def main():
     gone = con.sql('SELECT count(*) FROM place_indicator_index i JOIN _drop d '
                    'USING (level, group_key, measure)').fetchone()[0]
     names = con.sql('SELECT DISTINCT measure FROM _drop ORDER BY 1').fetchall()
-    con.execute("""DELETE FROM place_indicator_index i
+    # Marked, not deleted. These are redundant for BROWSING - the total of a
+    # partition is the population again - but several are the denominator of
+    # their own table, and a denominator should not disappear because its
+    # label resembles a total. They stay in the catalogue, out of the subject
+    # tree, and findable by search.
+    con.execute("""UPDATE place_indicator_index i SET redundant = TRUE
         WHERE EXISTS (SELECT 1 FROM _drop d WHERE d.level = i.level
                       AND d.group_key = i.group_key AND d.measure = i.measure)""")
     con.execute('DROP TABLE _drop')
-    print(f'  {gone} rows dropped as the total of their own table '
+    print(f'  {gone} rows marked as the total of their own table '
           f'({len(names)} measures):')
     for (nm,) in names:
         print(f'      {nm}')
@@ -262,12 +271,12 @@ def main():
           AND EXISTS (SELECT 1 FROM place_indicator_index j
                       WHERE j.group_key = i.group_key AND j.level = i.level
                         AND j.metric = i.measure)""").fetchone()[0]
-    con.execute("""DELETE FROM place_indicator_index i
+    con.execute("""UPDATE place_indicator_index i SET redundant = TRUE
         WHERE i.source = 'census' AND i.metric = ''
           AND EXISTS (SELECT 1 FROM place_indicator_index j
                       WHERE j.group_key = i.group_key AND j.level = i.level
                         AND j.metric = i.measure)""")
-    print(f'  {cols} column totals dropped (a heading standing in for a measure)')
+    print(f'  {cols} column totals marked (a heading standing in for a measure)')
 
     # ── the same cell in both censuses ──────────────────────────────────
     # A census cell keyed on PBS's raw strings cannot merge across censuses,
@@ -287,7 +296,7 @@ def main():
           SELECT level, topic, dataset, measure, metric,
                  count(DISTINCT years[1]) AS n_years
           FROM place_indicator_index
-          WHERE source = 'census' AND len(years) = 1
+          WHERE source = 'census' AND len(years) = 1 AND NOT redundant
           GROUP BY 1, 2, 3, 4, 5 HAVING count(DISTINCT years[1]) > 1)
         SELECT i.level, i.topic, i.topic_label,
                any_value(i.group_key) AS group_key,
@@ -304,11 +313,17 @@ def main():
                any_value(i.sexes) AS sexes,
                max(i.shapes) AS shapes, max(i.units) AS units,
                min(i.min_value) AS min_value, max(i.max_value) AS max_value,
-               any_value(i.label_source) AS label_source
+               any_value(i.label_source) AS label_source, i.redundant
         FROM place_indicator_index i
         LEFT JOIN merged m USING (level, topic, dataset, measure, metric)
+        -- redundant is grouped on, and excluded from `merged` above, so a
+        -- row kept only for the catalogue can neither merge with another nor
+        -- pull a real measure into a compound key. Leaving it out folded
+        -- demographics/pop_total and urbanRural/total_all into a single
+        -- entry keyed "2017=pop_total\x1f2017=total_all", which is two
+        -- different measures wearing one name.
         GROUP BY i.level, i.topic, i.topic_label, i.dataset, i.measure,
-                 i.metric, i.source, m.measure,
+                 i.metric, i.source, i.redundant, m.measure,
                  CASE WHEN m.measure IS NULL THEN i.indicator ELSE '' END""")
     n_both = con.sql("""SELECT count(*) FROM place_indicator_index
                         WHERE len(years) > 1 AND source = 'census'""").fetchone()[0]
