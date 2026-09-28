@@ -263,6 +263,7 @@
     $('paneTitle').textContent = t.title || current.topicLabel;
     $('paneDek').textContent = t.dek || '';
     $('cardNote').textContent = t.note || '';
+    renderSrc(current.chart);
     (CHART[current.chart] || renderBudget)();
   }
 
@@ -1310,6 +1311,26 @@
     $('cardNote').textContent = '';
   }
 
+  /* The source panel is generated from the provenance record, the same one
+     the economy page uses, so what this chart is made of is written down once
+     and the CSV carries the same words. */
+  function renderSrc(chart) {
+    var card = $('card');
+    if (!card) return;
+    var el = card.querySelector('.src');
+    if (!el) { el = document.createElement('div'); el.className = 'src';
+               card.appendChild(el); }
+    var r = window.DDProv && window.DDProv.of('state:' + chart);
+    el.innerHTML = r ? window.DDProv.panel(r) : '';
+    var btn = $('csvBtn'), has = !!(CSV_BLOCK[chart] && D[CSV_BLOCK[chart]]
+                                    && D[CSV_BLOCK[chart]].cols);
+    if (btn) {
+      btn.textContent = has ? 'CSV' : 'Catalogue';
+      btn.title = has ? 'Download this chart\u2019s data as CSV'
+        : 'This panel describes an extraction and has no table of its own';
+    }
+  }
+
   var CSV_NAME = {
     tax: 'fbr_tax_collection', courts: 'ljcp_case_flows',
     judges: 'ljcp_judicial_strength', crime: 'police_reported_offences',
@@ -1337,19 +1358,57 @@
     courtsFlow: 'courts', courtsCategory: 'courts',
     taxStack: 'tax', taxLines: 'tax', taxShare: 'tax',
     plantsFuel: 'plants', plantsLargest: 'plants', plantsReports: 'plants',
+    /* The three distribution-company charts were in no block, so CSV fell
+       through to a catalogue redirect: the button navigated away instead of
+       downloading the table the reader was looking at. budgetPanel really has
+       no table - D.budget is four counts describing an extraction - and that
+       is said out loud below rather than answered with a redirect. */
+    discoLosses: 'discos', discoLatest: 'discos', discoUnits: 'discos',
+  };
+
+  /* A CSV that is the whole block when the chart drew a slice of it is not
+     this chart's data. Where the chart narrows, the export narrows with it,
+     and what it narrowed to is written into the file's header. */
+  var VIEW_FILTER = {
+    discoLatest: function (rows, cols) {
+      var i = cols.indexOf('fy'), last = rows.reduce(function (m, r) {
+        return r[i] > m ? r[i] : m; }, '');
+      return { rows: rows.filter(function (r) { return r[i] === last; }),
+               view: { 'fiscal year': last } };
+    },
+    impactsMetric: function (rows, cols) {
+      var i = cols.indexOf('metric'), m = state.ind;
+      return { rows: rows.filter(function (r) { return r[i] === m; }),
+               view: { metric: m } };
+    },
+    plantsLargest: function (rows, cols) {
+      var i = cols.indexOf('mw');
+      return { rows: rows.slice().sort(function (a, b) { return b[i] - a[i]; })
+                 .slice(0, 18), view: { selection: 'the 18 largest by capacity' } };
+    },
   };
 
   function downloadCsv() {
     var name = CSV_BLOCK[current.chart];
     var block = name && D[name];
-    if (!block) {
-      window.location.href = '/datasets/'
-        + current.ds.replace(/_/g, '-') + '/';
+    /* No table behind this view, and the button says "Catalogue" because of
+       it. Going there is then an answer, not the silent redirect it was when
+       the button still claimed to be a CSV. */
+    if (!block || !block.cols) {
+      window.location.href = 'datasets/' + current.ds.replace(/_/g, '-') + '/';
       return;
     }
-    if (!block || !block.cols) return;
-    var rows = [block.cols].concat(block.rows);
-    var csv = rows.map(function (r) { return r.map(csvCell).join(','); }).join('\n');
+    var rows = block.rows, view = {};
+    var f = VIEW_FILTER[current.chart];
+    if (f) { var r = f(block.rows, block.cols); rows = r.rows; view = r.view; }
+    var head = [];
+    if (window.DDProv) {
+      head = window.DDProv.header('state:' + current.chart, view)
+        .map(function (r) { return r.map(csvCell).join(','); });
+      if (head.length) head.push('#');
+    }
+    var csv = head.concat([block.cols].concat(rows).map(function (r) {
+      return r.map(csvCell).join(','); })).join('\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     a.download = 'data_darbar_' + current.ds + '.csv';

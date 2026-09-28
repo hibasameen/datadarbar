@@ -246,6 +246,118 @@ CHARTS = {
     calc='change between those two years at the chosen level of detail'),
 }
 
+# ─────────────────────────────────────────────────────────────────────────
+# The State page. Its own index already carries a dataset per chart, so the
+# table is read from there rather than retyped here and cannot drift from
+# what the page draws; only the per-chart part is written below.
+# ─────────────────────────────────────────────────────────────────────────
+STATE = {
+ 'taxStack': dict(publication='Revenue collection by head',
+    selection='all heads, every fiscal year',
+    calc='stacked to the annual total',
+    note='Nominal rupees, not inflation-adjusted. 42 of 264 source cells are '
+         'absent, mostly historical wealth tax and CVT; absent is not zero.'),
+ 'taxLines': dict(publication='Revenue collection by head',
+    selection='each head as its own line', note='Nominal rupees.'),
+ 'taxShare': dict(publication='Revenue collection by head',
+    selection='each head as a share of the year\u2019s total',
+    calc='head divided by the total of the heads present that year'),
+ 'budgetPanel': dict(publication='Budget in Brief',
+    selection='what the eighteen budget documents contain, and where each '
+              'figure is drawn from',
+    note='Own-year Budget Estimates. This panel describes the extraction, not '
+         'a time series.'),
+ 'courtsPending': dict(publication='Judicial Statistics of Pakistan',
+    selection='cases pending at year end, by court'),
+ 'courtsClearance': dict(publication='Judicial Statistics of Pakistan',
+    selection='disposed against instituted, by court and year',
+    calc='clearance = disposed / instituted',
+    note='Clearance above 100 per cent means more cases were disposed of than '
+         'filed that year. It does not on its own show the backlog fell, '
+         'which depends on the opening stock.'),
+ 'courtsFlow': dict(publication='Judicial Statistics of Pakistan',
+    selection='cases instituted and disposed, by court and year'),
+ 'courtsCategory': dict(publication='Judicial Statistics of Pakistan',
+    selection='civil against criminal, by court and year'),
+ 'judgesComposition': dict(publication='Judicial strength returns',
+    selection='sanctioned posts by rank: working, vacant, and neither'),
+ 'judgesTrend': dict(publication='Judicial strength returns',
+    selection='working and vacant posts over time'),
+ 'crimeForce': dict(publication='Reported offences by police force',
+    selection='cases reported, by force and year',
+    note='The national figure reconciles to eight regional and force '
+         'components plus Pakistan, not to nine independent forces. These are '
+         'offences reported to police, not offences committed.'),
+ 'crimeOffence': dict(publication='Reported offences by police force',
+    selection='cases reported by offence, across Pakistan',
+    note='Reported offences, not offences committed.'),
+ 'crimeAjk': dict(publication='Reported offences by police force',
+    selection='Azad Jammu & Kashmir, by district',
+    note='AJK\u2019s own series and the PBS series differ for 2022 by 300 cases, '
+         'because one is a fiscal year and the other calendar. Both are kept.'),
+ 'crimeKp': dict(publication='Reported offences by police force',
+    selection='Khyber Pakhtunkhwa, seven serious offences'),
+ 'sindhGroup': dict(publication='Sindh Police crime returns',
+    selection='cases by category group and year'),
+ 'sindhCategory': dict(publication='Sindh Police crime returns',
+    selection='the twelve largest categories'),
+ 'sindhRange': dict(publication='Sindh Police crime returns',
+    selection='cases by police range'),
+ 'firsDaily': dict(publication='Sindh Police first information reports',
+    selection='first information reports by day',
+    note='Not every day is present. The series covers the days the returns '
+         'were published for, not a complete daily record.'),
+ 'plantsFuel': dict(publication='State of Industry Report',
+    selection='installed capacity by fuel, across every report extracted',
+    note='133 plants appear across all reports; 118 of them, totalling 42,010 '
+         'MW, were last observed in FY2024-25. The remaining fifteen last '
+         'appear in older reports, so this is the extracted reporting '
+         'universe rather than current national capacity.'),
+ 'plantsLargest': dict(publication='State of Industry Report',
+    selection='the eighteen largest plants by capacity',
+    note='Same reporting universe as the fuel chart.'),
+ 'plantsReports': dict(publication='State of Industry Report',
+    selection='plants by the fiscal years their reports cover',
+    calc='presence between a plant\u2019s first and last appearance is inferred, '
+         'not observed in every intervening report'),
+ 'discoLosses': dict(publication='State of Industry Report, distribution companies',
+    selection='transmission and distribution loss rate, by company and year',
+    calc='units lost divided by units bought',
+    note='This is a T&D energy loss rate: units that entered the system and '
+         'did not reach a meter. It is not a measure of bills unpaid, which '
+         'NEPRA reports separately as recovery. K-Electric\u2019s denominator is '
+         'its published purchases, which is not its whole available-energy '
+         'base, so its rate is not exactly comparable with the others.'),
+ 'discoLatest': dict(publication='State of Industry Report, distribution companies',
+    selection='the latest year, companies ranked by loss rate',
+    note='As the loss chart: a T&D energy loss rate, not unpaid bills.'),
+ 'discoUnits': dict(publication='State of Industry Report, distribution companies',
+    selection='units bought, units billed and units lost, by company and year',
+    note='Bought minus billed and units lost differ by up to 1 GWh, which is '
+         'rounding in the source.'),
+ 'eventsTimeline': dict(publication='Disaster alerts',
+    selection='alerts by hazard and year',
+    note='Alerts issued, not events that occurred. These records do not join '
+         'to the monsoon impact records: they are separate universes.'),
+ 'impactsMetric': dict(publication='Monsoon impact returns',
+    selection='the selected impact measure, by province',
+    note='These records do not join to the alert records.'),
+}
+
+STATE_PUBLISHER = {
+    'fbr_tax_collection': 'Federal Board of Revenue',
+    'budget_lines': 'Finance Division',
+    'ljcp_case_flows': 'Law and Justice Commission of Pakistan',
+    'ljcp_judicial_strength': 'Law and Justice Commission of Pakistan',
+    'police_crime_annual': 'Pakistan Bureau of Statistics, from provincial police returns',
+    'sindh_crime_annual': 'Sindh Police',
+    'sindh_fir_daily': 'Sindh Police',
+    'nepra_plants': 'NEPRA',
+    'nepra_disco_annual': 'NEPRA',
+    'climate_events': 'National Disaster Management Authority',
+    'climate_impacts': 'National Disaster Management Authority',
+}
+
 # The catalogue's `source` is one string mixing publisher and publication -
 # "PBS National Accounts annual tables (2015-16 base)" - so splitting it on a
 # comma yields a publication where a publisher belongs. Named here instead.
@@ -322,6 +434,40 @@ def main():
         }
         out[cid] = {k: v for k, v in r.items() if v not in (None, [], '')}
 
+    # ── the State page ────────────────────────────────────────────────
+    # Its index is the list of charts, so a chart added there without a
+    # record here fails the build the same way a finance card does.
+    sd = (app / 'data/state_data.js').read_text()
+    idx = json.loads(sd[sd.index('{'):sd.rindex(';')])['index']
+    ds_of = {}
+    for row in idx:
+        ds_of.setdefault(row['chart'], row['ds'])
+
+    miss = sorted(set(ds_of) - set(STATE))
+    assert not miss, f'charts in the State index with no provenance record: {miss}'
+    ghost = sorted(set(STATE) - set(ds_of))
+    assert not ghost, f'State records naming no chart in the index: {ghost}'
+
+    for chart, rec in STATE.items():
+        t = ds_of[chart]
+        assert t in tables, f'{chart} names {t}, which is not in the catalogue'
+        assert t in STATE_PUBLISHER, f'{chart} names {t}, which has no publisher'
+        meta = tables[t]
+        label = next(r['label'] for r in idx if r['chart'] == chart)
+        r = {
+            'card': 'state:' + chart, 'title': label,
+            'topic': next(r['topic'] for r in idx if r['chart'] == chart),
+            'publisher': STATE_PUBLISHER[t],
+            'publication': rec['publication'],
+            'table': t, 'catalogue': f'datasets/{slug(t)}/',
+            'rows': meta.get('rows'), 'unit': meta.get('unit'),
+            'vintage': release,
+            'selection': rec.get('selection'), 'calc': rec.get('calc'),
+            'note': rec.get('note'), 'artefact': False,
+        }
+        out['state:' + chart] = {k: v for k, v in r.items()
+                                 if v not in (None, [], '', False)}
+
     dest = pathlib.Path(a.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(
@@ -332,7 +478,9 @@ def main():
     art = [c for c, r in out.items() if r.get('artefact')]
     no_tbl = [c for c, r in out.items() if not r.get('table')]
     used = sorted({r['table'] for r in out.values() if r.get('table')})
-    print(f'  {len(out)} charts, {len(used)} warehouse tables, release {release}')
+    n_state = len([c for c in out if c.startswith('state:')])
+    print(f'  {len(out)} charts ({len(out)-n_state} economy, {n_state} state), '
+          f'{len(used)} warehouse tables, release {release}')
     print(f'  artefacts (vintage is the extract, not the warehouse): '
           f'{", ".join(art)}')
     print(f'  no warehouse table at all: {", ".join(no_tbl)}')

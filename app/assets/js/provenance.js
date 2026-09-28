@@ -120,7 +120,7 @@
   }
 
   window.DDProv = { of: function (id) { return P[id]; }, header: header,
-                    render: render, topicMeta: topicMeta };
+                    render: render, topicMeta: topicMeta, panel: panel };
 
   if (document.readyState !== 'loading') render();
   else document.addEventListener('DOMContentLoaded', render);

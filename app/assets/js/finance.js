@@ -1425,9 +1425,18 @@ function toCSV(rows){
  const esc=v=>{if(v==null)v='';v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
  return [cols.join(',')].concat(rows.map(r=>cols.map(c=>esc(r[c])).join(','))).join('\n');
 }
-function downloadCSV(name,rows){
+/* Every export carries where it came from and what the reader had selected
+   when they asked for it. A CSV that has left the page is the only record of
+   its own provenance, and a filename is not one. */
+function provHead(card,view){
+ if(!card||!window.DDProv)return '';
+ const esc=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+ const L=window.DDProv.header(card,view);
+ return L.length?L.map(r=>r.map(esc).join(',')).join('\n')+'\n#\n':'';
+}
+function downloadCSV(name,rows,card,view){
  if(!rows||!rows.length)return;
- const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8'});
+ const blob=new Blob([provHead(card,view)+toCSV(rows)],{type:'text/csv;charset=utf-8'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w.-]+/g,'_');
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
 }
@@ -1481,8 +1490,54 @@ const CSV={
  io:()=>{const {sectors,matrix_nodiag:M}=E.io;const out=[];
    sectors.forEach((s,i)=>sectors.forEach((s2,j)=>{if(i!==j&&M[i][j]>0)out.push({supplier:s,buyer:s2,flow_rs_bn:round2(M[i][j])});}));
    return ['Pakistan_input_output_2015-16.csv',out.sort((a,b)=>b.flow_rs_bn-a.flow_rs_bn)];},
- budget:()=>{const yr=bYears[bYi],out=[];(E.budget[bSide][yr]||[]).forEach(g=>g.children.forEach(c=>out.push({fiscal_year:yr,side:bSide,category:g.label,line_item:c.name,rs_bn:round2(c.bn)})));
-   return [`Pakistan_budget_${bSide}_${yr}.csv`,out];}
+ /* The page promises that CSV downloads the chart's data, and this handler
+    did not: it always wrote one year of nominal line items, so a reader
+    looking at the Trend view in real 2015-16 prices with three categories
+    selected received a nominal single-year treemap export instead. What the
+    reader is looking at is bView, bPrice and the chip selection, and the
+    export now follows all three.
+
+    deflator_estimated is not decoration. The deflator is published only to
+    2024-25; beyond that deflForYears extrapolates it, so a real value for a
+    later year rests on an estimate, and a column that says which rows those
+    are is the difference between a figure and a guess. */
+ budget:()=>{
+   ensureBudgetSel(bSide);
+   /* The price control is hidden in the treemap view, so bPrice there is
+      whatever the trend view was last left on - stale, and not what the
+      reader is looking at. The treemap is nominal. */
+   const sel=budgetSel[bSide],real=bPrice==='real'&&bView==='trend',
+     basis=real?'real_2015_16':'nominal';
+   const allYears=Object.keys(E.budget[bSide]).sort();
+   const defl=deflForYears(allYears),known=deflator();
+   const adj=(v,y)=>real?v/(defl[y]/100):v;
+   const view={view:bView==='trend'?'Trend':'Treemap',side:bSide,
+     'price basis':real?'constant 2015-16 rupees, GDP-deflated':'nominal rupees',
+     categories:sel.size+' of '+budgetCats(bSide).keys.length+' selected'};
+   if(bView==='trend'){
+     const keys=budgetCats(bSide).keys.filter(k=>sel.has(k));
+     const out=[];
+     allYears.forEach(y=>{
+       const m={};(E.budget[bSide][y]||[]).forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));
+       keys.forEach(k=>out.push({fiscal_year:y,side:bSide,category:k,
+         ['rs_bn_'+basis]:round2(adj(m[k]||0,y)),
+         price_basis:basis,gdp_deflator:round2(defl[y]),
+         deflator_estimated:real?(known[y]==null):null,
+         estimate_status:'own-year Budget Estimate'}));});
+     view.years=allYears[0]+' to '+allYears[allYears.length-1];
+     view.stacking=bTrendMode;
+     return [`Pakistan_budget_${bSide}_trend_${basis}.csv`,out,view];
+   }
+   const yr=bYears[bYi],out=[];
+   (E.budget[bSide][yr]||[]).forEach(g=>{if(!sel.has(g.label))return;
+     g.children.forEach(c=>out.push({fiscal_year:yr,side:bSide,category:g.label,
+       line_item:c.name,['rs_bn_'+basis]:round2(adj(c.bn,yr)),
+       price_basis:basis,gdp_deflator:round2(defl[yr]),
+       deflator_estimated:real?(known[yr]==null):null,
+       estimate_status:'own-year Budget Estimate'}));});
+   view.year=yr;
+   return [`Pakistan_budget_${bSide}_${yr}_${basis}.csv`,out,view];}
+
 };
 function round2(v){return v==null?null:Math.round(v*100)/100;}
 function initCsv(){
@@ -1493,7 +1548,9 @@ function initCsv(){
   .on('click',function(e){
   e.stopPropagation();
   const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
-  try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}
+  const card=this.closest('.card');
+  try{const [name,rows,view]=fn();downloadCSV(name,rows,card&&card.id,view);}
+  catch(err){console.error('CSV',k,err);}
  });
 }
 

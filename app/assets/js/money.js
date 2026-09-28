@@ -793,8 +793,15 @@ const CSV = {
 };
 const toCSV = rows => rows.map(r => r.map(v => { const s = v == null ? '' : String(v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n');
-function downloadCSV(name, rows) {
-  const b = new Blob([toCSV(rows)], { type: 'text/csv;charset=utf-8' });
+function provHead(card, view) {
+  if (!card || !window.DDProv) return '';
+  const esc = v => { v = String(v == null ? '' : v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const L = window.DDProv.header(card, view);
+  return L.length ? L.map(r => r.map(esc).join(',')).join('\n') + '\n#\n' : '';
+}
+function downloadCSV(name, rows, card, view) {
+  const b = new Blob([provHead(card, view) + toCSV(rows)], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name + '.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -804,7 +811,9 @@ function initCsv() {
      .csvbtn would leave the other two modules' buttons doing nothing. */
   d3.selectAll('.csvbtn').filter(function () { return this.dataset.csv in CSV; })
     .on('click', function () {
-    const f = CSV[this.dataset.csv]; if (!f) return; const [name, rows] = f(); downloadCSV(name, rows);
+    const f = CSV[this.dataset.csv]; if (!f) return;
+    const card = this.closest('.card');
+    const [name, rows, view] = f(); downloadCSV(name, rows, card && card.id, view);
   });
 }
 

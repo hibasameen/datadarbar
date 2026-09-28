@@ -411,9 +411,15 @@ function toCSV(rows){
  const esc=v=>{if(v==null)v='';v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
  return [cols.join(',')].concat(rows.map(r=>cols.map(c=>esc(r[c])).join(','))).join('\n');
 }
-function downloadCSV(name,rows){
+function provHead(card,view){
+ if(!card||!window.DDProv)return '';
+ const esc=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+ const L=window.DDProv.header(card,view);
+ return L.length?L.map(r=>r.map(esc).join(',')).join('\n')+'\n#\n':'';
+}
+function downloadCSV(name,rows,card,view){
  if(!rows||!rows.length)return;
- const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8'});
+ const blob=new Blob([provHead(card,view)+toCSV(rows)],{type:'text/csv;charset=utf-8'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w.-]+/g,'_');
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
 }
@@ -447,7 +453,9 @@ function initCsv(){
  d3.selectAll('.csvbtn').filter(function(){return this.dataset.csv in CSV;})
   .on('click',function(e){
   e.stopPropagation();const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
-  try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}
+  const card=this.closest('.card');
+  try{const [name,rows,view]=fn();downloadCSV(name,rows,card&&card.id,view);}
+  catch(err){console.error('CSV',k,err);}
  });
 }
 
