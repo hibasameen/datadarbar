@@ -72,9 +72,12 @@
     courts: {
       theme: 'Justice',
       title: 'Case flows and pendency',
-      dek: 'What was pending, what came in and what was decided, by province, '
-         + '2020 to 2024. A clearance rate above 100 per cent means the court '
-         + 'decided more than it received that year and the backlog fell.',
+      dek: 'What was pending, what came in and what was decided, across four '
+         + 'provinces and Islamabad, 2020 to 2024. A clearance rate above 100 '
+         + 'per cent means a court decided more cases than it received that '
+         + 'year. It does not mean the backlog fell: in seven of these rows it '
+         + 'rose anyway \u2014 Punjab cleared 100.5 per cent in 2022 and ended the '
+         + 'year with 2,611 more cases pending than it started with.',
       note: 'Categories nest: \u2018all\u2019 contains civil and criminal, so the three '
           + 'are not added together. Where opening plus instituted minus '
           + 'disposed does not equal the closing figure, transfers between '
@@ -114,27 +117,42 @@
     sindhCrime: {
       theme: 'Crime & policing',
       title: 'Sindh\u2019s own crime tables',
-      dek: 'Sindh police publish on their own schema \u2014 54 offence categories '
-         + 'in seven groups, by police range, 2019 to 2025 \u2014 which is a '
+      dek: 'Sindh police publish on their own schema \u2014 44 offence categories '
+         + 'in six groups, by police range, 2019 to 2025 \u2014 which is a '
          + 'longer and finer series than the national compilation carries.',
       note: 'These figures do not line up with the national compilation and '
           + 'should not be spliced onto it: the categories are Sindh\u2019s own, and '
           + 'the geography is police ranges, which are not districts and do '
-          + 'not nest inside the census frame. Prior-year comparison columns '
-          + 'printed in the source are excluded, so each year is counted once. '
-          + 'Within Sindh the groups do partition the categories, so those add '
-          + 'up; the twelve shown are the largest of the 54.',
+          + 'not nest inside the census frame. Ranges and categories are '
+          + 'grouped on the keys the warehouse carries rather than on the '
+          + 'printed names, because the reports change capitalisation partway '
+          + 'through \u2014 KARACHI RANGE becomes Karachi Range \u2014 and on the raw '
+          + 'names the same range read as two series that stopped and started '
+          + 'in the year the typography changed. Prior-year comparison columns '
+          + 'ARE used: they carry 2019 from the 2020 report, and no cell '
+          + 'appears both as a comparison column and as its own year, so '
+          + 'nothing is counted twice and those years keep the only '
+          + 'observations they have. Within Sindh the groups do partition the '
+          + 'categories, so those add up; the twelve shown are the largest of '
+          + 'the 44.',
     },
     firs: {
       theme: 'Crime & policing',
       title: 'First information reports',
-      dek: 'Every FIR registered across Sindh, day by day, through the autumn '
-         + 'of 2025.',
-      note: 'Eight weeks, not a year, and the only complete daily series any '
-          + 'Pakistani force publishes. The table also carries a year-to-date '
-          + 'column, which is a running total: adding those numbers up would '
-          + 'count the same reports once for every day that remained in the '
-          + 'year. Only the daily figure drawn here is a flow.',
+      dek: 'The daily FIR bulletins Sindh police published in the autumn of '
+         + '2025 \u2014 11 days observed out of the 54 between 15 September and '
+         + '7 November.',
+      note: 'These are the bulletins that exist, not a daily series. Forty-'
+          + 'three of the 54 calendar days have no observation at all, '
+          + 'including the whole of 25 September to 5 November, and the line '
+          + 'is broken at every absent day rather than drawn across it. The '
+          + 'source\u2019s own quality report calls the historical series '
+          + 'incomplete. The table also carries a year-to-date column, which '
+          + 'is a running total: adding those up would count the same reports '
+          + 'once for every day left in the year, and it is not consistent '
+          + 'either \u2014 89,289 on 17 September falls to 88,944 on 19 September, '
+          + 'which is the source disagreeing with itself rather than a '
+          + 'negative number of reports. Only the daily figure is drawn.',
     },
     discos: {
       theme: 'Energy',
@@ -338,12 +356,21 @@
   }
 
   /* ── courts ──────────────────────────────────────────────────────────── */
+  /* Islamabad Capital Territory is not a province, and the LJCP tables cover
+     four of them plus ICT. Counting the rows and calling the answer
+     "5 provinces" invented a fifth. */
+  function jurisdictionLabel(list) {
+    var ict = list.some(function (p) { return /islamabad/i.test(p); });
+    var n = list.length - (ict ? 1 : 0);
+    return n + ' province' + (n === 1 ? '' : 's') + (ict ? ' and Islamabad' : '');
+  }
+
   function renderCourts(mode) {
     state.mode = mode;
     var rows = courts.filter(function (d) { return d.category === 'all'; });
     var provs = Array.from(new Set(rows.map(function (d) { return d.province; }))).sort();
     var years = Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(d3.ascending);
-    cover(['2020 to 2024', provs.length + ' provinces',
+    cover(['2020 to 2024', jurisdictionLabel(provs),
            'all courts', 'civil and criminal also available']);
     var key = state.mode === 'clearance' ? 'clearance_pct' : 'pending_end';
     if (state.mode === 'flow') return flowChart(rows, provs, years);
@@ -400,7 +427,7 @@
     keys = keys.filter(function (k) {
       return series.some(function (d) { return d.k === k; });
     });
-    cover([years[0] + ' to ' + years[years.length - 1], provs.length + ' provinces',
+    cover([years[0] + ' to ' + years[years.length - 1], jurisdictionLabel(provs),
            'civil against criminal', 'pending at year end']);
     var colour = d3.scaleOrdinal().domain(provs)
       .range(['#0c3a1e', '#1e6b3e', '#b5860b', '#4d8a62', '#d4a017']);
@@ -660,10 +687,15 @@
     var prov = firs.filter(function (d) { return d.level === 'province'; })
       .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     var dist = firs.filter(function (d) { return d.level === 'police_district'; });
+    /* Days observed against days in the span. "11 daily reports" over an
+       eight-week window reads as a series with a few holes; "11 of 54 days"
+       says what it is. */
+    var day0 = new Date(prov[0].date), dayN = new Date(prov[prov.length - 1].date);
+    var span = Math.round((dayN - day0) / 86400000) + 1;
     cover([niceSpan(prov[0].date, prov[prov.length - 1].date),
-           prov.length + ' daily reports',
+           prov.length + ' of ' + span + ' days observed',
            new Set(dist.map(function (d) { return d.place; })).size + ' districts',
-           'eight weeks, not a year']);
+           'bulletins, not a daily series']);
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 16, right: 64, bottom: 30, left: 56 }, W);
@@ -672,10 +704,23 @@
       .range([m.left, W - m.right]);
     var y = d3.scaleLinear().domain([0, d3.max(prov, function (d) { return d.daily; })])
       .nice().range([H - m.bottom, m.top]);
-    svg.append('path').datum(prov).attr('fill', 'none')
+    /* Broken at every day the bulletin did not cover. Drawn as one line the
+       six-week gap between 24 September and 6 November became a long diagonal
+       that reads as a slow decline actually measured. defined() turns it into
+       what it is: two runs of observations with nothing in between. */
+    var byDay = {};
+    prov.forEach(function (d) { byDay[d.date] = d; });
+    var series = [];
+    for (var t = new Date(day0); t <= dayN; t.setDate(t.getDate() + 1)) {
+      var iso = t.toISOString().slice(0, 10);
+      series.push(byDay[iso] || { date: iso, daily: null });
+    }
+    svg.append('path').datum(series).attr('fill', 'none')
       .attr('stroke', '#1e6b3e').attr('stroke-width', 2)
-      .attr('d', d3.line().x(function (d) { return x(new Date(d.date)); })
-                          .y(function (d) { return y(d.daily); }));
+      .attr('d', d3.line()
+        .defined(function (d) { return d.daily != null; })
+        .x(function (d) { return x(new Date(d.date)); })
+        .y(function (d) { return y(d.daily); }));
     svg.selectAll('circle').data(prov).join('circle')
       .attr('cx', function (d) { return x(new Date(d.date)); })
       .attr('cy', function (d) { return y(d.daily); })

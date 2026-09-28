@@ -173,18 +173,48 @@ def main():
         ORDER BY region, geography, year, offence""")
 
     # Sindh publishes its own crime tables on a different schema from the
-    # national compilation - 54 categories nested in 7 groups, by police range
-    # - so it is its own dataset rather than being forced into police_crime.
-    # Only rows the extractor selected: the tables carry prior-year comparison
-    # columns that would otherwise be counted as observations of their own.
+    # national compilation - 44 categories in 6 groups, by police range - so
+    # it is its own dataset rather than being forced into police_crime.
+    #
+    # GROUPED ON THE CANONICAL KEYS, not the printed names. The reports change
+    # capitalisation partway through: KARACHI RANGE becomes Karachi Range, and
+    # BLASPHEMY (Offences relating to religion) loses its brackets. Sent to the
+    # browser as raw strings those became 14 places and 54 categories instead
+    # of 7 and 44, and every chart split one series into two that stopped and
+    # started at the year the typography changed. The warehouse has carried
+    # geography_key and crime_category_key all along.
+    #
+    # The display name is the variant the source printed in mixed case where
+    # there is one, which is the later and more readable form; the raw labels
+    # stay in the warehouse as the audit trail.
+    #
+    # Prior-year comparison columns ARE included, and that is deliberate: they
+    # carry 2019 from the 2020 report, and no cell appears both as a
+    # comparison column and as its own year - 0 of 1,232 (year, place,
+    # category) cells have both - so nothing is counted twice. Dropping them
+    # would delete the only observations those years have.
     sindh = rows(f"""
-        SELECT year, geography_name, geography_level,
-               CASE WHEN upper(category_group) = 'MISCELLANEOUS' THEN 'Miscellaneous'
-                    ELSE category_group END AS grp,
-               crime_category_raw, sum(cases_reported)
-        FROM '{W_}/sindh_crime_annual.parquet'
-        WHERE selection_status = 'selected' AND row_type = 'detail'
-          AND cases_reported IS NOT NULL
+        WITH named AS (
+          SELECT geography_key,
+                 any_value(geography_name ORDER BY
+                   CASE WHEN geography_name = upper(geography_name) THEN 1 ELSE 0 END,
+                   geography_name) AS geo_name
+          FROM '{W_}/sindh_crime_annual.parquet' GROUP BY 1),
+        cats AS (
+          SELECT crime_category_key,
+                 any_value(crime_category_raw ORDER BY
+                   CASE WHEN crime_category_raw = upper(crime_category_raw) THEN 1 ELSE 0 END,
+                   crime_category_raw) AS cat_name
+          FROM '{W_}/sindh_crime_annual.parquet' GROUP BY 1)
+        SELECT s.year, n.geo_name, s.geography_level,
+               CASE WHEN upper(s.category_group) = 'MISCELLANEOUS' THEN 'Miscellaneous'
+                    ELSE s.category_group END AS grp,
+               c.cat_name, sum(s.cases_reported)
+        FROM '{W_}/sindh_crime_annual.parquet' s
+        JOIN named n USING (geography_key)
+        JOIN cats  c USING (crime_category_key)
+        WHERE s.selection_status = 'selected' AND s.row_type = 'detail'
+          AND s.cases_reported IS NOT NULL
         GROUP BY 1, 2, 3, 4, 5 ORDER BY 1, 2, 4, 5""")
 
     # First information reports, daily. Eight weeks of 2025, not a year: the
