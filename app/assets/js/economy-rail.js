@@ -19,51 +19,22 @@
 (function () {
   'use strict';
 
-  var DATASET = {
-    // finance
-    // national_accounts for the aggregates and income per person;
-    // gdp_indicators only still supplies the exchange rate.
-    'sec-macro': ['national_accounts', 'Output, income and the rupee, Table 5'],
-    'sec-qtr': ['gva_by_activity_quarterly', 'Value added by sector, quarterly'],
-    /* These three read national_accounts, not gva_by_activity_annual: the
-       share charts are Table 7b at current prices and the decomposition is
-       Table 5 at constant prices. gva_by_activity_annual is constant-price
-       leaf activity data - a real table, but not the one behind these - and
-       naming it sent anyone trying to reproduce the chart to the wrong
-       numbers. */
-    'sec-arc': ['national_accounts', 'Sector shares of GVA, Table 7b'],
-    'sec-mix': ['national_accounts', 'Sector shares of GVA, Table 7b'],
-    'sec-contrib': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
-    'sec-cybreak': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
-    'sec-ceras': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
-    'sec-lsm': ['lsm_qim', 'Large-scale manufacturing index'],
-    'sec-qimonth': ['lsm_qim', 'Large-scale manufacturing index'],
-    'sec-weights': ['lsm_sector_indices', 'Manufacturing sector indices and weights'],
-    'sec-cmi': ['national_accounts', 'National accounts and GDP tables'],
-    'sec-io': ['national_accounts', 'National accounts and GDP tables'],
-    'sec-budget': ['budget_lines', 'Federal budget line items'],
-    // money
-    'sec-usd': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-reer': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-cpi': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-food': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-policy': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-kibor': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-spread': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-res': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-bop': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-remit': ['diaspora_remittances_monthly', 'Remittances to Pakistan by month'],
-    'sec-emig': ['diaspora_destinations', 'Emigrants by destination, skill and occupation'],
-    'sec-m': ['sbp_observations', 'SBP monetary and external statistics'],
-    'sec-npl': ['sbp_observations', 'SBP monetary and external statistics'],
-    // trade
-    'sec-drill': ['trade_hs8', 'Imports and exports by HS8 product and country'],
-    'sec-products': ['trade_by_group', 'Imports and exports by commodity group'],
-    'sec-movers': ['trade_by_group', 'Imports and exports by commodity group'],
-    'sec-totals': ['trade_monthly_totals', 'Monthly trade totals since 2003'],
-    'sec-recon': ['trade_reconciliation', 'Trade totals reconciled against their parts'],
-    'sec-partners': ['trade_by_country', 'Imports and exports by trading partner'],
-  };
+  /* The dataset map used to live here, in parallel with the prose under each
+     chart and the CSV function beside it, and the three drifted apart: the
+     share charts named gva_by_activity_annual for a Table 7b current-price
+     chart, and two cards named a table that does not contain them. There is
+     now one record, generated from the warehouse catalogue by
+     etl/build_provenance.py, and the rail reads it like everything else.
+     A chart with no warehouse table says so rather than borrowing a name. */
+  var DATASET = (function () {
+    var P = window.DD_PROV || {}, out = {};
+    Object.keys(P).forEach(function (id) {
+      var r = P[id];
+      out[id] = [r.table || '\u2014',
+                 r.table ? r.publication : 'No warehouse table'];
+    });
+    return out;
+  })();
 
   /* Cards that are drill-downs of another card rather than charts in their own
      right. sec-country only exists once a partner has been clicked, so listing

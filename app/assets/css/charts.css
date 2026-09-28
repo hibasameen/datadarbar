@@ -241,3 +241,12 @@ html[data-page="trade"] .scrolly{grid-template-columns:1fr}
 html[data-page="trade"] .sticky-graphic{height:56vh;top:64px}
 html[data-page="trade"] .step{min-height:70vh}
 }
+
+/* A caption is not a source. .src is generated from the provenance record and
+   is replaced wholesale on load, so anything hand-written in it is lost; text
+   that tells the reader how to use the chart belongs here instead. */
+.hint{font-size:11px;color:var(--muted-2);margin-top:8px;font-weight:500}
+.src b.src-lbl{color:var(--muted);font-weight:700}
+.src .src-line{display:block;margin-top:3px}
+.src .src-art{display:block;margin-top:3px;color:var(--rust)}
+.src a{color:inherit;text-decoration:underline;text-underline-offset:2px}

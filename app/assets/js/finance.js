@@ -184,7 +184,7 @@ function applyTopic(k,push){
  const t=TOPICS.find(x=>x.k===k);
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
- d3.select('#topicMeta').html('<b>Sources.</b> '+t.meta);
+ d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
  const all=k==='all';
  d3.select('#sideYear').style('display',(k==='structure'||k==='growth'||all)?null:'none');
  setupYearSlider();
