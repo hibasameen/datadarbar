@@ -311,7 +311,8 @@
              two different faults look identical without it. One unit twice is
              an ambiguous source cell; two units once each is a district that
              merged. The first must not be added up, the second must be. */
-          'SELECT map_key AS k, value AS v, unit AS u FROM census_panel_' + y
+          'SELECT map_key AS k, value AS v, unit AS u,'
+          + ' map_relation AS rel, map_note AS note FROM census_panel_' + y
           + ' WHERE table_id = ' + q(c[0])
           + '   AND indicator = ' + q(c[1])
           + "   AND coalesce(col_label, '') = " + q(c[2])
@@ -587,7 +588,7 @@
      reader is told, and the figures that would be wrong - the total and the
      ranking - are withheld rather than guessed. */
   function toMap(res) {
-    var out = {}, units = [], byUnit = {}, conflict = {}, ambiguous = 0;
+    var out = {}, units = [], byUnit = {}, conflict = {}, ambiguous = 0, meta = {};
     res.rows.forEach(function (r) {
       /* The shape AND the name. A unit name is not unique - Khanpur, Nowshera
          and Sahiwal are each the name of two different tehsils - so keying on
@@ -607,11 +608,20 @@
         return;
       }
       var keys = String(r.k).split(' ');
-      byUnit[id] = { keys: keys, v: r.v, u: id };
-      keys.forEach(function (k) { out[k] = r.v; });
+      /* The boundary story travels with the figure. The query used to return
+         a key and a value and nothing else, so a district that merged, split
+         or was matched only approximately looked exactly like one that did
+         not - and the note the warehouse wrote about it reached no one. */
+      byUnit[id] = { keys: keys, v: r.v, u: id, rel: r.rel, note: r.note };
+      keys.forEach(function (k) {
+        out[k] = r.v;
+        if ((r.rel && r.rel !== 'exact') || r.note) {
+          meta[k] = { boundary: r.rel, boundaryNote: r.note };
+        }
+      });
       units.push(byUnit[id]);
     });
-    return { values: out, meta: {}, units: units, ambiguous: ambiguous };
+    return { values: out, meta: meta, units: units, ambiguous: ambiguous };
   }
 
   /* ── comparable footprints ──────────────────────────────────────────────
@@ -1061,11 +1071,22 @@
        denominator needs saying. The Mouza Census divides by one of three
        different things and only two of them are bounded by 100, so dirt
        streets in Keti Bunder read 176% and the page said nothing about why. */
+    var bits = [];
+    /* 482 entries carry a label the source never resolved to a definition. A
+       badge on a search result does not reach someone who arrived through the
+       hierarchy or a shared link, and this is the one place every route
+       passes. */
+    if (col('h_review', i) === 1) {
+      bits.push('The source label for this series is ambiguous and has not '
+                + 'been resolved. It is kept exactly as published rather '
+                + 'than guessed at.');
+    }
     var note = col('h_note', i);
+    if (note) bits.push(note);
     var box = $('legendDef');
     if (box) {
-      box.textContent = note || '';
-      box.hidden = !note;
+      box.textContent = bits.join(' ');
+      box.hidden = !bits.length;
     }
   }
 
@@ -1156,10 +1177,18 @@
       caption = 'Total \u00b7 ' + where;
     }
 
+    /* How many of the places on the map this figure covers, always, rather
+       than a warning on the caption that would fire on nearly every census
+       map and so stop being read. The census does not reach Azad Jammu &
+       Kashmir or Gilgit-Baltistan, so 136 of 156 is the normal state of a
+       national total here and saying so once is worth more than calling it
+       partial every time. */
+    var whole = (geoCache[state.level] || { features: [] }).features.length;
     box.hidden = false;
     box.innerHTML =
       '<div class="tot"><span class="tot-k">' + esc(g.noun + 's showing') + '</span>'
-      + '<b>' + n + '</b></div>'
+      + '<b>' + n + (!prov && whole && n < whole ? ' of ' + whole : '')
+      + '</b></div>'
       + (figure === null ? ''
          : '<div class="tot"><span class="tot-k">' + esc(caption) + '</span>'
            + '<b>' + esc(figure) + '</b></div>')
@@ -1198,8 +1227,11 @@
     }
   }
 
+  /* 280 of the 344 curated entries carry no structured year, so the strip
+     showed a dash where a date belongs and a dash reads as a value that
+     failed to load. Undated is a fact about the source and is said as one. */
   function yearLabel() {
-    if (!state.year) return '';
+    if (!state.year) return col('source', state.row) === 'census' ? '' : 'undated';
     return /^\u0394/.test(state.year) ? 'Change 2017\u201323' : state.year;
   }
 
@@ -1325,6 +1357,25 @@
          + '</span></div>';
     }
     if (m && m.note) h += '<p class="notice">' + esc(m.note) + '</p>';
+    /* What the 2023 shape was in the census that published this figure. The
+       warehouse records it on every row and it reached nobody: a district
+       that merged, split or matched only approximately looked exactly like
+       one that did not. */
+    if (m && (m.boundary || m.boundaryNote)) {
+      var BOUND = {
+        merged: 'This shape covers more than one unit in the census that '
+              + 'published the figure, so the figure shown is the whole '
+              + 'shape\u2019s, not one unit\u2019s.',
+        split: 'The unit that published this figure was later split, and the '
+             + 'figure belongs to the whole of it rather than to this shape '
+             + 'alone.',
+        approximate: 'This shape is matched to the census unit approximately.',
+      };
+      var msg = BOUND[m.boundary] || (m.boundary
+                ? 'Boundary relation: ' + m.boundary : '');
+      if (m.boundaryNote) msg = (msg ? msg + ' ' : '') + m.boundaryNote;
+      if (msg) h += '<p class="notice">' + esc(msg) + '</p>';
+    }
     if (m && m.relation === 'low_n' && v != null) {
       h += '<p class="notice">' + esc(noteFor(col('group_key', state.row), m.flag))
          + '</p>';
