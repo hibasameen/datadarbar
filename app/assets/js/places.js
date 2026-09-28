@@ -321,9 +321,28 @@
                                         : "   AND unit_type <> 'district'")
           + '   AND map_key IS NOT NULL AND value IS NOT NULL');
       }).then(toMap).then(function (r) {
+        /* A headcount below zero is not a small number; it is not a number.
+           The 2017 panel carries eighteen of them, all in Sherani and all in
+           table 7: -20,478 spouses, -20,298 household heads, -15,649 sons and
+           daughters. They are dropped from the map and from everything
+           derived from it - including a change, because the change of an
+           impossible figure is impossible too - and counted so the strip can
+           say so. The values stay in the warehouse and in the catalogue; what
+           they need is the source re-read, not a guess here.
+
+           Only for census counts. Curated groups keep their change series as
+           indicators of their own, where a negative is the whole point. */
+        var invalid = 0;
+        if (summable()) {
+          r.units = (r.units || []).filter(function (u) {
+            if (u.v < 0) { invalid += 1; return false; }
+            return true;
+          });
+        }
         var f = byFootprint(r, summable());
         return { values: f.values, meta: r.meta, units: r.units,
-                 ambiguous: r.ambiguous, shared: f.uncombinable, fpOf: f };
+                 ambiguous: r.ambiguous, shared: f.uncombinable,
+                 invalid: invalid, fpOf: f };
       });
     }
 
@@ -349,7 +368,7 @@
           both.forEach(function (yr) {
             (yr.units || []).forEach(function (u) { fp.join(u.keys); });
           });
-          var g17 = {}, g23 = {}, keysOf = {};
+          var g17 = {}, g23 = {}, keysOf = {}, nameOf = {};
           var gather = function (yr, into) {
             (yr.units || []).forEach(function (u) {
               if (u.v == null) return;
@@ -358,6 +377,9 @@
               (keysOf[g] = keysOf[g] || {});
               u.keys.forEach(function (k) { keysOf[g][k] = 1; });
               into[g + '\u0000n'] = (into[g + '\u0000n'] || 0) + 1;
+              // which census units the footprint is made of, for the export
+              var nm = u.u ? String(u.u).split('\u001f')[1] : '';
+              if (nm) (nameOf[g] = nameOf[g] || {})[nm] = 1;
             });
           };
           gather(both[0], g17); gather(both[1], g23);
@@ -370,13 +392,15 @@
             if (many && !can) { shared += keys.length; return; }
             var d = v23 - v17;
             keys.forEach(function (k) { out[k] = d; });
-            units.push({ keys: keys, v: d });
+            units.push({ keys: keys, v: d,
+                         u: '\u001f' + Object.keys(nameOf[g] || {}).sort().join(' + ') });
           });
           // Same shape every other route returns; a bare map here read as an
           // undefined .values and the legend silently kept the old scale.
           // A change inherits either year's ambiguity: subtracting a figure
           // we cannot pin down does not pin it down.
           return { values: out, meta: {}, units: units, shared: shared,
+                   invalid: (both[0].invalid || 0) + (both[1].invalid || 0),
                    ambiguous: (both[0].ambiguous || 0) + (both[1].ambiguous || 0) };
         });
     }
@@ -430,6 +454,7 @@
                        n2: u.num, d2: u.den, k2: u.denKey });
         });
         return { values: out, meta: {}, units: units,
+                 invalid: (a.invalid || 0) + (c2.invalid || 0),
                  ambiguous: (a.ambiguous || 0) + (c2.ambiguous || 0) };
       });
   }
@@ -455,12 +480,12 @@
         return false;
       });
       if (u.v != null && den) {
-        units.push({ keys: u.keys, v: u.v / den * f,
+        units.push({ keys: u.keys, v: u.v / den * f, u: u.u,
                      num: u.v, den: den, denKey: denKey });
       }
     });
     return { values: out, meta: {}, units: units,
-             ambiguous: (res.ambiguous || 0) };
+             invalid: (res.invalid || 0), ambiguous: (res.ambiguous || 0) };
   }
 
   /* The place's population, from table 1 of the same census, at the same
@@ -729,6 +754,7 @@
       state.units = r.units || null;
       state.ambiguous = r.ambiguous || 0;
       state.shared = r.shared || 0;
+      state.invalid = r.invalid || 0;
       return paint().then(function () {
         renderLegend();
         renderTotals();
@@ -888,6 +914,11 @@
       sel.appendChild(o);
     });
     sel.dataset.filled = '1';
+    if (state.provWanted) {
+      sel.value = state.provWanted;
+      if (sel.value !== state.provWanted) sel.value = '';   // not a province here
+      state.provWanted = '';
+    }
   }
 
   /* ── legend, with the facet controls the design puts on the map ───────── */
@@ -1075,6 +1106,11 @@
          ? '<div class="tot tot-warn"><span class="tot-k">Not shown</span><b>'
            + state.shared + ' ' + esc(g.noun) + (state.shared === 1 ? '' : 's')
            + ' where a rate cannot be combined across the 2017 units</b></div>'
+         : '')
+      + (state.invalid
+         ? '<div class="tot tot-warn"><span class="tot-k">Dropped</span><b>'
+           + state.invalid + ' ' + esc(g.noun) + (state.invalid === 1 ? '' : 's')
+           + ' reporting a negative count, which the source cannot mean</b></div>'
          : '');
   }
 
@@ -1140,10 +1176,18 @@
     // them by which row arrived last. Withheld with the total.
     if (state.ambiguous) { box.hidden = true; return; }
     var dp = dpFor(state.row);
+    var g = GEO[state.level], prov = $('provFilter').value;
     var seen = {}, rows = [];
     Object.keys(state.values).forEach(function (k) {
       var v = state.values[k];
       if (v == null) return;
+      /* The same filter the map and the total already obey. Choosing Sindh
+         moved both and left the ranking on Lahore, Faisalabad and
+         Rawalpindi - a national list under a provincial heading. */
+      if (prov) {
+        var pp = placeProps(k);
+        if (!pp || g.prov(pp) !== prov) return;
+      }
       var name = nameFor(k);
       if (seen[name]) return;
       seen[name] = 1;
@@ -1397,6 +1441,9 @@
     if (state.sex !== 'all') q.set('sex', state.sex);
     if (state.place) q.set('p', state.place);
     if (document.getElementById('ovSchools').checked) q.set('ov', 'schools');
+    // Shared without it, a link to "Sindh" opened on the whole country.
+    var pv = $('provFilter') && $('provFilter').value;
+    if (pv) q.set('prov', pv);
     history.replaceState(null, '', location.pathname + '?' + q.toString());
   }
 
@@ -1416,6 +1463,10 @@
     state.norm = ['pct', 'per1000'].indexOf(q.get('n')) >= 0 ? q.get('n') : '';
     if (q.get('sex')) state.sex = q.get('sex');
     state.place = q.get('p') || null;
+    /* Applied after buildProvinces has filled the dropdown - setting .value
+       before the options exist selects nothing and the filter is silently
+       lost on every shared link. */
+    state.provWanted = q.get('prov') || '';
     if (q.get('ov') === 'schools') {
       var box = document.getElementById('ovSchools');
       box.checked = true;
@@ -1452,8 +1503,11 @@
     $('geoTehsil').onclick = function () { setLevel('tehsil'); };
     $('indSearch').oninput = function () { state.query = this.value; renderPicker(); };
     $('provFilter').onchange = function () {
-      if (state.row != null) paint().then(function () { renderTotals(); zoomProvince(); });
-      else zoomProvince();
+      if (state.row != null) {
+        paint().then(function () {
+          renderTotals(); renderRanks(); writeUrl(); zoomProvince();
+        });
+      } else { writeUrl(); zoomProvince(); }
     };
     $('placeSearch').oninput = function () { findPlace(this.value); };
     $('csvBtn').onclick = downloadCsv;
@@ -1506,15 +1560,54 @@
     }
   }
 
+  /* The export used to carry four columns - place, province, shape key and a
+     heading taken from the indicator label - so a share of the population and
+     the count it came from downloaded under the same heading and the same
+     filename, and a figure published for a larger 2017 unit appeared on each
+     of its child shapes with nothing to say they were the same observation.
+     Everything that decides what the number MEANS travels with it now: when
+     it was measured, for whom, what was done to it, and what it was divided
+     by. The province filter applies here too - it already applied to the map
+     and the total, so a download that quietly ignored it described a
+     different country from the one on screen. */
   function downloadCsv() {
     if (state.row == null || !state.values) return;
-    var g = GEO[state.level];
-    var rows = [[g.noun, 'province', 'shape_key', col('label', state.row)]];
+    var g = GEO[state.level], prov = $('provFilter').value;
+    var src = col('source', state.row);
+    var mode = state.norm === 'pct' ? '% of population'
+             : state.norm === 'per1000' ? 'per 1,000 people' : 'as published';
+
+    // shape key -> the source observation behind it
+    var by = {};
+    (state.units || []).forEach(function (u) {
+      u.keys.forEach(function (k) { by[k] = u; });
+    });
+
+    // "breakdown", not "unit": source_unit below is a place, and two columns
+    // called unit meaning different things is how a reader mis-joins a table.
+    var rows = [[g.noun, 'province', 'shape_key', 'value', 'breakdown',
+                 'year', 'locality', 'sex', 'metric_mode',
+                 'numerator', 'denominator', 'source_unit',
+                 'shapes_sharing_this_figure', 'dataset', 'indicator_key',
+                 'quality']];
     var geo = geoCache[state.level];
     if (geo) geo.features.forEach(function (f) {
       var k = g.key(f.properties), v = state.values[k];
       if (v == null) return;
-      rows.push([g.name(f.properties), g.prov(f.properties), k, v]);
+      if (prov && g.prov(f.properties) !== prov) return;
+      var u = by[k] || {};
+      var unitName = u.u ? String(u.u).split('\u001f')[1] || '' : '';
+      var shares = u.keys ? u.keys.length : 1;
+      var quality = state.ambiguous ? 'source rows for this series conflict'
+                  : shares > 1 ? 'figure published for a larger source unit'
+                  : '';
+      rows.push([g.name(f.properties), g.prov(f.properties), k, v,
+                 state.norm ? mode : (col('metric', state.row) || ''),
+                 yearLabel() || '', state.locality, state.sex, mode,
+                 u.num == null ? '' : u.num, u.den == null ? '' : u.den,
+                 unitName, shares,
+                 col('dataset', state.row) || src,
+                 col('indicator', state.row), quality]);
     });
     var csv = rows.map(function (r) {
       return r.map(function (c) {
@@ -1524,8 +1617,15 @@
     }).join('\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-    a.download = 'data_darbar_' + col('indicator', state.row).replace(/[^A-Za-z0-9]+/g, '_')
-      + '_' + state.level + '.csv';
+    /* The year and the conversion in the name, because two downloads of the
+       same indicator are two different tables. */
+    a.download = 'data_darbar_'
+      + col('indicator', state.row).replace(/[^A-Za-z0-9]+/g, '_')
+      + '_' + state.level
+      + (state.year ? '_' + String(state.year).replace(/[^A-Za-z0-9]+/g, '') : '')
+      + (state.norm ? '_' + state.norm : '')
+      + (prov ? '_' + prov.replace(/[^A-Za-z0-9]+/g, '') : '')
+      + '.csv';
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
