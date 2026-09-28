@@ -349,49 +349,82 @@
        are already drawn on that frame. A place missing from either year is
        left out rather than treated as a zero: an absent 2017 figure would
        otherwise read as growth equal to the whole 2023 value. */
-    if (/^\u0394/.test(year)) {
+    // Order matters: the normalised routes below handle change themselves,
+    // as the change in the RATE. This branch is the change in the count, and
+    // it ran first - so picking Change with a share selected quietly gave the
+    // count difference while the legend said "change in % of population".
+    if (/^\u0394/.test(year) && !state.norm) {
       return Promise.all([censusYear('2017'), censusYear('2023')])
         .then(function (both) {
           var a = both[0].values, b = both[1].values;
-          var out = {};
+          var out = {}, units = [];
           Object.keys(b).forEach(function (k) {
             if (a[k] != null && b[k] != null) out[k] = b[k] - a[k];
           });
+          var was = {};
+          both[0].units.forEach(function (u) { was[u.keys.join(' ')] = u.v; });
+          both[1].units.forEach(function (u) {
+            var prev = was[u.keys.join(' ')];
+            if (prev != null && u.v != null) {
+              units.push({ keys: u.keys, v: u.v - prev });
+            }
+          });
           // Same shape every other route returns; a bare map here read as an
           // undefined .values and the legend silently kept the old scale.
-          return { values: out, meta: {} };
+          return { values: out, meta: {}, units: units };
         });
     }
     if (!state.norm) return censusYear(year);
 
-    /* Per 1,000 people, against the whole population of the place - not the
-       population of the band. "Divorced, 35-44 per 1,000" is therefore per
-       1,000 of everyone, which is a rate of the whole place rather than a
-       prevalence within the age group, and the label says people rather than
-       anything narrower.
+    /* Per 1,000 people, or as a share, against the whole population of the
+       place - not the population of the band. "Divorced, 35-44 per 1,000" is
+       therefore per 1,000 of everyone, a rate of the whole place rather than
+       a prevalence within the age group, which is why the label says people
+       rather than anything narrower.
 
        Locality is matched, so a rural count is divided by the rural
-       population, and the year is the indicator's own: dividing a 2017 count
-       by a 2023 population would invent a change that is only a denominator
-       moving. */
-    var popYear = /^\u0394/.test(year) ? '2023' : year;
-    var popInd = popYear === '2017'
-      ? 'POPULATION - 2017 / ALL SEXES'
-      : 'POPULATION-2023 / ALL SEXES';
-    return Promise.all([
-      /^\u0394/.test(year)
-        ? Promise.all([censusYear('2017'), censusYear('2023')]).then(function (b) {
-            var a = b[0].values, c2 = b[1].values, out = {};
-            Object.keys(c2).forEach(function (k) {
-              if (a[k] != null && c2[k] != null) out[k] = c2[k] - a[k];
-            });
-            return { values: out };
-          })
-        : censusYear(year),
-      population(popYear, popInd),
-    ]).then(function (both) {
-      return perThousand(both[0], both[1]);
-    });
+       population, and each year uses its OWN population. */
+    function popIndFor(y) {
+      return y === '2017' ? 'POPULATION - 2017 / ALL SEXES'
+                          : 'POPULATION-2023 / ALL SEXES';
+    }
+
+    function normalisedYear(y) {
+      return Promise.all([censusYear(y), population(y, popIndFor(y))])
+        .then(function (b) { return perThousand(b[0], b[1]); });
+    }
+
+    if (!/^\u0394/.test(year)) return normalisedYear(year);
+
+    /* The change in the RATE, not the rate of the change. Taking the change in
+       the count and dividing it by today's population answers a different
+       question - it spreads the growth over the people who are here now - and
+       where the population itself grew it is not a change in the share at
+       all. So each census is normalised against its own population first, and
+       the two are subtracted after.
+
+       Both years' parts travel on each unit, because the national change is
+       the change in the national rate, not the mean of 136 district changes. */
+    return Promise.all([normalisedYear('2017'), normalisedYear('2023')])
+      .then(function (b) {
+        var a = b[0], c2 = b[1], out = {};
+        Object.keys(c2.values).forEach(function (k) {
+          if (a.values[k] != null && c2.values[k] != null) {
+            out[k] = c2.values[k] - a.values[k];
+          }
+        });
+        var was = {};
+        a.units.forEach(function (u) { was[u.keys.join(' ')] = u; });
+        var units = [];
+        c2.units.forEach(function (u) {
+          var prev = was[u.keys.join(' ')];
+          if (!prev) return;
+          units.push({ keys: u.keys, v: u.v - prev.v,
+                       n1: prev.num, d1: prev.den, k1: prev.denKey,
+                       n2: u.num, d2: u.den, k2: u.denKey });
+        });
+        return { values: out, meta: {}, units: units };
+      });
   }
 
   /* The count over the population, per unit - and the two parts kept, so the
@@ -407,11 +440,16 @@
     Object.keys(v).forEach(function (k) {
       if (v[k] != null && pop[k]) out[k] = v[k] / pop[k] * f;
     });
+    var unitOf = pop.__unit || {};
     (res.units || []).forEach(function (u) {
-      var den = null;
-      u.keys.some(function (k) { if (pop[k]) { den = pop[k]; return true; } return false; });
+      var den = null, denKey = null;
+      u.keys.some(function (k) {
+        if (pop[k]) { den = pop[k]; denKey = unitOf[k] || k; return true; }
+        return false;
+      });
       if (u.v != null && den) {
-        units.push({ keys: u.keys, v: u.v / den * f, num: u.v, den: den });
+        units.push({ keys: u.keys, v: u.v / den * f,
+                     num: u.v, den: den, denKey: denKey });
       }
     });
     return { values: out, meta: {}, units: units };
@@ -430,10 +468,16 @@
                                       : "   AND unit_type <> 'district'")
         + '   AND map_key IS NOT NULL AND value IS NOT NULL');
     }).then(function (res) {
-      var out = {};
+      // Per shape, and which population unit each shape belongs to. The unit
+      // is what stops a total double counting: a district that split after
+      // 2017 is one population row drawn on two shapes, and adding the shapes
+      // gives 214.8m for a 2017 population of 207.7m.
+      var out = {}, unitOf = {};
       res.rows.forEach(function (r) {
-        String(r.k).split(' ').forEach(function (k) { out[k] = r.v; });
+        var id = String(r.k);
+        id.split(' ').forEach(function (k) { out[k] = r.v; unitOf[k] = id; });
       });
+      out.__unit = unitOf;
       return out;
     });
   }
@@ -709,7 +753,10 @@
     var i = state.row;
     if (i == null) return;
     $('legendTitle').textContent = (col('label', i))
-      + (state.norm ? ', ' + normLabel() : '');
+      + (state.norm
+         ? (/^\u0394/.test(state.year || '') ? ', change in ' : ', ')
+           + normLabel()
+         : '');
     var n = state.values ? Object.keys(state.values).length : 0;
     $('legendSub').textContent = col('group_label', i) + (n ? ' · ' + n.toLocaleString()
       + ' ' + GEO[state.level].noun + 's' : '');
@@ -816,11 +863,31 @@
 
     var figure, caption;
     if (state.norm) {
-      var num = 0, den = 0;
-      keep.forEach(function (u) { num += (u.num || 0); den += (u.den || 0); });
-      figure = den ? (num / den * normFactor()).toFixed(2)
-                     + (state.norm === 'pct' ? '%' : '') : '\u2014';
-      caption = normLabel().replace(/^%/, 'Share') + ' \u00b7 ' + where;
+      var f = normFactor(), suffix = state.norm === 'pct' ? '%' : '';
+      if (keep.length && keep[0].d2 !== undefined) {
+        // a change: the change in the whole area's rate, not a mean of
+        // district changes, which would weight Harnai like Lahore
+        var n1 = 0, d1 = 0, n2 = 0, d2 = 0, s1 = {}, s2 = {};
+        keep.forEach(function (u) {
+          n1 += (u.n1 || 0); n2 += (u.n2 || 0);
+          if (!s1[u.k1]) { s1[u.k1] = 1; d1 += (u.d1 || 0); }
+          if (!s2[u.k2]) { s2[u.k2] = 1; d2 += (u.d2 || 0); }
+        });
+        var delta = (d1 && d2) ? (n2 / d2 - n1 / d1) * f : null;
+        figure = delta == null ? '\u2014'
+          : (delta > 0 ? '+' : '') + delta.toFixed(2) + suffix;
+        caption = 'Change in ' + normLabel().replace(/^%/, 'share')
+                + ' \u00b7 ' + where;
+      } else {
+        var num = 0, den = 0, seenDen = {};
+        keep.forEach(function (u) {
+          num += (u.num || 0);
+          var dk = u.denKey || u.keys.join(' ');
+          if (!seenDen[dk]) { seenDen[dk] = 1; den += (u.den || 0); }
+        });
+        figure = den ? (num / den * f).toFixed(2) + suffix : '\u2014';
+        caption = normLabel().replace(/^%/, 'Share') + ' \u00b7 ' + where;
+      }
     } else if (rate) {
       var vals = keep.map(function (u) { return u.v; }).sort(function (a, b) { return a - b; });
       figure = vals.length
