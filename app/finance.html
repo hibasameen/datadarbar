@@ -4,12 +4,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=d98ca9b6"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=d98ca9b6"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=d98ca9b6"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=0d5edbbd"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=0d5edbbd"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=0d5edbbd"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=d98ca9b6"></script>
-<script src="assets/js/palette.js?v=d98ca9b6"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=0d5edbbd"></script>
+<script src="assets/js/palette.js?v=0d5edbbd"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -389,7 +389,7 @@
  <!-- overtime -->
  <div class="card" data-topic="overtime" id="sec-totals">
   <button class="csvbtn" data-csv="totals" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-  <h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2015–2024.</div><div id="ttChart"></div></div>
+  <h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2003–04 to 2025–26, as PBS publishes them.</div><div id="ttChart"></div></div>
 
  <div class="card" data-topic="overtime" id="sec-recon">
   <button class="csvbtn" data-csv="recon" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
@@ -425,27 +425,28 @@
  <div class="foot" id="foot-finance"><b>Sources.</b> Sector shares, growth &amp; contributions: <a href="https://www.pbs.gov.pk/national-accounts-2/" target="_blank" rel="noopener">PBS National Accounts</a> (2015-16 base; Macro Economic Indicators 1951-52→, real growth Table 6, sectoral shares Table 7b). LSM &amp; QIM: <a href="https://www.pbs.gov.pk/industry-2/" target="_blank" rel="noopener">PBS Industry Statistics</a> — monthly QIM trend sheet and annual Table-2 production indices on the 2015-16 and 2005-06 bases, retrieved Aug 2026. Manufacturing censuses: PBS <b>CMI 2005-06 and 2015-16</b> reports. Input-output: PBS Supply-Use &amp; Input-Output Tables 2015-16. Budget: Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Budget in Brief &amp; Explanatory Memorandum on Federal Receipts</a> (FY2009-10→2026-27). Full detail lives in the project's DuckDB warehouse (<code>lsm_qim</code>, <code>lsm_sector_indices</code>, <code>national_accounts</code>, <code>budget_lines</code>).</div>
 <div class="foot" id="pageFoot"></div>
 </div>
-<div class="foot" id="foot-trade"><b>Source.</b> Pakistan Bureau of Statistics — <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">External Trade Statistics</a> (8-digit "by commodities and countries"). Values as-published, aggregated to Rs billion. PBS did not publish 8-digit data for a few years, so those gaps are filled from other sources and flagged: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, shown at HS-section level only, converted to Rs at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, converted at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so a commodity breakdown isn't available for those two years. All other years are PBS 8-digit; FY2021-22→2023-24 were parsed from PBS PDFs (import totals reconcile to 93–100% of the official grand total). Full data + a queryable DuckDB warehouse accompany this project.</div>
+<div class="foot" id="foot-trade"><b>Sources.</b> Two different PBS series sit on this page, and they do not agree, so each chart says which it is on. <b>Trade over time</b> and <b>trading partners</b> are the <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">National Trade Database</a> totals as published (pull of 2026-09-27) — the grand total and the partner tables PBS reconciles against it. <b>Products, sections and movers</b> are the 8-digit "by commodities and countries" series, which is a sum of detail rather than a total: for FY2021-22 to FY2023-24 it was parsed from PBS PDFs and covers 93–100 per cent of the official grand total, so it runs up to 7 per cent below the published figure for the same year. Read a product share off the detail and a national total off the totals chart; do not mix them. The 8-digit series also has holes PBS did not publish and other sources fill: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, at HS-section level only, converted at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so no commodity breakdown exists for those two years. Values as-published, aggregated to Rs billion. Full data and a queryable DuckDB warehouse accompany this project.</div>
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=d98ca9b6"></script>
-<script src="data/growth_data.js?v=d98ca9b6"></script>
-<script src="data/structure_data.js?v=d98ca9b6"></script>
-<script src="data/money_data.js?v=d98ca9b6"></script>
-<script src="data/migration_data.js?v=d98ca9b6"></script>
-<script src="data/recon_data.js?v=d98ca9b6"></script>
-<script src="assets/js/econ_data.js?v=d98ca9b6"></script>
-<script src="assets/js/econ-shell.js?v=d98ca9b6"></script>
-<script type="module" src="assets/js/finance.js?v=d98ca9b6"></script>
-<script type="module" src="assets/js/money.js?v=d98ca9b6"></script>
-<script type="module" src="assets/js/trade.js?v=d98ca9b6"></script>
-<script src="assets/js/explorer.js?v=d98ca9b6"></script>
-<script src="assets/js/economy-rail.js?v=d98ca9b6"></script>
-<script src="assets/js/sidebar-mobile.js?v=d98ca9b6"></script>
-<script src="assets/js/shell.js?v=d98ca9b6"></script>
-<script src="assets/js/modals.js?v=d98ca9b6"></script>
-<script src="assets/js/analytics.js?v=d98ca9b6"></script>
+<script src="data/macro_data.js?v=0d5edbbd"></script>
+<script src="data/growth_data.js?v=0d5edbbd"></script>
+<script src="data/structure_data.js?v=0d5edbbd"></script>
+<script src="data/money_data.js?v=0d5edbbd"></script>
+<script src="data/migration_data.js?v=0d5edbbd"></script>
+<script src="data/recon_data.js?v=0d5edbbd"></script>
+<script src="data/trade_data.js?v=0d5edbbd"></script>
+<script src="assets/js/econ_data.js?v=0d5edbbd"></script>
+<script src="assets/js/econ-shell.js?v=0d5edbbd"></script>
+<script type="module" src="assets/js/finance.js?v=0d5edbbd"></script>
+<script type="module" src="assets/js/money.js?v=0d5edbbd"></script>
+<script type="module" src="assets/js/trade.js?v=0d5edbbd"></script>
+<script src="assets/js/explorer.js?v=0d5edbbd"></script>
+<script src="assets/js/economy-rail.js?v=0d5edbbd"></script>
+<script src="assets/js/sidebar-mobile.js?v=0d5edbbd"></script>
+<script src="assets/js/shell.js?v=0d5edbbd"></script>
+<script src="assets/js/modals.js?v=0d5edbbd"></script>
+<script src="assets/js/analytics.js?v=0d5edbbd"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

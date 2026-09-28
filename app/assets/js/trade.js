@@ -14,7 +14,7 @@ let E,D={},TX;
 const TOPICS=[
  {k:'all',label:'Everything',
   desc:'Every trade chart on one page, top to bottom.',
-  meta:'PBS External Trade Statistics (8-digit), 2015–2024; gaps flagged in the source note below.'},
+  meta:'PBS National Trade Database for totals and partners (2003–04 on); 8-digit External Trade Statistics for the product charts (2015–16 on). The two do not agree — see the source note below.'},
  {k:'basket',label:'What we trade',
   desc:'The full export/import basket as a drill-down treemap, plus the largest single products.',
   meta:'PBS External Trade Statistics — 8-digit imports & exports by commodity.'},
@@ -22,11 +22,11 @@ const TOPICS=[
   desc:'The biggest risers and fallers in the trade basket over the decade, at your chosen detail level.',
   meta:'PBS 8-digit trade; change between 2015-16 and 2024-25. Detail level set in the sidebar.'},
  {k:'overtime',label:'Trade over time',
-  desc:'Exports, imports and the trade balance year by year, 2015–2024.',
-  meta:'PBS External Trade Statistics; a few years’ gaps filled from UN Comtrade / Economic Survey (see note).'},
+  desc:'Exports, imports and the trade balance year by year, 2003–04 to 2025–26.',
+  meta:'PBS National Trade Database, monthly totals as published. This is the grand total, not the sum of the product detail shown elsewhere on this page.'},
  {k:'partners',label:'Trading partners',
   desc:'The largest countries Pakistan trades with — pick one for its own profile.',
-  meta:'PBS External Trade Statistics — trade by partner country.'}];
+  meta:'PBS National Trade Database, trade by partner country, 2003–04 on. Partner tables do not always account for the whole published total — how much they name is charted below.'}];
 const TOPIC_GROUPS=[
  {label:null,keys:['all']},
  {label:'What & how much',keys:['basket','movers','overtime']},
@@ -48,11 +48,17 @@ function standDown(){
 }
 let topic='basket',tCountry='all',tLevel='section',mDir='export',mMeasure='abs',mMode='span',mWinIdx=0,applyingHash=false;
 const LEVEL_LABEL={section:'HS section',chapter:'HS chapter',product:'8-digit product'};
+let TR_FLAGS={},TR_CLEAN=null;
 
 function start(){
  if(!window.ECON){return setTimeout(start,30);}
  E=window.ECON;D.ser={};E.indicators.series.forEach(s=>D.ser[s.key]=s);
  TX=E.trade_extra||{sel:[],country:{},movers:{},meta:{}};
+ /* The artefact's totals were a sum of D-10 detail covering 93-100% of the
+    grand total, so they ran 7% under the published figure and began in
+    2015-16. DD_TRADE carries the published total from 2003-04. */
+ if(window.DD_TRADE){const W=window.DD_TRADE;E.totals=W.totals;E.partners=W.partners;
+  TR_FLAGS=W.flags||{};TR_CLEAN=W.last_clean||null;}
  initDrill();initPartners();initProducts();drawTotals();initMovers();initCountry();initRecon();initCsv();initTopics();
  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
   if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
@@ -198,31 +204,60 @@ function drawDrill(){
  d3.select('#drillMeta').text(`${dDir==='export'?'Exports':'Imports'} ${dYears[dYi]} · ${dPath.length===0?(overview?'sector overview — select a sector for products':'all products, grouped by section'):'section '+dPath[0]+', by chapter'} · total ${fmtRs(total)}`);
 }
 /* ---------- trade over time ---------- */
+/* Every other year fit when the series was ten years long. At twenty-three
+   it printed twelve labels into the width of six and they ran together into
+   "2003200420062007". The stride has to come from how many years there are
+   and how much room they have, not from a constant, and it is counted back
+   from the last year so the end of the series is always labelled. */
+function tickYears(years,W){
+ const want=W<420?4:W<700?6:8,step=Math.max(1,Math.ceil(years.length/want)),out=[];
+ for(let i=years.length-1;i>=0;i-=step)out.unshift(years[i]);
+ return out;
+}
 function drawTotalsInto(el,W,H,hi){
  const T=E.totals,years=T.years,m={t:16,r:64,b:28,l:54};
  const x=d3.scalePoint().domain(years).range([m.l,W-m.r]).padding(.5);
  const av=[];years.forEach(y=>['export','import','balance'].forEach(k=>{if(T[k][y]!=null)av.push(T[k][y]);}));
  const y=d3.scaleLinear().domain([Math.min(0,d3.min(av)),d3.max(av)]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H);
- svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%(W<420?3:2)===0)));
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(tickYears(years,W)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
  const ser=[['export','Exports',scolor('XI')],['import','Imports','var(--negative)'],['balance','Balance','var(--green-800)']];
  const line=d3.line().defined(d=>d.v!=null).x(d=>x(d.y)).y(d=>y(d.v));
+ /* A flagged year is drawn, not dropped - hiding PBS's own published
+    figure would be its own kind of lie - but drawn dashed and faint, so the
+    eye does not read a data defect as a trend. The note below says which. */
+ const ci=TR_CLEAN?years.indexOf(TR_CLEAN):years.length-1,
+       cut=ci<0?years.length-1:ci;
  ser.forEach(s=>{const pts=years.map(yr=>({y:yr,v:T[s[0]][yr]}));
    const dim=(hi==='gap'&&s[0]==='balance')||(hi==='grow'&&s[0]==='balance');
-   svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('opacity',dim?0.25:1).attr('d',line);
+   svg.append('path').datum(pts.slice(0,cut+1)).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('opacity',dim?0.25:1).attr('d',line);
+   if(cut<years.length-1)svg.append('path').datum(pts.slice(cut)).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('stroke-dasharray','5 4').attr('opacity',dim?0.15:0.4).attr('d',line);
    const lp=pts.filter(p=>p.v!=null).slice(-1)[0];if(lp)svg.append('text').attr('x',x(lp.y)+8).attr('y',y(lp.v)+4).attr('font-size',12).attr('font-weight',700).attr('fill',s[2]).attr('opacity',dim?0.3:1).text(s[1]);});
  if(hi==='gap'){const yr=years[years.length-1];const e=T.export[yr],im=T.import[yr];if(e&&im)svg.append('line').attr('x1',x(yr)).attr('x2',x(yr)).attr('y1',y(e)).attr('y2',y(im)).attr('stroke','var(--negative)').attr('stroke-width',2).attr('stroke-dasharray','4 3');}
 }
-function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();drawTotalsInto(el,el.node().clientWidth||900,300,null);}
+function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();
+ drawTotalsInto(el,el.node().clientWidth||900,300,null);
+ const fy=Object.keys(TR_FLAGS).sort();
+ if(fy.length)el.append('div').attr('class','note').html(
+  'Drawn dashed and not to be quoted: '+fy.map(y=>'<b>'+y+'</b> \u2014 '+
+   TR_FLAGS[y].map(t=>t.replace(/</g,'&lt;')).join(' ')).join(' '));}
 
 /* ---------- partners & products (year slider) ---------- */
 let pDir='export',prDir='export';
-function setSlider(id,lblId,years,cb){const s=d3.select('#'+id);s.attr('min',0).attr('max',Math.max(0,years.length-1)).property('value',years.length-1);d3.select('#'+lblId).text(years[years.length-1]||'');s.on('input',function(){d3.select('#'+lblId).text(years[+this.value]);cb();});}
+/* A slider that opens on the newest year opens, here, on a year PBS has not
+   finished publishing and whose Q1 is not credible. def picks the last year
+   fit to be read without a caveat; the flagged year is still reachable, one
+   notch further right, which is the right place for it. */
+function setSlider(id,lblId,years,cb,def){const s=d3.select('#'+id);
+ let i=years.length-1;if(def!=null){const j=years.indexOf(def);if(j>=0)i=j;}
+ s.attr('min',0).attr('max',Math.max(0,years.length-1)).property('value',i);
+ d3.select('#'+lblId).text(years[i]||'');
+ s.on('input',function(){d3.select('#'+lblId).text(years[+this.value]);cb();});}
 const pYears=()=>Object.keys(E.partners[pDir]).sort();
 const prYears=()=>Object.keys(E.products[prDir]).sort();
-function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();}
+function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners,TR_CLEAN);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners,TR_CLEAN);drawPartners();}
 function initProducts(){d3.selectAll('#prDir button').on('click',function(){d3.selectAll('#prDir button').classed('on',false);d3.select(this).classed('on',true);prDir=this.dataset.d;setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();});setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();}
 /* A slider index of zero is a valid selection, and `+value || last` is not a
    way to read one: 0 is falsy, so choosing the FIRST year silently drew the
@@ -395,7 +430,8 @@ const CSV={
  products:()=>{const ys=prYears(),yr=yearAt('#prYr',ys);
    return [`Pakistan_top_products_${prDir}_${yr}.csv`,(E.products[prDir][yr]||[]).map(p=>({direction:prDir,year:yr,product:p.name,section:p.section,rs_bn:r2(p.bn)}))];},
  totals:()=>{const T=E.totals;
-   return ['Pakistan_trade_over_time.csv',T.years.map(y=>({year:y,exports_rs_bn:r2(T.export[y]),imports_rs_bn:r2(T.import[y]),balance_rs_bn:r2(T.balance[y])}))];},
+   return ['Pakistan_trade_over_time.csv',T.years.map(y=>({year:y,exports_rs_bn:r2(T.export[y]),imports_rs_bn:r2(T.import[y]),balance_rs_bn:r2(T.balance[y]),
+     months_published:T.months?T.months[y]:null,caveat:(TR_FLAGS[y]||[]).join(' ')||null}))];},
  partners:()=>{const ys=pYears(),yr=yearAt('#pYr',ys);
    return [`Pakistan_top_partners_${pDir}_${yr}.csv`,(E.partners[pDir][yr]||[]).map(p=>({direction:pDir,year:yr,partner:p.country,rs_bn:r2(p.bn)}))];},
  movers:()=>{const arr=moverList(),w=currentWindow();
