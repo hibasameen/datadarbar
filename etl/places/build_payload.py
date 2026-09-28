@@ -142,13 +142,19 @@ def main():
     assert len(set(keys)) == len(keys), 'the compound source key is not unique'
 
     unresolved = set(hier['unresolved_review'])
-    hcols = ('h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls')
-    for j, n in enumerate(hcols):
+    for n in ('h_topic', 'h_sub', 'h_family', 'h_metric', 'h_controls'):
         names.append(n)
-    names.append('h_review')
+    # h_review: the label could not be resolved to a definition.
+    # h_sum:    the values may be added across places (a count, not a mean).
+    # h_norm:   the values may be read against the population (a count OF
+    #           PEOPLE). Both are decided in build_hierarchy.py from the
+    #           crosswalk's metric form, which types the quantity rather than
+    #           guessing at its wording.
+    names += ['h_review', 'h_sum', 'h_norm']
     rows = [r + tuple(hv[k][hmap[keys[i]][j]] for j, k in enumerate(
                 ('topic', 'sub', 'family', 'metric', 'controls')))
-              + (1 if hmap[keys[i]][5] in unresolved else 0,)
+              + (1 if hmap[keys[i]][5] in unresolved else 0,
+                 hmap[keys[i]][6], hmap[keys[i]][7])
             for i, r in enumerate(rows)]
 
     P = columnar(rows, names,

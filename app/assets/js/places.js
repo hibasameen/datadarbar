@@ -538,10 +538,22 @@
     return yrs;
   }
 
+  /* Bumped by every choose(); a response carrying a stale token is dropped. */
+  var drawSeq = 0;
+
   function choose(i, norm) {
     state.row = i;
     if (norm !== undefined) state.norm = norm || '';
-    if (rail) rail.follow(i);
+    /* A conversion does not survive a move to a series that cannot take one.
+       Every route in - a search result, a hierarchy choice, a shared link, a
+       district/tehsil switch - ends here, so this is the one place it has to
+       be checked. Without it, turning on "% of population" over a disability
+       count and then opening "Population over 60 min from care, walking (%)"
+       left n=pct alive and divided a published percentage by the population
+       again: the strip read 0.00% while the metric dropdown said "All" and
+       was greyed out. */
+    if (state.norm && col('h_norm', i) !== 1) state.norm = '';
+    if (rail) rail.follow(i, state.norm);
     var yrs = yearsFor(i);
     // Default to the most recent actual year, not to the change. The curated
     // pairs carry a third entry - the difference between the censuses - and it
@@ -555,7 +567,15 @@
     renderLegend();
     $('legend').hidden = false;
     $('legendSub').textContent = 'Loading…';
+    /* Whichever request answered last used to win, and on a shared link two
+       are always in flight: the page opens on its default indicator and the
+       URL then chooses another. The default's values arrived second and were
+       written over the ones already drawn, so a deep link to tehsil travel
+       time showed 591 tehsils ranging 3,574 to 4,123,354 - the population -
+       under a legend that said minutes. Only the newest request may write. */
+    var mine = ++drawSeq;
     fetchValues(i).then(function (r) {
+      if (mine !== drawSeq) return;
       state.values = r.values;
       state.meta = r.meta;
       state.units = r.units || null;
@@ -566,6 +586,7 @@
         writeUrl();
       });
     }).catch(function (e) {
+      if (mine !== drawSeq) return;
       $('legendSub').textContent = 'Could not load this indicator: ' + e.message;
     });
   }
@@ -823,14 +844,10 @@
     });
     var n = keep.length;
     var where = prov || 'Pakistan';
-    // dp is is_rate only for census rows; elsewhere it is decimal places.
-    // The rail already decides this, so ask it rather than guess again.
-    var rate = !state.norm && (window.DDPlacesRail
-      ? window.DDPlacesRail.isRate(col('source', state.row) === 'census',
-                                   col('dp', state.row),
-                                   col('measure', state.row),
-                                   col('metric', state.row))
-      : col('dp', state.row) > 0);
+    /* A mean, a rate, an index or a distance cannot be totalled across
+       places. Decided in the build from the kind of quantity, not from
+       whether the label happens to contain the word "mean". */
+    var rate = !state.norm && col('h_sum', state.row) !== 1;
 
     var figure, caption;
     if (state.norm) {

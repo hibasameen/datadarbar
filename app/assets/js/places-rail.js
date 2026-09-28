@@ -34,19 +34,13 @@
 (function () {
   'use strict';
 
-  /* Words that mean the number is already relative to something. Checked on
-     the measure and the breakdown, because either half can carry it. */
-  var RATE_WORDS = /%|\brates?\b|\bratios?\b|\bper\b|averag|\bavg\b|\bmedian\b|\bmean\b|\bindex\b|proportion|\bshare\b|\bpct\b|per cent|percent|\bdensity\b/i;
-
-  /* The population itself, which is the denominator and cannot be normalised
-     by itself. Only the WHOLE population: an earlier rule excluded anything
-     starting with "Population", which silently took out every mother tongue -
-     they are published as "Population by Mother Tongue - Balochi" - and those
-     are exactly the counts a share is wanted for. Male and female populations
-     stay in, because the share of a district that is female is a real
-     question; the derived columns beside them (sex ratio, density, urban
-     proportion, household size) are caught as rates by their own names. */
-  var WHOLE_POP = /^population[\s\-\u2013\u2014]*(20\d\d)?(\s*[\u2014-]\s*all sexes)?$/i;
+  /* Which entries may be read per head, and which may be totalled, are
+     decided in the build and travel on the row as h_norm and h_sum. The two
+     regular expressions that used to live here - one for words meaning "this
+     is already relative", one for the whole population, which cannot be a
+     share of itself - were the best guess available before the crosswalk
+     typed every entry. They are gone because they were wrong 278 times, and
+     because a second copy of the rule is a second thing to drift. */
 
   var NORMS = [
     { id: 'p', mode: 'pct', label: '% of population' },
@@ -130,13 +124,13 @@
          Population and area are excluded even though they are counts:
          "population per 1,000 people" is 1,000 everywhere, and land per head
          is a different question from the one this control asks. */
-      var dp = col('dp', i);
-      var census = col('source', i) === 'census';
-      // dp is is_rate only for census rows. Elsewhere it is decimal places:
-      // crop area carries dp 1 and is a count of hectares, not a rate.
-      var isRate = (census && dp > 0)
-        || RATE_WORDS.test(measure) || RATE_WORDS.test(metric || '');
-      var countable = !isRate && !WHOLE_POP.test(measure) && !/^area\b/i.test(measure);
+      /* Whether this can be read per head is decided in the build, from the
+         crosswalk's metric form - the kind of quantity - rather than from
+         the wording of its label. Reading the label got it wrong 278 times:
+         "Travel time to care, motorised (min)" has no word in it that says
+         rate, so minutes were offered as a share of the population, and so
+         were hectares of apples and the depth of the water table. */
+      var countable = col('h_norm', i) === 1;
 
       /* The hierarchy's topic, not the index's own. The original topic
          column stays on the row as `srcTopic` because heading() keys census
@@ -326,12 +320,10 @@
   window.DDPlacesRail = {
     /* Exposed because the totals strip needs the same answer. It once used dp
        alone and so totalled a contraceptive-prevalence rate across 128
-       districts to 3,635 - a number that means nothing. One test, one
-       answer. */
-    isRate: function (census, dp, measure, metric) {
-      return (census && dp > 0)
-          || RATE_WORDS.test(measure || '') || RATE_WORDS.test(metric || '');
-    },
+       districts to 3,635 - a number that means nothing - and then, reading
+       labels instead, added 471 tehsils' average journeys to care into
+       26,272 minutes. Both now come from the same build-time flag. */
+    canTotal: function (row) { return row === 1 || row === true; },
 
     mount: function (opts) {
       var host = opts.el;
@@ -366,8 +358,16 @@
         /* The picker list and the rail are peers, so choosing from one moves
            the other. Without this they drift and the page shows a rail that
            disagrees with the indicator actually on the map. */
-        follow: function (row) {
-          var r = index.filter(function (x) { return x.row === row; })[0];
+        follow: function (row, norm) {
+          /* Matched on the conversion as well as the row. Every indicator
+             with a per-head reading is three rows here - the count and its
+             two twins - and matching on the row alone always returned the
+             count, so choosing "% of population" redrew the map but snapped
+             the Metric dropdown back to "All" beside it. */
+          var want = norm || '';
+          var r = index.filter(function (x) {
+            return x.row === row && (x.norm || '') === want;
+          })[0] || index.filter(function (x) { return x.row === row; })[0];
           if (!r) return;
           hold(st, r);
           rail.sync(false);

@@ -108,6 +108,71 @@ CORRECTIONS = {
 }
 
 
+# ── what each kind of quantity may do ──────────────────────────────────────
+# Two questions the picker has been answering by reading the label, and
+# getting wrong 278 times:
+#
+#   can it be added up?      a count can, a mean cannot
+#   can it be read per head? only a count OF PEOPLE can
+#
+# The old rule was one regular expression over the measure and breakdown
+# names, which worked whenever the name happened to contain "mean", "per" or
+# "%". "Travel time to care, motorised (min)" contains none of them, so the
+# picker totalled 471 tehsils' average journeys to 26,272 minutes and offered
+# to express them as a share of the population - 0.01%. "APPLE - Area
+# (thousand hectares)" and "Water table depth (feet)" were offered the same.
+#
+# The crosswalk already types every entry: 22 metric forms over all 5,201.
+# That is the right key, because it describes the quantity rather than its
+# wording. SUM_OK and POP_OK below are the whole rule, and every metric form
+# must appear in them or the build fails - a new one must be classified, not
+# silently defaulted.
+SUM_OK = {
+    'Source count': True,
+    'Source value (retain native definition)': True,
+    'Enumerated structure count': True,
+    'Cultivated area (thousand hectares)': True,
+    'Production volume (thousand tonnes)': True,
+    'Land area (km\u00b2)': True,
+    'Yield (tonnes/hectare)': False,
+    'Published percentage / proportion': False,
+    'Published rate (definition review)': False,
+    'Published rate / ratio': False,
+    'Average / source-defined score': False,
+    'Growth rate (%)': False,
+    'Density (people per km\u00b2)': False,
+    'Sex ratio (source scaling)': False,
+    'Mean time (minutes; source weighting)': False,
+    'Median time (minutes)': False,
+    'Distance (km)': False,
+    'Distance gap (km)': False,
+    'Percentage-point gap': False,
+    'Index': False,
+    'Percentile': False,
+    'Radiance intensity': False,
+}
+
+# Only counts of people. Hectares, tonnes, minutes, kilometres, indices and
+# gaps are not people, and a count of buildings is not either: banks per
+# 1,000 residents may be worth having one day, but it is a facility rate with
+# its own label, not a share of the population.
+POP_OK = {
+    'Source count': True,
+    'Source value (retain native definition)': True,
+    'Enumerated structure count': False,
+}
+
+# Where the crosswalk's type is contradicted by the values themselves.
+# "Literate Population" is typed 'Published rate / ratio' and runs to
+# 7,760,203 - it is a count of people, and the district column beside it
+# reaches -725,564 because it carries the 2017-to-2023 change. Typed by what
+# it is, so it can be totalled and read per head like every other headcount.
+METRIC_FORM_OVERRIDE = {
+    'district\u001fliteracy\u001fliterate_all': 'Source count',
+    'district\u001fliteracy\u001filliterate_all': 'Source count',
+}
+
+
 def countable(o):
     measure = o.get('measure') or o.get('label') or ''
     metric = o.get('metric') or ''
@@ -166,10 +231,24 @@ def main():
             review = fix.get('review', review)
             applied.add(key)
         assert topic in topics, f'row maps to an unknown topic: {topic!r}'
+        form = METRIC_FORM_OVERRIDE.get(key, m['metric_form'])
+        if form not in SUM_OK:
+            raise AssertionError(
+                f'metric form {form!r} is not classified in SUM_OK/POP_OK - '
+                f'a new quantity type must be told whether it can be totalled '
+                f'and whether it can be read per head')
+        # countable() is the rail's own "is this already relative?" test. Both
+        # gates have to pass: the form says a population denominator is
+        # meaningful for this kind of quantity, and the label says this
+        # particular entry is not already a rate. The second still does real
+        # work - table 29 counts housing units under breakdowns like "Rooms
+        # per Housing Unit", and those are counts, but not of people.
         out[key] = [
             topics.index(topic), idx('sub', sub), idx('family', family),
             idx('metric', m['metric_form']), idx('controls', controls),
             idx('review', review),
+            1 if SUM_OK[form] else 0,
+            1 if (POP_OK.get(form, False) and countable(o)) else 0,
         ]
 
     unmatched = set(CORRECTIONS) - applied
@@ -201,6 +280,9 @@ def main():
           f'{len(vocab["family"])} families, {len(vocab["metric"])} metric forms')
     print(f'  {sum(1 for v in out.values() if v[5] in unresolved):,} rows '
           f'marked "definition needs review"')
+    n_sum = sum(v[6] for v in out.values())
+    n_norm = sum(v[7] for v in out.values())
+    print(f'  {n_sum:,} entries can be totalled; {n_norm:,} can be read per head')
     print(f'  per-head modes agree with places-rail.js on all {len(mapping):,} rows')
     print(f'  {len(applied)} corrections applied to the proposal\'s mapping')
     print(f'  -> {dest} ({dest.stat().st_size/1e6:.2f} MB)')
