@@ -133,7 +133,12 @@
            in one flat list is unreadable; the same 180 under the eight tables
            that published them is a list you can scan. */
         var opts = uniq(rows, lv, LABEL_OF[lv], groupOf[lv]);
-        if (optional[lv] && opts.length > 1) {
+        // Always, not only when there is a choice. With the All option
+        // dropped on a single-dataset topic, fill() fell back to that one
+        // dataset and wrote it into state - so an All that the reader never
+        // cancelled was lost the moment they passed through such a topic,
+        // and every topic after it showed one table's charts.
+        if (optional[lv]) {
           opts = [{ value: ALL, label: ALL_LABEL[lv]
                      || ('All ' + (names[lv] || CAPTION[lv] || lv).toLowerCase()
                          + 's') }].concat(opts);

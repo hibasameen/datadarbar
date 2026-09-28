@@ -39,6 +39,7 @@
     'sec-res': ['sbp_observations', 'SBP monetary and external statistics'],
     'sec-bop': ['sbp_observations', 'SBP monetary and external statistics'],
     'sec-remit': ['diaspora_remittances_monthly', 'Remittances to Pakistan by month'],
+    'sec-emig': ['diaspora_destinations', 'Emigrants by destination, skill and occupation'],
     'sec-m': ['sbp_observations', 'SBP monetary and external statistics'],
     'sec-npl': ['sbp_observations', 'SBP monetary and external statistics'],
     // trade
@@ -162,10 +163,16 @@
       }
     }
 
-    var state = { ds: index[0].ds, topic: index[0].topic, ind: index[0].ind };
+    /* All datasets by default, as Places does. With the dataset leading, a
+       topic showed only the charts of whichever table sorted first: External
+       balance listed the two SBP charts and hid both remittances and
+       emigration, which are the two anyone comes to that topic for. */
+    var state = { ds: window.DDExplorer.ALL, topic: index[0].topic,
+                  ind: index[0].ind };
     var rail = window.DDExplorer.mount({
       el: host, index: index, state: state,
       levels: ['topic', 'ds', 'ind'],
+      optional: { ds: true },
       listLevel: list ? 'ind' : undefined, listEl: list, searchEl: search,
       labels: { ind: 'Chart' }, moreEl: moreEl,
       onChange: function (row) { go(row); },
@@ -208,7 +215,6 @@
       if (!t || t === state.topic) return;
       var first = index.filter(function (r) { return r.topic === t; })[0];
       if (!first) return;                 // 'all' and anything not in the index
-      state.ds = first.ds;
       state.topic = first.topic;
       state.ind = first.ind;
       rail.sync(false);

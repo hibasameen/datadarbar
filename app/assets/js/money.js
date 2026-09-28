@@ -101,7 +101,7 @@ const TOPIC_DRAWS = {
   rupee:    () => { drawUsd(); drawReer(); },
   prices:   () => { drawCpi(); drawFood(); },
   rates:    () => { drawPolicy(); drawKibor(); drawSpread(); },
-  external: () => { drawRes(); drawBop(); drawRemit(); },
+  external: () => { drawRes(); drawBop(); drawRemit(); drawEmig(); },
   money:    () => { drawMoney(); drawNpl(); }
 };
 const TOPIC_GROUPS = [
@@ -574,6 +574,106 @@ function drawRemit() {
     .attr('fill', 'var(--muted)').text(r => usdm(r[2]));
 }
 
+/* ---------------- chart: emigration ----------------
+   The other end of the remittance story, from three warehouse tables nothing
+   drew. One thing the source does that has to be handled rather than trusted:
+   diaspora_destinations carries year = -1 on 197 rows, which is not a year
+   but the cumulative total since records began. The payload keeps it in its
+   own block for exactly that reason, and the destinations view is that total
+   - 8.67 million people - said as a total rather than folded into a series
+   whose years would then each be roughly double. */
+let emigMode = 'dest';
+
+function wireEmig() {
+  d3.selectAll('#emigMode .seg').on('click', function () {
+    emigMode = this.dataset.em;
+    drawEmig();
+  });
+}
+
+function drawEmig() {
+  const M = window.DD_MIGRATION;
+  if (!M) return nodata('#chEmig', 'No emigration data.');
+  d3.selectAll('#emigMode .seg').classed('on', function () {
+    return this.dataset.em === emigMode;
+  });
+
+  const el = d3.select('#chEmig'); el.selectAll('*').remove();
+  const W = el.node().clientWidth || 1100;
+
+  if (emigMode === 'skill') return emigSkill(M, el, W);
+  if (emigMode === 'occ') return emigBars(M.occupation.rows.slice(0, 20), el, W,
+    'Registered emigrants by occupation, 2024',
+    'The twenty largest of ' + M.occupation.rows.length + ' occupations. One '
+    + 'year only \u2014 the Bureau publishes this cut for 2024 alone.');
+
+  const tot = d3.sum(M.total.rows, r => r[2]);
+  return emigBars(M.total.rows.slice(0, 20).map(r => [r[0], r[2]]), el, W,
+    'Registered emigrants since records began, by destination',
+    d3.format(',')(tot) + ' people across ' + M.total.rows.length + ' countries. '
+    + 'This is the cumulative total the source publishes, not a single year: '
+    + M.annual.rows.length + ' annual rows exist from 2011 and are a different '
+    + 'universe, so the two are never added.');
+}
+
+function emigBars(rows, el, W, title, note) {
+  d3.select('#emigNote').text(note);
+  const H = Math.max(240, rows.length * 22 + 40), m = { t: 22, r: 96, b: 24, l: 190 };
+  const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
+  const x = d3.scaleLinear().domain([0, d3.max(rows, r => r[1]) * 1.06]).range([m.l, W - m.r]);
+  const y = d3.scaleBand().domain(rows.map(r => r[0])).range([m.t, H - m.b]).padding(.24);
+  svg.append('text').attr('x', m.l).attr('y', 12).attr('font-size', 10)
+    .attr('fill', 'var(--muted-2)').text(title);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).attr('class', 'axis')
+    .call(d3.axisBottom(x).ticks(Math.floor((W - m.r) / 110)).tickFormat(d3.format('~s')));
+  svg.append('g').attr('transform', `translate(${m.l},0)`).attr('class', 'axis')
+    .call(d3.axisLeft(y));
+  const tot = d3.sum(rows, r => r[1]);
+  svg.selectAll('rect.b').data(rows).join('rect').attr('class', 'b')
+    .attr('x', m.l).attr('y', r => y(r[0])).attr('height', y.bandwidth())
+    .attr('width', r => Math.max(0, x(r[1]) - m.l))
+    .attr('fill', 'var(--green-700)').attr('rx', 3)
+    .on('mousemove', (e, r) => showTip(`<b>${r[0]}</b><br>${d3.format(',')(r[1])}`
+      + `<br>${(100 * r[1] / tot).toFixed(1)}% of those shown`, e))
+    .on('mouseleave', hideTip);
+  svg.selectAll('text.v').data(rows).join('text').attr('class', 'v cv')
+    .attr('x', r => x(r[1]) + 6).attr('y', r => y(r[0]) + y.bandwidth() / 2 + 3)
+    .attr('fill', 'var(--muted)').text(r => d3.format('~s')(r[1]));
+}
+
+function emigSkill(M, el, W) {
+  const rows = M.skill.rows;
+  const years = [...new Set(rows.map(r => r[0]))].sort((a, b) => a - b);
+  const levels = [...new Set(rows.map(r => r[2]))];
+  d3.select('#emigNote').text(
+    'Registered emigrants by skill level, ' + years[0] + ' to ' + years[years.length - 1]
+    + '. The Bureau\u2019s own categories, which are about the job applied for '
+    + 'rather than the qualification held.');
+  const H = 340, m = { t: 18, r: 150, b: 26, l: 58 };
+  const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
+  const byLevel = d3.group(rows, r => r[2]);
+  const x = d3.scaleLinear().domain(d3.extent(years)).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, d3.max(rows, r => r[3])]).nice()
+    .range([H - m.b, m.t]);
+  const colour = window.DDPalette
+    ? window.DDPalette.ordinal(levels) : () => 'var(--green-700)';
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).attr('class', 'axis')
+    .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')));
+  svg.append('g').attr('transform', `translate(${m.l},0)`).attr('class', 'axis')
+    .call(d3.axisLeft(y).ticks(6).tickFormat(d3.format('~s')));
+  levels.forEach((lv, i) => {
+    const series = (byLevel.get(lv) || []).slice().sort((a, b) => a[0] - b[0]);
+    svg.append('path').datum(series).attr('fill', 'none')
+      .attr('stroke', colour(lv)).attr('stroke-width', 2)
+      .attr('d', d3.line().x(r => x(r[0])).y(r => y(r[3])));
+    const last = series[series.length - 1];
+    if (last) {
+      svg.append('text').attr('x', W - m.r + 6).attr('y', y(last[3]) + 3)
+        .attr('font-size', 11).attr('fill', colour(lv)).text(lv);
+    }
+  });
+}
+
 /* ---------------- charts: money & banks ---------------- */
 function drawMoney() {
   chips('money', drawMoney);
@@ -826,7 +926,7 @@ function buildFoot() {
 function start() {
   if (!window.DD_MONEY) { return setTimeout(start, 30); }
   D = window.DD_MONEY; S = D.series; M = D.meta;
-  buildFySelect(); buildFoot(); initCsv();
+  buildFySelect(); buildFoot(); initCsv(); wireEmig();
   initTopics();          // last: it triggers the first render via applyStateFromHash()
   let rt;
   window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
