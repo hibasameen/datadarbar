@@ -156,15 +156,20 @@
     },
     discos: {
       theme: 'Energy',
-      title: 'Electricity distribution losses',
-      dek: 'The share of the electricity each distribution company buys that '
-         + 'it never bills anyone for, 2006-07 to 2024-25. In the last year '
-         + 'that is 8.4 per cent in Islamabad and 38.8, 38.4 and 39.0 per '
-         + 'cent in Peshawar, Quetta and Sukkur \u2014 two units in every five.',
-      note: 'Losses here are technical and commercial together: electricity '
-          + 'lost in the wires and electricity delivered but never paid for. '
-          + 'NEPRA\u2019s published figure does not separate them, so neither '
-          + 'does this. Rates are computed from the units bought and units '
+      title: 'Electricity transmission and distribution losses',
+      dek: 'The share of the electricity entering each distribution '
+         + 'company\u2019s system that never reaches a billed meter, 2006-07 to '
+         + '2024-25. In the last year that is 8.4 per cent in Islamabad and '
+         + '38.8, 38.4 and 39.0 per cent in Peshawar, Quetta and Sukkur '
+         + '\u2014 two units in every five.',
+      note: 'This is a T&D loss: units that entered the system and were '
+          + 'never billed, whether they leaked away in the wires or were '
+          + 'taken off them. It is NOT electricity delivered and then not '
+          + 'paid for. NEPRA reports that separately, as commercial losses '
+          + 'and recovery, and measures it in rupees billed against rupees '
+          + 'collected \u2014 a unit that was billed and never paid for is '
+          + 'counted as sold here, not lost. Rates are computed from the '
+          + 'units bought and units '
           + 'sold printed in the same row rather than from the percentage '
           + 'column beside them, which contradicts its own row for PESCO in '
           + 'the 2011 edition. The 2024 edition prints the whole system\u2019s '
@@ -177,9 +182,17 @@
     plants: {
       theme: 'Energy',
       title: 'Power plants and capacity',
-      dek: 'The 133 plants on the national grid, what they burn and how much '
-         + 'they could produce.',
-      note: 'Installed capacity is nameplate \u2014 what a plant could produce, not '
+      dek: 'The plants in NEPRA\u2019s report for a chosen year, what they burn '
+         + 'and how much they were rated at. 118 plants and 41,440 MW in '
+         + '2024-25; 133 plants have appeared at some point since 2017-18.',
+      note: 'Every figure here belongs to one report year, chosen above the '
+          + 'chart. Adding the years together would count the same plant up '
+          + 'to eight times, and 22 plants have their capacity revised '
+          + 'between reports \u2014 Tarbela is 3,948 MW in 2017-18 and 3,478 MW '
+          + 'after it. This is the reporting universe NEPRA published, not a '
+          + 'register of every plant in the country, and a plant leaving the '
+          + 'series has left the reports rather than necessarily closed. '
+          + 'Installed capacity is nameplate \u2014 what a plant could produce, not '
           + 'what it does, so the fuel mix here is not the generation mix. '
           + 'NEPRA spells the same fuel more than one way across its tables '
           + '(\u2018Coal\u2019 and \u2018THERMAL- COAL\u2019 are both coal), so the bars group '
@@ -264,6 +277,7 @@
     $('paneDek').textContent = t.dek || '';
     $('cardNote').textContent = t.note || '';
     renderSrc(current.chart);
+    clearCtl();   /* the year picker belongs to the plants charts alone */
     (CHART[current.chart] || renderBudget)();
   }
 
@@ -740,30 +754,81 @@
   }
 
   /* ── power plants ────────────────────────────────────────────────────── */
-  var FY = ['2017-18', '2018-19', '2019-20', '2020-21', '2021-22', '2022-23',
-            '2023-24', '2024-25'];
+  /* THE UNION OF EIGHT REPORTS IS NOT A YEAR. These charts used to draw
+     nepra_plants, which collapses the reports to one row per plant carrying
+     its MAXIMUM capacity across every year it appears, with a first and last
+     fiscal year around it. Summed, that is 133 plants and 45,405 MW - a
+     figure for no year at all, since NEPRA reported 118 plants and 41,440 MW
+     for 2024-25. It also could not say which year a capacity belonged to, and
+     22 plants are revised between reports: Tarbela is 3,948 MW in 2017-18 and
+     3,478 MW in every year after.
 
-  /* first_fy and last_fy are the first and last fiscal year a plant appears in
-     NEPRA's reports, NOT when it was commissioned: 108 of the 133 carry
-     2017-18, which is simply where the report series begins. Drawn as
-     cumulative capacity it would show 37,853 MW springing into existence in
-     one year. So this counts what is IN the reports each year, and says so. */
-  function renderPlantsReports() {
-    var rows = FY.map(function (fy) {
-      var live = plants.filter(function (d) {
-        return d.first_fy <= fy && fy <= d.last_fy;
-      });
-      return { fy: fy, n: live.length, mw: d3.sum(live, function (d) { return d.mw; }) };
+     The payload now carries the observations themselves, one row per plant
+     per fiscal year, and these charts name the year they draw. Presence is
+     read, not inferred: reconstructing it from a first-to-last span puts one
+     plant into a year its report does not contain. */
+  var PLANT_YEARS = (D.plants && D.plants.years) || [];
+  var PLANT_COVER = (D.plants && D.plants.cover) || {};
+  var plantFy = PLANT_YEARS[PLANT_YEARS.length - 1];
+
+  function clearCtl() {
+    var old = $('card').querySelector('.ctl-row');
+    if (old) old.remove();
+  }
+
+  function plantYearPicker() {
+    clearCtl();
+    var bar = document.createElement('div');
+    bar.className = 'ctl-row';
+    var lab = document.createElement('span');
+    lab.className = 'ctl-lbl';
+    lab.textContent = 'Report year';
+    bar.appendChild(lab);
+    PLANT_YEARS.forEach(function (fy) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'seg';
+      b.textContent = fy;
+      b.setAttribute('aria-pressed', fy === plantFy ? 'true' : 'false');
+      b.onclick = function () { plantFy = fy; render(); };
+      bar.appendChild(b);
     });
-    var gone = plants.filter(function (d) { return d.last_fy < FY[FY.length - 1]; });
-    cover([FY[0] + ' to ' + FY[FY.length - 1],
-           rows[rows.length - 1].n + ' plants in the latest report',
-           gone.length + ' have dropped out',
-           'report coverage, not commissioning']);
+    $('card').insertBefore(bar, $('chart'));
+  }
+
+  function plantsIn(fy) {
+    return plants.filter(function (d) { return d.fy === fy; });
+  }
+
+  /* What each report covered, from the reports themselves. The count of
+     plants and the megawatts are two different numbers before 2021-22,
+     because NEPRA listed plants it gave no capacity for - 11 of 108 in
+     2017-18 - and a plant listed without a rating is still a plant it
+     listed. Both are drawn. */
+  function renderPlantsReports() {
+    clearCtl();
+    var rows = PLANT_YEARS.map(function (fy) {
+      var live = plantsIn(fy), c = PLANT_COVER[fy] || {};
+      return { fy: fy, n: live.length, rated: c.with_mw != null ? c.with_mw : live.length,
+               mw: d3.sum(live, function (d) { return d.mw || 0; }) };
+    });
+    var last = rows[rows.length - 1];
+    /* Counted on plant_id, not the printed name: NEPRA spells the same 133
+       plants 161 ways across eight editions, and counting the name makes 161
+       plants out of 133. */
+    var ever = new Set(plants.map(function (d) { return d.id; }));
+    var inLast = new Set(plantsIn(PLANT_YEARS[PLANT_YEARS.length - 1])
+      .map(function (d) { return d.id; }));
+    var gone = 0;
+    ever.forEach(function (id) { if (!inLast.has(id)) gone += 1; });
+    cover([PLANT_YEARS[0] + ' to ' + PLANT_YEARS[PLANT_YEARS.length - 1],
+           last.n + ' plants in ' + last.fy,
+           ever.size + ' ever reported, ' + gone + ' not in the last report',
+           'the reporting universe, not commissioning']);
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 14, right: 74, bottom: 34, left: 58 }, W);
-    var x = d3.scalePoint().domain(FY).range([m.left, W - m.right]).padding(.4);
+    var x = d3.scalePoint().domain(PLANT_YEARS).range([m.left, W - m.right]).padding(.4);
     var y = d3.scaleLinear().domain([0, d3.max(rows, function (d) { return d.mw; })])
       .nice().range([H - m.bottom, m.top]);
     svg.append('path').datum(rows).attr('fill', 'none')
@@ -775,30 +840,31 @@
       .attr('cy', function (d) { return y(d.mw); })
       .attr('r', 3.5).attr('fill', '#1e6b3e')
       .append('title').text(function (d) {
-        return d.fy + '\n' + d.n + ' plants\n'
-             + Math.round(d.mw).toLocaleString() + ' MW';
+        return d.fy + '\n' + d.n + ' plants listed'
+             + (d.rated < d.n ? ', ' + d.rated + ' with a capacity' : '')
+             + '\n' + Math.round(d.mw).toLocaleString() + ' MW as reported';
       });
     svg.selectAll('text.n').data(rows).join('text').attr('class', 'n')
       .attr('x', function (d) { return x(d.fy); })
       .attr('y', function (d) { return y(d.mw) - 9; })
       .attr('text-anchor', 'middle').attr('font-size', 10.5).attr('fill', muted())
-      .text(function (d) { return d.n; });
+      .text(function (d) { return d.rated < d.n ? d.rated + '/' + d.n : d.n; });
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
       .call(d3.axisBottom(x)).attr('color', muted()).attr('font-size', 10)
       .selectAll('text').attr('transform', 'rotate(-30)').attr('text-anchor', 'end');
     svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
       .call(d3.axisLeft(y).ticks(5).tickFormat(shortNum))
       .attr('color', muted()).attr('font-size', 11);
-    host.say('Installed megawatts present in NEPRA\u2019s report for each fiscal '
-           + 'year, with the number of plants above each point.',
-             'This is report coverage, not commissioning. The fiscal years on '
-           + 'each plant are the first and last it appears in, and 108 of the '
-           + '133 begin at 2017-18 because that is where the series starts. '
-           + 'The ' + gone.length + ' plants whose last year is earlier have '
-           + 'dropped out of the reports, which is not the same as having '
-           + 'closed.');
+    host.say('Megawatts NEPRA reported for each fiscal year, summed from the '
+           + 'plants that report names, with the number of plants above each '
+           + 'point.',
+             'This is what the reports covered, not what was commissioned or '
+           + 'retired. A plant leaving the series has dropped out of the '
+           + 'reporting, which is not the same as having closed, and where '
+           + 'two numbers are shown the first is how many plants carry a '
+           + 'capacity figure. Summing every year together would count the '
+           + 'same plant up to eight times.');
   }
-
 
   /* ── electricity distribution losses ─────────────────────────────────── */
   /* Nineteen editions of NEPRA's state-of-industry report, crosswalked in
@@ -852,21 +918,26 @@
     }).reduce(function (a, b) { return b.value > a.value ? b : a; }).value.toFixed(1)
       + '%', sys ? 'system ' + sys.loss_pct.toFixed(1) + '% in ' + sys.fy : '']
       .filter(Boolean));
-    lineChart(rows, keys, ys, 'value', 'losses, % of units bought',
+    lineChart(rows, keys, ys, 'value',
+      'T&D losses, % of units entering the system',
       function (v) { return v.toFixed(0) + '%'; },
       { gaps: true,
-        lede: 'The share of the electricity each company buys that it never '
-            + 'bills anyone for — technical losses in the wires, and '
-            + 'electricity delivered but not paid for, which the published '
-            + 'figure does not separate.',
+        lede: 'The share of the electricity entering each company’s system '
+            + 'that never reaches a billed meter — lost in the wires, or '
+            + 'taken off them. Bills issued and not paid are a different '
+            + 'measure, which NEPRA reports in rupees; those units were '
+            + 'billed, so they count as sold here.',
         foot: 'Computed from the units bought and units sold printed in the '
             + 'same row, not from the percentage column beside them: for '
             + 'PESCO in 2006-07 to 2009-10 that column reads 54 to 64 per '
             + 'cent where its own GWh give 32 to 35, and the 2015 edition '
             + 'restates 2010-11 at 37.96 where 2011 printed 62.35. '
-            + 'K-Electric’s rate is as published, because it generates '
+            + 'Denominators differ by company and the axis says so: for '
+            + 'every DISCO it is units purchased, but K-Electric generates '
             + 'most of what it sells and its purchased column is grid '
-            + 'imports only.' });
+            + 'imports alone — 1,083 GWh in 2024-25 against 15,249 GWh sold '
+            + '— so purchased minus sold is not its loss. Its rate is '
+            + 'NEPRA’s published one, on its own available energy.' });
   }
 
   function renderDiscoLatest() {
@@ -879,7 +950,7 @@
     discoCover([fy, rows.length + ' companies reporting']);
     barChart(rows, function (d) { return discoArea(d.unit); },
       function (d) { return d.loss_pct; },
-      'Losses in ' + fy + ', % of units bought',
+      'T&D losses in ' + fy + ', % of units entering the system',
       'The spread is the story: the same regulator, the same tariff, and a '
       + 'range from under nine per cent to nearly forty. Bars are ordered '
       + 'worst first.',
@@ -928,8 +999,8 @@
       .domain([0, d3.max(years, function (d) { return d.sold + d.lost; })]).nice()
       .range([H - m.bottom, m.top]);
     var LAYERS = [
-      { k: 'sold', label: 'billed to someone', c: 'var(--pine)' },
-      { k: 'lost', label: 'lost or unbilled', c: 'var(--rust)' }];
+      { k: 'sold', label: 'billed', c: 'var(--pine)' },
+      { k: 'lost', label: 'never billed (T&D loss)', c: 'var(--rust)' }];
     var acc = {};
     LAYERS.forEach(function (L) {
       svg.append('g').attr('fill', L.c).selectAll('rect')
@@ -988,26 +1059,35 @@
   function renderPlants(mode) {
     state.mode = mode;
     if (mode === 'reports') return renderPlantsReports();
-    var mw = d3.sum(plants, function (d) { return d.mw; });
-    cover([plants.length + ' plants',
-           Math.round(mw).toLocaleString() + ' MW installed',
+    plantYearPicker();
+    var yr = plantsIn(plantFy).filter(function (d) { return d.mw != null; });
+    var c = PLANT_COVER[plantFy] || {};
+    var mw = d3.sum(yr, function (d) { return d.mw; });
+    cover([plantFy + ' report',
+           (c.plants || yr.length) + ' plants listed'
+             + (c.with_mw != null && c.with_mw < c.plants
+                ? ', ' + c.with_mw + ' with a capacity' : ''),
+           Math.round(mw).toLocaleString() + ' MW as reported',
            'nameplate capacity, not generation']);
     if (mode === 'largest') {
-      var top = plants.slice(0, 18);
+      var top = yr.slice().sort(function (a, b) { return b.mw - a.mw; }).slice(0, 18);
       return barChart(top, function (d) { return d.plant; }, function (d) { return d.mw; },
-                      'Installed megawatts \u00b7 the 18 largest of ' + plants.length,
-                      'Capacity a plant could produce, not what it does.',
+                      'Installed megawatts in ' + plantFy
+                        + ' \u00b7 the 18 largest of ' + yr.length,
+                      'Capacity a plant could produce in the year NEPRA '
+                        + 'reported it, not what it generated.',
                       function (d) { return d.technology + ' \u00b7 ' + d.fuel; });
     }
-    var fam = Array.from(d3.rollup(plants,
+    var fam = Array.from(d3.rollup(yr,
       function (v) {
         return { mw: d3.sum(v, function (d) { return d.mw; }), n: v.length };
       }, function (d) { return d.family; }),
       function (e) { return { family: e[0], mw: e[1].mw, n: e[1].n }; })
       .sort(function (a, b) { return b.mw - a.mw; });
     barChart(fam, function (d) { return d.family; }, function (d) { return d.mw; },
-             'Installed megawatts by fuel',
-             'Nameplate capacity. The figure after each bar is how many plants it holds.',
+             'Installed megawatts by fuel, ' + plantFy,
+             'Nameplate capacity as reported that year. The figure after each '
+               + 'bar is how many plants it holds.',
              function (d) { return d.n + (d.n === 1 ? ' plant' : ' plants'); },
              function (d) { return Math.round(d.mw).toLocaleString() + ' MW \u00b7 ' + d.n; });
   }
@@ -1381,10 +1461,20 @@
       return { rows: rows.filter(function (r) { return r[i] === m; }),
                view: { metric: m } };
     },
+    /* These three draw one report year, so their exports carry that year and
+       not the union of eight. */
+    plantsFuel: function (rows, cols) {
+      var f = cols.indexOf('fy');
+      return { rows: rows.filter(function (r) { return r[f] === plantFy; }),
+               view: { 'report year': plantFy } };
+    },
     plantsLargest: function (rows, cols) {
-      var i = cols.indexOf('mw');
-      return { rows: rows.slice().sort(function (a, b) { return b[i] - a[i]; })
-                 .slice(0, 18), view: { selection: 'the 18 largest by capacity' } };
+      var i = cols.indexOf('mw'), f = cols.indexOf('fy');
+      return { rows: rows.filter(function (r) {
+                 return r[f] === plantFy && r[i] != null; })
+                 .sort(function (a, b) { return b[i] - a[i]; }).slice(0, 18),
+               view: { 'report year': plantFy,
+                       'shown': 'the 18 largest by capacity' } };
     },
   };
 

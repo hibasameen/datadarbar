@@ -1512,7 +1512,9 @@ def build(src: Path, district_only: bool = False) -> None:
         "category, 2020 to 2024.",
         "The stock and the flow together: pending at the start, what came in, "
         "what was decided, and what was left. clearance_rate_pct is disposals "
-        "over institutions \u2014 above 100 means the backlog fell that year. "
+        "over institutions. Above 100 means more cases were decided than "
+        "filed that year; it does NOT establish that the backlog fell, "
+        "which depends on the opening stock and is answered by backlog_change. "
         "stock_flow_check records whether opening plus instituted minus disposed "
         "actually equals the closing figure PBS prints; where it does not, "
         "transfers between courts usually explain it, and the residual columns "
@@ -1615,6 +1617,51 @@ def build(src: Path, district_only: bool = False) -> None:
          "installed_mw": "nameplate capacity, megawatts",
          "first_fy": "first year it appears", "last_fy": "last year it appears"},
         "NEPRA State of Industry and performance reports", "megawatts")
+
+    # ONE ROW PER PLANT WAS NOT ENOUGH. nepra_plants collapses the reports to
+    # a single row per plant with installed_mw taken as the MAXIMUM across
+    # every year it appears and a first/last fiscal year around it. Anything
+    # built from that is a union of eight reports, not a year: 133 plants and
+    # 45,405 MW, against 118 plants and 41,440 MW actually reported for
+    # 2024-25. It also cannot answer which year a capacity belongs to, and 22
+    # plants are revised between years, so the single figure is right for at
+    # most one of them.
+    #
+    # These are the observations themselves, one row per plant per fiscal
+    # year, so a chart can name the year it is drawing instead of inferring
+    # presence from a span.
+    if (src / "nepra_plant_month.parquet").exists():
+        register(
+            "nepra_plant_years",
+            "Every plant in NEPRA\u2019s reports, by fiscal year: what it burns "
+            "and what it was rated at in that year.",
+            "One row per plant per fiscal year as reported, 2017-18 to "
+            "2024-25 \u2014 the observations behind nepra_plants, which collapses "
+            "them to one row per plant at its maximum capacity. Use this "
+            "table when the year matters: 22 plants have their capacity "
+            "revised between reports, and the union of all eight years is "
+            "133 plants and 45,405 MW against 118 and 41,440 MW reported for "
+            "2024-25. Presence here is observed, not inferred: one plant is "
+            "absent from a year inside its own first-to-last span. Rows with "
+            "no installed_mw are kept rather than dropped, because a plant "
+            "the report lists without a capacity is still a plant it listed: "
+            "11 of the 108 in 2017-18 are like this, falling to none from "
+            "2021-22. This is the reporting universe NEPRA published, not a "
+            "register of every plant in the country.",
+            {"plant_id": "NEPRA\u2019s own identifier",
+             "plant": "the plant as that report names it",
+             "fiscal_year": "the report\u2019s fiscal year",
+             "technology": "how it generates", "fuel": "what it burns or uses",
+             "installed_mw": "nameplate capacity as reported THAT year",
+             "dependable_mw": "dependable capacity as reported that year",
+             "generation_gwh": "generation that year, where reported"},
+            "NEPRA State of Industry and performance reports",
+            f"""SELECT plant_id, plant, fiscal_year, technology, fuel,
+                       installed_mw, dependable_mw, generation_gwh
+                FROM '{(src / "nepra_plant_month.parquet").as_posix()}'
+                WHERE month = 'FY'
+                ORDER BY fiscal_year, installed_mw DESC NULLS LAST""",
+            unit="megawatts")
 
     src_table(
         "nepra_disco_annual", "nepra_disco_annual.parquet",

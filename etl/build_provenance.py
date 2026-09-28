@@ -307,34 +307,57 @@ STATE = {
     selection='first information reports by day',
     note='Not every day is present. The series covers the days the returns '
          'were published for, not a complete daily record.'),
- 'plantsFuel': dict(publication='State of Industry Report',
-    selection='installed capacity by fuel, across every report extracted',
-    note='133 plants appear across all reports; 118 of them, totalling 42,010 '
-         'MW, were last observed in FY2024-25. The remaining fifteen last '
-         'appear in older reports, so this is the extracted reporting '
-         'universe rather than current national capacity.'),
- 'plantsLargest': dict(publication='State of Industry Report',
-    selection='the eighteen largest plants by capacity',
-    note='Same reporting universe as the fuel chart.'),
- 'plantsReports': dict(publication='State of Industry Report',
-    selection='plants by the fiscal years their reports cover',
-    calc='presence between a plant\u2019s first and last appearance is inferred, '
-         'not observed in every intervening report'),
- 'discoLosses': dict(publication='State of Industry Report, distribution companies',
+ 'plantsFuel': dict(publication='State of Industry Report, plants by fiscal year',
+    selection='the plants in one chosen report year, grouped into fuel families',
+    calc='capacity is what that report rated the plant at, not a maximum '
+         'across years: 22 plants are revised between reports',
+    note='One report year at a time. The union of all eight is 133 plants and '
+         '45,405 MW, which is a figure for no year - NEPRA reported 118 '
+         'plants and 41,440 MW for 2024-25. This is the reporting universe '
+         'NEPRA published, not a register of every plant in the country.'),
+ 'plantsLargest': dict(publication='State of Industry Report, plants by fiscal year',
+    selection='the eighteen largest plants in the chosen report year',
+    note='Ranked on that year\u2019s reported capacity, not a maximum across years.'),
+ 'plantsReports': dict(publication='State of Industry Report, plants by fiscal year',
+    selection='the plants each report actually names, by fiscal year',
+    calc='presence is observed in each report rather than inferred from a '
+         'first-to-last span, which would place one plant in a year its '
+         'report does not contain',
+    note='Plants listed without a capacity are counted but add no megawatts: '
+         '11 of 108 in 2017-18, none from 2021-22, and where the two differ '
+         'both are shown. A plant leaving the series has left the reports, '
+         'which is not the same as having closed.'),
+ # NEPRA publishes these as three separate series and the page draws one of
+ # them. units_purchased_sold_losses is energy: units in, units billed, the
+ # difference. technical_commercial_losses splits T&D losses (in units) from
+ # commercial losses (in RUPEES billed against collected). And
+ # billing_collection_recovery is recovery, also in rupees. A unit that was
+ # billed and never paid for is counted as SOLD in the series drawn here.
+ 'discoLosses': dict(publication='State of Industry Report, units purchased, '
+                                 'sold and lost by distribution company',
     selection='transmission and distribution loss rate, by company and year',
-    calc='units lost divided by units bought',
-    note='This is a T&D energy loss rate: units that entered the system and '
-         'did not reach a meter. It is not a measure of bills unpaid, which '
-         'NEPRA reports separately as recovery. K-Electric\u2019s denominator is '
-         'its published purchases, which is not its whole available-energy '
-         'base, so its rate is not exactly comparable with the others.'),
- 'discoLatest': dict(publication='State of Industry Report, distribution companies',
+    calc='units never billed divided by units entering the system',
+    note='A T&D energy loss: units that entered the system and never reached '
+         'a billed meter. It is not electricity delivered and then not paid '
+         'for, which NEPRA reports separately as commercial losses and '
+         'recovery, in rupees. Denominators differ: for every DISCO it is '
+         'units purchased, but K-Electric generates most of what it sells and '
+         'its purchased column is grid imports alone, so its rate is NEPRA\u2019s '
+         'published one on its own available energy.'),
+ 'discoLatest': dict(publication='State of Industry Report, units purchased, '
+                                 'sold and lost by distribution company',
     selection='the latest year, companies ranked by loss rate',
-    note='As the loss chart: a T&D energy loss rate, not unpaid bills.'),
- 'discoUnits': dict(publication='State of Industry Report, distribution companies',
-    selection='units bought, units billed and units lost, by company and year',
-    note='Bought minus billed and units lost differ by up to 1 GWh, which is '
-         'rounding in the source.'),
+    note='As the loss chart: energy never billed, not bills unpaid, and '
+         'K-Electric\u2019s rate is on a different base.'),
+ 'discoUnits': dict(publication='State of Industry Report, units purchased, '
+                                'sold and lost by distribution company',
+    selection='units entering the system, units billed and units never '
+              'billed, by company and year',
+    calc='summed across companies, so a year with fewer companies reporting '
+         'is a smaller year and is drawn faded',
+    note='Excludes K-Electric, whose purchased column is grid imports only. '
+         'Units in minus units billed and the printed loss figure differ by '
+         'up to 1 GWh, which is rounding in the source.'),
  'eventsTimeline': dict(publication='Disaster alerts',
     selection='alerts by hazard and year',
     note='Alerts issued, not events that occurred. These records do not join '
@@ -353,6 +376,7 @@ STATE_PUBLISHER = {
     'sindh_crime_annual': 'Sindh Police',
     'sindh_fir_daily': 'Sindh Police',
     'nepra_plants': 'NEPRA',
+    'nepra_plant_years': 'NEPRA',
     'nepra_disco_annual': 'NEPRA',
     'climate_events': 'National Disaster Management Authority',
     'climate_impacts': 'National Disaster Management Authority',

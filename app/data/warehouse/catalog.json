@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-28",
+ "generated": "2026-09-29",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -298,7 +298,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201154,
+   "bytes": 8201226,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -1817,7 +1817,7 @@
    "bytes": 13724,
    "rows": 75,
    "description": "Cases pending, instituted and disposed by province, court tier and category, 2020 to 2024.",
-   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions \u2014 above 100 means the backlog fell that year. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so do not add the three together.",
+   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions. Above 100 means more cases were decided than filed that year; it does NOT establish that the backlog fell, which depends on the opening stock and is answered by backlog_change. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so do not add the three together.",
    "unit": "cases",
    "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
    "columns": [
@@ -3635,6 +3635,58 @@
    ]
   },
   {
+   "name": "nepra_plant_years",
+   "file": "nepra_plant_years.parquet",
+   "bytes": 13143,
+   "rows": 909,
+   "description": "Every plant in NEPRA\u2019s reports, by fiscal year: what it burns and what it was rated at in that year.",
+   "notes": "One row per plant per fiscal year as reported, 2017-18 to 2024-25 \u2014 the observations behind nepra_plants, which collapses them to one row per plant at its maximum capacity. Use this table when the year matters: 22 plants have their capacity revised between reports, and the union of all eight years is 133 plants and 45,405 MW against 118 and 41,440 MW reported for 2024-25. Presence here is observed, not inferred: one plant is absent from a year inside its own first-to-last span. Rows with no installed_mw are kept rather than dropped, because a plant the report lists without a capacity is still a plant it listed: 11 of the 108 in 2017-18 are like this, falling to none from 2021-22. This is the reporting universe NEPRA published, not a register of every plant in the country.",
+   "unit": "megawatts",
+   "source": "NEPRA State of Industry and performance reports",
+   "columns": [
+    {
+     "name": "plant_id",
+     "type": "VARCHAR",
+     "description": "NEPRA\u2019s own identifier"
+    },
+    {
+     "name": "plant",
+     "type": "VARCHAR",
+     "description": "the plant as that report names it"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "the report\u2019s fiscal year"
+    },
+    {
+     "name": "technology",
+     "type": "VARCHAR",
+     "description": "how it generates"
+    },
+    {
+     "name": "fuel",
+     "type": "VARCHAR",
+     "description": "what it burns or uses"
+    },
+    {
+     "name": "installed_mw",
+     "type": "DOUBLE",
+     "description": "nameplate capacity as reported THAT year"
+    },
+    {
+     "name": "dependable_mw",
+     "type": "DOUBLE",
+     "description": "dependable capacity as reported that year"
+    },
+    {
+     "name": "generation_gwh",
+     "type": "DOUBLE",
+     "description": "generation that year, where reported"
+    }
+   ]
+  },
+  {
    "name": "nepra_plants",
    "file": "nepra_plants.parquet",
    "bytes": 7934,
@@ -4479,20 +4531,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RLS_POLSALE_M",
-     "name": "POL (Energy Products) Sales by Sector",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2013-07",
-     "upto": "2026-05"
-    },
-    {
      "code": "TS_GP_RS_QGDP1516_Q",
      "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
      "subject": "Real Sector",
      "series": 8,
      "since": "2015-09",
      "upto": "2026-03"
+    },
+    {
+     "code": "TS_GP_RLS_POLSALE_M",
+     "name": "POL (Energy Products) Sales by Sector",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2013-07",
+     "upto": "2026-05"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",

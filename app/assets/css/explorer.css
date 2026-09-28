@@ -163,3 +163,10 @@ a.tree-item{color:var(--green-800)}
 .xlist-meta{font-size:.68rem;color:var(--muted)}
 .xside-note{margin-top:auto;padding-top:.7rem;font-size:.7rem;color:var(--muted);
   line-height:1.45;border-top:1px solid var(--line)}
+
+/* The report-year picker on the power-plant charts. A chart that draws one
+   year has to let the reader choose it and see which one is chosen. */
+.ctl-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:0 0 .8rem}
+.ctl-lbl{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin-right:.3rem}
+.ctl-row .seg{height:26px;padding:0 9px;font-size:.78rem}

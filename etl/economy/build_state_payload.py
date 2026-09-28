@@ -225,13 +225,36 @@ def main():
         WHERE daily_firs IS NOT NULL
         ORDER BY report_date, geography_name""")
 
-    # Energy: every plant, with a grouped fuel family for the chart.
+    # Energy. The plant-YEAR observations, not the collapsed one-row-per-plant
+    # table: nepra_plants carries installed_mw as the maximum across every
+    # report a plant appears in, so anything summed from it is a union of
+    # eight years rather than a year. 133 plants and 45,405 MW that way,
+    # against 118 and 41,440 MW actually reported for 2024-25.
+    # The canonical name, not the one that report happened to print: NEPRA
+    # spells 133 plants 161 ways across eight editions, so counting the
+    # printed name makes 161 plants out of 133. plant_id is what resolves
+    # them and it is unique within every year.
     plants = rows(f"""
-        SELECT plant_name, {FUEL_FAMILY} AS family, technology, fuel,
-               installed_mw, first_fy, last_fy
-        FROM '{W_}/nepra_plants.parquet'
-        WHERE installed_mw IS NOT NULL
-        ORDER BY installed_mw DESC""")
+        SELECT y.plant_id, coalesce(p.plant_name, y.plant) AS plant,
+               y.fiscal_year, {FUEL_FAMILY.replace('fuel', 'y.fuel')} AS family,
+               y.technology, y.fuel, y.installed_mw
+        FROM '{W_}/nepra_plant_years.parquet' y
+        LEFT JOIN (SELECT plant_id, plant_name
+                   FROM '{W_}/nepra_plants.parquet') p USING (plant_id)
+        ORDER BY y.fiscal_year DESC, y.installed_mw DESC NULLS LAST""")
+    assert len({r[0] for r in plants}) == 133, 'plant_id count moved'
+    plant_fys = sorted({r[2] for r in plants})
+    assert len(plant_fys) >= 6, f'only {len(plant_fys)} plant years'
+    # A plant listed without a capacity is still a plant that was listed, so
+    # the rows are kept and the two counts are carried separately. A chart
+    # that sums megawatts is drawing the second; one that counts plants is
+    # drawing the first, and they are not the same number before 2021-22.
+    plant_cover = {}
+    for fy in plant_fys:
+        yr = [r for r in plants if r[2] == fy]
+        assert len(yr) > 50, f'{fy} has only {len(yr)} plants'
+        plant_cover[fy] = {'plants': len(yr),
+                           'with_mw': sum(1 for r in yr if r[6] is not None)}
 
     # Disasters: the alerts. GDACS carries no casualty figures, so none are
     # claimed here - alert_level is what the source actually grades.
@@ -319,21 +342,23 @@ def main():
          'Sindh, by police range', 'sindhRange', 'sindhCrime', 'year'),
         ('sindh_fir_daily', 'firs', 'daily',
          'First information reports, daily', 'firsDaily', 'firs', None),
-        ('nepra_plants', 'plants', 'fuel', 'Installed capacity by fuel',
-         'plantsFuel', 'plants', None),
-        ('nepra_plants', 'plants', 'largest', 'The eighteen largest plants',
-         'plantsLargest', 'plants', None),
-        ('nepra_plants', 'plants', 'reports',
-         'Plants in NEPRA\u2019s reports, by fiscal year', 'plantsReports',
-         'plants', None),
+        ('nepra_plant_years', 'plants', 'fuel',
+         'Reported capacity by fuel, one year at a time', 'plantsFuel',
+         'plants', 'fy'),
+        ('nepra_plant_years', 'plants', 'largest',
+         'The eighteen largest plants in the selected year', 'plantsLargest',
+         'plants', 'fy'),
+        ('nepra_plant_years', 'plants', 'reports',
+         'What NEPRA\u2019s reports covered, year by year', 'plantsReports',
+         'plants', 'fy'),
         ('nepra_disco_annual', 'discos', 'losses',
-         'Losses as a share of units bought, by company', 'discoLosses',
+         'T&D losses as a share of units entering the system', 'discoLosses',
          'discos', 'fy_end'),
         ('nepra_disco_annual', 'discos', 'latest',
          'The latest year, companies ranked', 'discoLatest', 'discos',
          'fy_end'),
         ('nepra_disco_annual', 'discos', 'units',
-         'Units bought, units billed, units lost', 'discoUnits', 'discos',
+         'Units in, units billed, units never billed', 'discoUnits', 'discos',
          'fy_end'),
         ('climate_events', 'events', 'timeline', 'Alerts by hazard and year',
          'eventsTimeline', 'events', None),
@@ -383,8 +408,9 @@ def main():
         'firs': {'rows': firs,
                  'cols': ['date', 'place', 'level', 'daily', 'ytd']},
         'plants': {'rows': plants,
-                   'cols': ['plant', 'family', 'technology', 'fuel', 'mw',
-                            'first_fy', 'last_fy']},
+                   'cols': ['id', 'plant', 'fy', 'family', 'technology',
+                            'fuel', 'mw'],
+                   'years': plant_fys, 'cover': plant_cover},
         'events': {'rows': events,
                    'cols': ['id', 'hazard', 'title', 'start', 'end', 'alert',
                             'url']},
