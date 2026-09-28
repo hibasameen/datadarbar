@@ -298,6 +298,11 @@
       return (want || ind.split('\u001f')[0].split('=').pop()).split('|');
     }
 
+    /* Whether this indicator's values may be added is decided in the build
+       and travels on the row; a footprint of several units can only be
+       combined for a count. */
+    function summable() { return col('h_sum', state.row) === 1; }
+
     function censusYear(y) {
       var c = cellFor(y);
       return engine().then(function (w) {
@@ -315,7 +320,11 @@
           + (state.level === 'district' ? "   AND unit_type = 'district'"
                                         : "   AND unit_type <> 'district'")
           + '   AND map_key IS NOT NULL AND value IS NOT NULL');
-      }).then(toMap);
+      }).then(toMap).then(function (r) {
+        var f = byFootprint(r, summable());
+        return { values: f.values, meta: r.meta, units: r.units,
+                 ambiguous: r.ambiguous, shared: f.uncombinable, fpOf: f };
+      });
     }
 
     /* Change is computed here rather than stored, for the 34 cell definitions
@@ -331,24 +340,43 @@
     if (/^\u0394/.test(year) && !state.norm) {
       return Promise.all([censusYear('2017'), censusYear('2023')])
         .then(function (both) {
-          var a = both[0].values, b = both[1].values;
-          var out = {}, units = [];
-          Object.keys(b).forEach(function (k) {
-            if (a[k] != null && b[k] != null) out[k] = b[k] - a[k];
+          /* Grouped across BOTH censuses before subtracting. Keyed on the
+             shape string, the old code never matched a split parent to its
+             children - "015 170" is not "015" - so the strip skipped them
+             while the map subtracted the whole parent from each child. */
+          var can = summable();
+          var fp = footprints();
+          both.forEach(function (yr) {
+            (yr.units || []).forEach(function (u) { fp.join(u.keys); });
           });
-          var was = {};
-          both[0].units.forEach(function (u) { was[u.keys.join(' ')] = u.v; });
-          both[1].units.forEach(function (u) {
-            var prev = was[u.keys.join(' ')];
-            if (prev != null && u.v != null) {
-              units.push({ keys: u.keys, v: u.v - prev });
-            }
+          var g17 = {}, g23 = {}, keysOf = {};
+          var gather = function (yr, into) {
+            (yr.units || []).forEach(function (u) {
+              if (u.v == null) return;
+              var g = fp.of(u.keys[0]);
+              into[g] = into[g] === undefined ? u.v : into[g] + u.v;
+              (keysOf[g] = keysOf[g] || {});
+              u.keys.forEach(function (k) { keysOf[g][k] = 1; });
+              into[g + '\u0000n'] = (into[g + '\u0000n'] || 0) + 1;
+            });
+          };
+          gather(both[0], g17); gather(both[1], g23);
+          var out = {}, units = [], shared = 0;
+          Object.keys(keysOf).forEach(function (g) {
+            var v17 = g17[g], v23 = g23[g];
+            if (v17 == null || v23 == null) return;
+            var many = (g17[g + '\u0000n'] || 0) > 1 || (g23[g + '\u0000n'] || 0) > 1;
+            var keys = Object.keys(keysOf[g]);
+            if (many && !can) { shared += keys.length; return; }
+            var d = v23 - v17;
+            keys.forEach(function (k) { out[k] = d; });
+            units.push({ keys: keys, v: d });
           });
           // Same shape every other route returns; a bare map here read as an
           // undefined .values and the legend silently kept the old scale.
           // A change inherits either year's ambiguity: subtracting a figure
           // we cannot pin down does not pin it down.
-          return { values: out, meta: {}, units: units,
+          return { values: out, meta: {}, units: units, shared: shared,
                    ambiguous: (both[0].ambiguous || 0) + (both[1].ambiguous || 0) };
         });
     }
@@ -536,7 +564,14 @@
   function toMap(res) {
     var out = {}, units = [], byUnit = {}, conflict = {}, ambiguous = 0;
     res.rows.forEach(function (r) {
-      var id = r.u == null ? String(r.k) : String(r.u);
+      /* The shape AND the name. A unit name is not unique - Khanpur, Nowshera
+         and Sahiwal are each the name of two different tehsils - so keying on
+         the name alone collapsed two real places into one and then reported
+         them as a source that contradicted itself. Keying on the name alone
+         also would have merged Khanpur's 186,886 with its namesake's
+         1,169,138. A true duplicate repeats the same unit on the same shape;
+         two places that share a name do not share a map key. */
+      var id = r.u == null ? String(r.k) : String(r.k) + '\u001f' + String(r.u);
       if (byUnit[id] !== undefined) {
         // Counted once per place, not once per discarded row: a district with
         // three disagreeing copies is one district we cannot pin down.
@@ -552,6 +587,81 @@
       units.push(byUnit[id]);
     });
     return { values: out, meta: {}, units: units, ambiguous: ambiguous };
+  }
+
+  /* ── comparable footprints ──────────────────────────────────────────────
+     A map shape and a census unit are not the same thing, and on the 2023
+     frame they disagree in both directions.
+
+       merged   FR Bannu (43,112) and Bannu District (1,167,071) are two 2017
+                units drawn on one 2023 shape. The footprint held 1,210,183
+                people; the map showed 1,167,071, because the second
+                assignment replaced the first.
+
+       split    old Chitral is one 2017 unit carrying map_key "015 170",
+                drawn on two 2023 shapes. Its figure was copied onto both, so
+                subtracting it from each child gave Lower Chitral a change of
+                45,223 - 59,247 = -14,024 children aged 0-4. The comparable
+                figure is the old parent against BOTH children,
+                70,296 - 59,247 = +11,049.
+
+     Both are the same question - which shapes have to be taken together
+     before the arithmetic means anything - so both are answered by grouping
+     the shapes into footprints: every key a unit touches is joined to every
+     other key that unit touches, and the groups that fall out are the
+     smallest areas comparable across the two censuses. A district that
+     neither split nor merged is a group of one and nothing changes for it. */
+  function footprints() {
+    var parent = {};
+    function find(k) {
+      while (parent[k] !== k) { parent[k] = parent[parent[k]]; k = parent[k]; }
+      return k;
+    }
+    function add(k) { if (parent[k] === undefined) parent[k] = k; }
+    return {
+      join: function (keys) {
+        keys.forEach(add);
+        for (var i = 1; i < keys.length; i++) {
+          var a = find(keys[0]), b = find(keys[i]);
+          if (a !== b) parent[b] = a;
+        }
+      },
+      of: function (k) { return parent[k] === undefined ? k : find(k); },
+    };
+  }
+
+  /* One value per footprint. A count is the sum of the units in it, which is
+     the footprint's own figure. A rate is not: two districts' literacy rates
+     do not average into the rate of the pair without their populations, so
+     where a footprint holds more than one unit a rate is withheld rather than
+     guessed, and the strip says how many shapes that covered. */
+  function byFootprint(res, summable) {
+    var fp = footprints();
+    (res.units || []).forEach(function (u) { fp.join(u.keys); });
+    var groups = {}, shared = 0;
+    (res.units || []).forEach(function (u) {
+      var g = fp.of(u.keys[0]);
+      if (!groups[g]) groups[g] = { keys: {}, units: [], v: 0 };
+      u.keys.forEach(function (k) { groups[g].keys[k] = 1; });
+      groups[g].units.push(u);
+    });
+    var out = {};
+    Object.keys(groups).forEach(function (g) {
+      var grp = groups[g], keys = Object.keys(grp.keys);
+      var v;
+      if (grp.units.length === 1) {
+        v = grp.units[0].v;                       // one unit: unchanged
+      } else if (summable) {
+        v = grp.units.reduce(function (a, u) { return a + u.v; }, 0);
+      } else {
+        v = null;                                 // rates cannot be combined
+        shared += keys.length;
+      }
+      if (v != null) keys.forEach(function (k) { out[k] = v; });
+      grp.v = v;
+      grp.keyList = keys;
+    });
+    return { values: out, groups: groups, fp: fp, uncombinable: shared };
   }
 
   /* ── choosing ───────────────────────────────────────────────────────────
@@ -618,6 +728,7 @@
       state.meta = r.meta;
       state.units = r.units || null;
       state.ambiguous = r.ambiguous || 0;
+      state.shared = r.shared || 0;
       return paint().then(function () {
         renderLegend();
         renderTotals();
@@ -954,7 +1065,17 @@
            + '<b>' + esc(figure) + '</b></div>')
       + '<div class="tot"><span class="tot-k">' + esc(state.norm ? 'Showing' : 'Year')
       + '</span><b>' + esc(state.norm ? normLabel()
-                                      : (yearLabel() || '\u2014')) + '</b></div>';
+                                      : (yearLabel() || '\u2014')) + '</b></div>'
+      /* A hole in the map with nothing said about it reads as missing data.
+         These are shapes whose 2017 footprint held more than one census unit -
+         Bannu and its frontier region, and five like it - and this indicator
+         is a rate, which two units' worth of cannot be combined without their
+         denominators. The figure is not missing; it is not derivable. */
+      + (state.shared
+         ? '<div class="tot tot-warn"><span class="tot-k">Not shown</span><b>'
+           + state.shared + ' ' + esc(g.noun) + (state.shared === 1 ? '' : 's')
+           + ' where a rate cannot be combined across the 2017 units</b></div>'
+         : '');
   }
 
   /* Fit the map to the chosen province, and back to the country when the
