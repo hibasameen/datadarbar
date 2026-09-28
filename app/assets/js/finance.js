@@ -95,8 +95,14 @@ function standDown(){
 let E,ST,IND;
 let selYear,selSector='all',arcYears=[],arcData=[],shareYears=[],lsmSeries={},lsmColors={},lsmSel;
 function start(){
- if(!window.ECON||!window.DD_GROWTH){return setTimeout(start,30);}
- E=window.ECON;ST=E.structure;IND=E.industry;
+ if(!window.ECON||!window.DD_GROWTH||!window.DD_STRUCTURE){return setTimeout(start,30);}
+ E=window.ECON;IND=E.industry;
+ /* Shares and growth come from the warehouse now (DD_STRUCTURE), not
+    from the econ_data.js artefact. The numbers are the same to within
+    rounding - it was faithful to PBS - but they can be refreshed and
+    checked now, which they could not be while the only copy of them
+    was a committed file no script produced. */
+ ST=window.DD_STRUCTURE;
  prepData();
  buildSectorSelect();
  initArc();initMix();initContrib();

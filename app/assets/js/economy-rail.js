@@ -21,13 +21,21 @@
 
   var DATASET = {
     // finance
-    'sec-macro': ['gdp_indicators', 'GDP, income per person and the rupee'],
+    // national_accounts for the aggregates and income per person;
+    // gdp_indicators only still supplies the exchange rate.
+    'sec-macro': ['national_accounts', 'Output, income and the rupee, Table 5'],
     'sec-qtr': ['gva_by_activity_quarterly', 'Value added by sector, quarterly'],
-    'sec-arc': ['gva_by_activity_annual', 'Value added by sector, annual'],
-    'sec-mix': ['gva_by_activity_annual', 'Value added by sector, annual'],
-    'sec-contrib': ['gdp_growth', 'GDP growth by sector since 1951'],
-    'sec-cybreak': ['gdp_growth', 'GDP growth by sector since 1951'],
-    'sec-ceras': ['gdp_growth', 'GDP growth by sector since 1951'],
+    /* These three read national_accounts, not gva_by_activity_annual: the
+       share charts are Table 7b at current prices and the decomposition is
+       Table 5 at constant prices. gva_by_activity_annual is constant-price
+       leaf activity data - a real table, but not the one behind these - and
+       naming it sent anyone trying to reproduce the chart to the wrong
+       numbers. */
+    'sec-arc': ['national_accounts', 'Sector shares of GVA, Table 7b'],
+    'sec-mix': ['national_accounts', 'Sector shares of GVA, Table 7b'],
+    'sec-contrib': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
+    'sec-cybreak': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
+    'sec-ceras': ['national_accounts', 'Real growth by activity, Tables 5 and 6'],
     'sec-lsm': ['lsm_qim', 'Large-scale manufacturing index'],
     'sec-qimonth': ['lsm_qim', 'Large-scale manufacturing index'],
     'sec-weights': ['lsm_sector_indices', 'Manufacturing sector indices and weights'],
