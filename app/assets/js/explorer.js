@@ -28,12 +28,13 @@
   var LABEL_OF = { topic: 'topicLabel', ds: 'dsLabel', ind: 'label',
                    metric: 'metricLabel' };
 
-  function uniq(rows, key, labelKey) {
+  function uniq(rows, key, labelKey, groupKey) {
     var seen = {}, out = [];
     rows.forEach(function (r) {
       if (!(r[key] in seen)) {
         seen[r[key]] = 1;
-        out.push({ value: r[key], label: r[labelKey] || r[key], theme: r.theme });
+        out.push({ value: r[key], label: r[labelKey] || r[key],
+                   theme: groupKey ? r[groupKey] : r.theme });
       }
     });
     return out;
@@ -123,11 +124,15 @@
        had no sign the other thirteen existed. */
     var ALL = window.DDExplorer.ALL;
     var optional = cfg.optional || {};
+    var groupOf = cfg.groupOf || {};
 
     function sync(fire) {
       var rows = index;
       levels.forEach(function (lv, i) {
-        var opts = uniq(rows, lv, LABEL_OF[lv]);
+        /* A level can group its options under headings. 180 census indicators
+           in one flat list is unreadable; the same 180 under the eight tables
+           that published them is a list you can scan. */
+        var opts = uniq(rows, lv, LABEL_OF[lv], groupOf[lv]);
         if (optional[lv] && opts.length > 1) {
           opts = [{ value: ALL, label: ALL_LABEL[lv]
                      || ('All ' + (names[lv] || CAPTION[lv] || lv).toLowerCase()
@@ -137,7 +142,7 @@
           state[lv] = drawList(rows, lv, state[lv]);
         } else {
           var f = fieldFor(lv);
-          state[lv] = fill(f.sel, opts, state[lv], i === 0);
+          state[lv] = fill(f.sel, opts, state[lv], i === 0 || !!groupOf[lv]);
           // A select with one option stays visible but disabled, so the rail
           // keeps its shape as you move between datasets.
           f.sel.disabled = opts.length < 2;

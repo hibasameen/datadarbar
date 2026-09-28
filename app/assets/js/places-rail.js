@@ -43,6 +43,54 @@
     { id: 'n', mode: 'per1000', label: 'per 1,000 people' },
   ];
 
+  /* A heading per table, not per title. PBS retitled its tables between the
+     censuses - table 6 is "Population 15+ by marital status" in 2017 and
+     "Population 15 years and above by age group, sex, marital status and
+     rural/urban" in 2023 - so grouping on the title gave 22 headings for 8
+     tables, the same table listed twice under two names. Keyed on the number,
+     with the shortest title winning so the heading stays scannable, and our
+     own notes about what changed between censuses left off: they belong on
+     the chart, not in a dropdown heading. */
+  var HEADING = {};
+
+  function heading(groupKey, groupLabel, topic) {
+    var t = /^census_t(.+)$/.exec(groupKey || '');
+    if (!t) return groupLabel || '';
+    var subject = String(groupLabel || '')
+      .replace(/^Table\s+\S+\s*[\u2014-]\s*/, '')
+      .replace(/^20\d\d:\s*/, '');
+    // Cut at the first comma, but not into nonsense: "Area, population by
+    // sex, sex ratio, density..." became "Area", which names the wrong
+    // column. Keep going until there are words enough to recognise it by.
+    var cut = subject.split(/[,.]/)[0].trim();
+    if (cut.split(/\s+/).length < 3) {
+      cut = subject.split(/\s+/).slice(0, 7).join(' ').replace(/[,.]$/, '');
+    }
+    // Keyed on the topic as well as the number: PBS reused its numbers, so
+    // table 22 is homelessness in 2017 and cooking fuel in 2023 - one
+    // dictionary per number let the 2023 title label a Demographics group.
+    var key = 'census_t' + t[1] + '\u001f' + (topic || '');
+    // Our notes read on from "2017:", so stripping it leaves a lower-case
+    // first word in a heading.
+    cut = cut.charAt(0).toUpperCase() + cut.slice(1);
+    if (cut && (!HEADING[key] || cut.length < HEADING[key].length)) {
+      HEADING[key] = cut;
+    }
+    return key;
+  }
+
+  /* Named once every row has been seen, so the shortest title has had its
+     chance to win. */
+  function nameHeadings(index) {
+    index.forEach(function (r) {
+      if (HEADING[r.tableLabel]) {
+        r.tableLabel = 'Table ' + r.tableLabel.split('\u001f')[0]
+                         .replace('census_t', '')
+                     + ' \u2014 ' + HEADING[r.tableLabel];
+      }
+    });
+  }
+
   function build(IX, N, col, level, list) {
     var index = [], seen = {};
     for (var i = 0; i < N; i++) {
@@ -86,6 +134,7 @@
         ind: measure, label: measure,
         metric: String(i), metricLabel: metric || 'All',
         key: col('indicator', i), groupKey: col('group_key', i),
+        tableLabel: heading(col('group_key', i), col('group_label', i), topic),
         years: (list ? list('years', i) : []).join('/'),
         row: i, fullLabel: label,
         rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
@@ -104,6 +153,7 @@
           metric: n.id + i,
           metricLabel: (metric || 'All') + '\u2002\u00b7\u2002' + n.label,
           key: col('indicator', i), groupKey: col('group_key', i),
+        tableLabel: heading(col('group_key', i), col('group_label', i), topic),
           years: (list ? list('years', i) : []).join('/'),
           row: i, norm: n.mode, fullLabel: label + ', ' + n.label,
           rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
@@ -140,6 +190,8 @@
         });
       });
     });
+
+    nameHeadings(index);
 
     index.sort(function (a, b) {
       return a.topicLabel.localeCompare(b.topicLabel)
@@ -238,6 +290,7 @@
         el: host, index: index, state: st,
         levels: ['topic', 'ds', 'ind', 'metric'],
         optional: { topic: true, ds: true },
+        groupOf: { ind: 'tableLabel' },
         labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                   metric: 'Metric' },
         onChange: function (r) { if (r) opts.onChange(r.row, r.norm || ''); },
@@ -285,6 +338,7 @@
             el: host, index: index, state: st,
             levels: ['topic', 'ds', 'ind', 'metric'],
             optional: { topic: true, ds: true },
+            groupOf: { ind: 'tableLabel' },
             labels: { topic: 'Topic', ds: 'Dataset', ind: 'Indicator',
                       metric: 'Metric' },
             onChange: function (x) { if (x) opts.onChange(x.row, x.norm || ''); },

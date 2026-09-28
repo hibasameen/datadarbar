@@ -250,6 +250,25 @@ def main():
     for (nm,) in names:
         print(f'      {nm}')
 
+    # A column heading standing in for a measure. PBS repeats the column name
+    # in the row when it prints that column's total, so "POPULATION / ALL
+    # SEXES" against itself becomes a measure called "Population - All Sexes"
+    # with no breakdown - which is why a bare population appeared under
+    # Housing, in a table about types of household. It is the total of the
+    # household types beside it, and it is recognised by the measure text
+    # turning up as a METRIC on its siblings.
+    cols = con.sql("""SELECT count(*) FROM place_indicator_index i
+        WHERE i.source = 'census' AND i.metric = ''
+          AND EXISTS (SELECT 1 FROM place_indicator_index j
+                      WHERE j.group_key = i.group_key AND j.level = i.level
+                        AND j.metric = i.measure)""").fetchone()[0]
+    con.execute("""DELETE FROM place_indicator_index i
+        WHERE i.source = 'census' AND i.metric = ''
+          AND EXISTS (SELECT 1 FROM place_indicator_index j
+                      WHERE j.group_key = i.group_key AND j.level = i.level
+                        AND j.metric = i.measure)""")
+    print(f'  {cols} column totals dropped (a heading standing in for a measure)')
+
     # ── the same cell in both censuses ──────────────────────────────────
     # A census cell keyed on PBS's raw strings cannot merge across censuses,
     # because the two spell the same thing differently: "00 - 04" against
