@@ -26,7 +26,11 @@
     'sec-arc': ['gva_by_activity_annual', 'Value added by sector, annual'],
     'sec-mix': ['gva_by_activity_annual', 'Value added by sector, annual'],
     'sec-contrib': ['gdp_growth', 'GDP growth by sector since 1951'],
+    'sec-cybreak': ['gdp_growth', 'GDP growth by sector since 1951'],
+    'sec-ceras': ['gdp_growth', 'GDP growth by sector since 1951'],
     'sec-lsm': ['lsm_qim', 'Large-scale manufacturing index'],
+    'sec-qimonth': ['lsm_qim', 'Large-scale manufacturing index'],
+    'sec-weights': ['lsm_sector_indices', 'Manufacturing sector indices and weights'],
     'sec-cmi': ['national_accounts', 'National accounts and GDP tables'],
     'sec-io': ['national_accounts', 'National accounts and GDP tables'],
     'sec-budget': ['budget_lines', 'Federal budget line items'],
@@ -56,7 +60,14 @@
   /* Cards that are drill-downs of another card rather than charts in their own
      right. sec-country only exists once a partner has been clicked, so listing
      it in the rail would offer a choice that lands on nothing. The card itself
-     stays on the page and is reached the way it always was. */
+     stays on the page and is reached the way it always was.
+
+     Note the selector below takes .card[data-topic][id], and finance.html puts
+     four of its charts inside grid2 wrappers as bare <div class="card">. Those
+     four - the year breakdown, growth engines, the monthly QIM and the index
+     weights - were on the page and in no dropdown, because only the wrapper
+     carried an id. They now carry their own, and the wrapper keeps its: the
+     page hides by wrapper, the rail scrolls to the card. */
   var DRILLDOWN = { 'sec-country': 1 };
 
   var TOPIC_LABEL = {
