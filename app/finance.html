@@ -4,12 +4,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-economy.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=9c308a28"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=9c308a28"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=9c308a28"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=df66ba1c"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=df66ba1c"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=df66ba1c"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=9c308a28"></script>
-<script src="assets/js/palette.js?v=9c308a28"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=df66ba1c"></script>
+<script src="assets/js/palette.js?v=df66ba1c"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -101,7 +101,7 @@
   <div class="desc" id="macroDesc">The four numbers the rest of this page is measured against. <b>Indexed</b> puts them all at 100 in 1999-2000, so their paths can be compared; <b>Levels</b> gives each its own units and axis.</div>
   <div id="macro"></div>
   <div class="legend" id="macroLegend"></div>
-  <div class="note"><b>Real income per person peaked in 2021-22</b>, at Rs 192,848 in constant prices, and was lower in 2023-24 than it was then &mdash; output kept growing, but not faster than the population. GDP and GNI are at constant 2015-16 prices; <b>GNI is GDP plus net primary income from abroad</b>, which is mostly remittances and was negative until 2001-02, so the gap between the two lines is what Pakistanis abroad add to the national accounts. The exchange rate is the annual average, and per-person income is not published for 2024-25 or 2025-26.</div>
+  <div class="note">Three aggregates, and they are not the same number. <b>GVA at basic prices</b> is what the sector charts on this page add up to; <b>GDP at market prices</b> is GVA plus taxes less subsidies; <b>GNI</b> is GDP plus net primary income from abroad, which is largely remittances and was negative until 2001-02. For 2025-26 they are Rs 42.6tn, Rs 45.8tn and Rs 49.8tn. All three are at constant 2015-16 prices, from PBS National Accounts Table 5, and both identities hold to the rupee in every year. <b>Income per person is shown on two population bases.</b> From 2023-24 PBS reprojects population on the 2023 Census, so the two series are not a continuation of one another &mdash; on the 2017-Census basis 2025-26 is Rs 203,118, on the 2023-Census basis Rs 195,484 &mdash; and joining them would draw a fall that is a change of denominator, not of income. The exchange rate is the annual average.</div>
  </div>
 
  <div class="card" data-topic="structure" id="sec-qtr">
@@ -114,7 +114,7 @@
   <div class="desc" id="qtrDesc">Pakistan&rsquo;s only quarterly output series, 2015-16 to 2024-25. <b>Hover a quarter</b> for its composition.</div>
   <div id="qtr"></div>
   <div class="legend" id="qtrLegend"></div>
-  <div class="note"><b>This is the only place the lockdown is visible.</b> Between January&ndash;March and April&ndash;June 2020 industry fell from Rs 1.70tn to Rs 1.36tn &mdash; a fifth &mdash; and services from 5.13 to 4.79, while agriculture did not move: crops were already in the ground. An annual series averages that quarter away. The four quarters add back to the published annual GDP <b>to the rupee</b> in nine of the ten years; in 2024-25 they come to 99.8 per cent, because PBS revised the annual figure after splitting the quarters and the 72-billion-rupee difference has not been pushed back into them. Quarters are fiscal: Q1 is July&ndash;September.</div>
+  <div class="note">Pakistan&rsquo;s only quarterly output series. Between January&ndash;March and April&ndash;June 2020 industry fell from Rs 1.70tn to Rs 1.36tn and services from Rs 5.13tn to Rs 4.79tn, while agriculture rose from Rs 1.99tn to Rs 2.05tn. These are unadjusted sequential quarters and are not seasonally adjusted, so a quarter-on-quarter move is not on its own a measure of what any one event did. Quarters are fiscal: Q1 is July&ndash;September. <b>The four quarters sum to the annual GVA</b> &mdash; not to GDP, which adds taxes less subsidies &mdash; and they agree with Table 5 to within Rs 2 million in eight of the ten years. Two do not: 2023-24 by Rs 15.9bn and 2024-25 by Rs 72.0bn, where the quarterly release and the annual table are different vintages.</div>
  </div>
 
  <!-- ===== growth drivers ===== -->
@@ -429,21 +429,21 @@
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=9c308a28"></script>
-<script src="data/money_data.js?v=9c308a28"></script>
-<script src="data/migration_data.js?v=9c308a28"></script>
-<script src="data/recon_data.js?v=9c308a28"></script>
-<script src="assets/js/econ_data.js?v=9c308a28"></script>
-<script src="assets/js/econ-shell.js?v=9c308a28"></script>
-<script type="module" src="assets/js/finance.js?v=9c308a28"></script>
-<script type="module" src="assets/js/money.js?v=9c308a28"></script>
-<script type="module" src="assets/js/trade.js?v=9c308a28"></script>
-<script src="assets/js/explorer.js?v=9c308a28"></script>
-<script src="assets/js/economy-rail.js?v=9c308a28"></script>
-<script src="assets/js/sidebar-mobile.js?v=9c308a28"></script>
-<script src="assets/js/shell.js?v=9c308a28"></script>
-<script src="assets/js/modals.js?v=9c308a28"></script>
-<script src="assets/js/analytics.js?v=9c308a28"></script>
+<script src="data/macro_data.js?v=df66ba1c"></script>
+<script src="data/money_data.js?v=df66ba1c"></script>
+<script src="data/migration_data.js?v=df66ba1c"></script>
+<script src="data/recon_data.js?v=df66ba1c"></script>
+<script src="assets/js/econ_data.js?v=df66ba1c"></script>
+<script src="assets/js/econ-shell.js?v=df66ba1c"></script>
+<script type="module" src="assets/js/finance.js?v=df66ba1c"></script>
+<script type="module" src="assets/js/money.js?v=df66ba1c"></script>
+<script type="module" src="assets/js/trade.js?v=df66ba1c"></script>
+<script src="assets/js/explorer.js?v=df66ba1c"></script>
+<script src="assets/js/economy-rail.js?v=df66ba1c"></script>
+<script src="assets/js/sidebar-mobile.js?v=df66ba1c"></script>
+<script src="assets/js/shell.js?v=df66ba1c"></script>
+<script src="assets/js/modals.js?v=df66ba1c"></script>
+<script src="assets/js/analytics.js?v=df66ba1c"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

@@ -396,10 +396,17 @@ function drawArcLines(){
    this page is implicitly divided or deflated by, and which nothing drew: the
    econ_data.js `indicators` block has carried eleven of them since the site
    began and uses two, invisibly, to build the budget deflator. */
+/* The three output aggregates are not interchangeable, and the first version
+   of this chart treated them as if they were: GVA at basic prices was labelled
+   GDP, and net primary income was added to it to make a "GNI" two trillion
+   rupees short of the published one. They come from PBS's Table 5 now, where
+   GVA + taxes - subsidies = GDP and GDP + NPI = GNI, both to the rupee. GVA
+   is in the levels view, because it is the basis every sector chart on this
+   page is built on. */
 const MACRO_SERIES=[
- {k:'gdp_tn', lbl:'GDP',                 c:'var(--pine)',      unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
+ {k:'gdp_tn', lbl:'GDP, market prices',  c:'var(--pine)',      unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
  {k:'gni_tn', lbl:'Gross national income',c:'var(--teal-500)', unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
- {k:'pci',    lbl:'Real income per person',c:'var(--gold-600)',unit:'Rs',    fmt:v=>'Rs '+Math.round(v).toLocaleString()},
+ {k:'pci17',  lbl:'Real income per person',c:'var(--gold-600)',unit:'Rs',    fmt:v=>'Rs '+Math.round(v).toLocaleString()},
  {k:'usd',    lbl:'Rupees per US dollar', c:'var(--rust)',     unit:'Rs/$',  fmt:v=>v.toFixed(0)}];
 let macroView='index',macroRows=[];
 function initMacro(){
@@ -453,11 +460,17 @@ function drawMacroLevels(){
  d3.select('#macroLegend').html('');
  const W=el.node().clientWidth||1100,cols=W<640?1:2,cw=W/cols,ch=Math.max(150,Math.min(190,cw*0.5));
  const PANELS=[
-  {lbl:'Output and national income', unit:'Rs trillion, 2015-16 prices',
-   ks:[MACRO_SERIES[0],MACRO_SERIES[1]]},
-  {lbl:'Real income per person', unit:'rupees, 2015-16 prices', ks:[MACRO_SERIES[2]]},
+  {lbl:'Output and national income', unit:'Rs trillion, 2015-16 prices — GVA, then plus taxes less subsidies, then plus income from abroad',
+   ks:[{k:'gva_tn',lbl:'GVA, basic prices',c:'var(--olive)',fmt:v=>v.toFixed(1)+' tn'},
+       MACRO_SERIES[0],MACRO_SERIES[1]]},
+  /* Two lines, not one. From 2023-24 PBS reprojects population on the 2023
+     Census, so the series are not a continuation of each other and joining
+     them would draw a fall nobody measured. */
+  {lbl:'Real income per person', unit:'rupees, 2015-16 prices — by census population basis',
+   ks:[{k:'pci17',lbl:'On 2017-Census population',c:'var(--gold-600)',fmt:v=>'Rs '+Math.round(v).toLocaleString()},
+       {k:'pci23',lbl:'On 2023-Census population',c:'var(--sienna)',fmt:v=>'Rs '+Math.round(v).toLocaleString()}]},
   {lbl:'The rupee', unit:'rupees per US dollar, annual average', ks:[MACRO_SERIES[3]]},
-  {lbl:'Net primary income from abroad', unit:'Rs trillion — mostly remittances',
+  {lbl:'Net primary income from abroad', unit:'Rs trillion — GNI less GDP',
    ks:[{k:'npi_tn',lbl:'Net primary income',c:'var(--plum)',fmt:v=>v.toFixed(2)+' tn'}]}];
  const svg=el.append('svg').attr('width',W).attr('height',ch*Math.ceil(PANELS.length/cols)).style('display','block');
  PANELS.forEach((p,i)=>{
@@ -480,13 +493,10 @@ function drawMacroLevels(){
    g.append('circle').attr('cx',x(l.fy_end)).attr('cy',y(l[s.k])).attr('r',3).attr('fill',s.c);
    g.append('text').attr('x',x(l.fy_end)-4).attr('y',y(l[s.k])-7).attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800).attr('fill',s.c).text(s.fmt(l[s.k]));
   });
-  /* Where real income per person turned. Marked, because it is the one thing
-     on this card a reader will not find anywhere else on the site. */
-  if(p.ks[0].k==='pci'){
-   const pts=macroRows.filter(r=>r.pci!=null),pk=pts.reduce((a,b)=>b.pci>a.pci?b:a);
-   g.append('line').attr('x1',x(pk.fy_end)).attr('x2',x(pk.fy_end)).attr('y1',m.t).attr('y2',ch-m.b).attr('stroke','var(--muted)').attr('stroke-dasharray','2 3').attr('opacity',.8);
-   g.append('text').attr('x',x(pk.fy_end)-5).attr('y',m.t+11).attr('text-anchor','end').attr('font-size',10).attr('font-style','italic').attr('fill','var(--muted)').text('peak '+pk.fy);
-  }
+  /* A "peak 2021-22" marker used to sit here. It was an artefact of an
+     extract that stopped in 2023-24: on the 2017-Census basis the series
+     reaches 198,864 in 2024-25 and 203,118 in 2025-26, both above it. The
+     chart states no turning point now; the reader can see the shape. */
   g.append('g').attr('transform',`translate(0,${ch-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(6,Math.floor(cw/110))).tickFormat(n=>fyLbl(n)));
   g.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')));
  });
@@ -1408,8 +1418,16 @@ function downloadCSV(name,rows){
 }
 const CSV={
  macro:()=>['Pakistan_macro_indicators_2000-2026.csv',
-   macroRows.map(r=>({fiscal_year:r.fy,gdp_constant_rs_tn:r.gdp_tn,gni_constant_rs_tn:r.gni_tn,
-     net_primary_income_abroad_rs_tn:r.npi_tn,real_income_per_person_rs:r.pci,rupees_per_usd:r.usd}))],
+   macroRows.map(r=>({fiscal_year:r.fy,
+     gva_basic_prices_rs_tn:r.gva_tn,
+     gdp_market_prices_rs_tn:r.gdp_tn,
+     gni_constant_rs_tn:r.gni_tn,
+     net_primary_income_abroad_rs_tn:r.npi_tn,
+     income_per_person_rs_2017census_population:r.pci17,
+     income_per_person_rs_2023census_population:r.pci23,
+     rupees_per_usd:r.usd,
+     price_basis:'constant 2015-16',
+     source:'PBS National Accounts Table 5'}))],
  qtr:()=>[`Pakistan_quarterly_gva_by_${qtrLevel}.csv`,
    qtrRows.map(r=>({fiscal_year:r.fy,quarter:'Q'+r.quarter,months:QTR_NAME[r.quarter],
      sector:r.sector,subsector:r.subsector,activity:r.category,
