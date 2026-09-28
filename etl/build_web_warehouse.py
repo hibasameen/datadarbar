@@ -1636,7 +1636,12 @@ def build(src: Path, district_only: bool = False) -> None:
         "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
         "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a "
         "named episode with a start and end, and date_precision says how well "
-        "the dates are known. climate_impacts carries what each one did.",
+        "the dates are known. These events do NOT join to climate_impacts: "
+        "the impact records carry no event key, only their own report_id, so "
+        "the two are separate universes and attributing an impact row to an "
+        "event here would be an inference, not a lookup. An earlier note "
+        "said climate_impacts carries what each one did, which invited a "
+        "join that cannot be made.",
         {"record_id": "the event", "source": "who recorded it",
          "hazard": "flood, drought or tropical cyclone", "subtype": "finer type",
          "title": "how the source names it", "start_date": "when it began",
@@ -1646,12 +1651,16 @@ def build(src: Path, district_only: bool = False) -> None:
 
     src_table(
         "climate_impacts", "climate_events/climate_impacts.parquet",
-        "What each event did: people affected, killed, displaced, and assets "
-        "damaged, by place where reported.",
-        "336 observations. The metric column says what is counted and the "
-        "figures come from whichever report covered that place, so coverage is "
-        "uneven between events and between places within one event. Do not read "
-        "a missing row as a zero.",
+        "Impacts reported by disaster reporting: people affected, killed, "
+        "displaced, and assets damaged, by place and reporting period.",
+        "336 observations, keyed by report and place, not by event. There "
+        "is no event key in this table and none that joins to "
+        "climate_events, so an impact cannot be attributed to a named event "
+        "by lookup - only by reading the period and the place, which is an "
+        "inference. The metric column says what is counted and the figures "
+        "come from whichever report covered that place, so coverage is "
+        "uneven between places and between periods. Do not read a missing "
+        "row as a zero.",
         {"observation_id": "the observation", "report_id": "the report it came from",
          "location_name": "the place as the report names it",
          "admin_level": "how fine the place is", "metric": "what is counted",
@@ -1708,9 +1717,14 @@ def build(src: Path, district_only: bool = False) -> None:
     csv_table(
         "gva_by_activity_annual", NA / "gdp_by_activity_annual_constant_2000_2026.csv",
         "Gross value added by sector and sub-sector, annual, at constant prices.",
-        "Three levels in one table \u2014 sector, subsector and category \u2014 so summing "
-        "the rows double- or triple-counts. Filter to one level before adding "
-        "anything up.",
+        "One row per leaf activity, 22 a year, with sector and subsector as "
+        "the path to it rather than rows of their own. Summing the rows is "
+        "therefore correct and reproduces the published total: it equals "
+        "Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, "
+        "the exception being 2023-24, where the activity file and the annual "
+        "table are different vintages and differ by Rs15.9bn. An earlier note "
+        "here said the rows were three nested levels and that adding them "
+        "double-counts, which is not what the file contains.",
         {"fy": "fiscal year", "fy_end": "calendar year it ends in",
          "sector": "the broad sector", "subsector": "within the sector",
          "category": "within the sub-sector",
@@ -1721,9 +1735,10 @@ def build(src: Path, district_only: bool = False) -> None:
     csv_table(
         "gva_by_activity_quarterly", NA / "gdp_by_activity_quarterly_constant_2016_2025.csv",
         "The same, quarterly, from 2015\u201316.",
-        "Quarterly national accounts are newer and thinner than the annual series "
-        "and are revised more. The same nesting applies: sector, subsector and "
-        "category are levels, not categories to add together.",
+        "Quarterly national accounts are newer and thinner than the annual "
+        "series and are revised more. The grain is the same as the annual "
+        "file: one row per leaf activity, with sector and subsector as the "
+        "path, so the rows of one quarter add up rather than double-count.",
         {"fy": "fiscal year", "fy_end": "calendar year it ends in",
          "quarter": "Q1 is July\u2013September", "sector": "the broad sector",
          "subsector": "within the sector", "category": "within the sub-sector",

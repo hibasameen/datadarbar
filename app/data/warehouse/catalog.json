@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-27",
+ "generated": "2026-09-28",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "tables": [
   {
@@ -298,7 +298,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201156,
+   "bytes": 8201154,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -674,7 +674,7 @@
    "bytes": 7042,
    "rows": 31,
    "description": "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
-   "notes": "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a named episode with a start and end, and date_precision says how well the dates are known. climate_impacts carries what each one did.",
+   "notes": "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a named episode with a start and end, and date_precision says how well the dates are known. These events do NOT join to climate_impacts: the impact records carry no event key, only their own report_id, so the two are separate universes and attributing an impact row to an event here would be an inference, not a lookup. An earlier note said climate_impacts carries what each one did, which invited a join that cannot be made.",
    "unit": "events",
    "source": "Reanalysis of published disaster reporting",
    "columns": [
@@ -795,8 +795,8 @@
    "file": "climate_impacts.parquet",
    "bytes": 7050,
    "rows": 336,
-   "description": "What each event did: people affected, killed, displaced, and assets damaged, by place where reported.",
-   "notes": "336 observations. The metric column says what is counted and the figures come from whichever report covered that place, so coverage is uneven between events and between places within one event. Do not read a missing row as a zero.",
+   "description": "Impacts reported by disaster reporting: people affected, killed, displaced, and assets damaged, by place and reporting period.",
+   "notes": "336 observations, keyed by report and place, not by event. There is no event key in this table and none that joins to climate_events, so an impact cannot be attributed to a named event by lookup - only by reading the period and the place, which is an inference. The metric column says what is counted and the figures come from whichever report covered that place, so coverage is uneven between places and between periods. Do not read a missing row as a zero.",
    "unit": "people, assets",
    "source": "Reanalysis of published disaster reporting",
    "columns": [
@@ -1164,7 +1164,7 @@
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 167765,
+   "bytes": 167488,
    "rows": 45829,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead. Census education source corrections dated 2026-09-25 use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. Missing source counts are unavailable, not zero.",
@@ -1499,7 +1499,7 @@
    "bytes": 6373,
    "rows": 594,
    "description": "Gross value added by sector and sub-sector, annual, at constant prices.",
-   "notes": "Three levels in one table \u2014 sector, subsector and category \u2014 so summing the rows double- or triple-counts. Filter to one level before adding anything up.",
+   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total: it equals Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, the exception being 2023-24, where the activity file and the annual table are different vintages and differ by Rs15.9bn. An earlier note here said the rows were three nested levels and that adding them double-counts, which is not what the file contains.",
    "unit": "million rupees",
    "source": "PBS national accounts, pull of 2026-09-27",
    "columns": [
@@ -1546,7 +1546,7 @@
    "bytes": 9588,
    "rows": 880,
    "description": "The same, quarterly, from 2015\u201316.",
-   "notes": "Quarterly national accounts are newer and thinner than the annual series and are revised more. The same nesting applies: sector, subsector and category are levels, not categories to add together.",
+   "notes": "Quarterly national accounts are newer and thinner than the annual series and are revised more. The grain is the same as the annual file: one row per leaf activity, with sector and subsector as the path, so the rows of one quarter add up rather than double-count.",
    "unit": "million rupees",
    "source": "PBS national accounts, pull of 2026-09-27",
    "columns": [
@@ -3689,8 +3689,8 @@
   {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
-   "bytes": 107564,
-   "rows": 5801,
+   "bytes": 123033,
+   "rows": 5664,
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
@@ -3735,6 +3735,16 @@
      "name": "label",
      "type": "VARCHAR",
      "description": "the indicator, as a reader sees it"
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": ""
     },
     {
      "name": "dp",
@@ -3789,6 +3799,11 @@
     {
      "name": "label_source",
      "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "redundant",
+     "type": "BOOLEAN",
      "description": ""
     }
    ]
