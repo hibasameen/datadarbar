@@ -706,8 +706,24 @@
     // -21 to 13 rather than on a level.
     state.year = yrs.length ? (yrs.indexOf(state.year) >= 0 ? state.year : latestYear(yrs))
                             : null;
+    /* A breakdown the reader chose is kept when the next measure has it. When
+       it does not, the map changes whose figure it shows - from women to
+       everyone - and that is said, not done silently. */
+    var heldSex = state.sex, heldLoc = state.locality;
     state.locality = pickFacet(list('localities', i), state.locality);
     state.sex = pickFacet(list('sexes', i), state.sex);
+    var WHO = { female: 'women and girls', male: 'men and boys',
+                transgender: 'transgender people', rural: 'rural areas',
+                urban: 'urban areas' };
+    state.resetNote = '';
+    if (heldSex !== 'all' && state.sex !== heldSex && WHO[heldSex]) {
+      state.resetNote = 'Not published for ' + WHO[heldSex]
+        + ' - this measure is shown for all sexes.';
+    } else if (heldLoc !== 'all' && state.locality !== heldLoc && WHO[heldLoc]) {
+      state.resetNote = 'Not published for ' + WHO[heldLoc]
+        + ' separately - this measure is shown for '
+        + (state.locality === 'all' ? 'urban and rural together' : WHO[state.locality] || state.locality) + '.';
+    }
     renderLegend();
     $('legend').hidden = false;
     if ($('measureHead').hidden) {
@@ -1119,7 +1135,7 @@
       };
     });
 
-    $('legendNote').textContent = '';
+    $('legendNote').textContent = state.resetNote || '';
 
     /* What this percentage is a percentage OF, where the source's own
        denominator needs saying. The Mouza Census divides by one of three

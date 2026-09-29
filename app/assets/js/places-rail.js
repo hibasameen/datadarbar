@@ -157,10 +157,56 @@
     return { measures: measures, byRow: byRow };
   }
 
+  /* PLAIN WORDS FIND SOURCE WORDS. Searching "power", "language", "jobless"
+     or "oosc" found nothing, because no published label uses them; "out of
+     school" found 5 entries where "out-of-school" found 108, and "sanitation"
+     found 1 where "toilet" found 273. Each group below is searched as one:
+     the reader's own word still ranks first, and the source's wording stays
+     searchable exactly as printed. "Schooling" is deliberately broad - it
+     could mean attendance, enrolment or attainment, and pretending it names
+     one of them would hide the other two. */
+  var ALIASES = [
+    ['literacy', 'literate', 'illiterate'],
+    ['out of school', 'oosc', 'never attended'],
+    ['electricity', 'power', 'lighting'],
+    ['mother tongue', 'language'],
+    ['sanitation', 'toilet', 'washroom', 'open defecation'],
+    ['immunisation', 'immunization', 'immunised', 'vaccination', 'vaccine'],
+    ['poverty', 'mpi', 'headcount', 'deprived'],
+    ['unemployment', 'unemployed', 'jobless', 'seeking work'],
+    ['migration', 'migrant', 'emigrant', 'emigrants'],
+    ['schooling', 'attendance', 'attended', 'enrolment', 'attainment'],
+    ['internet', 'online'],
+    ['phone', 'mobile', 'smartphone'],
+    ['housing', 'house', 'dwelling'],
+    ['water', 'drinking water', 'piped'],
+  ];
+  function norm(s) { return String(s).toLowerCase().replace(/[-\u2013\u2014]/g, ' ').replace(/\s+/g, ' '); }
+  function expand(q) {
+    var out = [q];
+    ALIASES.forEach(function (g) {
+      if (g.some(function (w) { return q.indexOf(w) >= 0; })) {
+        g.forEach(function (w) {
+          g.forEach(function (from) {
+            if (q.indexOf(from) < 0) return;
+            var alt = q.replace(from, w);
+            if (out.indexOf(alt) < 0) out.push(alt);
+          });
+        });
+      }
+    });
+    return out;
+  }
+
   /* Relevance for search. The census outnumbers everything else forty to one,
      so an unranked "literacy" opens on "10 -- 14 · FORMAL". */
-  function score(m, q) {
-    var name = m.label.toLowerCase(), at = name.indexOf(q), s = 0;
+  function score(m, q, alts) {
+    var name = norm(m.label), at = name.indexOf(q), s = 0;
+    // An alias match counts, but the reader's own word first.
+    if (at < 0 && alts) {
+      alts.some(function (a) { at = name.indexOf(a); return at >= 0; });
+      if (at >= 0) s -= 15;
+    }
     if (name === q) s += 200;
     if (at === 0) s += 100;
     else if (at > 0) s += /[^a-z0-9]/.test(name.charAt(at - 1)) ? 70 : 50;
@@ -173,14 +219,15 @@
   }
 
   function matches(m, q, col) {
-    var hay = (m.label + ' ' + m.fam + ' ' + m.sub + ' ' + m.topic + ' '
-               + m.ds + ' ' + m.groupLabel).toLowerCase();
-    if (hay.indexOf(q) >= 0) return true;
+    var alts = Array.isArray(q) ? q : [q];
+    var hay = norm(m.label + ' ' + m.fam + ' ' + m.sub + ' ' + m.topic + ' '
+                   + m.ds + ' ' + m.groupLabel);
+    if (alts.some(function (a) { return hay.indexOf(a) >= 0; })) return true;
     // The source's own spelling stays searchable: someone who knows a series
     // by what PBS printed must still find it by typing that.
     return m.rows.some(function (r) {
-      return String(col('indicator', r.row)).toLowerCase().indexOf(q) >= 0
-          || String(col('label', r.row)).toLowerCase().indexOf(q) >= 0;
+      var raw = norm(col('indicator', r.row) + ' ' + col('label', r.row));
+      return alts.some(function (a) { return raw.indexOf(a) >= 0; });
     });
   }
 
@@ -340,13 +387,15 @@
       }
 
       function libRows() {
-        var q = (libState.q || '').trim().toLowerCase();
+        var q = norm((libState.q || '').trim());
         var pool = built.measures.filter(function (m) {
           return !libState.topic || m.topic === libState.topic;
         });
         if (!q) return { list: pool, q: '' };
-        var hits = pool.filter(function (m) { return matches(m, q, col); })
-          .map(function (m) { return { m: m, s: score(m, q) }; })
+        var alts = expand(q);
+        libState.alts = alts.slice(1);
+        var hits = pool.filter(function (m) { return matches(m, alts, col); })
+          .map(function (m) { return { m: m, s: score(m, q, alts) }; })
           .sort(function (a, b) { return b.s - a.s; })
           .map(function (x) { return x.m; });
         return { list: hits, q: q };
@@ -383,7 +432,10 @@
               ? ms.length.toLocaleString() + ' measure' + (ms.length === 1 ? '' : 's')
                 + (series > ms.length ? ' · ' + series.toLocaleString()
                    + ' detailed series' : '')
-                + (q ? ' match “' + esc(libState.q) + '”' : '')
+                + (q ? ' match \u201c' + esc(libState.q) + '\u201d'
+                     + (libState.alts && libState.alts.length
+                        ? ' (also searching ' + esc(libState.alts.slice(0, 4).join(', ')) + ')'
+                        : '') : '')
                 + ' · ' + level + ' map'
               : (q ? 'Nothing here matches “' + esc(libState.q) + '”.' : ''))
           + '</p></header><div class="lib-body">';
@@ -446,7 +498,7 @@
         if (q) {
           var elsewhere = other.measures.filter(function (m) {
             return (!libState.topic || m.topic === libState.topic)
-                && matches(m, q, col);
+                && matches(m, expand(q), col);
           }).filter(function (m) {
             return !built.measures.some(function (x) {
               return x.groupKey === m.groupKey && x.name === m.name;
