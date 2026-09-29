@@ -2304,7 +2304,11 @@
                card.appendChild(el); }
     var r = window.DDProv && window.DDProv.of('state:' + chart);
     el.innerHTML = r ? window.DDProv.panel(r) : '';
-    var btn = $('csvBtn'), has = !!(CSV_BLOCK[chart] && D[CSV_BLOCK[chart]]
+    // The budget exports its own grouped payload through budgetCsv(), so it
+    // has a table even though it is in no CSV_BLOCK; the button said
+    // "Catalogue" and then downloaded a CSV.
+    var btn = $('csvBtn'), has = (current.topic === 'budget' && !!BUDGET)
+                             || !!(CSV_BLOCK[chart] && D[CSV_BLOCK[chart]]
                                     && D[CSV_BLOCK[chart]].cols);
     if (btn) {
       btn.textContent = has ? 'CSV' : 'Catalogue';
