@@ -192,3 +192,6 @@ a.tree-item{color:var(--green-800)}
 .xnav-chart:hover{background:var(--green-100);color:var(--ink)}
 .xnav-chart.is-on{background:var(--gold-100);color:var(--green-800);font-weight:700}
 .xside .xfind-none{margin:6px 8px;font-size:12px;color:var(--muted)}
+/* The old cascade's container right-aligned its children for a row of
+   selects; a list of topics has to fill the column. */
+.xside .xrail.xnav{align-items:stretch;flex-wrap:nowrap}
