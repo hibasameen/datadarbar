@@ -302,14 +302,34 @@
     // spells the same band differently in each - "2017=<key>\x1f2023=<key>".
     var year = state.year || list('years', i)[0];
 
-    function cellFor(y) {
+    /* The key carries a cell per year, and per sex where PBS published the
+       sexes as separate columns rather than as a sex dimension: "2017=<key>"
+       or "2017:female=<key>". Both forms are read here, because a cell that
+       merged only across years keeps the shorter one.
+
+       Falling back to the first part is deliberate and load-bearing: a sex
+       chosen on one indicator persists to the next, and if that one has no
+       such column the map must still draw something rather than going blank
+       on a facet the reader cannot see they are holding. */
+    function cellFor(y, sx) {
       if (ind.indexOf('=') < 0) return ind.split('|');
-      var want = null;
-      ind.split('\u001f').forEach(function (part) {
-        var at = part.indexOf('=');
-        if (part.slice(0, at) === String(y)) want = part.slice(at + 1);
+      var parts = ind.split('\u001f'), want = null, yearOnly = null;
+      parts.forEach(function (part) {
+        var at = part.indexOf('='), head = part.slice(0, at);
+        var bits = head.split(':'), py = bits[0], ps = bits[1];
+        if (py !== String(y)) return;
+        if (ps == null) { yearOnly = part.slice(at + 1); return; }
+        if (sx && ps === String(sx)) want = part.slice(at + 1);
+        if (yearOnly == null) yearOnly = part.slice(at + 1);
       });
-      return (want || ind.split('\u001f')[0].split('=').pop()).split('|');
+      var key = want || yearOnly || parts[0].split('=').pop();
+      var out = key.split('|');
+      /* Where the key carries the sex, the panel does NOT: PBS published
+         those as separate columns, so every one of their rows sits under
+         sex='all' and filtering on the chosen sex as well would return
+         nothing at all. The key has already selected it. */
+      out.bySex = ind.indexOf(':') >= 0;
+      return out;
     }
 
     /* Whether this indicator's values may be added is decided in the build
@@ -318,7 +338,7 @@
     function summable() { return col('h_sum', state.row) === 1; }
 
     function censusYear(y) {
-      var c = cellFor(y);
+      var c = cellFor(y, state.sex);
       return engine().then(function (w) {
         return w.query(
           /* unit, because a shape and a source row are not the same thing and
@@ -331,7 +351,7 @@
           + '   AND indicator = ' + q(c[1])
           + "   AND coalesce(col_label, '') = " + q(c[2])
           + '   AND locality = ' + q(state.locality)
-          + '   AND sex = ' + q(state.sex)
+          + '   AND sex = ' + q(c.bySex ? 'all' : state.sex)
           + (state.level === 'district' ? "   AND unit_type = 'district'"
                                         : "   AND unit_type <> 'district'")
           + '   AND map_key IS NOT NULL AND value IS NOT NULL');

@@ -278,53 +278,127 @@ def main():
                         AND j.metric = i.measure)""")
     print(f'  {cols} column totals marked (a heading standing in for a measure)')
 
-    # ── the same cell in both censuses ──────────────────────────────────
+    # ── the same cell in both censuses, and across the sexes ────────────
     # A census cell keyed on PBS's raw strings cannot merge across censuses,
     # because the two spell the same thing differently: "00 - 04" against
     # "00 -- 04". So the identical measure appeared twice, once per census,
     # and the year control - which exists to offer 2017, 2023 and the change -
     # was disabled on both, each being a single-year row.
     #
-    # Grouped on the NORMALISED measure and metric instead, 206 cells are the
-    # same cell in both censuses. Those merge into one row carrying both
-    # years, and the raw key for each year travels with it as
-    # "2017=<key>\x1f2023=<key>" so the query can still find the right cell.
-    # The other 4,361 are published in one census only - the two ask different
-    # questions - and stay as they are.
+    # THE YEAR AND THE SEX WERE ALSO IN THE NAME. PBS publishes population as
+    # four columns per round, so the Population family carried eight entries -
+    # "POPULATION-2023 - All Sexes", "Population - 2017 - Female" and six more
+    # - for one variable that the page already has a year control and a sex
+    # control for. A reader choosing between eight names for one number is
+    # choosing between spellings.
+    #
+    # So the merge key is the one the year merge already used - level, topic,
+    # dataset, measure, metric - with the measure normalised by removing the
+    # sex word and the panel's OWN census year.
+    #
+    # The table is deliberately NOT in the key. PBS moves content between
+    # tables across rounds: the 2017 homeless table is table 22 and in 2023 it
+    # is a category inside table 10, and keying on the table would split those
+    # apart again after they had been correctly joined.
+    #
+    # Removing only the panel's own year matters. The 2023 Table 1 prints a
+    # "POPULATION 2017" column beside "POPULATION-2023" - the previous round,
+    # for comparison - and the 2017 table prints "POPULATION 1998". Stripping
+    # every year would make those look like the same measure as the round they
+    # sit in, merging a historical comparison column into the headline figure.
+    #
+    # Where two rows in a group claim the same year and sex the merge would
+    # have to choose between them, so that group is left alone and counted.
+    # All of those are a different fault - PBS spelling one category two ways
+    # inside one table, "Non- Pakistani" against "Non-pakistani" - which is a
+    # label problem and not this one.
+    con.execute("""CREATE OR REPLACE MACRO _sex_of(m) AS CASE
+        WHEN lower(m) LIKE '%all sexes%' OR lower(m) LIKE '%both sexes%'
+          THEN 'all'
+        WHEN lower(m) LIKE '%trans%' THEN 'transgender'
+        WHEN lower(m) LIKE '%female%' THEN 'female'
+        WHEN lower(m) LIKE '%male%' THEN 'male' ELSE NULL END""")
+    con.execute(r"""CREATE OR REPLACE MACRO _norm_meas(m, y) AS
+        trim(regexp_replace(regexp_replace(regexp_replace(lower(m),
+          '(all sexes|both sexes|trans ?gender|female|male)', '', 'g'),
+          '-? ?' || y, '', 'g'), '[^a-z0-9]+', ' ', 'g'))""")
+    con.execute(r"""CREATE OR REPLACE MACRO _disp_meas(m, y) AS
+        trim(regexp_replace(regexp_replace(regexp_replace(regexp_replace(m,
+          '\s*[—–-]?\s*(all sexes|both sexes|trans ?gender|female|male)\s*$',
+          '', 'gi'),
+          '\s*-?\s*' || y, '', 'g'),
+          '\s*[—–-]\s*$', '', 'g'),
+          '\s+', ' ', 'g'))""")
+
+    con.execute("""CREATE OR REPLACE TEMP TABLE _cand AS
+        SELECT level, topic, dataset, metric, measure, indicator,
+               years[1] AS yr, coalesce(_sex_of(measure), 'all') AS sx,
+               _norm_meas(measure, years[1]) AS nm
+        FROM place_indicator_index
+        WHERE source = 'census' AND NOT redundant AND len(years) = 1""")
+    con.execute("""CREATE OR REPLACE TEMP TABLE _merge AS
+        SELECT level, topic, dataset, nm, metric
+        FROM _cand
+        GROUP BY 1, 2, 3, 4, 5
+        HAVING count(*) > 1 AND count(*) = count(DISTINCT yr || '/' || sx)""")
+    skipped = con.sql("""SELECT count(*) FROM (
+        SELECT 1 FROM _cand GROUP BY level, topic, dataset, nm, metric
+        HAVING count(*) > 1 AND count(*) <> count(DISTINCT yr || '/' || sx))
+        """).fetchone()[0]
+
     con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
-        WITH merged AS (
-          SELECT level, topic, dataset, measure, metric,
-                 count(DISTINCT years[1]) AS n_years
-          FROM place_indicator_index
-          WHERE source = 'census' AND len(years) = 1 AND NOT redundant
-          GROUP BY 1, 2, 3, 4, 5 HAVING count(DISTINCT years[1]) > 1)
         SELECT i.level, i.topic, i.topic_label,
                any_value(i.group_key) AS group_key,
                any_value(i.group_label) AS group_label,
                i.dataset,
-               CASE WHEN m.measure IS NULL THEN any_value(i.indicator)
-                    ELSE string_agg(i.years[1] || '=' || i.indicator, '\x1f'
-                                    ORDER BY i.years[1]) END AS indicator,
-               any_value(i.label) AS label, i.measure, i.metric,
+               -- The raw key per year and sex travels with the row, because
+               -- PBS spells the same band differently in each round and puts
+               -- each sex in its own column. Only the sex half is added when
+               -- there is more than one, so a year-only merge keeps the
+               -- shorter "2017=<key>" form it already had.
+               CASE WHEN m.nm IS NULL THEN any_value(i.indicator)
+                    WHEN count(DISTINCT c.sx) > 1
+                      THEN string_agg(c.yr || ':' || c.sx || '=' || i.indicator,
+                                      '\x1f' ORDER BY c.yr, c.sx)
+                    ELSE string_agg(c.yr || '=' || i.indicator,
+                                    '\x1f' ORDER BY c.yr) END AS indicator,
+               CASE WHEN m.nm IS NULL THEN any_value(i.label)
+                    ELSE any_value(_disp_meas(i.measure, c.yr)) END AS label,
+               CASE WHEN m.nm IS NULL THEN any_value(i.measure)
+                    ELSE any_value(_disp_meas(i.measure, c.yr)) END AS measure,
+               i.metric,
                any_value(i.dp) AS dp, i.source,
                any_value(i.families) AS families,
                list_sort(list_distinct(flatten(list(i.years)))) AS years,
                any_value(i.localities) AS localities,
-               any_value(i.sexes) AS sexes,
+               CASE WHEN m.nm IS NULL THEN any_value(i.sexes)
+                    ELSE list_sort(list_distinct(list(c.sx))) END AS sexes,
                max(i.shapes) AS shapes, max(i.units) AS units,
                min(i.min_value) AS min_value, max(i.max_value) AS max_value,
                any_value(i.label_source) AS label_source, i.redundant
         FROM place_indicator_index i
-        LEFT JOIN merged m USING (level, topic, dataset, measure, metric)
-        -- redundant is grouped on, and excluded from `merged` above, so a
-        -- row kept only for the catalogue can neither merge with another nor
-        -- pull a real measure into a compound key. Leaving it out folded
-        -- demographics/pop_total and urbanRural/total_all into a single
-        -- entry keyed "2017=pop_total\x1f2017=total_all", which is two
-        -- different measures wearing one name.
-        GROUP BY i.level, i.topic, i.topic_label, i.dataset, i.measure,
-                 i.metric, i.source, i.redundant, m.measure,
-                 CASE WHEN m.measure IS NULL THEN i.indicator ELSE '' END""")
+        -- Joined on the indicator, which is the row's own identity. Joining
+        -- on measure and metric fans out where PBS spells one age band two
+        -- ways inside a table: each index row then matched both candidate
+        -- rows and the compound key came out with the same year twice.
+        LEFT JOIN _cand c
+          ON c.level = i.level AND c.indicator = i.indicator
+        LEFT JOIN _merge m
+          ON m.level = c.level AND m.topic = c.topic AND m.dataset = c.dataset
+         AND m.nm = c.nm AND m.metric = c.metric
+        -- redundant is grouped on, and excluded from _cand above, so a row
+        -- kept only for the catalogue can neither merge with another nor pull
+        -- a real measure into a compound key. Leaving it out folded
+        -- demographics/pop_total and urbanRural/total_all into a single entry
+        -- keyed "2017=pop_total\x1f2017=total_all", which is two different
+        -- measures wearing one name.
+        GROUP BY i.level, i.topic, i.topic_label, i.dataset, i.metric,
+                 i.source, i.redundant, m.nm,
+                 CASE WHEN m.nm IS NULL THEN i.indicator ELSE '' END,
+                 CASE WHEN m.nm IS NULL THEN i.measure ELSE '' END""")
+    print(f'  {skipped} groups left unmerged: two rows claim the same year '
+          f'and sex, which is PBS spelling one category two ways')
+
     n_both = con.sql("""SELECT count(*) FROM place_indicator_index
                         WHERE len(years) > 1 AND source = 'census'""").fetchone()[0]
     print(f'  {n_both} census cells published in both censuses, merged into '

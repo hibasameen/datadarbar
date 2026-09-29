@@ -163,14 +163,96 @@ def main():
     # name; a destination with no row means the hierarchy is describing an
     # index that no longer exists. Either way the fix is to regenerate the
     # crosswalk, not to paper over it here.
-    missing = [keys[i] for i in browsable if keys[i] not in hmap]
-    stale = set(hmap) - {keys[i] for i in browsable}
+    # A ROW THAT MERGED HAS A KEY THE CROSSWALK NEVER SAW. The crosswalk is a
+    # snapshot of the index taken when the hierarchy was assigned, keyed on
+    # level + table + indicator, and merging rows across the censuses and the
+    # sexes rewrites that last part into a compound of the keys it absorbed.
+    # Regenerating the crosswalk is not an option: the topic and family on
+    # each row were assigned once, by hand, and cannot be re-derived.
+    #
+    # So a compound key is resolved through the rows it absorbed, which ARE in
+    # the crosswalk as separate entries - and every one of them must agree
+    # about where the row belongs. They should: a merge only joins rows that
+    # are the same variable. If they disagree the merge was wrong, and that is
+    # worth failing on rather than picking whichever came first.
+    # The crosswalk's own keys may themselves be compound, from the merge
+    # that was in place when it was taken. Regrouping can split one of those
+    # back into singletons, whose individual keys then appear nowhere - so
+    # every compound entry is also indexed by its parts, and the lookup works
+    # in both directions.
+    # Keyed on level and the cell, NOT on the table. A compound key carries
+    # any_value(group_key) of the rows it absorbed, so a cell from table 5 can
+    # sit inside a key labelled table 4, and matching on the table would miss
+    # it. The cell string is what identifies the cell.
+    parts_of = {}
+    for ck, cv in hier['map'].items():
+        lvl, gk, ind = ck.split('\u001f', 2)
+        if '=' not in ind:
+            continue
+        for part in ind.split('\u001f'):
+            parts_of.setdefault(
+                (lvl, part.split('=', 1)[1]), []).append((ck, cv))
+
+    def resolve(k):
+        if k in hmap:
+            return hmap[k], [k]
+        lvl0, gk0, ind0 = k.split('\u001f', 2)
+        if '=' not in ind0 and (lvl0, ind0) in parts_of:
+            seen = parts_of[(lvl0, ind0)]
+            assert all(v == seen[0][1] for _, v in seen), (
+                f'one cell sits in two crosswalk entries that disagree: {k!r}')
+            return seen[0][1], [ck for ck, _ in seen]
+        lvl, gk, ind = k.split('\u001f', 2)
+        if '=' not in ind:
+            return None, []
+        parts, seen_at, places = ind.split('\u001f'), [], []
+        for part in parts:
+            ck = '\u001f'.join((lvl, gk, part.split('=', 1)[1]))
+            if ck in hmap:
+                seen_at.append(ck)
+                places.append(hmap[ck])
+        if not places:
+            return None, []
+        # h_norm - whether the value can be read per head - is the one field
+        # a merge may legitimately split on, because it depends on the facet
+        # that just became a control. "Female population per 1,000 people" is
+        # a real map; "total population per 1,000 people" is 1,000 everywhere.
+        # Everything else must agree, because a merge only joins rows that are
+        # the same variable, and if they disagree the merge was wrong.
+        NORM = 7
+        first = places[0]
+        assert all(p[:NORM] == first[:NORM] and p[NORM + 1:] == first[NORM + 1:]
+                   for p in places), (
+            f'a merged row\u2019s parts disagree about where it belongs, so '
+            f'the merge joined two different variables: {k!r}')
+        out = list(first)
+        # Conservative: offered only where every facet supports it, so the
+        # control never draws the degenerate map.
+        out[NORM] = min(p[NORM] for p in places)
+        if out[NORM] != max(p[NORM] for p in places):
+            demoted.append(k)
+        return out, seen_at
+
+    resolved, consumed, missing, demoted = {}, set(), [], []
+    for i in browsable:
+        got, used = resolve(keys[i])
+        if got is None:
+            missing.append(keys[i])
+        else:
+            resolved[keys[i]] = got
+            consumed.update(used)
+    hmap = resolved
+    stale = set(hier['map']) - consumed
     assert not missing, (
         f'{len(missing)} index rows have no place in the hierarchy, e.g. '
         f'{missing[0]!r}')
     assert not stale, (
         f'{len(stale)} hierarchy entries match no index row, e.g. '
         f'{sorted(stale)[0]!r}')
+    if demoted:
+        print(f'  {len(demoted)} merged rows lose the per-head reading: one '
+              f'of their facets cannot carry it (total population per 1,000 '
+              f'people is 1,000 everywhere)')
     assert len(set(keys)) == len(keys), 'the compound source key is not unique'
 
     unresolved = set(hier['unresolved_review'])
