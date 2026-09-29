@@ -360,6 +360,21 @@ STATE = {
          'in every bar it was reported in',
     note='One bar per report. Nameplate capacity, not generation; plants '
          'listed without a capacity add nothing.'),
+ 'plantsUsed': dict(publication='Plant-wise generation, CPPA-G system, by fiscal year',
+    selection='plants in the chosen report year that report both a capacity and '
+              'a generation figure, grouped into fuel families',
+    calc='share used = electricity generated / (nameplate MW x 8,760 hours) - '
+         'a capacity factor on nameplate capacity',
+    note='CPPA-G system plants only: K-Electric\u2019s own plants are not in these '
+         'sheets. Nameplate overstates what a plant can deliver - hydro is '
+         'limited by water, and a plant commissioned mid-year had fewer hours - '
+         'so a low share is not by itself idleness, but an oil plant at 4 per '
+         'cent was paid to stand by rather than to run.'),
+ 'plantsUseTrend': dict(publication='Plant-wise generation, CPPA-G system, by fiscal year',
+    selection='every plant reporting both capacity and generation, each year',
+    calc='generation summed over the year / (capacity summed x 8,760 hours)',
+    note='Plants listed without a generation figure are left out of both sides '
+         'of the ratio, not counted as idle: 11 in 2017-18, none from 2021-22.'),
  'plantsFuel': dict(publication='State of Industry Report, plants by fiscal year',
     selection='the plants in one chosen report year, grouped into fuel families',
     calc='capacity is what that report rated the plant at, not a maximum '
@@ -394,6 +409,18 @@ STATE = {
     note='SEPCO and TESCO enter the tables later than the rest and are '
          'compared over the years they have. K-Electric\u2019s rate is on a '
          'different base.'),
+ 'discoRecovery': dict(publication='State of Industry Report, billing, collection '
+                                   'and recovery by distribution company',
+    selection='rupees billed and rupees collected, government and private '
+              'consumers, 2019-20 to 2024-25',
+    calc='recovery = rupees collected / rupees billed, derived rather than read '
+         'from the printed percentage, which it matches exactly',
+    note='A bill that was never paid, not energy that was never billed: that is '
+         'the T&D loss, in the other charts. Above 100 per cent means arrears '
+         'from earlier years were collected. The 2025 report is a scan with '
+         'garbled column headings; each was matched on value to the clean 2024 '
+         'report, 47 or 48 of 48 company-years agreeing, and the build re-checks '
+         'it.'),
  'discoLosses': dict(publication='State of Industry Report, units purchased, '
                                  'sold and lost by distribution company',
     selection='transmission and distribution loss rate, by company and year',

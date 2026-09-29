@@ -65,7 +65,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import duckdb
 
-from build_disco_payload import AREA as DISCO_AREA, COLS as DISCO_COLS, losses
+from build_disco_payload import AREA as DISCO_AREA, COLS as DISCO_COLS, losses, \
+    recovery, RECOVERY_COLS
 
 # NEPRA's technology strings distinguish things that are the same fuel and spell
 # the same fuel two ways ('Coal' and 'THERMAL- COAL'). Group for the chart; the
@@ -237,7 +238,7 @@ def main():
     plants = rows(f"""
         SELECT y.plant_id, coalesce(p.plant_name, y.plant) AS plant,
                y.fiscal_year, {FUEL_FAMILY.replace('fuel', 'y.fuel')} AS family,
-               y.technology, y.fuel, y.installed_mw
+               y.technology, y.fuel, y.installed_mw, y.generation_gwh
         FROM '{W_}/nepra_plant_years.parquet' y
         LEFT JOIN (SELECT plant_id, plant_name
                    FROM '{W_}/nepra_plants.parquet') p USING (plant_id)
@@ -293,6 +294,8 @@ def main():
     # percentage column that contradicts them.
     disco_rows, disco_dropped, disco_disagree = losses(a.warehouse)
     assert disco_rows, 'the distribution crosswalk produced nothing'
+    recovery_rows = recovery(a.warehouse)
+    assert recovery_rows, 'no bill recovery rows'
 
 
     # ── derived denominators ─────────────────────────────────────────────
@@ -415,8 +418,13 @@ def main():
         ('sindh_fir_daily', 'firs', 'daily',
          'First information reports, the days observed', 'firsDaily', 'firs',
          None),
-        # Energy. The fuel mix across every report year leads; one year at a
-        # time is kept for the reader who wants a single report.
+        # Energy. What the capacity actually produced leads: nameplate
+        # capacity alone shows what could run, and the system ran at 34 per
+        # cent of it in 2024-25. The fuel mix and single years follow.
+        ('nepra_plant_years', 'plants', 'used',
+         'How much of the capacity ran, by fuel', 'plantsUsed', 'plants', 'fy'),
+        ('nepra_plant_years', 'plants', 'usetrend',
+         'Share of capacity used, year by year', 'plantsUseTrend', 'plants', 'fy'),
         ('nepra_plant_years', 'plants', 'mix',
          'Reported capacity by fuel, every report year', 'plantsMix',
          'plants', 'fy'),
@@ -432,6 +440,9 @@ def main():
         ('nepra_disco_annual', 'discos', 'change',
          'Losses then and now, company by company', 'discoChange', 'discos',
          'fy_end'),
+        ('nepra_disco_annual', 'discos', 'recovery',
+         'Bills paid: rupees collected for every rupee billed', 'discoRecovery',
+         'recovery', 'fy_end'),
         ('nepra_disco_annual', 'discos', 'losses',
          'T&D losses year by year', 'discoLosses', 'discos', 'fy_end'),
         ('nepra_disco_annual', 'discos', 'latest',
@@ -494,7 +505,7 @@ def main():
                  'cols': ['date', 'place', 'level', 'daily', 'ytd']},
         'plants': {'rows': plants,
                    'cols': ['id', 'plant', 'fy', 'family', 'technology',
-                            'fuel', 'mw'],
+                            'fuel', 'mw', 'gwh'],
                    'years': plant_fys, 'cover': plant_cover},
         'events': {'rows': events,
                    'cols': ['id', 'hazard', 'title', 'start', 'end', 'alert',
@@ -506,6 +517,7 @@ def main():
             'rows': budget[0], 'docs': budget[1],
             'first': budget[2], 'last': budget[3], 'items': budget[4],
         },
+        'recovery': {'rows': recovery_rows, 'cols': RECOVERY_COLS},
         'discos': {'rows': disco_rows, 'cols': DISCO_COLS, 'areas': DISCO_AREA,
                    'rejected': disco_dropped, 'disagreements': disco_disagree},
         'derived': {

@@ -195,6 +195,92 @@ def losses(warehouse):
     return rows, [list(d) for d in dropped], [list(d) for d in disagree]
 
 
+# ── bills paid ───────────────────────────────────────────────────────────
+# A T&D loss is energy that never reached a billed meter. Bills issued and
+# not paid are a different failure, which NEPRA reports separately in rupees:
+# billing_collection_recovery, 2019-20 to 2024-25. The page said the first
+# was the second until 29 September; this is the second, in its own chart.
+#
+# The 2025 report is an OCR'd scan and the only source for 2024-25, and its
+# column headings came through as "Colllcllon nu. In Mllllalll|Tallll". Each
+# is mapped here to the column it is, and the mapping was proven, not
+# guessed: matched on value against the 2024 report's clean headings in the
+# four years both cover, every one agrees on 47 or 48 of 48 company-years.
+# recovery() re-checks that on every build, so a later edition that reorders
+# the columns fails here rather than drawing billing as collection.
+RECOVERY = {
+    'Billing (Rs. in Million)|Government': 'billed_govt',
+    'Billing (Rs. in Million)|Govt.': 'billed_govt',
+    "111111111' OIL fn MU 11111|GoVlrnmmt": 'billed_govt',
+    'Billing (Rs. in Million)|Private': 'billed_pvt',
+    'Billing (Rs. in Million)|Pvt.': 'billed_pvt',
+    "111111111' OIL fn MU 11111|Private": 'billed_pvt',
+    'Billing (Rs. in Million)|Total': 'billed',
+    "111111111' OIL fn MU 11111|Tallll": 'billed',
+    'Collection (Rs. in Million)|Government': 'collected_govt',
+    'Collection (Rs. in Million)|Govt.': 'collected_govt',
+    'Colllcllon nu. In Mllllalll|GoVlrnmmt': 'collected_govt',
+    'Collection (Rs. in Million)|Private': 'collected_pvt',
+    'Collection (Rs. in Million)|Pvt.': 'collected_pvt',
+    'Colllcllon nu. In Mllllalll|Prlvlll9': 'collected_pvt',
+    'Collection (Rs. in Million)|Total': 'collected',
+    'Colllcllon nu. In Mllllalll|Tallll': 'collected',
+}
+RECOVERY_COLS = ['unit', 'fy', 'fy_end', 'edition', 'billed_mn', 'collected_mn',
+                 'pct', 'govt_pct', 'pvt_pct']
+
+
+def recovery(warehouse):
+    """Share of the rupees billed that were collected, company by year."""
+    con = duckdb.connect()
+    con.execute('SET threads TO 1')
+    W = pathlib.Path(warehouse).as_posix()
+    raw = con.sql(f"""
+        SELECT disco, fy, report_year, col_label, value
+        FROM '{W}/nepra_disco_annual.parquet'
+        WHERE series = 'billing_collection_recovery' AND value IS NOT NULL
+    """).fetchall()
+    cells = {}
+    for disco, fy, ry, col, val in raw:
+        u, m = unit(disco), RECOVERY.get(col)
+        if u is None or m is None or not fy:
+            continue
+        cells.setdefault((u, fy, ry), {})[m] = float(val)
+
+    # The OCR mapping, checked: the scanned edition against the clean one in
+    # the years they share.
+    scan = max(ry for (_, _, ry) in cells)
+    agree = total = 0
+    for (u, fy, ry), c in cells.items():
+        if ry != scan:
+            continue
+        clean = [cells[k] for k in cells if k[0] == u and k[1] == fy and k[2] != scan]
+        for other in clean[:1]:
+            for m in ('billed', 'collected'):
+                if m in c and m in other:
+                    total += 1
+                    agree += abs(c[m] - other[m]) <= 0.005 * abs(other[m]) + 1
+    assert total and agree / total >= 0.95, (
+        f'the scanned edition disagrees with the clean one on '
+        f'{total - agree} of {total} values - its columns have moved')
+
+    rows = []
+    for u in DISCOS + ['K-Electric', 'ALL']:
+        for fy in sorted({k[1] for k in cells if k[0] == u}):
+            ry = max(k[2] for k in cells if k[0] == u and k[1] == fy)
+            c = cells[(u, fy, ry)]
+            if not c.get('billed') or c.get('collected') is None:
+                continue
+            pct = lambda a, b: round(100.0 * c[a] / c[b], 2) \
+                if c.get(a) is not None and c.get(b) else None
+            rows.append([u, fy, int(fy[:4]) + 1, ry,
+                         round(c['billed'], 1), round(c['collected'], 1),
+                         pct('collected', 'billed'),
+                         pct('collected_govt', 'billed_govt'),
+                         pct('collected_pvt', 'billed_pvt')])
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--warehouse', required=True)

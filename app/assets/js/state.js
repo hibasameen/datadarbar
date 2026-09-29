@@ -68,6 +68,7 @@
   var sindhCrime = asObjects(D.sindhCrime), firs = asObjects(D.firs);
   var plants = asObjects(D.plants), events = asObjects(D.events);
   var discos = asObjects(D.discos);
+  var recovery = asObjects(D.recovery);
   var impacts = asObjects(D.impacts);
 
   /* Derived denominators, carried with the payload. GDP at current market
@@ -210,20 +211,21 @@
     },
     discos: {
       theme: 'Energy',
-      title: 'Electricity transmission and distribution losses',
+      title: 'Electricity lost and bills unpaid',
       dek: 'The share of the electricity entering each distribution '
          + 'company’s system that never reaches a billed meter, 2006-07 to '
          + '2024-25. The spread is the story: 8.4 per cent in Islamabad and '
          + '38.8, 38.4 and 39.0 per cent in Peshawar, Quetta and Sukkur '
          + '— two units in every five — and in eighteen years the worst '
-         + 'companies have barely moved.',
+         + 'companies have barely moved. Of what was billed in 2024-25, Quetta '
+         + 'collected 39 per cent and Sukkur 70.',
       note: 'This is a T&D loss: units that entered the system and were '
           + 'never billed, whether they leaked away in the wires or were '
           + 'taken off them. It is NOT electricity delivered and then not '
-          + 'paid for. NEPRA reports that separately, as commercial losses '
-          + 'and recovery, and measures it in rupees billed against rupees '
-          + 'collected — a unit that was billed and never paid for is '
-          + 'counted as sold here, not lost. Rates are computed from the '
+          + 'paid for. NEPRA reports that separately, in rupees billed against '
+          + 'rupees collected, and it is drawn separately here as bills paid '
+          + '— in the loss charts a unit that was billed and never paid for is '
+          + 'counted as sold, not lost. Rates are computed from the '
           + 'units bought and units sold printed in the same row rather than '
           + 'from the percentage column beside them, which contradicts its '
           + 'own row for PESCO in the 2011 edition. The 2024 edition prints '
@@ -236,8 +238,10 @@
     plants: {
       theme: 'Energy',
       title: 'Power plants and capacity',
-      dek: 'The plants in NEPRA’s reports, what they burn and how much they '
-         + 'were rated at, 2017-18 to 2024-25. Rated capacity in the reports grew '
+      dek: 'The plants in NEPRA’s reports, what they burn, how much they '
+         + 'were rated at and how much of that they ran, 2017-18 to 2024-25. '
+         + 'The plants ran at 43 per cent of their capacity in 2017-18 and 34 '
+         + 'per cent in 2024-25. Rated capacity in the reports grew '
          + 'from 32,400 MW in 2017-18 (with eleven plants listed unrated) to 41,400 '
          + 'MW in 2024-25, and nearly all of the addition is coal and nuclear; '
          + 'oil-fired capacity has been leaving the reports.',
@@ -326,10 +330,13 @@
     sindhCategory: function () { renderSindhChange('category'); },
     sindhRange: function () { renderSindhChange('range'); },
     firsDaily: renderFirs,
+    plantsUsed: renderPlantsUsed,
+    plantsUseTrend: renderPlantsUseTrend,
     plantsMix: renderPlantsMix,
     plantsFuel: function () { renderPlants('fuel'); },
     plantsLargest: function () { renderPlants('largest'); },
     plantsReports: function () { renderPlants('reports'); },
+    discoRecovery: renderDiscoRecovery,
     discoChange: renderDiscoChange,
     discoLosses: renderDiscoLosses,
     discoLatest: renderDiscoLatest,
@@ -1441,6 +1448,86 @@
     });
   }
 
+  /* Capacity is what could run; generation is what did. The ratio, on
+     nameplate over 8,760 hours, is the capacity factor. Plants that report
+     no generation are dropped from both sides rather than counted idle. */
+  function useOf(rows) {
+    var mw = 0, gwh = 0, n = 0;
+    rows.forEach(function (d) {
+      if (d.mw == null || d.gwh == null || !d.mw) return;
+      mw += d.mw; gwh += d.gwh; n += 1;
+    });
+    return { mw: mw, gwh: gwh, n: n, pct: mw ? 100 * gwh / (mw * 8.76) : null };
+  }
+
+  function renderPlantsUsed() {
+    state.mode = 'used';
+    plantYearPicker();
+    var yr = plantsIn(plantFy), all = useOf(yr);
+    var fam = FAMILY_ORDER.map(function (f) {
+      var u = useOf(yr.filter(function (d) { return d.family === f; }));
+      u.family = f; return u;
+    }).filter(function (u) { return u.n; })
+      .sort(function (a, b) { return b.pct - a.pct; });
+    cover([plantFy + ' report',
+           'all plants ran at ' + all.pct.toFixed(0) + '% of capacity',
+           Math.round(all.gwh).toLocaleString() + ' GWh from '
+             + Math.round(all.mw).toLocaleString() + ' MW',
+           'CPPA-G system, not K-Electric']);
+    barChart(fam, function (d) { return d.family; }, function (d) { return d.pct; },
+      'Electricity generated as a share of what the capacity could have produced '
+        + 'running all year, ' + plantFy + '. All plants together: '
+        + all.pct.toFixed(1) + ' per cent.',
+      'Nuclear runs almost flat out; oil-fired plants, most of them paid a capacity '
+        + 'charge whether they run or not, produced a fraction of what they could. '
+        + 'Hydro and wind are held down by water and weather as well as by demand. '
+        + 'Plants that report no generation are left out, not counted as idle.',
+      function (d) {
+        return Math.round(d.gwh).toLocaleString() + ' GWh from '
+             + Math.round(d.mw).toLocaleString() + ' MW · ' + d.n + ' plants';
+      },
+      function (d) { return d.pct.toFixed(0) + '% · ' + Math.round(d.mw).toLocaleString() + ' MW'; },
+      function (d) { return FAMILY_COLOUR[d.family] || DDPalette.accent(); });
+  }
+
+  function renderPlantsUseTrend() {
+    var ALL = 'All plants', rows = [], idx = {};
+    PLANT_YEARS.forEach(function (fy, i) { idx[fy] = i; });
+    var years = PLANT_YEARS.map(function (fy, i) { return i; });
+    PLANT_YEARS.forEach(function (fy) {
+      var yr = plantsIn(fy), all = useOf(yr);
+      rows.push({ k: ALL, year: idx[fy], value: all.pct });
+      FAMILY_ORDER.forEach(function (f) {
+        var u = useOf(yr.filter(function (d) { return d.family === f; }));
+        if (u.n) rows.push({ k: f, year: idx[fy], value: u.pct });
+      });
+    });
+    // Wind, solar and bagasse run on weather and harvest, not dispatch, and
+    // together are under 7 per cent of capacity; they stay on the one-year
+    // chart and out of this one, which is about plants that could be called on.
+    var DISPATCH = ['Nuclear', 'Coal', 'Hydro', 'Gas', 'Oil and mixed thermal'];
+    var keys = [ALL].concat(DISPATCH.filter(function (f) {
+      return rows.some(function (d) { return d.k === f; }); }));
+    rows = rows.filter(function (d) { return keys.indexOf(d.k) >= 0; });
+    var sys = rows.filter(function (d) { return d.k === ALL; });
+    cover([PLANT_YEARS[0] + ' to ' + PLANT_YEARS[PLANT_YEARS.length - 1],
+           sys[0].value.toFixed(0) + '% of capacity used in ' + PLANT_YEARS[0],
+           sys[sys.length - 1].value.toFixed(0) + '% in ' + PLANT_YEARS[PLANT_YEARS.length - 1],
+           'CPPA-G system, not K-Electric']);
+    lineChart(rows, keys, years, 'value', '% of capacity used',
+      function (v) { return v.toFixed(0) + '%'; },
+      { colour: function (k) { return k === ALL ? ink() : FAMILY_COLOUR[k]; },
+        width: function (k) { return k === ALL ? 3.2 : 1.6; },
+        tick: function (i) { return PLANT_YEARS[i]; },
+        lede: 'Electricity generated as a share of what the reported capacity could '
+            + 'have produced running all year. Capacity grew by 9,000 MW over these '
+            + 'years; generation did not keep up, so each megawatt ran less.',
+        foot: 'Gas and oil fell furthest, from 47 and 41 per cent in 2017-18 to 27 and '
+            + '22 in 2024-25. A falling share is idle capacity that consumers still '
+            + 'pay for through capacity charges. Wind, solar and bagasse are on the '
+            + 'one-year chart. Nameplate capacity, CPPA-G plants only.' });
+  }
+
   /* What each report covered, from the reports themselves. */
   function renderPlantsReports() {
     var rows = PLANT_YEARS.map(function (fy) {
@@ -1535,6 +1622,44 @@
              function (d) { return d.n + (d.n === 1 ? ' plant' : ' plants'); },
              function (d) { return Math.round(d.mw).toLocaleString() + ' MW · ' + d.n; },
              function (d) { return FAMILY_COLOUR[d.family] || DDPalette.accent(); });
+  }
+
+  /* ── bills paid ──────────────────────────────────────────────────────── */
+  /* Recovery is rupees, not units: a bill issued and never paid. The T&D
+     loss charts count that unit as sold. */
+  var REC_YEARS = Array.from(new Set(recovery.map(function (d) { return d.fy; }))).sort();
+  var recFy = REC_YEARS[REC_YEARS.length - 1];
+
+  function renderDiscoRecovery() {
+    var bar = ctlRow();
+    seg(bar, 'Year', REC_YEARS.map(function (fy) { return [fy, fy]; }), recFy,
+        function (v) { recFy = v; render(); });
+    var rows = recovery.filter(function (d) {
+      return d.fy === recFy && d.unit !== 'ALL' && d.pct != null;
+    }).sort(function (a, b) { return a.pct - b.pct; });
+    var sys = recovery.filter(function (d) { return d.fy === recFy && d.unit === 'ALL'; })[0];
+    var bn = function (v) { return 'Rs ' + Math.round(v / 1000).toLocaleString() + ' bn'; };
+    cover([recFy, rows.length + ' companies',
+           sys ? 'system ' + sys.pct.toFixed(1) + '% collected' : '',
+           sys ? bn(sys.billed_mn - sys.collected_mn) + ' billed and not collected' : '']
+          .filter(Boolean));
+    barChart(rows, function (d) { return discoArea(d.unit); },
+      function (d) { return d.pct; },
+      'Rupees collected for every hundred rupees billed, ' + recFy + ', worst first. '
+        + 'This is bills not paid, separate from the units lost before a bill was ever issued.',
+      'Above 100 means arrears from earlier years were collected on top of the year’s '
+        + 'bills. Hover for the government and private split: in Quetta the '
+        + 'private customers paid ' + (function () {
+          var q = rows.filter(function (d) { return d.unit === 'QESCO'; })[0];
+          return q && q.pvt_pct != null ? q.pvt_pct.toFixed(0) + ' rupees in a hundred' : 'least';
+        })() + '.',
+      function (d) {
+        return bn(d.billed_mn) + ' billed, ' + bn(d.collected_mn) + ' collected'
+             + (d.govt_pct != null ? '\ngovernment ' + d.govt_pct.toFixed(0) + '%' : '')
+             + (d.pvt_pct != null ? ' · private ' + d.pvt_pct.toFixed(0) + '%' : '');
+      },
+      function (d) { return d.pct.toFixed(1) + '%'; },
+      function (d) { return d.pct < 90 ? 'var(--rust)' : DDPalette.accent(); });
   }
 
   /* ── electricity distribution losses ─────────────────────────────────── */
@@ -1968,9 +2093,11 @@
             ? ' style="margin-left:auto"' : '') + '>' + b + '</span>';
         }).join('');
   }
-  function axes(svg, x, y, m, W, H, fmt, label, log) {
+  function axes(svg, x, y, m, W, H, fmt, label, log, tick) {
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
-      .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')))
+      .call(tick ? d3.axisBottom(x).tickValues(x.domain()[0] === x.domain()[1] ? [x.domain()[0]]
+                     : d3.range(x.domain()[0], x.domain()[1] + 1)).tickFormat(tick)
+                 : d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')))
       .attr('color', muted()).attr('font-size', 11);
     svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
       .call(log ? d3.axisLeft(y).ticks(5, fmt) : d3.axisLeft(y).ticks(6).tickFormat(fmt))
@@ -2076,7 +2203,7 @@
         .attr('cy', function (d) { return y(d[field]); })
         .attr('r', 2.4).attr('fill', col(k))
         .append('title').text(function (d) {
-          return k + '\n' + d.year + ': ' + fmt(d[field])
+          return k + '\n' + (opt.tick ? opt.tick(d.year) : d.year) + ': ' + fmt(d[field])
                + (d.raw != null ? ' (' + d.raw.toLocaleString() + ')' : '');
         });
     });
@@ -2084,7 +2211,7 @@
       svg.append('line').attr('x1', m.left).attr('x2', W - m.right)
         .attr('y1', y(100)).attr('y2', y(100)).attr('stroke', muted()).attr('stroke-dasharray', '3 3');
     }
-    axes(svg, x, y, m, W, H, fmt, opt.axis || label, opt.log);
+    axes(svg, x, y, m, W, H, fmt, opt.axis || label, opt.log, opt.tick);
     host.say(opt.lede || '', opt.foot || '');
     legend(svg, keys, col, W, m, function (k) {
       var last = rows.filter(function (d) { return d.k === k; }).pop();
@@ -2354,7 +2481,8 @@
     courtsNet: 'courts', courtsCategory: 'courts',
     taxStack: 'tax', taxGdp: 'tax', taxShare: 'tax', taxShift: 'tax',
     plantsMix: 'plants', plantsFuel: 'plants', plantsLargest: 'plants',
-    plantsReports: 'plants',
+    plantsReports: 'plants', plantsUsed: 'plants', plantsUseTrend: 'plants',
+    discoRecovery: 'recovery',
     discoChange: 'discos', discoLosses: 'discos', discoLatest: 'discos',
     discoUnits: 'discos',
     /* The budget draws from its own payload, which is grouped rather than
@@ -2376,6 +2504,24 @@
       var i = cols.indexOf('metric'), m = state.ind;
       return { rows: rows.filter(function (r) { return r[i] === m; }),
                view: { metric: m } };
+    },
+    plantsUsed: function (rows, cols) {
+      var f = cols.indexOf('fy');
+      return { rows: rows.filter(function (r) { return r[f] === plantFy; }),
+               view: { 'report year': plantFy,
+                       'derived': 'share used = gwh / (mw x 8.76); plants with an '
+                                + 'empty mw or gwh are left out of both sides' } };
+    },
+    plantsUseTrend: function (rows) {
+      return { rows: rows,
+               view: { 'derived': 'share used = gwh / (mw x 8.76), summed by fiscal '
+                                + 'year; plants with an empty mw or gwh are left out' } };
+    },
+    discoRecovery: function (rows, cols) {
+      var f = cols.indexOf('fy');
+      return { rows: rows.filter(function (r) { return r[f] === recFy; }),
+               view: { 'fiscal year': recFy,
+                       'derived': 'pct = collected_mn / billed_mn x 100' } };
     },
     plantsFuel: function (rows, cols) {
       var f = cols.indexOf('fy');
