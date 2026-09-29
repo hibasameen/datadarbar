@@ -105,111 +105,10 @@
     return (plain.length ? plain : yrs)[(plain.length ? plain : yrs).length - 1];
   }
 
-  /* The hierarchy's words are searchable alongside the source's own, so
-     "attainment", "disability" or "tenure" find the series filed under them
-     even though no published label uses those words. The source label stays
-     searchable exactly as it is: an alias is a way in, not a rename. */
-  function matches(i, q) {
-    /* The indicator key is searched too, and it holds PBS's own spelling.
-       The display label corrects the handful of slips - AFGHANI for Afghan,
-       HOUSE HOLD for Household - and someone who knows the series by what was
-       printed must still be able to type it and find it. */
-    return (col('label', i) + ' ' + col('group_label', i) + ' ' +
-            col('topic_label', i) + ' ' + col('h_topic', i) + ' ' +
-            col('h_sub', i) + ' ' + col('h_family', i) + ' ' +
-            col('indicator', i))
-      .toLowerCase().indexOf(q) >= 0;
-  }
-
-  /* Relevance, because the census outnumbers everything else forty to one and
-     an unranked list of 393 literacy matches opens on "10 -- 14 · FORMAL"
-     rather than on a literacy rate. Higher is better. */
-  function score(i, q) {
-    var label = col('label', i).toLowerCase();
-    var at = label.indexOf(q);
-    var s = 0;
-    if (at === 0) s += 100;                       // the label starts with it
-    else if (at > 0) {
-      s += 50;
-      if (/[^a-z0-9]/.test(label.charAt(at - 1))) s += 20;   // starts a word
-    } else if (col('group_label', i).toLowerCase().indexOf(q) >= 0) s += 15;
-    // a curated indicator is one of 296 chosen by hand; a census cell is one of
-    // 4,051 enumerated. Where both match, the chosen one is the better guess.
-    if (col('source', i) === 'place') s += 25;
-    // shorter labels are more likely to be the thing itself rather than a cell
-    // inside it
-    s -= Math.min(20, label.length / 6);
-    // an indicator that colours more shapes is more useful than a thin one
-    s += Math.min(10, col('shapes', i) / 65);
-    return s;
-  }
-
-  /* The list is now search results only. With no query there is nothing to
-     show, because the Topic dropdown is how you browse. */
-  function renderPicker() {
-    var host = $('pickerList');
-    var rows = rowsForLevel();
-    var q = state.query.trim().toLowerCase();
-
-    host.hidden = !q;
-    if (!q) { host.innerHTML = ''; return; }
-
-    var hits = rows.filter(function (i) { return matches(i, q); })
-      .map(function (i) { return { i: i, s: score(i, q) }; })
-      .sort(function (a, b) { return b.s - a.s; })
-      .map(function (x) { return x.i; });
-    $('searchHint').textContent = hits.length
-      ? hits.length.toLocaleString() + ' of ' + rows.length.toLocaleString()
-        + ' ' + GEO[state.level].noun + ' indicators match'
-      : 'Nothing matches. Try a shorter word.';
-    host.innerHTML = hits.length
-      ? '<div class="topic-items" style="margin-left:0;border:0;padding-left:0">'
-        + hits.slice(0, 200).map(indHtml).join('')
-        + (hits.length > 200
-           ? '<p class="empty">' + (hits.length - 200).toLocaleString()
-             + ' more — keep typing to narrow it.</p>' : '')
-        + '</div>'
-      : '<p class="empty">No indicator matches “' + esc(state.query) + '”.</p>';
-    bind(host);
-  }
-
-  function indHtml(i) {
-    var yrs = list('years', i);
-    var bits = [];
-    if (yrs.length === 1) bits.push(yrs[0]);
-    else if (yrs.length > 1) bits.push(yrs[0] + '–' + yrs[yrs.length - 1]);
-    bits.push(col('shapes', i).toLocaleString() + ' shapes');
-    /* The family first, then where the figure was published. The source
-       table stays visible: it is the provenance, and the family is only a
-       shelf we put it on. */
-    var fam = col('h_family', i);
-    var red = col('redundant', i) === 1;
-    return '<button class="ind" type="button" data-row="' + i + '"'
-         + (state.row === i ? ' aria-current="true"' : '') + '>'
-         + esc(col('label', i))
-         + (red
-            ? ' <span class="ind-flag ind-total" title="This is a total or a'
-              + ' column heading from the source table rather than a measure'
-              + ' of its own - usually the denominator its siblings are'
-              + ' shares of. Kept because a denominator should not disappear'
-              + ' for looking like a total.">source total</span>'
-            : '')
-         + (col('h_review', i) === 1
-            ? ' <span class="ind-flag" title="The source label for this series'
-              + ' is ambiguous and has not been resolved. It is kept exactly as'
-              + ' published rather than guessed at.">definition needs review</span>'
-            : '')
-         + '<span class="meta">'
-         + (fam ? esc(fam) + ' · ' : red ? 'Source total · ' : '')
-         + esc(col('group_label', i)) + ' · '
-         + bits.join(' · ') + '</span></button>';
-  }
-
-  function bind(host) {
-    host.querySelectorAll('.ind').forEach(function (b) {
-      b.onclick = function () { choose(Number(b.dataset.row)); };
-    });
-  }
+  /* Search, the topic list and the library live in places-rail.js now, and
+     open in a panel over the map rather than in a list under six dropdowns.
+     This stays as a hook other scripts call. */
+  function renderPicker() {}
 
   window.DD_PLACES = { state: state, render: renderPicker };
 
@@ -795,9 +694,14 @@
                             : null;
     state.locality = pickFacet(list('localities', i), state.locality);
     state.sex = pickFacet(list('sexes', i), state.sex);
-    renderPicker();
     renderLegend();
     $('legend').hidden = false;
+    if ($('measureHead').hidden) {
+      $('measureHead').hidden = false;
+      // The stage under the header just got shorter; Leaflet only notices a
+      // resized container when told.
+      if (map) map.invalidateSize();
+    }
     $('legendSub').textContent = 'Loading…';
     /* Whichever request answered last used to win, and on a shared link two
        are always in flight: the page opens on its default indicator and the
@@ -909,6 +813,19 @@
     });
   }
 
+  /* The country is fitted into the part of the map the reader can see: below
+     the tools along the top and above the key card, which sits over the
+     south-west corner and otherwise covered Sindh and Karachi. Padding the
+     bottom by the card's height keeps the country large; padding the left by
+     its width left 362 pixels and dropped a whole zoom level. */
+  function fitPad() {
+    var card = $('legend'), h = 0;
+    if (card && !card.hidden) h = card.offsetHeight;
+    var stage = $('placesMap'), H = stage ? stage.offsetHeight : 600;
+    return { paddingTopLeft: L.point(12, 56),
+             paddingBottomRight: L.point(12, Math.min(h + 24, H * 0.4)) };
+  }
+
   function paint() {
     var g = GEO[state.level];
     // returns a promise: the geometry may still be loading, and the legend
@@ -953,7 +870,7 @@
           });
         },
       }).addTo(map);
-      if (!map.__fitted) { map.fitBounds(layer.getBounds(), { padding: [12, 12] }); map.__fitted = true; }
+      if (!map.__fitted) { map.fitBounds(layer.getBounds(), fitPad()); map.__fitted = true; }
       state.scale = sc;
       renderRanks();
       paintSelection();
@@ -980,6 +897,88 @@
     }
   }
 
+  /* One line that says what the map is: when, for whom, from what, and how
+     much of the country it covers. It stays on screen with the map, because
+     the controls that set it are in a card a reader may have collapsed. */
+  function renderHead() {
+    var i = state.row;
+    if (i == null) return;
+    var g = GEO[state.level];
+    var bits = [];
+    // A survey's date is in its name - "PSLM 2019-20" - so "undated" is said
+    // only where nothing else dates it, and never invented.
+    var y = yearLabel();
+    if (y && !(y === 'undated' && /(19|20)\d\d/.test(col('dataset', i)))) bits.push(y);
+    var FAC = { all: null, rural: 'Rural', urban: 'Urban', male: 'Men and boys',
+                female: 'Women and girls', transgender: 'Transgender' };
+    if (list('sexes', i).length > 1) bits.push(FAC[state.sex] || 'All sexes');
+    else if (FAC[state.sex]) bits.push(FAC[state.sex]);
+    if (list('localities', i).length > 1) bits.push(FAC[state.locality] || 'Urban and rural');
+    else if (FAC[state.locality]) bits.push(FAC[state.locality] + ' only');
+    bits.push(String(col('dataset', i) || '').replace(/,? pull of [0-9-]+$/, ''));
+    if (state.values) {
+      var prov = $('provFilter').value;
+      var shown = Object.keys(state.values).filter(function (k) {
+        if (!prov) return true;
+        var pp = placeProps(k);
+        return pp && g.prov(pp) === prov;
+      }).length;
+      var whole = (geoCache[state.level] || { features: [] }).features.length;
+      bits.push(prov
+        ? shown.toLocaleString() + ' ' + g.noun + 's with data'
+        : shown.toLocaleString() + (whole && shown < whole ? ' of ' + whole : '')
+          + ' ' + g.noun + 's with data');
+    }
+    $('legendSub').textContent = bits.filter(Boolean).join(' \u00b7 ');
+  }
+
+  /* The measure's own breakdowns - age bands, a table's columns - and, for a
+     count of people, how to read it against the population. Offered only
+     where they exist: a single-option selector is furniture, and a greyed one
+     reads as broken. */
+  function renderBreak(i, m) {
+    var h = '';
+    if (m && m.rows.length > 1) {
+      var ages = m.rows.every(function (r) {
+        return /\d|under|above|below|ages|^all$/i.test(r.metric);
+      });
+      h += '<label class="bk"><span class="facet-lab">'
+         + (ages ? 'Age group' : 'Breakdown') + '</span>'
+         + '<select id="breakSel" aria-label="' + (ages ? 'Age group' : 'Breakdown') + '">'
+         + m.rows.map(function (r) {
+             return '<option value="' + r.row + '"' + (r.row === i ? ' selected' : '')
+                  + '>' + esc(r.metric) + '</option>';
+           }).join('')
+         + '</select></label>';
+    }
+    if (col('h_norm', i) === 1) {
+      h += '<div class="showas" role="group" aria-label="Show as">'
+         + '<span class="facet-lab">Show as</span>'
+         + [['', 'Count'], ['pct', '% of population'], ['per1000', 'per 1,000']]
+             .map(function (o) {
+               return '<button type="button" data-norm="' + o[0] + '" aria-pressed="'
+                    + ((state.norm || '') === o[0]) + '">' + o[1] + '</button>';
+             }).join('')
+         + '</div>';
+    }
+    var box = $('breakCtl');
+    box.innerHTML = h;
+    box.hidden = !h;
+    var sel = document.getElementById('breakSel');
+    if (sel) sel.onchange = function () { choose(Number(sel.value)); };
+    box.querySelectorAll('[data-norm]').forEach(function (b) {
+      b.onclick = function () { choose(state.row, b.dataset.norm); };
+    });
+    // The exact table and key belong one step away, with the definition,
+    // not in the way of choosing: they are how a researcher checks the
+    // number, not how a reader finds it.
+    $('legendSrc').textContent = 'Source: '
+      + String(col('dataset', i) || '').replace(/,? pull of [0-9-]+$/, '')
+      + (col('group_label', i) ? ' \u00b7 ' + col('group_label', i) : '')
+      + '. Series key: ' + col('group_key', i) + ' / '
+      + String(col('indicator', i)).split('\u001f')[0].replace(/^[^=]*=/, '') + '.';
+  }
+
   /* ── legend, with the facet controls the design puts on the map ───────── */
   function renderLegend() {
     var i = state.row;
@@ -988,18 +987,24 @@
        15-19 headed "Afghani, 15-19" is a map of the wrong thing, and the
        reader has no other place to read what they are looking at once they
        scroll past the controls. */
+    var m = rail && rail.measureOf ? rail.measureOf(i) : null;
+    var band = null;
+    if (m && m.rows.length > 1) {
+      m.rows.forEach(function (r) { if (r.row === i) band = r.metric; });
+    }
     var picked = [];
-    if (state.locality && state.locality !== 'all') picked.push(state.locality);
-    if (state.sex && state.sex !== 'all') picked.push(state.sex);
-    $('legendTitle').textContent = (col('label', i))
+    if (band && band !== 'All') picked.push(band);
+    var cap = function (v) { return v.charAt(0).toUpperCase() + v.slice(1); };
+    if (state.locality && state.locality !== 'all') picked.push(cap(state.locality));
+    if (state.sex && state.sex !== 'all') picked.push(cap(state.sex));
+    $('legendTitle').textContent = (m ? m.name : col('label', i))
       + (picked.length ? ' \u00b7 ' + picked.join(', ') : '')
       + (state.norm
          ? (/^\u0394/.test(state.year || '') ? ', change in ' : ', ')
            + normLabel()
          : '');
-    var n = state.values ? Object.keys(state.values).length : 0;
-    $('legendSub').textContent = col('group_label', i) + (n ? ' · ' + n.toLocaleString()
-      + ' ' + GEO[state.level].noun + 's' : '');
+    renderHead();
+    renderBreak(i, m);
 
     var sc = state.scale;
     var dp = dpFor(i);
@@ -1158,14 +1163,11 @@
     if (state.ambiguous) {
       box.hidden = false;
       box.innerHTML =
-        '<div class="tot"><span class="tot-k">' + esc(g.noun + 's showing') + '</span>'
-        + '<b>' + n + '</b></div>'
-        + '<div class="tot tot-warn"><span class="tot-k">Not totalled or ranked'
+        '<div class="tot tot-warn"><span class="tot-k">Not totalled or ranked'
         + '</span><b>' + state.ambiguous + ' ' + esc(g.noun)
         + (state.ambiguous === 1 ? '' : 's') + ' with conflicting source rows</b>'
-        + '</div>'
-        + '<div class="tot"><span class="tot-k">Year</span><b>'
-        + esc(yearLabel() || '\u2014') + '</b></div>';
+        + '</div>';
+      renderHead();
       return;
     }
     /* A mean, a rate, an index or a distance cannot be totalled across
@@ -1236,25 +1238,18 @@
       caption = 'Total \u00b7 ' + where;
     }
 
-    /* How many of the places on the map this figure covers, always, rather
-       than a warning on the caption that would fire on nearly every census
-       map and so stop being read. The census does not reach Azad Jammu &
-       Kashmir or Gilgit-Baltistan, so 136 of 156 is the normal state of a
-       national total here and saying so once is worth more than calling it
-       partial every time. */
-    var whole = (geoCache[state.level] || { features: [] }).features.length;
+    /* How many of the places on the map this figure covers is said once, in
+       the line under the measure's name: the census does not reach Azad Jammu
+       & Kashmir or Gilgit-Baltistan, so 136 of 156 is the normal state of a
+       national total here, and a strip box repeating it on every map stopped
+       being read. */
+    renderHead();
     box.hidden = false;
     box.innerHTML =
-      '<div class="tot"><span class="tot-k">' + esc(g.noun + 's showing') + '</span>'
-      + '<b>' + n + (!prov && whole && n < whole ? ' of ' + whole : '')
-      + '</b></div>'
-      + (figure === null ? ''
+      (figure === null ? ''
          : '<div class="tot"' + (rangeTitle ? ' title="' + esc(rangeTitle) + '"' : '')
            + '><span class="tot-k">' + esc(caption) + '</span>'
            + '<b>' + esc(figure) + '</b></div>')
-      + '<div class="tot"><span class="tot-k">' + esc(state.norm ? 'Showing' : 'Year')
-      + '</span><b>' + esc(state.norm ? normLabel()
-                                      : (yearLabel() || '\u2014')) + '</b></div>'
       /* A hole in the map with nothing said about it reads as missing data.
          These are shapes whose 2017 footprint held more than one census unit -
          Bannu and its frontier region, and five like it - and this indicator
@@ -1283,7 +1278,7 @@
       bounds = bounds ? bounds.extend(l.getBounds()) : L.latLngBounds(l.getBounds());
     });
     if (bounds && bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [24, 24] });
+      map.fitBounds(bounds, fitPad());
     }
   }
 
@@ -1632,12 +1627,33 @@
     var g = q.get('g'), ind = q.get('i');
     if (q.get('lv') === 'tehsil') setLevel('tehsil');
     if (!g || !ind) return false;
-    var row = -1;
+    var row = -1, via = null;
     for (var i = 0; i < N; i++) {
       if (col('level', i) === state.level && col('group_key', i) === g
           && col('indicator', i) === ind) { row = i; break; }
     }
+    /* A link shared before cells were merged across the censuses and the
+       sexes names one of the cells the merged row absorbed - "Population -
+       2017 / Female" - and must still open it: the measure, and the year and
+       sex that cell was. Matched on the cell alone, because a merged row
+       keeps any one of its tables' group keys. */
+    if (row < 0) {
+      for (var j = 0; j < N && row < 0; j++) {
+        if (col('level', j) !== state.level) continue;
+        var parts = String(col('indicator', j)).split(SEP);
+        for (var k = 0; k < parts.length; k++) {
+          var at = parts[k].indexOf('=');
+          if (at > 0 && parts[k].slice(at + 1) === ind) {
+            row = j; via = parts[k].slice(0, at).split(':'); break;
+          }
+        }
+      }
+    }
     if (row < 0) return false;
+    if (via) {
+      state.year = via[0];
+      if (via[1]) state.sex = via[1];
+    }
     if (q.get('y')) state.year = q.get('y');
     if (q.get('loc')) state.locality = q.get('loc');
     state.norm = ['pct', 'per1000'].indexOf(q.get('n')) >= 0 ? q.get('n') : '';
@@ -1675,13 +1691,15 @@
   /* ── boot ───────────────────────────────────────────────────────────────- */
   function boot() {
     map = L.map('placesMap', {
-      zoomControl: true, attributionControl: false,
+      zoomControl: false, attributionControl: false,
+      // Quarter steps, so a fit lands on the size that fits rather than
+      // rounding down to half of it.
+      zoomSnap: 0.25, zoomDelta: 0.5,
       scrollWheelZoom: true, minZoom: 4, maxZoom: 11,
     }).setView([30.2, 69.4], 5);
 
     $('geoDistrict').onclick = function () { setLevel('district'); };
     $('geoTehsil').onclick = function () { setLevel('tehsil'); };
-    $('indSearch').oninput = function () { state.query = this.value; renderPicker(); };
     $('provFilter').onchange = function () {
       if (state.row != null) {
         paint().then(function () {
@@ -1694,17 +1712,22 @@
     $('ovSchools').onchange = function () { toggleSchools(this.checked); writeUrl(); };
     $('shareBtn').onclick = share;
 
-    renderPicker();
+    /* Bottom right, clear of the measure header and the tools over the map's
+       top edge: in the top-left corner Leaflet put it on top of both. */
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
     rail = window.DDPlacesRail && window.DDPlacesRail.mount({
-      el: $('rail'), IX: IX, N: N, col: col, list: list, level: state.level,
-      row: state.row,
+      el: $('rail'), libraryEl: $('library'), searchEl: $('indSearch'),
+      IX: IX, N: N, col: col, list: list, level: state.level,
       onChange: function (row, norm) { state.norm = norm || ''; choose(row); },
+      onLevel: function (lv) { setLevel(lv); },
     });
     if (!readUrl() && rail) rail.fire();
   }
 
   function setLevel(lv) {
     if (state.level === lv) return;
+    var prevKey = state.row != null ? col('indicator', state.row) : null;
+    var prevGroup = state.row != null ? col('group_key', state.row) : null;
     state.level = lv;
     state.row = null; state.values = null; state.place = null; nameIndex = null;
     $('geoDistrict').setAttribute('aria-pressed', String(lv === 'district'));
@@ -1714,12 +1737,11 @@
     $('legend').hidden = true;
     if (layer) { map.removeLayer(layer); layer = null; }
     map.__fitted = false;
-    renderPicker();
     renderDetail();
     // Last, and not before the teardown above: the rebuild draws the new
     // level's default map, and running it first meant the lines below then
     // hid the legend and removed the layer it had just made.
-    if (rail) rail.rebuild(lv);
+    if (rail) rail.rebuild(lv, prevKey, prevGroup);
   }
 
   function findPlace(q) {

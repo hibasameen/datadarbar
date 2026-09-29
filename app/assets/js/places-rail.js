@@ -1,409 +1,575 @@
 /*
-   places-rail.js — Topic, subtopic, family, source, indicator, metric.
+   places-rail.js — search, topics, featured measures, and the full library.
 
-   The hierarchy is the one proposed in places-hierarchy-proposal.md and
-   joined onto the index by etl/places/build_payload.py on the compound source
-   key. Eleven topics, 49 subtopics, 76 families over the same 5,201 entries;
-   nothing is merged, renamed or dropped, and every original series keeps its
-   own row.
+   THE CASCADE IS GONE. The picker used to be six dropdowns - topic, subtopic,
+   family, source, indicator, metric - and a reader had to understand what
+   separates a subtopic from a family before a map appeared. Education opened
+   on "% Below Primary" behind 78 choices; the whole map opened on the 0-4 age
+   band. The hierarchy was right and showing every level of it as a control
+   was wrong.
 
-   Why a subject tree and not the flat topic list it replaces: the old rail
-   asked for a topic and then a dataset, and between them they had to carry
-   1,391 population entries or 1,040 education ones. "Education & schools"
-   is a shelf, not a choice - what a reader wants is attainment, or
-   attendance, or distance to a school, and those were only reachable by
-   scrolling a list of several hundred or by already knowing the wording.
+   Three routes now lead to the same selection (the review of 29 September):
 
-     Education & schools -> Educational attainment -> Highest education
-       attained -> Population Census -> Matric -> Female, urban
+     Explore a topic    open it and a map appears at once - the topic's own
+                        opening measure - with the handful most people want
+                        listed beneath it.
+     Browse the library every measure in the topic, under the subtopic and
+                        family headings that used to be dropdowns, or the
+                        same collection by source table. Nothing is capped.
+     Search             across every topic, grouped by measure, with every
+                        match reachable by "Load more".
 
-   Source stays a step rather than becoming a filter in small print, because
-   the collision it was added for is still real: three datasets publish a
-   literacy rate for the same district, measured differently and years apart.
-   It sits after the family now, which is where the choice actually arises -
-   only 24 of the 76 families have more than one source, and in the other 52
-   the step collapses rather than asking a question with one answer.
+   Each ends at the same choose(row), so a search result, a featured link, a
+   library entry and a shared link draw exactly the same map.
 
-   Levels that offer no choice are hidden, not greyed. Thirty-five of the 50
-   subtopics hold exactly one family; six visible dropdowns would be five
-   more than most of the index needs.
+   A MEASURE IS NOT A ROW. The index holds a row per published cell - the
+   0-4 band, the 5-9 band - and those are breakdowns of one measure, not 103
+   measures. Rows are grouped by topic, family, source, table and measure
+   name. Grouping stops at the table on purpose: "Total Population" is
+   published by several tables with different age bands, and folding them
+   together would put two different 0-4 bands under one name. Where two
+   measures in a family share a name, the table says which is which.
 
-   The search box and the grouped list stay exactly as they were. This is
-   another way in, not a replacement, and both end at the same choose(row).
+   Featured measures and each topic's opening view are resolved in the build
+   (etl/places/build_payload.py), which fails if a key stops matching. The
+   last opener lived here as a regular expression over an indicator key, and
+   a merge rewrote the key without anything noticing.
 */
 (function () {
   'use strict';
 
-  /* Which entries may be read per head, and which may be totalled, are
-     decided in the build and travel on the row as h_norm and h_sum. The two
-     regular expressions that used to live here - one for words meaning "this
-     is already relative", one for the whole population, which cannot be a
-     share of itself - were the best guess available before the crosswalk
-     typed every entry. They are gone because they were wrong 278 times, and
-     because a second copy of the rule is a second thing to drift. */
+  var PAGE = 40;       // library groups per "Load more", not a ceiling
+  var NOUN = { district: 'district', tehsil: 'tehsil' };
 
-  var NORMS = [
-    { id: 'p', mode: 'pct', label: '% of population' },
-    { id: 'n', mode: 'per1000', label: 'per 1,000 people' },
-  ];
-
-  /* A heading per table, not per title. PBS retitled its tables between the
-     censuses - table 6 is "Population 15+ by marital status" in 2017 and
-     "Population 15 years and above by age group, sex, marital status and
-     rural/urban" in 2023 - so grouping on the title gave 22 headings for 8
-     tables, the same table listed twice under two names. Keyed on the number,
-     with the shortest title winning so the heading stays scannable, and our
-     own notes about what changed between censuses left off: they belong on
-     the chart, not in a dropdown heading. */
-  var HEADING = {};
-
-  function heading(groupKey, groupLabel, topic) {
-    var t = /^census_t(.+)$/.exec(groupKey || '');
-    if (!t) return groupLabel || '';
-    var subject = String(groupLabel || '')
-      .replace(/^Table\s+\S+\s*[\u2014-]\s*/, '')
-      .replace(/^20\d\d:\s*/, '');
-    // Cut at the first comma, but not into nonsense: "Area, population by
-    // sex, sex ratio, density..." became "Area", which names the wrong
-    // column. Keep going until there are words enough to recognise it by.
-    var cut = subject.split(/[,.]/)[0].trim();
-    if (cut.split(/\s+/).length < 3) {
-      cut = subject.split(/\s+/).slice(0, 7).join(' ').replace(/[,.]$/, '');
-    }
-    // Keyed on the topic as well as the number: PBS reused its numbers, so
-    // table 22 is homelessness in 2017 and cooking fuel in 2023 - one
-    // dictionary per number let the 2023 title label a Demographics group.
-    var key = 'census_t' + t[1] + '\u001f' + (topic || '');
-    // Our notes read on from "2017:", so stripping it leaves a lower-case
-    // first word in a heading.
-    cut = cut.charAt(0).toUpperCase() + cut.slice(1);
-    if (cut && (!HEADING[key] || cut.length < HEADING[key].length)) {
-      HEADING[key] = cut;
-    }
-    return key;
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* Named once every row has been seen, so the shortest title has had its
-     chance to win. */
-  function nameHeadings(index) {
-    index.forEach(function (r) {
-      if (HEADING[r.tableLabel]) {
-        r.tableLabel = 'Table ' + r.tableLabel.split('\u001f')[0]
-                         .replace('census_t', '')
-                     + ' \u2014 ' + HEADING[r.tableLabel];
-      }
-    });
+  /* The years as a phrase. Census pairs carry a stored or computable change;
+     crops run to 39 fiscal years and read as a span. */
+  function yearsText(ys) {
+    if (!ys.length) return '';
+    var plain = ys.filter(function (y) { return !/^Δ/.test(y); });
+    var change = plain.length < ys.length;
+    if (plain.length > 3) return plain[0] + ' to ' + plain[plain.length - 1];
+    return plain.join(', ') + (change ? ' and change' : '');
   }
 
-  function build(IX, N, col, level, list) {
-    var index = [], seen = {};
+  /* The index sometimes appends its own disambiguation - "Total Population ·
+     2017/2023/Δ2017-23" - which is a note for a dropdown, not a name. */
+  function tidy(s) {
+    return String(s || '').replace(/\s*·\s*(19|20)\d\d[\/0-9Δ\-]*$/, '');
+  }
+
+  function build(IX, N, col, list, level) {
+    var measures = [], byKey = {}, byRow = {};
     for (var i = 0; i < N; i++) {
       if (col('level', i) !== level) continue;
-      /* A table's own total is in the catalogue but not in the subject tree.
-         "Population by Mother Tongue - Total" is the population again under
-         its table's name, and 463 rows like it would put a duplicate at the
-         top of every family. They are reachable by search, where someone
-         looking for a denominator will look. */
       if (col('redundant', i) === 1) continue;
-      var topic = col('topic', i);
+      var topic = col('h_topic', i) || col('topic_label', i) || col('topic', i);
+      var fam = col('h_family', i) || '';
       var ds = col('dataset', i) || 'Unattributed';
-      var label = col('label', i) || col('indicator', i);
-      // Row number is the indicator's value, so two identically named
-      // indicators under one dataset stay distinct rather than collapsing.
-      var key = topic + '\u001f' + ds + '\u001f' + i;
-      if (seen[key]) continue;
-      seen[key] = 1;
-      /* The measure is the indicator and the breakdown is the metric, so
-         "Total Population" holds its 103 age bands instead of standing as 103
-         separate indicators. A cell with no breakdown gets one metric, "All",
-         rather than an empty dropdown. */
-      var measure = col('measure', i) || label;
+      var name = tidy(col('measure', i) || col('label', i));
+      var gk = col('group_key', i);
+      var k = [topic, fam, ds, gk, name].join('\u001f');
+      var m = byKey[k];
+      if (!m) {
+        m = byKey[k] = {
+          id: measures.length, topic: topic, sub: col('h_sub', i) || topic,
+          fam: fam, ds: ds, groupKey: gk, groupLabel: col('group_label', i) || '',
+          name: name, label: name, rows: [], years: [], shapes: 0,
+          source: col('source', i), review: false,
+        };
+        measures.push(m);
+      }
       var metric = col('metric', i) || '';
-      /* A count can be read per head; a rate already is one.
-
-         For census rows dp carries the index's own is_rate flag - null for a
-         count, 2 for a rate - and that is trustworthy. For every other source
-         dp is a decimal-places hint rather than a claim about the measure:
-         "Annual Growth Rate (%)" has no dp and is plainly a rate. So those
-         are tested on the name as well, which is what the name is for.
-
-         Population and area are excluded even though they are counts:
-         "population per 1,000 people" is 1,000 everywhere, and land per head
-         is a different question from the one this control asks. */
-      /* Whether this can be read per head is decided in the build, from the
-         crosswalk's metric form - the kind of quantity - rather than from
-         the wording of its label. Reading the label got it wrong 278 times:
-         "Travel time to care, motorised (min)" has no word in it that says
-         rate, so minutes were offered as a share of the population, and so
-         were hectares of apples and the depth of the water table. */
-      var countable = col('h_norm', i) === 1;
-
-      /* The hierarchy's topic, not the index's own. The original topic
-         column stays on the row as `srcTopic` because heading() keys census
-         table numbers on it - PBS reused number 22 for homelessness in 2017
-         and cooking fuel in 2023 - and because the map colour scales fall
-         back to it. Navigation moved; identity did not. */
-      var hTopic = col('h_topic', i) || col('topic_label', i) || topic;
-      var base = {
-        topic: hTopic, topicLabel: hTopic,
-        sub: col('h_sub', i) || hTopic, subLabel: col('h_sub', i) || hTopic,
-        fam: col('h_family', i) || '', famLabel: col('h_family', i) || '',
-        mform: col('h_metric', i) || '',
-        review: col('h_review', i) === 1,
-        srcTopic: topic,
-        ds: ds, dsLabel: ds,
-        ind: measure, label: measure,
-        key: col('indicator', i), groupKey: col('group_key', i),
-        tableLabel: heading(col('group_key', i), col('group_label', i), topic),
-        years: (list ? list('years', i) : []).join('/'),
-        row: i, fullLabel: label,
-        rows: col('shapes', i) ? col('shapes', i) + ' places' : '',
-      };
-      index.push(Object.assign({}, base, {
-        metric: String(i), metricLabel: metric || 'All',
-      }));
-      /* Two ways to read a count against the population, because they suit
-         different sizes. A share is the natural reading of mother tongue or
-         religion, where the categories partition the population; per 1,000
-         is the natural reading of something rare, where the share would be
-         0.006% and unreadable. Both use the same denominator. */
-      NORMS.forEach(function (n) {
-        if (!countable) return;
-        index.push(Object.assign({}, base, {
-          metric: n.id + i,
-          metricLabel: (metric || 'All') + '\u2002\u00b7\u2002' + n.label,
-          norm: n.mode, fullLabel: label + ', ' + n.label,
-        }));
+      m.rows.push({ row: i, metric: metric || 'All' });
+      list('years', i).forEach(function (y) {
+        if (m.years.indexOf(y) < 0) m.years.push(y);
       });
+      m.shapes = Math.max(m.shapes, col('shapes', i) || 0);
+      if (col('h_review', i) === 1) m.review = true;
+      byRow[i] = m;
     }
-    /* "Total Population" is published in several tables, each with its own
-       age bands, so the metric list showed "0-4" three times over. Where a
-       metric repeats within one measure, the table it came from is what
-       separates them - the same qualifier the full label uses. */
-    var byMeasure = {};
-    index.forEach(function (r) {
-      var k = r.topic + '\u001f' + r.ds + '\u001f' + r.ind + '\u001f' + r.metricLabel;
-      (byMeasure[k] = byMeasure[k] || []).push(r);
+    /* Two measures with one name in one family are two tables. Say which. */
+    var clash = {};
+    measures.forEach(function (m) {
+      var c = m.topic + '\u001f' + m.fam + '\u001f' + m.ds + '\u001f' + m.name;
+      (clash[c] = clash[c] || []).push(m);
     });
-    Object.keys(byMeasure).forEach(function (k) {
-      var group = byMeasure[k];
-      if (group.length < 2) return;
-      group.forEach(function (r) {
-        var t = /^census_t(.+)$/.exec(r.groupKey || '');
-        if (t) r.metricLabel += '\u2002\u00b7\u2002table ' + t[1];
+    Object.keys(clash).forEach(function (c) {
+      if (clash[c].length < 2) return;
+      var sameLabel = clash[c].every(function (m) {
+        return m.groupLabel === clash[c][0].groupLabel;
       });
-      // One table can still give two rows with one name, because the two
-      // censuses spell the same band differently and the labels normalise to
-      // the same string. The census separates those, as it does for labels.
-      var still = {};
-      group.forEach(function (r) {
-        (still[r.metricLabel] = still[r.metricLabel] || []).push(r);
-      });
-      Object.keys(still).forEach(function (lab) {
-        if (still[lab].length < 2) return;
-        still[lab].forEach(function (r) {
-          if (r.years) r.metricLabel += '\u2002\u00b7\u2002' + r.years;
-        });
+      clash[c].forEach(function (m) {
+        var t = /^census_t(.+)$/.exec(m.groupKey || '');
+        // Two curated groups can publish one measure under one group title,
+        // and then the title separates nothing; how many places it reaches
+        // does.
+        m.label = m.name + (t ? ' \u00b7 table ' + t[1]
+          : sameLabel ? ' \u00b7 ' + m.shapes + ' places'
+          : ' \u00b7 ' + m.groupLabel);
       });
     });
-
-    nameHeadings(index);
-
-    /* Topics in the order the proposal gives - general subjects first, so a
-       reader opening the list meets Population before Agriculture - and the
-       order travels in the payload rather than being inferred here from
-       whichever topic happens to hold the first row. Anything the payload
-       does not name sorts after the named ones rather than first. */
-    var ORDER = (IX.h_topic_order || []);
-    var rank = function (t) {
-      var i = ORDER.indexOf(t);
-      return i < 0 ? ORDER.length : i;
-    };
-    index.sort(function (a, b) {
-      return rank(a.topic) - rank(b.topic)
-          || a.topic.localeCompare(b.topic)
-          || a.subLabel.localeCompare(b.subLabel)
-          || a.famLabel.localeCompare(b.famLabel)
-          || a.dsLabel.localeCompare(b.dsLabel)
-          || a.label.localeCompare(b.label)
-          || a.metricLabel.localeCompare(b.metricLabel, undefined, { numeric: true });
+    measures.forEach(function (m) {
+      m.years.sort();
+      // Breakdowns in the order a reader expects: "All" first, then bands in
+      // numeric order rather than "10-14" before "5-9".
+      m.rows.sort(function (a, b) {
+        if (a.metric === 'All') return -1;
+        if (b.metric === 'All') return 1;
+        return a.metric.localeCompare(b.metric, undefined, { numeric: true });
+      });
     });
-    return index;
+    return { measures: measures, byRow: byRow };
   }
 
-  /* Matched against the indicator KEY, not the display label. Labels are
-     ambiguous in both directions: "POPULATION - 2017 / ALL SEXES" also reads
-     as an all-sexes population row, and table 3's household-size brackets are
-     labelled "1,000-1,999 - Population 2023 - All Sexes". Two earlier attempts
-     opened the national map on the 2017 census and then on a household-size
-     bracket. The key names the table, so it cannot mean two things. */
-  var OPENERS = [
-    /^1\|POPULATION[\s-]*2023 \/ ALL SEXES\|POPULATION[\s-]*2023 \/ ALL SEXES$/i,
-    /^1\|POPULATION[\s-]*2023 \/ ALL SEXES\|/i,
-    /^total_population$/i,
-  ];
-
-  function prefer(index) {
-    for (var p = 0; p < OPENERS.length; p++) {
-      var hit = index.filter(function (r) { return OPENERS[p].test(r.key || ''); })[0];
-      if (hit) return hit;
-    }
-    // Nothing recognised: take the topic with the most indicators rather than
-    // whatever sorts first alphabetically.
-    var byTopic = {};
-    index.forEach(function (r) { byTopic[r.topic] = (byTopic[r.topic] || 0) + 1; });
-    var best = Object.keys(byTopic).sort(function (a, b) {
-      return byTopic[b] - byTopic[a];
-    })[0];
-    return index.filter(function (r) { return r.topic === best; })[0] || null;
+  /* Relevance for search. The census outnumbers everything else forty to one,
+     so an unranked "literacy" opens on "10 -- 14 · FORMAL". */
+  function score(m, q) {
+    var name = m.label.toLowerCase(), at = name.indexOf(q), s = 0;
+    if (name === q) s += 200;
+    if (at === 0) s += 100;
+    else if (at > 0) s += /[^a-z0-9]/.test(name.charAt(at - 1)) ? 70 : 50;
+    else if (m.fam.toLowerCase().indexOf(q) >= 0) s += 30;
+    if (m.source !== 'census') s += 25;          // one of ~300 chosen by hand
+    s -= Math.min(20, name.length / 6);           // the thing itself, not a cell in it
+    s += Math.min(10, m.shapes / 15);             // coverage breaks ties, never buries
+    return s;
   }
 
-  /* The source defaults to all of them, so opening a family shows every
-     indicator in it whoever measured it - and picking one narrows rather than
-     being the price of entry. */
-  var ALL = function () { return window.DDExplorer.ALL; };
-
-  /* An "All" the reader chose survives a redraw; everything else follows the
-     row on screen. follow() runs after every draw, and an earlier version
-     rewrote topic and dataset from the drawn row - so picking All topics
-     lasted exactly one redraw before snapping back to the topic of whatever
-     was showing. Subtopic and family behave the same way, because with All
-     topics chosen they are the only levels left to browse across. */
-  function hold(st, r) {
-    var keep = function (held, next) {
-      return held === ALL() || held === undefined ? ALL() : next;
-    };
-    st.topic = st.topic === ALL() ? ALL() : r.topic;
-    st.sub = st.sub === ALL() ? ALL() : r.sub;
-    st.fam = st.fam === ALL() ? ALL() : r.fam;
-    st.ds = keep(st.ds, r.ds);
-    st.ind = r.ind; st.metric = r.metric;
-  }
-
-  /* The row the four held values resolve to, falling back up the cascade the
-     same way the rail itself does when a level's value did not survive. */
-  function pick(index, st) {
-    var at = function (lv, r) { return st[lv] === ALL() || r[lv] === st[lv]; };
-    var inScope = function (r) {
-      return at('topic', r) && at('sub', r) && at('fam', r) && at('ds', r);
-    };
-    return index.filter(function (r) {
-      return inScope(r) && r.ind === st.ind && r.metric === st.metric;
-    })[0]
-    || index.filter(function (r) { return inScope(r) && r.ind === st.ind; })[0]
-    || index.filter(inScope)[0];
-  }
-
-
-  /* One config, used by both the first mount and the rebuild that follows a
-     district/tehsil switch. They were two copies of the same object literal,
-     which is two places to forget a level. */
-  var LEVELS = ['topic', 'sub', 'fam', 'ds', 'ind', 'metric'];
-
-  function railCfg(host, index, st, onRow) {
-    return {
-      el: host, index: index, state: st,
-      levels: LEVELS,
-      /* Topic, subtopic, family and source can all be left at All, so a
-         reader who knows only the source - or only the wording - can get to a
-         series without first guessing which subject tree it was filed under.
-         Indicator and metric are the series itself and always resolve. */
-      optional: { topic: true, sub: true, fam: true, ds: true },
-      /* ...and the three middle ones disappear when they offer one answer.
-         35 of the 50 subtopics hold a single family, and 52 of the 76
-         families have a single source. */
-      hideSingle: { sub: true, fam: true, ds: true },
-      groupOf: { ind: 'tableLabel', fam: 'subLabel' },
-      labelOf: { sub: 'subLabel', fam: 'famLabel' },
-      labels: { topic: 'Topic', sub: 'Subtopic', fam: 'Indicator family',
-                ds: 'Source', ind: 'Indicator', metric: 'Metric' },
-      allLabel: { topic: 'All topics', sub: 'All subtopics',
-                  fam: 'All families', ds: 'All sources' },
-      onChange: onRow,
-    };
+  function matches(m, q, col) {
+    var hay = (m.label + ' ' + m.fam + ' ' + m.sub + ' ' + m.topic + ' '
+               + m.ds + ' ' + m.groupLabel).toLowerCase();
+    if (hay.indexOf(q) >= 0) return true;
+    // The source's own spelling stays searchable: someone who knows a series
+    // by what PBS printed must still find it by typing that.
+    return m.rows.some(function (r) {
+      return String(col('indicator', r.row)).toLowerCase().indexOf(q) >= 0
+          || String(col('label', r.row)).toLowerCase().indexOf(q) >= 0;
+    });
   }
 
   window.DDPlacesRail = {
-    /* Exposed because the totals strip needs the same answer. It once used dp
-       alone and so totalled a contraceptive-prevalence rate across 128
-       districts to 3,635 - a number that means nothing - and then, reading
-       labels instead, added 471 tehsils' average journeys to care into
-       26,272 minutes. Both now come from the same build-time flag. */
     canTotal: function (row) { return row === 1 || row === true; },
 
     mount: function (opts) {
-      var host = opts.el;
-      if (!host || !window.DDExplorer) return null;
-      var index = build(opts.IX, opts.N, opts.col, opts.level, opts.list);
-      if (!index.length) return null;
+      var IX = opts.IX, N = opts.N, col = opts.col, list = opts.list;
+      var host = opts.el, lib = opts.libraryEl, search = opts.searchEl;
+      var level = opts.level;
+      var built = build(IX, N, col, list, level);
+      var other = build(IX, N, col, list, level === 'district' ? 'tehsil' : 'district');
+      var order = IX.h_topic_order || [];
+      var open = null, current = null, libState = null, invoker = null;
+      var pending = null;
 
-      /* Alphabetically first is "Agriculture / Almond, area in thousand
-         hectares", which is a poor thing to open a national map on. Open on
-         population the way the live map does, and fall back by preference
-         rather than to whatever sorts first. */
-      var first = prefer(index) || index[0];
-      var st = {};
-      hold(st, first);
-      if (opts.row != null) {
-        var cur = index.filter(function (r) { return r.row === opts.row; })[0];
-        if (cur) hold(st, cur);
+      function featured(topic) {
+        var rows = ((IX.featured || {})[level] || {})[topic] || [];
+        var seen = {}, out = [];
+        rows.forEach(function (r) {
+          var m = built.byRow[r];
+          if (m && !seen[m.id]) { seen[m.id] = 1; out.push({ m: m, row: r }); }
+        });
+        return out;
       }
 
-      var emit = function (r) { if (r) opts.onChange(r.row, r.norm || ''); };
-      var rail = window.DDExplorer.mount(railCfg(host, index, st, emit));
-      rail.sync(false);
+      function opener(topic) {
+        var f = featured(topic)[0];
+        if (f) return f.row;
+        var m = built.measures.filter(function (x) { return x.topic === topic; })[0];
+        return m ? m.rows[0].row : null;
+      }
 
-      return {
-        /* Draw whatever the rail is currently showing. boot() calls this when
-           the URL carried no indicator, so the page opens on a real map
-           instead of a rail pointing at an empty one. */
+      function count(topic, b) {
+        return b.measures.filter(function (m) { return m.topic === topic; }).length;
+      }
+
+      /* ── the topic list ──────────────────────────────────────────────── */
+      function drawTopics() {
+        var h = '<h2 class="rail-cap">Topics</h2><ul class="topics">';
+        order.forEach(function (t) {
+          var n = count(t, built), elsewhere = count(t, other);
+          if (!n && !elsewhere) return;
+          var isOpen = open === t;
+          h += '<li class="topic' + (isOpen ? ' is-open' : '') + '">'
+             + '<button type="button" class="topic-btn" data-topic="' + esc(t) + '"'
+             + ' aria-expanded="' + isOpen + '">'
+             + '<span class="topic-name">' + esc(t) + '</span>'
+             + '<span class="topic-n">' + (n ? n : NOUN[level === 'district'
+                 ? 'tehsil' : 'district'] + 's only') + '</span></button>';
+          if (isOpen) h += drawOpen(t, n);
+          h += '</li>';
+        });
+        h += '</ul>';
+        host.innerHTML = h;
+        host.querySelectorAll('.topic-btn').forEach(function (b) {
+          b.onclick = function () {
+            var t = b.dataset.topic;
+            if (open === t) { open = null; drawTopics(); return; }
+            open = t;
+            var r = opener(t);
+            if (r != null) opts.onChange(r, '');
+            else drawTopics();     // measured at the other level only
+          };
+        });
+        host.querySelectorAll('[data-row]').forEach(function (b) {
+          b.onclick = function () { opts.onChange(Number(b.dataset.row), ''); };
+        });
+        host.querySelectorAll('[data-browse]').forEach(function (b) {
+          b.onclick = function () {
+            openLibrary({ topic: b.dataset.browse, q: '' }, b);
+          };
+        });
+        host.querySelectorAll('[data-switch]').forEach(function (b) {
+          b.onclick = function () {
+            // The reader asked for this topic, so the other level opens on it
+            // rather than on whatever was on screen before.
+            pending = b.dataset.topic || null;
+            opts.onLevel(b.dataset.switch);
+          };
+        });
+      }
+
+      function drawOpen(t, n) {
+        if (!n) {
+          var lv = level === 'district' ? 'tehsil' : 'district';
+          return '<div class="topic-body"><p class="topic-note">'
+               + esc(t) + ' is measured for ' + lv + 's, not ' + level + 's.</p>'
+               + '<button type="button" class="topic-link" data-switch="' + lv
+               + '" data-topic="' + esc(t) + '">Open the ' + lv + ' map</button></div>';
+        }
+        var f = featured(t), h = '<div class="topic-body"><ul class="featured">';
+        f.forEach(function (x) {
+          var on = current && built.byRow[current] === x.m;
+          h += '<li><button type="button" class="feat' + (on ? ' is-on' : '') + '"'
+             + ' data-row="' + x.row + '"' + (on ? ' aria-current="true"' : '') + '>'
+             + '<span class="feat-name">' + esc(x.m.name) + '</span>'
+             + '<span class="feat-meta">' + esc(shortSource(x.m)) + '</span>'
+             + '</button></li>';
+        });
+        h += '</ul>';
+        // The measure on screen, when it came from the library, is shown here
+        // too - a list that hides the thing you are looking at loses your place.
+        var cm = current != null ? built.byRow[current] : null;
+        if (cm && cm.topic === t && !f.some(function (x) { return x.m === cm; })) {
+          h += '<p class="feat-also">Showing <b>' + esc(cm.label) + '</b></p>';
+        }
+        h += '<button type="button" class="topic-link" data-browse="' + esc(t) + '">'
+           + 'Browse all ' + n.toLocaleString() + ' measures in this topic \u2192'
+           + '</button></div>';
+        return h;
+      }
+
+      /* The source as a reader would name it. The full dataset name - with
+         "rural households only" and the retrieval date - is in the line under
+         the measure once it is on the map, where it qualifies the number; in
+         a list it only has to tell two entries apart. */
+      function shortSource(m) {
+        var y = yearsText(m.years);
+        var ds = m.ds;
+        var rural = /rural households only/i.test(ds);
+        ds = ds.split(/ \u00b7 |, via |, latest |, pull of |, rural households only| \(/)[0]
+               .replace(/^Population Census$/, 'Census')
+               .replace(/^Bureau of Emigration & Overseas Employment$/, 'Bureau of Emigration')
+               .replace(/^Adaad school layer.*/, 'School locations')
+               .replace(/^VIIRS DNB$/, 'VIIRS night lights');
+        if (rural) ds += ', rural';
+        return ds + (y && ds.indexOf(y) < 0 ? ' \u00b7 ' + y : '');
+      }
+
+      /* ── the library ─────────────────────────────────────────────────── */
+      function openLibrary(st, from) {
+        libState = Object.assign({ view: 'subject', shown: PAGE, topic: open, q: '' },
+                                 libState && libState.keep ? libState : {}, st);
+        invoker = from || invoker;
+        lib.hidden = false;
+        drawLibrary();
+        var box = lib.querySelector('.lib-q');
+        if (box && !st.keepFocus) {
+          box.focus();
+          box.setSelectionRange(box.value.length, box.value.length);
+        }
+      }
+
+      function closeLibrary() {
+        lib.hidden = true;
+        if (search && libState && libState.q) search.value = '';
+        libState = null;
+        if (invoker && invoker.focus && document.contains(invoker)) invoker.focus();
+      }
+
+      function libRows() {
+        var q = (libState.q || '').trim().toLowerCase();
+        var pool = built.measures.filter(function (m) {
+          return !libState.topic || m.topic === libState.topic;
+        });
+        if (!q) return { list: pool, q: '' };
+        var hits = pool.filter(function (m) { return matches(m, q, col); })
+          .map(function (m) { return { m: m, s: score(m, q) }; })
+          .sort(function (a, b) { return b.s - a.s; })
+          .map(function (x) { return x.m; });
+        return { list: hits, q: q };
+      }
+
+      function drawLibrary() {
+        var got = libRows(), ms = got.list, q = got.q;
+        var scope = libState.topic || 'All topics';
+        var series = ms.reduce(function (a, m) { return a + m.rows.length; }, 0);
+        var h = '<header class="lib-head">'
+          + '<div class="lib-title"><h2>' + esc(q ? 'Search' : scope) + '</h2>'
+          + '<button type="button" class="lib-close" aria-label="Close">×</button></div>'
+          + '<label class="lib-search"><input class="lib-q" type="search" value="'
+          + esc(libState.q) + '" placeholder="Search '
+          + esc(libState.topic ? 'within ' + libState.topic : 'every topic')
+          + '…" aria-label="Search measures"/></label>'
+          + '<div class="lib-ctl">'
+          + '<span class="lib-scope">'
+          + (libState.topic
+              ? '<button type="button" data-scope="topic" aria-pressed="true">'
+                + esc(libState.topic) + '</button>'
+                + '<button type="button" data-scope="all" aria-pressed="false">All topics</button>'
+              : '<button type="button" data-scope="all" aria-pressed="true">All topics</button>'
+                + (open ? '<button type="button" data-scope="topic" aria-pressed="false">'
+                          + esc(open) + '</button>' : ''))
+          + '</span>'
+          + (q ? '' : '<span class="lib-view">'
+              + '<button type="button" data-view="subject" aria-pressed="'
+              + (libState.view === 'subject') + '">By subject</button>'
+              + '<button type="button" data-view="source" aria-pressed="'
+              + (libState.view === 'source') + '">By source table</button></span>')
+          + '</div>'
+          + '<p class="lib-count">' + (ms.length
+              ? ms.length.toLocaleString() + ' measure' + (ms.length === 1 ? '' : 's')
+                + (series > ms.length ? ' · ' + series.toLocaleString()
+                   + ' detailed series' : '')
+                + (q ? ' match “' + esc(libState.q) + '”' : '')
+                + ' · ' + level + ' map'
+              : (q ? 'Nothing here matches “' + esc(libState.q) + '”.' : ''))
+          + '</p></header><div class="lib-body">';
+
+        /* Sorted before it is paged, so "Load more" continues the list rather
+           than dropping entries into sections already read. Sections run in
+           the order a reader looks for them: the one holding the topic's
+           opening measure first, then the other featured ones, then the rest
+           alphabetically - and reference populations last, where someone
+           looking for a denominator will look. */
+        var a = libState.view === 'source' ? 'ds' : 'sub';
+        var b = libState.view === 'source' ? 'groupLabel' : 'fam';
+        if (!q) {
+          var feat = featured(libState.topic || open || '').map(function (x) { return x.m; });
+          var rankOf = {};
+          feat.forEach(function (m, k) {
+            if (!(m[a] in rankOf)) rankOf[m[a]] = k;
+          });
+          var last = function (v) { return /population bases|reference/i.test(v) ? 1 : 0; };
+          ms = ms.slice().sort(function (x, y) {
+            var rx = x[a] in rankOf ? rankOf[x[a]] : 999;
+            var ry = y[a] in rankOf ? rankOf[y[a]] : 999;
+            return last(x[a]) - last(y[a]) || rx - ry
+                || String(x[a]).localeCompare(String(y[a]))
+                || String(x[b]).localeCompare(String(y[b]))
+                || x.label.localeCompare(y.label, undefined, { numeric: true });
+          });
+        }
+        var shown = ms.slice(0, libState.shown);
+        if (q) {
+          h += shown.map(item).join('');
+        } else {
+          // Headings are the old dropdowns: subtopic and family by subject,
+          // dataset and table by source. They are headings now, not steps.
+          var lastA = null, lastB = null;
+          shown.forEach(function (m) {
+            if (m[a] !== lastA) {
+              if (lastA !== null) h += '</section>';
+              h += '<section class="lib-sec"><h3>' + esc(m[a]) + '</h3>';
+              lastA = m[a]; lastB = null;
+            }
+            if (m[b] && m[b] !== lastB) {
+              h += '<h4>' + esc(m[b]) + '</h4>';
+              lastB = m[b];
+            }
+            h += item(m);
+          });
+          if (lastA !== null) h += '</section>';
+        }
+        if (ms.length > shown.length) {
+          h += '<button type="button" class="lib-more">Load '
+             + Math.min(PAGE, ms.length - shown.length) + ' more of '
+             + (ms.length - shown.length).toLocaleString() + ' remaining</button>';
+        }
+        /* A measure that exists only at the other geography is not absent -
+           it is on the other map. Say so rather than letting the level make
+           it look like it does not exist. */
+        if (q) {
+          var elsewhere = other.measures.filter(function (m) {
+            return (!libState.topic || m.topic === libState.topic)
+                && matches(m, q, col);
+          }).filter(function (m) {
+            return !built.measures.some(function (x) {
+              return x.groupKey === m.groupKey && x.name === m.name;
+            });
+          });
+          if (elsewhere.length) {
+            var lv = level === 'district' ? 'tehsil' : 'district';
+            h += '<section class="lib-sec lib-else"><h3>Also on the ' + lv + ' map</h3>'
+               + elsewhere.slice(0, 12).map(function (m) {
+                   return '<div class="lib-item is-else"><span class="lib-name">'
+                     + esc(m.label) + '</span><span class="lib-meta">'
+                     + esc(m.topic + ' · ' + shortSource(m)) + '</span></div>';
+                 }).join('')
+               + '<button type="button" class="topic-link" data-switch="' + lv
+               + '">Open the ' + lv + ' map</button></section>';
+          }
+        }
+        h += '</div>';
+        lib.innerHTML = h;
+        wireLibrary();
+      }
+
+      function item(m) {
+        var on = current != null && built.byRow[current] === m;
+        var n = m.rows.length;
+        var meta = [shortSource(m), m.shapes.toLocaleString() + ' '
+                    + NOUN[level] + 's with data'];
+        if (!libState.topic || libState.q) meta.unshift(m.topic);
+        var h = '<div class="lib-item' + (on ? ' is-on' : '') + '">'
+          + '<button type="button" class="lib-pick" data-row="' + m.rows[0].row + '"'
+          + (on ? ' aria-current="true"' : '') + '>'
+          + '<span class="lib-name">' + esc(m.label)
+          + (m.review ? ' <span class="ind-flag" title="The source label for this'
+              + ' series is ambiguous and has not been resolved. It is kept exactly'
+              + ' as published rather than guessed at.">definition needs review</span>'
+              : '')
+          + '</span><span class="lib-meta">' + esc(meta.join(' · ')) + '</span>'
+          + '</button>';
+        if (n > 1) {
+          // Every published band stays one click away, including the
+          // overlapping ones, without standing as a measure of its own.
+          h += '<details class="lib-bands"><summary>' + n + ' breakdowns</summary>'
+             + '<div class="lib-band-list">'
+             + m.rows.map(function (r) {
+                 return '<button type="button" data-row="' + r.row + '"'
+                   + (current === r.row ? ' aria-current="true"' : '') + '>'
+                   + esc(r.metric) + '</button>';
+               }).join('') + '</div></details>';
+        }
+        return h + '</div>';
+      }
+
+      function wireLibrary() {
+        lib.querySelector('.lib-close').onclick = closeLibrary;
+        var box = lib.querySelector('.lib-q');
+        box.oninput = function () {
+          libState.q = box.value;
+          libState.shown = PAGE;
+          if (search) search.value = libState.topic ? '' : box.value;
+          var pos = box.selectionStart;
+          drawLibrary();
+          var nb = lib.querySelector('.lib-q');
+          nb.focus();
+          nb.setSelectionRange(pos, pos);
+        };
+        lib.querySelectorAll('[data-scope]').forEach(function (b) {
+          b.onclick = function () {
+            libState.topic = b.dataset.scope === 'topic' ? (libState.topic || open) : null;
+            libState.shown = PAGE;
+            drawLibrary();
+          };
+        });
+        lib.querySelectorAll('[data-view]').forEach(function (b) {
+          b.onclick = function () { libState.view = b.dataset.view; drawLibrary(); };
+        });
+        var more = lib.querySelector('.lib-more');
+        if (more) more.onclick = function () {
+          libState.shown += PAGE;
+          drawLibrary();
+          var items = lib.querySelectorAll('.lib-item');
+          var nxt = items[libState.shown - PAGE];
+          if (nxt) { var bt = nxt.querySelector('button'); if (bt) bt.focus(); }
+        };
+        lib.querySelectorAll('[data-row]').forEach(function (b) {
+          b.onclick = function () {
+            opts.onChange(Number(b.dataset.row), '');
+            closeLibrary();
+          };
+        });
+        lib.querySelectorAll('[data-switch]').forEach(function (b) {
+          b.onclick = function () {
+            var q = libState.q;
+            closeLibrary();
+            opts.onLevel(b.dataset.switch);
+            if (q) openLibrary({ topic: null, q: q });
+          };
+        });
+      }
+
+      lib.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { e.preventDefault(); closeLibrary(); }
+      });
+      if (search) {
+        search.addEventListener('input', function () {
+          var q = search.value;
+          if (q.trim().length < 2) {
+            if (libState && !libState.topic) closeLibrary();
+            return;
+          }
+          openLibrary({ topic: null, q: q, shown: PAGE, keepFocus: true }, search);
+          search.focus();
+        });
+        search.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && search.value.trim().length >= 2) {
+            var box = lib.querySelector('.lib-q');
+            if (box) box.focus();
+          }
+        });
+      }
+
+      drawTopics();
+
+      var api = {
+        /* What the opening map shows. */
         fire: function () {
-          var r = pick(index, st);
-          if (r) opts.onChange(r.row, r.norm || '');
+          open = 'Population & households';
+          var r = opener(open);
+          if (r == null) {
+            open = order.filter(function (t) { return count(t, built); })[0];
+            r = opener(open);
+          }
+          if (r != null) opts.onChange(r, '');
         },
-        /* The picker list and the rail are peers, so choosing from one moves
-           the other. Without this they drift and the page shows a rail that
-           disagrees with the indicator actually on the map. */
-        follow: function (row, norm) {
-          /* Matched on the conversion as well as the row. Every indicator
-             with a per-head reading is three rows here - the count and its
-             two twins - and matching on the row alone always returned the
-             count, so choosing "% of population" redrew the map but snapped
-             the Metric dropdown back to "All" beside it. */
-          var want = norm || '';
-          var r = index.filter(function (x) {
-            return x.row === row && (x.norm || '') === want;
-          })[0] || index.filter(function (x) { return x.row === row; })[0];
-          if (!r) return;
-          hold(st, r);
-          rail.sync(false);
+        follow: function (row) {
+          current = row;
+          var m = built.byRow[row];
+          if (m) open = m.topic;
+          drawTopics();
+          if (libState && !lib.hidden) drawLibrary();
         },
-        /* Switching district <-> tehsil rebuilds the index, because the two
-           levels carry different indicators. Two things were wrong here: it
-           re-mounted the rail but never fired, so the map went blank and
-           stayed blank; and having no held row it took index[0], which sorts
-           alphabetically - so the country opened on "Almond, area in thousand
-           hectares" or on "Bank".
-
-           Now it keeps the indicator you were looking at if the new level has
-           it, falls back to the preferred opener if not, and always draws. */
-        rebuild: function (level, key) {
-          var prev = pick(index, st);
-          index = build(opts.IX, opts.N, opts.col, level, opts.list);
-          if (!index.length) return;
-
-          var same = prev && index.filter(function (x) {
-            return x.key === prev.key;
-          })[0];
-          var next = same || prefer(index) || index[0];
-          hold(st, next);
-
-          rail = window.DDExplorer.mount(railCfg(host, index, st, emit));
-          rail.sync(false);
-          var drawn = pick(index, st) || next;
-          opts.onChange(drawn.row, drawn.norm || '');
+        /* The measure a row belongs to, for the breakdown control beside the
+           legend: the ages, the tables' own columns. */
+        measureOf: function (row) { return built.byRow[row] || null; },
+        rebuild: function (lv, prevKey, prevGroup) {
+          level = lv;
+          built = build(IX, N, col, list, level);
+          other = build(IX, N, col, list, level === 'district' ? 'tehsil' : 'district');
+          var keep = null;
+          if (prevKey) {
+            for (var i = 0; i < N; i++) {
+              if (col('level', i) === lv && col('indicator', i) === prevKey
+                  && col('group_key', i) === prevGroup && col('redundant', i) !== 1) {
+                keep = i; break;
+              }
+            }
+          }
+          if (pending) { open = pending; keep = null; pending = null; }
+          var r = keep != null ? keep : (open && opener(open));
+          if (r == null) { api.fire(); return; }
+          opts.onChange(r, '');
         },
+        openLibrary: function (topic) { openLibrary({ topic: topic || open, q: '' }); },
       };
+      return api;
     },
   };
 })();

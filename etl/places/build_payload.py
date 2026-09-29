@@ -75,6 +75,74 @@ def write(path, global_name, obj, what):
     return path.stat().st_size
 
 
+# ── what each topic opens on, and what it features ────────────────────────
+# A topic opened on whichever of its rows sorted first. Education opened on
+# "% Below Primary" and the whole map opened on the 0-4 age band, because the
+# one rule that picked the national opener matched an indicator key that a
+# later merge had rewritten, and nothing noticed. So the first entry of each
+# list is the topic's opening view, chosen for a clear definition, broad
+# coverage and a unit a reader recognises; the rest are the few measures most
+# people come for. "Featured" is presentation order only - every other measure
+# stays in the topic's full library.
+#
+# Keys are group_key|indicator. A merged indicator is matched through any of
+# the cells it absorbed, and the build fails if a key resolves nowhere, so a
+# rename upstream breaks the build rather than the opening map.
+#
+# Where the best rate is a partial survey it is used anyway, because a count
+# of households mostly redraws the population map: the electricity and pucca
+# housing measures are HIES 2024-25, rural households, 109 districts, and the
+# page says so beside the map.
+FEATURED = {
+    'Population & households': [
+        'demographics|pop_total', 'demographics|density_per_sq_km',
+        'demographics|annual_growth_rate', 'demographics|avg_household_size',
+        'demographics|urban_proportion', 'demographics|sex_ratio',
+        'migration|emigrants_registered', 'census_t18|18|Migration from Abroad|',
+        'satPop|pop', 'satPop|popdens'],
+    'Education & schools': [
+        'literacy|literacy_ratio_all', 'literacy|literacy_ratio_female',
+        'censusSchooling|in_school_5_16_female',
+        'censusSchooling|out_of_school_5_16', 'education|pct_matric_plus',
+        'censusSchooling|schooling_gender_gap', 'pslmEducation|literacy_rate',
+        'schoolAccess|girls_middle_km', 'schoolAccess|boys_middle_km'],
+    'Work & local economy': [
+        'employment|lfpr', 'employment|lfpr_female',
+        'employment|unemployment_rate', 'employment|employment_ratio',
+        'lfs25|pct_agriculture', 'employment|pct_self_employed', 'lfs|lfpr'],
+    'Health & disability': [
+        'micsNutrition|stunting', 'micsMaternal|inst_delivery',
+        'micsMaternal|anc4', 'micsNutrition|wasting', 'census_t16|16|Disability|',
+        'healthAccessDistrict|wal_pct_pop_gt60', 'healthAccess|wal_pct_pop_gt60',
+        'dhsImmunisation|full_immun', 'pslmHealth|morbidity_rate'],
+    'Women & gender': [
+        'micsWomen|married_before_18', 'micsWomen|literate', 'micsWomen|cpr_any',
+        'dhsFamilyPlanning|unmet_need', 'hiesDecisions|pct_not_permitted_work',
+        'micsWomen|dv_justified'],
+    'Housing & buildings': [
+        'hiesHousing|pct_pucca_house', 'hiesHousing|pct_katcha_house',
+        'hiesHousing|pct_owner_occupied', 'hiesHousing|avg_rooms',
+        'census_t20|20|Kacha HH|Kacha HH', 'facilities|entity_8'],
+    'Utilities & local infrastructure': [
+        'hiesHousing|pct_electricity', 'pslmWash|pct_piped_water',
+        'pslmWash|pct_flush_toilet', 'micsWash|open_defecation',
+        'micsWash|ecoli_household', 'hiesWaste|pct_formal_collection'],
+    'Digital access & information': [
+        'pslmDigital|pct_internet', 'pslmDigital|pct_mobile',
+        'pslmDigital|pct_smartphone', 'pslmDigital|pct_internet_female',
+        'hiesIct|pct_daily_internet'],
+    'Poverty & living standards': [
+        'mpi|H', 'mpi|mpi', 'mpi|A', 'pslmFies|food_insecurity_pct',
+        'mpi|c_electricity', 'mpi|c_schooling', 'rwi|rwi_pct', 'rwi|rwi'],
+    'Agriculture': [
+        'crops|crop|4|production_000t', 'crops|crop|4|yield_t_per_ha',
+        'crops|crop|4|area_000ha', 'crops|crop|2|production_000t',
+        'crops|crop|5|production_000t', 'crops|crop|3|production_000t',
+        'crops|crop|1|production_000t'],
+    'Environment': ['nightlights|density', 'nightlights|growth'],
+}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--warehouse', required=True)
@@ -286,6 +354,24 @@ def main():
                  if keys[i] in hmap else blank_for(r))
             for i, r in enumerate(rows)]
 
+    # "Total Population" against the population is 100% everywhere, and per
+    # 1,000 people it is 1,000. build_hierarchy.py's WHOLE_POP pattern catches
+    # "Population" and "Population 2023 - All Sexes" but not the curated
+    # tables' "Total Population", and it cannot be widened there without
+    # contradicting the per-head modes the crosswalk recorded. So the whole
+    # population is taken out of the per-head control here. Female, male,
+    # urban and rural population keep it: a share of the whole is what they
+    # are for.
+    import re as _re
+    hn, ms = names.index('h_norm'), names.index('measure')
+    whole = _re.compile(r'^(total\s+)?population(\s*[\u2014-]\s*all sexes)?$', _re.I)
+    fixed = 0
+    for ri, r in enumerate(rows):
+        if r[hn] == 1 and whole.match(str(r[ms] or '').strip()):
+            rows[ri] = r[:hn] + (0,) + r[hn + 1:]
+            fixed += 1
+    print(f'  {fixed} whole-population rows taken out of the per-head control')
+
     P = columnar(rows, names,
                  {'level', 'topic', 'topic_label', 'group_key', 'group_label',
                   'dataset', 'source', 'families', 'years', 'localities',
@@ -297,6 +383,56 @@ def main():
     # first, so Places does not open on Agriculture - travels beside them
     # rather than being inferred from whichever topic happens to appear first.
     P['h_topic_order'] = hv['topic']
+
+    # Resolve FEATURED to row numbers per level. A merged indicator is
+    # "2017:all=<cell>\x1f2023:all=<cell>", and any of its cells names it.
+    at = {nm: k for k, nm in enumerate(names)}
+    lookup = {}
+    for ri, r in enumerate(rows):
+        if r[at['redundant']]:
+            continue
+        ind = str(r[at['indicator']])
+        parts = [ind] if '=' not in ind else \
+            [x.split('=', 1)[1] for x in ind.split('\u001f')]
+        for part in parts:
+            lookup.setdefault((r[at['level']], r[at['group_key']] + '|' + part), ri)
+    nowhere = [k for ks in FEATURED.values() for k in ks
+               if not any((lv, k) in lookup for lv in ('district', 'tehsil'))]
+    assert not nowhere, (
+        f'{len(nowhere)} featured keys match no row at either level - the index '
+        f'moved under them: {nowhere[:3]}')
+    unknown = set(FEATURED) - set(hv['topic'])
+    assert not unknown, f'featured topics the hierarchy does not have: {unknown}'
+
+    featured = {}
+    for lv in ('district', 'tehsil'):
+        by = {}
+        for topic in hv['topic']:
+            got = [lookup[(lv, k)] for k in FEATURED.get(topic, [])
+                   if (lv, k) in lookup]
+            # A level the list was not written for - most curated series are
+            # district tables - still gets a start, taken from that level's own
+            # rows by coverage, so a topic never opens on nothing.
+            if len(got) < 3:
+                pool = [ri for ri, r in enumerate(rows)
+                        if r[at['level']] == lv and r[at['h_topic']] == topic
+                        and not r[at['redundant']] and not r[at['metric']]
+                        and ri not in got]
+                pool.sort(key=lambda ri: (rows[ri][at['source']] == 'census',
+                                          -(rows[ri][at['shapes']] or 0)))
+                got += pool[:6 - len(got)]
+            if got:
+                by[topic] = got
+        featured[lv] = by
+    for topic in hv['topic']:
+        has = any(r[at['level']] == 'district' and r[at['h_topic']] == topic
+                  and not r[at['redundant']] for r in rows)
+        assert not has or topic in featured['district'], (
+            f'{topic} has district measures but opens on nothing')
+    P['featured'] = featured
+    print('  featured: ' + ', '.join(
+        f"{t.split(' ')[0]} {len(v)}" for t, v in featured['district'].items()))
+
     n1 = write(out / 'places_index.js', 'DD_PLACES_IX', P,
                f'Places picker index, {len(ix):,} indicators')
 

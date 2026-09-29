@@ -45,7 +45,11 @@
 .empty{padding:14px 10px;font-size:12.5px;color:var(--muted);line-height:1.5}
 
 /* ── map ────────────────────────────────────────────────────────────────── */
-.map-wrap{flex-grow:1;min-width:0;position:relative;background:var(--ground)}
+.map-wrap{flex-grow:1;min-width:0;position:relative;background:var(--ground);
+  display:flex;flex-direction:column}
+/* The map and everything drawn over it. The measure header is above this in
+   the flow rather than floating on the map, where it hid the north. */
+.map-stage{position:relative;flex:1;min-height:0}
 /* Leaflet paints its container #ddd by default, which showed through as a
    grey panel behind the map on a page whose ground is cream. The map has no
    tile layer - the shapes are the whole picture - so the container simply
@@ -68,8 +72,8 @@
 .year-ctl button[aria-pressed="true"]{background:var(--green-900);color:#fff;font-weight:700}
 .year-ctl button:disabled{color:var(--muted);cursor:not-allowed;opacity:.45}
 
-.map-tools{position:absolute;left:16px;top:16px;display:flex;gap:8px;z-index:500}
-.map-tools-right{position:absolute;right:16px;top:16px;display:flex;gap:8px;z-index:500}
+.map-tools{position:absolute;left:14px;top:12px;display:flex;gap:8px;z-index:500}
+.map-tools-right{position:absolute;right:14px;top:12px;display:flex;gap:8px;z-index:500}
 .tool{height:34px;padding:0 12px;background:rgba(255,255,255,.96);border:1px solid var(--line);
   border-radius:8px;font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;
   display:flex;align-items:center;gap:7px}
@@ -184,20 +188,15 @@
 
 /* The strip over the map: how many places are showing and what they come to,
    following the province filter. */
-.totals{position:absolute;top:0;left:0;right:0;z-index:450;display:flex;
-  gap:0;background:var(--surface);border-bottom:1px solid var(--line)}
+.totals{display:flex;flex:none;gap:0}
 .totals[hidden]{display:none}
-.tot{flex:1;min-width:0;padding:7px 14px;border-right:1px solid var(--line);
-  display:flex;flex-direction:column;gap:1px}
-.tot:last-child{border-right:0}
+.tot{min-width:0;max-width:260px;padding:2px 0 2px 14px;margin-left:14px;
+  border-left:1px solid var(--line);display:flex;flex-direction:column;gap:1px;justify-content:center}
 .tot-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;
   text-transform:uppercase;color:var(--muted);overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap}
-.tot b{font-size:15px;font-weight:700;color:var(--ink);
+.tot b{font-size:17px;font-weight:800;color:var(--ink);
   font-variant-numeric:tabular-nums}
-/* The map tools sit below the strip rather than under it. */
-.totals:not([hidden]) ~ .map-tools,
-.totals:not([hidden]) ~ .map-tools-right{top:52px}
 @media(max-width:700px){
   .tot{padding:5px 9px}
   .tot b{font-size:13px}
@@ -226,11 +225,123 @@
    row is understood, it is just not a measure anyone browses to. */
 .ind-total{color:var(--slate,#5a6b7a);background:var(--green-100)}
 
-/* Leaflet draws its zoom control in the map's own top-left corner, which is
-   exactly where the totals bar and the tools row are drawn over the map, so
-   it sat on top of both and the district count was unreadable behind it. The
-   chrome above the map is ours; the control moves below it, and moves again
-   when the totals bar appears, which is the same offset .map-tools already
-   takes. */
-.leaflet-top.leaflet-left{top:44px}
-.map-wrap:has(.totals:not([hidden])) .leaflet-top.leaflet-left{top:80px}
+/* ── the measure header ─────────────────────────────────────────────────── */
+.measure-head{display:flex;align-items:center;gap:0;padding:10px 18px;
+  background:var(--surface);border-bottom:1px solid var(--line);flex:none}
+.measure-head[hidden]{display:none}
+.mh-text{flex:1;min-width:0}
+.mh-text h1{margin:0;font-size:17px;font-weight:800;color:var(--green-900);
+  line-height:1.25;letter-spacing:-.1px}
+.mh-sum{margin:3px 0 0;font-size:12px;color:var(--muted);line-height:1.4}
+
+/* ── the topic list ─────────────────────────────────────────────────────── */
+.rail{flex:1 1 auto;overflow-y:auto;padding:10px 8px 18px;min-height:0}
+.rail-cap{margin:2px 10px 6px;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.topics{list-style:none;margin:0;padding:0}
+.topic-btn{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  width:100%;padding:8px 10px;border:0;border-radius:7px;background:none;font:inherit;
+  font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left}
+.topic-btn:hover{background:var(--green-100)}
+.topic.is-open>.topic-btn{background:var(--green-100);color:var(--green-900);font-weight:700}
+.topic-n{font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap}
+.topic-body{padding:4px 0 10px 10px}
+.featured{list-style:none;margin:0;padding:0 0 0 8px;border-left:2px solid var(--line)}
+.feat{display:block;width:100%;padding:6px 10px;border:0;border-radius:6px;
+  background:none;font:inherit;text-align:left;cursor:pointer}
+.feat:hover{background:var(--green-100)}
+.feat.is-on{background:var(--gold-100)}
+.feat-name{display:block;font-size:12.8px;font-weight:600;color:var(--ink);line-height:1.3}
+.feat.is-on .feat-name{color:var(--green-800)}
+.feat-meta{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.feat-also{margin:6px 10px 0 18px;font-size:11.5px;color:var(--muted)}
+.topic-link{display:block;margin:8px 0 0 8px;padding:5px 10px;border:0;background:none;
+  font:inherit;font-size:12.5px;font-weight:700;color:var(--green-700);cursor:pointer;
+  text-align:left}
+.topic-link:hover{text-decoration:underline}
+.topic-note{margin:4px 10px;font-size:12px;color:var(--muted);line-height:1.45}
+.overlays .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+/* ── the key, and the controls that change what it describes ────────────── */
+.legend{max-width:330px}
+.legend[hidden]{display:none}
+.break-ctl{display:flex;flex-direction:column;gap:7px}
+.break-ctl[hidden]{display:none}
+.bk{display:flex;align-items:center;gap:8px}
+.bk select{flex:1;min-width:0;height:30px;border:1px solid var(--line-strong);
+  border-radius:6px;background:var(--surface);font:inherit;font-size:12px;color:var(--ink);
+  padding:0 6px}
+.showas{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.showas .facet-lab{margin-right:8px}
+.showas button{height:28px;padding:0 9px;border:1px solid var(--line-strong);
+  background:var(--surface);font:inherit;font-size:11.5px;font-weight:600;color:var(--ink);
+  cursor:pointer;margin-left:-1px}
+.showas button:first-of-type{border-radius:6px 0 0 6px;margin-left:0}
+.showas button:last-child{border-radius:0 6px 6px 0}
+.showas button[aria-pressed="true"]{background:var(--green-900);color:#fff;
+  border-color:var(--green-900)}
+.legend-more summary{font-size:11.5px;font-weight:700;color:var(--green-700);cursor:pointer}
+.legend-more .sub{margin-top:5px}
+
+/* ── the library ────────────────────────────────────────────────────────── */
+.library{position:absolute;top:0;left:0;bottom:0;width:min(720px,100%);z-index:1200;
+  background:var(--surface);border-right:1px solid var(--line);
+  box-shadow:10px 0 28px rgba(12,58,30,.10);display:flex;flex-direction:column}
+.library[hidden]{display:none}
+.lib-head{padding:14px 20px 10px;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:9px;flex:none}
+.lib-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lib-title h2{margin:0;font-size:17px;font-weight:800;color:var(--green-900)}
+.lib-close{border:0;background:none;font-size:24px;line-height:1;color:var(--muted);
+  cursor:pointer;padding:2px 6px;border-radius:6px}
+.lib-close:hover{background:var(--green-100);color:var(--ink)}
+.lib-search input{width:100%;height:38px;padding:0 12px;border:1.5px solid var(--green-700);
+  border-radius:8px;background:var(--surface);font:inherit;font-size:13.5px;color:var(--ink)}
+.lib-ctl{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.lib-scope,.lib-view{display:inline-flex;border:1px solid var(--line-strong);
+  border-radius:6px;overflow:hidden}
+.lib-scope button,.lib-view button{height:28px;padding:0 11px;border:0;
+  border-right:1px solid var(--line);background:var(--surface);font:inherit;
+  font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
+.lib-scope button:last-child,.lib-view button:last-child{border-right:0}
+.lib-scope button[aria-pressed="true"],.lib-view button[aria-pressed="true"]{
+  background:var(--green-900);color:#fff}
+.lib-count{margin:0;font-size:11.5px;color:var(--muted)}
+.lib-body{flex:1;overflow-y:auto;padding:4px 20px 28px}
+.lib-sec h3{margin:18px 0 4px;font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.lib-sec h4{margin:12px 0 2px;font-size:13px;font-weight:700;color:var(--green-800)}
+.lib-item{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;
+  border-bottom:1px solid var(--line)}
+.lib-pick{flex:1 1 300px;min-width:0;padding:7px 8px;border:0;border-radius:6px;
+  background:none;font:inherit;text-align:left;cursor:pointer}
+.lib-pick:hover{background:var(--green-100)}
+.lib-item.is-on .lib-pick{background:var(--gold-100)}
+.lib-name{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+.lib-meta{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.lib-item.is-else{padding:6px 8px;opacity:.8}
+.lib-bands{padding:0 8px 6px}
+.lib-bands summary{font-size:11.5px;font-weight:600;color:var(--green-700);cursor:pointer}
+.lib-band-list{display:flex;flex-wrap:wrap;gap:4px;padding:6px 0 4px}
+.lib-band-list button{padding:3px 8px;border:1px solid var(--line-strong);border-radius:5px;
+  background:var(--surface);font:inherit;font-size:11.5px;color:var(--ink);cursor:pointer}
+.lib-band-list button:hover{background:var(--green-100)}
+.lib-band-list button[aria-current="true"]{background:var(--green-900);color:#fff;
+  border-color:var(--green-900)}
+.lib-more{display:block;width:100%;margin:16px 0 4px;padding:10px 14px;
+  border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);
+  font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.lib-more:hover{background:var(--green-100)}
+:root[data-theme="dark"] .library{box-shadow:10px 0 28px rgba(0,0,0,.4)}
+
+@media(max-width:860px){
+  .rail{max-height:42vh}
+  .map-wrap{height:auto}
+  .map-stage{height:60vh;flex:none}
+  .measure-head{flex-wrap:wrap;gap:6px}
+  .totals{width:100%}
+  .tot:first-child{margin-left:0;padding-left:0;border-left:0}
+  /* A library that fits the phone rather than a strip over a 60vh map. */
+  .library{position:fixed;inset:0;width:auto;z-index:2000}
+}
