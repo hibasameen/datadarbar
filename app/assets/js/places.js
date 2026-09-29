@@ -36,6 +36,22 @@
     return s ? s.split(SEP) : [];
   }
 
+  /* A merged key is "2017=<cell>" or "2017:female=<cell>", parts joined by
+     \x1f, and it is recognised by that year prefix - never by the presence of
+     an "=". Census table 12 publishes "Literate >=10", "Population >=10" and
+     "Population >=5", and reading their ">=" as a merge asked the warehouse
+     for an indicator called "10": three measures, 727 places each, drew an
+     empty map. */
+  var MERGED = /^((?:19|20)\d\d)(?::([a-z]+))?=/;
+  function mergedParts(ind) {
+    ind = String(ind || '');
+    if (!MERGED.test(ind)) return null;
+    return ind.split(SEP).map(function (part) {
+      var m = MERGED.exec(part);
+      return m ? { year: m[1], sex: m[2] || null, cell: part.slice(m[0].length) } : null;
+    }).filter(Boolean);
+  }
+
   var state = {
     level: 'district',
     row: null,          // index row of the chosen indicator
@@ -211,23 +227,21 @@
        such column the map must still draw something rather than going blank
        on a facet the reader cannot see they are holding. */
     function cellFor(y, sx) {
-      if (ind.indexOf('=') < 0) return ind.split('|');
-      var parts = ind.split('\u001f'), want = null, yearOnly = null;
-      parts.forEach(function (part) {
-        var at = part.indexOf('='), head = part.slice(0, at);
-        var bits = head.split(':'), py = bits[0], ps = bits[1];
-        if (py !== String(y)) return;
-        if (ps == null) { yearOnly = part.slice(at + 1); return; }
-        if (sx && ps === String(sx)) want = part.slice(at + 1);
-        if (yearOnly == null) yearOnly = part.slice(at + 1);
+      var parts = mergedParts(ind);
+      if (!parts) return ind.split('|');
+      var want = null, yearOnly = null;
+      parts.forEach(function (p) {
+        if (p.year !== String(y)) return;
+        if (!p.sex) { yearOnly = p.cell; return; }
+        if (sx && p.sex === String(sx)) want = p.cell;
+        if (yearOnly == null) yearOnly = p.cell;
       });
-      var key = want || yearOnly || parts[0].split('=').pop();
-      var out = key.split('|');
+      var out = (want || yearOnly || parts[0].cell).split('|');
       /* Where the key carries the sex, the panel does NOT: PBS published
          those as separate columns, so every one of their rows sits under
          sex='all' and filtering on the chosen sex as well would return
          nothing at all. The key has already selected it. */
-      out.bySex = ind.indexOf(':') >= 0;
+      out.bySex = parts.some(function (p) { return !!p.sex; });
       return out;
     }
 
@@ -976,7 +990,8 @@
       + String(col('dataset', i) || '').replace(/,? pull of [0-9-]+$/, '')
       + (col('group_label', i) ? ' \u00b7 ' + col('group_label', i) : '')
       + '. Series key: ' + col('group_key', i) + ' / '
-      + String(col('indicator', i)).split('\u001f')[0].replace(/^[^=]*=/, '') + '.';
+      + ((mergedParts(col('indicator', i)) || [{ cell: col('indicator', i) }])[0].cell)
+      + '.';
   }
 
   /* ── legend, with the facet controls the design puts on the map ───────── */
@@ -1640,11 +1655,10 @@
     if (row < 0) {
       for (var j = 0; j < N && row < 0; j++) {
         if (col('level', j) !== state.level) continue;
-        var parts = String(col('indicator', j)).split(SEP);
+        var parts = mergedParts(col('indicator', j)) || [];
         for (var k = 0; k < parts.length; k++) {
-          var at = parts[k].indexOf('=');
-          if (at > 0 && parts[k].slice(at + 1) === ind) {
-            row = j; via = parts[k].slice(0, at).split(':'); break;
+          if (parts[k].cell === ind) {
+            row = j; via = [parts[k].year, parts[k].sex]; break;
           }
         }
       }

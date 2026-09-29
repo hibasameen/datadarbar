@@ -75,6 +75,20 @@ def write(path, global_name, obj, what):
     return path.stat().st_size
 
 
+# A merged key is "2017=<cell>" or "2017:female=<cell>", parts joined by \x1f.
+# Recognised by that year prefix, never by the presence of "=": census table
+# 12 publishes "Literate >=10", and ">=" is not a merge.
+MERGED = re.compile(r'^((?:19|20)\d\d)(?::([a-z]+))?=')
+
+
+def cells(ind):
+    """The cells a key names: itself, or each part of a merged key."""
+    ind = str(ind)
+    if not MERGED.match(ind):
+        return None
+    return [p[MERGED.match(p).end():] for p in ind.split('\u001f') if MERGED.match(p)]
+
+
 # ── what each topic opens on, and what it features ────────────────────────
 # A topic opened on whichever of its rows sorted first. Education opened on
 # "% Below Primary" and the whole map opened on the 0-4 age band, because the
@@ -255,27 +269,24 @@ def main():
     parts_of = {}
     for ck, cv in hier['map'].items():
         lvl, gk, ind = ck.split('\u001f', 2)
-        if '=' not in ind:
-            continue
-        for part in ind.split('\u001f'):
-            parts_of.setdefault(
-                (lvl, part.split('=', 1)[1]), []).append((ck, cv))
+        for cell in cells(ind) or []:
+            parts_of.setdefault((lvl, cell), []).append((ck, cv))
 
     def resolve(k):
         if k in hmap:
             return hmap[k], [k]
         lvl0, gk0, ind0 = k.split('\u001f', 2)
-        if '=' not in ind0 and (lvl0, ind0) in parts_of:
+        if not cells(ind0) and (lvl0, ind0) in parts_of:
             seen = parts_of[(lvl0, ind0)]
             assert all(v == seen[0][1] for _, v in seen), (
                 f'one cell sits in two crosswalk entries that disagree: {k!r}')
             return seen[0][1], [ck for ck, _ in seen]
         lvl, gk, ind = k.split('\u001f', 2)
-        if '=' not in ind:
+        if not cells(ind):
             return None, []
-        parts, seen_at, places = ind.split('\u001f'), [], []
-        for part in parts:
-            ck = '\u001f'.join((lvl, gk, part.split('=', 1)[1]))
+        seen_at, places = [], []
+        for cell in cells(ind):
+            ck = '\u001f'.join((lvl, gk, cell))
             if ck in hmap:
                 seen_at.append(ck)
                 places.append(hmap[ck])
@@ -392,9 +403,7 @@ def main():
         if r[at['redundant']]:
             continue
         ind = str(r[at['indicator']])
-        parts = [ind] if '=' not in ind else \
-            [x.split('=', 1)[1] for x in ind.split('\u001f')]
-        for part in parts:
+        for part in cells(ind) or [ind]:
             lookup.setdefault((r[at['level']], r[at['group_key']] + '|' + part), ri)
     nowhere = [k for ks in FEATURED.values() for k in ks
                if not any((lv, k) in lookup for lv in ('district', 'tehsil'))]

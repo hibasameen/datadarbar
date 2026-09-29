@@ -62,24 +62,55 @@
     return String(s || '').replace(/\s*·\s*(19|20)\d\d[\/0-9Δ\-]*$/, '');
   }
 
+  /* SOURCE TOTALS STAY FINDABLE. 463 rows are a table's own total or column
+     heading - usually the denominator its other rows are shares of - so they
+     are kept out of the subject headings, where they would stand at the top
+     of every family as a duplicate of the population. But a denominator must
+     not disappear for looking like a total: they sit under their own table's
+     topic in a section named for what they are, and search finds them. Their
+     topic is the one the rest of their table is filed under; every one of the
+     463 has such a sibling. */
+  var TOTALS = 'Source totals and denominators';
+
+  function tableTopics(N, col, level) {
+    var count = {};
+    for (var i = 0; i < N; i++) {
+      if (col('level', i) !== level || col('redundant', i) === 1) continue;
+      var k = col('group_key', i), t = col('h_topic', i);
+      if (!t) continue;
+      var c = count[k] = count[k] || {};
+      c[t] = (c[t] || 0) + 1;
+    }
+    var out = {};
+    Object.keys(count).forEach(function (k) {
+      out[k] = Object.keys(count[k]).sort(function (a, b) {
+        return count[k][b] - count[k][a];
+      })[0];
+    });
+    return out;
+  }
+
   function build(IX, N, col, list, level) {
     var measures = [], byKey = {}, byRow = {};
+    var tt = tableTopics(N, col, level);
     for (var i = 0; i < N; i++) {
       if (col('level', i) !== level) continue;
-      if (col('redundant', i) === 1) continue;
-      var topic = col('h_topic', i) || col('topic_label', i) || col('topic', i);
-      var fam = col('h_family', i) || '';
+      var red = col('redundant', i) === 1;
+      var topic = red ? (tt[col('group_key', i)] || col('topic_label', i))
+                      : (col('h_topic', i) || col('topic_label', i) || col('topic', i));
+      var fam = red ? (col('group_label', i) || '') : (col('h_family', i) || '');
       var ds = col('dataset', i) || 'Unattributed';
       var name = tidy(col('measure', i) || col('label', i));
       var gk = col('group_key', i);
-      var k = [topic, fam, ds, gk, name].join('\u001f');
+      var k = [topic, fam, ds, gk, name, red ? 't' : ''].join('\u001f');
       var m = byKey[k];
       if (!m) {
         m = byKey[k] = {
-          id: measures.length, topic: topic, sub: col('h_sub', i) || topic,
+          id: measures.length, topic: topic,
+          sub: red ? TOTALS : (col('h_sub', i) || topic),
           fam: fam, ds: ds, groupKey: gk, groupLabel: col('group_label', i) || '',
           name: name, label: name, rows: [], years: [], shapes: 0,
-          source: col('source', i), review: false,
+          source: col('source', i), review: false, total: red,
         };
         measures.push(m);
       }
@@ -137,6 +168,7 @@
     if (m.source !== 'census') s += 25;          // one of ~300 chosen by hand
     s -= Math.min(20, name.length / 6);           // the thing itself, not a cell in it
     s += Math.min(10, m.shapes / 15);             // coverage breaks ties, never buries
+    if (m.total) s -= 40;                         // a denominator, after the measures
     return s;
   }
 
@@ -153,6 +185,9 @@
   }
 
   window.DDPlacesRail = {
+    // For tests/test_places_preservation.py, which checks that every row the
+    // index holds is reachable from the library.
+    _build: build,
     canTotal: function (row) { return row === 1 || row === true; },
 
     mount: function (opts) {
@@ -182,8 +217,12 @@
         return m ? m.rows[0].row : null;
       }
 
+      // Measures a reader browses; the source totals are counted in the
+      // library, where they sit in their own section.
       function count(topic, b) {
-        return b.measures.filter(function (m) { return m.topic === topic; }).length;
+        return b.measures.filter(function (m) {
+          return m.topic === topic && !m.total;
+        }).length;
       }
 
       /* ── the topic list ──────────────────────────────────────────────── */
@@ -363,7 +402,9 @@
           feat.forEach(function (m, k) {
             if (!(m[a] in rankOf)) rankOf[m[a]] = k;
           });
-          var last = function (v) { return /population bases|reference/i.test(v) ? 1 : 0; };
+          var last = function (v) {
+            return v === TOTALS ? 2 : /population bases|reference/i.test(v) ? 1 : 0;
+          };
           ms = ms.slice().sort(function (x, y) {
             var rx = x[a] in rankOf ? rankOf[x[a]] : 999;
             var ry = y[a] in rankOf ? rankOf[y[a]] : 999;
