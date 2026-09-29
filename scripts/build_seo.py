@@ -192,9 +192,11 @@ def patch_metadata(file, title, description, path):
     text = text.replace("&copy; 2026 Hiba Sameen. All rights reserved.", "&copy; 2026 Hiba Sameen")
     # The standalone URLs remain useful to crawlers and to readers without JS.
     text = re.sub(r'href="#"\s+data-modal="(about|methodology)"', lambda m: f'href="{m[1]}.html"', text)
+    # The footer is apply_shell.py's alone. This used to append a second row of
+    # links (district profiles, catalogue, Adaad, Aiwan) that apply_shell then
+    # stripped, so the page depended on which script ran last - and the deploy
+    # runs only this one. District Profiles moved into the shell's footer.
     text = re.sub(r'<span data-research-links>.*?</span>', "", text, flags=re.S)
-    links = f'<span data-research-links><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor</a></span>'
-    text = text.replace("</footer>", links + "</footer>", 1)
     file.write_text(text)
 
 

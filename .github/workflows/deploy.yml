@@ -24,6 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # The catalogue reads geography_keys.parquet to say which keys are
+      # safe to join on.
+      - name: Install DuckDB
+        run: python3 -m pip install --quiet 'duckdb>=1.0'
+
       - name: Build search pages
         run: python3 scripts/build_seo.py
 

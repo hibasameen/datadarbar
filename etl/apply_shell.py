@@ -102,6 +102,7 @@ def footer(root=''):
         '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
         'rel="noopener">CC BY 4.0</a></span>' + sep +
         '<span><a href="' + root + 'datasets/">Data Catalogue</a> &middot; '
+        '<a href="' + root + 'districts/">District Profiles</a> &middot; '
         '<a href="' + root + 'methods.html">Methods</a> &middot; '
         '<a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> '
         '&middot; <a href="https://aiwan.adaad.org/" target="_blank" '
