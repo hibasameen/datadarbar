@@ -253,3 +253,60 @@ html[data-page="trade"] .step{min-height:70vh}
    for 49 series that end on six different days. */
 .freshness{margin-top:9px;font-size:11.5px;color:var(--muted-2);font-weight:500}
 .freshness .fresh-stale{color:var(--rust,#b5502a)}
+
+
+/* ── Economy navigation: topics in the sidebar, controls with the charts ── */
+.eco-nav{padding:12px 12px 18px;display:flex;flex-direction:column;gap:10px}
+.eco-nav .xsearch{display:flex;align-items:center;gap:8px;padding:8px 11px;
+  border:1.5px solid var(--green-700);border-radius:8px;background:var(--surface)}
+.eco-nav .xsearch input{border:0;outline:0;background:transparent;font:inherit;
+  font-size:13px;color:var(--ink);flex:1;min-width:0}
+.eco-nav .xfind{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);
+  border-radius:8px;padding:4px;max-height:320px;overflow-y:auto}
+.eco-nav .xfind[hidden]{display:none}
+.xfind-item{display:block;width:100%;text-align:left;padding:6px 8px;border:0;border-radius:6px;
+  background:none;font:inherit;cursor:pointer}
+.xfind-item:hover{background:var(--green-100)}
+.xfind-name{display:block;font-size:12.5px;font-weight:600;color:var(--ink)}
+.xfind-meta{display:block;font-size:11px;color:var(--muted)}
+.xfind-none{margin:6px 8px;font-size:12px;color:var(--muted)}
+.eco-group ul{list-style:none;margin:0;padding:0}
+.eco-group-h{margin:6px 8px 3px;font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.eco-nav .topic-item{display:block;width:100%;text-align:left;padding:6px 9px;border:0;
+  border-radius:6px;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  cursor:pointer;text-decoration:none;line-height:1.3}
+.eco-nav .topic-item:hover{background:var(--green-100)}
+.eco-nav .topic-item.on{background:var(--green-100);color:var(--green-900);font-weight:700}
+.eco-nav .topic-item.is-link{font-weight:500;color:var(--body)}
+.eco-note{font-size:11px;color:var(--muted);font-weight:500}
+.eco-charts{margin:2px 0 6px 10px !important;padding-left:9px !important;
+  border-left:2px solid var(--line)}
+.eco-charts button{display:block;width:100%;text-align:left;padding:4px 8px;border:0;
+  border-radius:5px;background:none;font:inherit;font-size:12px;color:var(--body);cursor:pointer;
+  line-height:1.3}
+.eco-charts button:hover{background:var(--green-100);color:var(--ink)}
+
+.topic-bar{position:sticky;top:56px;z-index:40;background:var(--bg,var(--ground));
+  margin:-22px -26px 16px;padding:14px 26px 12px;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:10px}
+.topic-title{margin:0;font-size:20px;font-weight:800;color:var(--green-900);letter-spacing:-.2px}
+.topic-bar .topic-desc{margin-top:3px;font-size:12.5px;max-width:78ch}
+.topic-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.topic-ctl:empty{display:none}
+.topic-ctl .eco-panel{border:1px solid var(--line);border-radius:9px;background:var(--surface);
+  padding:7px 11px;min-width:180px;flex:0 1 auto}
+.topic-ctl .eco-panel label{margin-bottom:4px}
+/* The scale's explanation belongs on the control, not in a paragraph over
+   the charts. */
+.topic-ctl #sideScale .topic-desc{display:none}
+.topic-bar .eco-meta{background:none;margin:0;padding:0;border:0;font-size:11px;color:var(--muted)}
+.cmpbtn{float:right;margin-left:6px;font-size:11px;font-weight:700;color:var(--green-700);
+  text-decoration:none;padding:4px 9px;border:1px solid var(--line-strong);border-radius:6px;
+  background:var(--surface);line-height:1.4}
+.cmpbtn:hover{border-color:var(--green-500);background:var(--green-100)}
+@media(max-width:1000px){
+  .eco-side>.eco-nav{display:none}
+  .eco-side.open>.eco-nav{display:flex}
+  .topic-bar{top:0;position:relative;margin:-18px -16px 14px;padding:12px 16px}
+}

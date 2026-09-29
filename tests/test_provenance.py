@@ -16,10 +16,10 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 APP = ROOT / 'app'
 
-# budgetPanel describes an extraction - D.budget is four counts - so it has no
-# table of its own. The button says "Catalogue" and goes there, which is an
-# answer rather than the silent redirect it replaced.
-NO_TABLE = {'budgetPanel'}
+# The budget charts export from their own grouped payload (DD_BUDGET) through
+# budgetCsv(), not from a warehouse block, since the budget moved to this page
+# on 29 September. They are checked separately below rather than exempted.
+BUDGET_TOPIC = 'budget'
 
 
 def _state_data():
@@ -34,8 +34,15 @@ def test_every_state_chart_exports_its_table():
     block = dict(re.findall(r"(\w+):\s*'(\w+)'", body))
 
     D = _state_data()
-    charts = {r['chart'] for r in D['index']}
-    for c in sorted(charts - NO_TABLE):
+    charts = {r['chart'] for r in D['index'] if r['topic'] != BUDGET_TOPIC}
+    budget = {r['chart'] for r in D['index'] if r['topic'] == BUDGET_TOPIC}
+    # The budget's route: state.js hands the whole topic to budgetCsv(), which
+    # must exist and read the budget payload the page loads.
+    assert budget, 'the budget topic has no charts'
+    assert "current.topic === 'budget' && BUDGET) return budgetCsv()" in js
+    assert 'function budgetCsv()' in js
+    assert 'window.DD_BUDGET=' in (APP / 'data/budget_data.js').read_text()
+    for c in sorted(charts):
         b = block.get(c)
         assert b, f'{c} is in the State index but in no CSV block'
         assert isinstance(D.get(b), dict) and 'cols' in D[b], (

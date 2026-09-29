@@ -58,16 +58,25 @@ ART = {
 E = html.escape
 
 
-def card(href, accent, title, desc, stat):
+def card(href, accent, title, desc, stat, links=()):
+    """A card is a doorway with named rooms. A reader looking for exports
+    should see "Trade" on the homepage, not have to guess it sits inside
+    Economy - so each card lists the destinations people come for, and the
+    card's title still opens the section as a whole. An <a> cannot hold other
+    links, so the card is an article whose title is the link."""
+    items = ''.join(
+        f'            <li><a href="{E(h)}">{E(t)}</a></li>\n' for h, t in links)
     return (
-        f'      <a class="lcard" data-accent="{accent}" href="{href}">\n'
-        f'        <div class="lcard-art">{ART[accent]}</div>\n'
+        f'      <article class="lcard" data-accent="{accent}">\n'
+        f'        <a class="lcard-art" href="{href}" tabindex="-1" aria-hidden="true">'
+        f'{ART[accent]}</a>\n'
         f'        <div class="lcard-body">\n'
-        f'          <h2 class="lcard-title">{E(title)}</h2>\n'
+        f'          <h2 class="lcard-title"><a href="{href}">{E(title)}</a></h2>\n'
         f'          <p class="lcard-desc">{E(desc)}</p>\n'
-        f'          <div class="lcard-stat">{E(stat)}</div>\n'
+        + (f'          <ul class="lcard-links">\n{items}          </ul>\n' if items else '')
+        + f'          <div class="lcard-stat">{E(stat)}</div>\n'
         f'        </div>\n'
-        f'      </a>')
+        f'      </article>')
 
 
 def shelf(href, title, desc):
@@ -105,26 +114,44 @@ def main():
         'generated': str(cat['generated']),
     }
 
+    P = 'places.html?lv=district&'
     explorers = '\n'.join([
         card('places.html', 'places', 'Places',
              'Every district and tehsil: people, education, work, housing, '
              'health, poverty and wealth, night-time lights, rural facilities '
              'and crops, on one frame.',
-             f'156 districts · 649 tehsils · {n(f["placesInd"])} indicators'),
+             f'156 districts · 649 tehsils · {n(f["placesInd"])} indicators',
+             [('places.html', 'District & tehsil map'),
+              (P + 'g=literacy&i=literacy_ratio_all', 'Literacy'),
+              (P + 'g=employment&i=lfpr', 'Work and employment'),
+              (P + 'g=mpi&i=H', 'Poverty'),
+              (P + 'g=crops&i=crop%7C4%7Cproduction_000t', 'Crops')]),
         card('finance.html', 'economy', 'Economy',
              'Output and growth since 1951, industry, every traded product and '
              'partner, the rupee, prices, interest rates and the external '
              'balance.',
-             '4 themes · 15 topics · PBS and SBP series'),
+             '15 topics · PBS and SBP series',
+             [('finance.html#t=structure', 'GDP & growth'),
+              ('finance.html#t=industry', 'Industry'),
+              ('finance.html#t=basket', 'Trade: products and partners'),
+              ('finance.html#t=prices', 'Prices & interest rates'),
+              ('finance.html#t=rupee', 'The rupee & reserves')]),
         card('state.html', 'state', 'State',
              'The state’s own statistics, by institution and year: the federal '
              'budget and what the state collects, court case flows and pendency, '
              'reported crime, power plants and disasters.',
              f'{f["stateInd"]} charts · {f["stateDs"]} datasets · '
-             'Budget, FBR, LJCP, police, NEPRA'),
+             'Budget, FBR, LJCP, police, NEPRA',
+             [('state.html?t=tax', 'Government budget & tax'),
+              ('state.html?t=courts', 'Courts & judges'),
+              ('state.html?t=crime', 'Crime & policing'),
+              ('state.html?t=discos', 'Electricity & energy'),
+              ('state.html?t=impacts', 'Disasters')]),
     ])
 
     links = '\n'.join([
+        shelf('explore.html', 'Compare series',
+              'Any two series on one axis, with only the comparisons that are valid'),
         shelf('datasets/', 'Data catalogue',
               f'{f["tables"]} documented tables, source notes, CSV and Parquet'),
         shelf('query.html', 'Query with SQL', 'DuckDB in your browser, no signup'),

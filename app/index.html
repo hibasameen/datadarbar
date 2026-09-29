@@ -4,8 +4,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=bf1cc55f"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="assets/css/landing.css?v=bf1cc55f"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=c610f9de"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="assets/css/landing.css?v=c610f9de"/>
 <!-- SEO:START -->
 <title>Data Darbar — Pakistan Census, Trade &amp; Economic Data</title>
 <meta name="description" content="Data Darbar by Adaad brings Pakistan&#x27;s official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes.">
@@ -37,30 +37,51 @@
     </div>
 
     <div class="lcards">
-      <a class="lcard" data-accent="places" href="places.html">
-        <div class="lcard-art"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M44 58 L70 34 L104 40 L110 72 L78 92 L46 84 Z" fill="var(--green-300)"/><path d="M104 40 L140 30 L164 52 L150 78 L110 72 Z" fill="var(--green-700)"/><path d="M110 72 L150 78 L158 104 L120 114 L78 92 Z" fill="var(--green-400)"/><path d="M22 70 L44 58 L46 84 L30 96 Z" fill="var(--line-strong)"/><path d="M164 52 L192 62 L182 92 L158 104 L150 78 Z" fill="var(--green-200)"/></svg></div>
+      <article class="lcard" data-accent="places">
+        <a class="lcard-art" href="places.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M44 58 L70 34 L104 40 L110 72 L78 92 L46 84 Z" fill="var(--green-300)"/><path d="M104 40 L140 30 L164 52 L150 78 L110 72 Z" fill="var(--green-700)"/><path d="M110 72 L150 78 L158 104 L120 114 L78 92 Z" fill="var(--green-400)"/><path d="M22 70 L44 58 L46 84 L30 96 Z" fill="var(--line-strong)"/><path d="M164 52 L192 62 L182 92 L158 104 L150 78 Z" fill="var(--green-200)"/></svg></a>
         <div class="lcard-body">
-          <h2 class="lcard-title">Places</h2>
+          <h2 class="lcard-title"><a href="places.html">Places</a></h2>
           <p class="lcard-desc">Every district and tehsil: people, education, work, housing, health, poverty and wealth, night-time lights, rural facilities and crops, on one frame.</p>
-          <div class="lcard-stat">156 districts · 649 tehsils · 5,664 indicators</div>
+          <ul class="lcard-links">
+            <li><a href="places.html">District &amp; tehsil map</a></li>
+            <li><a href="places.html?lv=district&amp;g=literacy&amp;i=literacy_ratio_all">Literacy</a></li>
+            <li><a href="places.html?lv=district&amp;g=employment&amp;i=lfpr">Work and employment</a></li>
+            <li><a href="places.html?lv=district&amp;g=mpi&amp;i=H">Poverty</a></li>
+            <li><a href="places.html?lv=district&amp;g=crops&amp;i=crop%7C4%7Cproduction_000t">Crops</a></li>
+          </ul>
+          <div class="lcard-stat">156 districts · 649 tehsils · 5,635 indicators</div>
         </div>
-      </a>
-      <a class="lcard" data-accent="economy" href="finance.html">
-        <div class="lcard-art"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M20 108 L20 74 L52 56 L84 70 L116 44 L148 62 L180 36 L200 48 L200 108 Z" fill="var(--gold-400)"/><path d="M20 108 L20 92 L52 80 L84 94 L116 74 L148 88 L180 66 L200 76 L200 108 Z" fill="var(--gold-600)"/><path d="M20 108 L20 102 L52 98 L84 104 L116 94 L148 102 L180 90 L200 96 L200 108 Z" fill="var(--gold-800)"/><polyline points="20,74 52,56 84,70 116,44 148,62 180,36 200,48" fill="none" stroke="var(--green-900)" stroke-width="2.5"/></svg></div>
+      </article>
+      <article class="lcard" data-accent="economy">
+        <a class="lcard-art" href="finance.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M20 108 L20 74 L52 56 L84 70 L116 44 L148 62 L180 36 L200 48 L200 108 Z" fill="var(--gold-400)"/><path d="M20 108 L20 92 L52 80 L84 94 L116 74 L148 88 L180 66 L200 76 L200 108 Z" fill="var(--gold-600)"/><path d="M20 108 L20 102 L52 98 L84 104 L116 94 L148 102 L180 90 L200 96 L200 108 Z" fill="var(--gold-800)"/><polyline points="20,74 52,56 84,70 116,44 148,62 180,36 200,48" fill="none" stroke="var(--green-900)" stroke-width="2.5"/></svg></a>
         <div class="lcard-body">
-          <h2 class="lcard-title">Economy</h2>
+          <h2 class="lcard-title"><a href="finance.html">Economy</a></h2>
           <p class="lcard-desc">Output and growth since 1951, industry, every traded product and partner, the rupee, prices, interest rates and the external balance.</p>
-          <div class="lcard-stat">4 themes · 15 topics · PBS and SBP series</div>
+          <ul class="lcard-links">
+            <li><a href="finance.html#t=structure">GDP &amp; growth</a></li>
+            <li><a href="finance.html#t=industry">Industry</a></li>
+            <li><a href="finance.html#t=basket">Trade: products and partners</a></li>
+            <li><a href="finance.html#t=prices">Prices &amp; interest rates</a></li>
+            <li><a href="finance.html#t=rupee">The rupee &amp; reserves</a></li>
+          </ul>
+          <div class="lcard-stat">15 topics · PBS and SBP series</div>
         </div>
-      </a>
-      <a class="lcard" data-accent="state" href="state.html">
-        <div class="lcard-art"><svg viewBox="0 0 220 130" role="img" aria-label=""><rect x="34" y="82" width="22" height="26" fill="var(--teal-500)"/><rect x="66" y="62" width="22" height="46" fill="var(--teal-700)"/><rect x="98" y="76" width="22" height="32" fill="var(--teal-500)"/><rect x="130" y="50" width="22" height="58" fill="var(--teal-700)"/><rect x="162" y="36" width="22" height="72" fill="var(--teal-700)"/><line x1="26" y1="108" x2="196" y2="108" stroke="var(--teal-700)" stroke-width="2"/><polyline points="45,88 77,74 109,78 141,58 173,42" fill="none" stroke="var(--gold-500)" stroke-width="2.5"/><circle cx="173" cy="42" r="4" fill="var(--gold-500)"/></svg></div>
+      </article>
+      <article class="lcard" data-accent="state">
+        <a class="lcard-art" href="state.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><rect x="34" y="82" width="22" height="26" fill="var(--teal-500)"/><rect x="66" y="62" width="22" height="46" fill="var(--teal-700)"/><rect x="98" y="76" width="22" height="32" fill="var(--teal-500)"/><rect x="130" y="50" width="22" height="58" fill="var(--teal-700)"/><rect x="162" y="36" width="22" height="72" fill="var(--teal-700)"/><line x1="26" y1="108" x2="196" y2="108" stroke="var(--teal-700)" stroke-width="2"/><polyline points="45,88 77,74 109,78 141,58 173,42" fill="none" stroke="var(--gold-500)" stroke-width="2.5"/><circle cx="173" cy="42" r="4" fill="var(--gold-500)"/></svg></a>
         <div class="lcard-body">
-          <h2 class="lcard-title">State</h2>
+          <h2 class="lcard-title"><a href="state.html">State</a></h2>
           <p class="lcard-desc">The state’s own statistics, by institution and year: the federal budget and what the state collects, court case flows and pendency, reported crime, power plants and disasters.</p>
+          <ul class="lcard-links">
+            <li><a href="state.html?t=tax">Government budget &amp; tax</a></li>
+            <li><a href="state.html?t=courts">Courts &amp; judges</a></li>
+            <li><a href="state.html?t=crime">Crime &amp; policing</a></li>
+            <li><a href="state.html?t=discos">Electricity &amp; energy</a></li>
+            <li><a href="state.html?t=impacts">Disasters</a></li>
+          </ul>
           <div class="lcard-stat">38 charts · 11 datasets · Budget, FBR, LJCP, police, NEPRA</div>
         </div>
-      </a>
+      </article>
     </div>
 
     <div class="lshelf">
@@ -68,6 +89,10 @@
         <span class="lshelf-eyebrow">For analysts</span>
         <span class="lshelf-sub">The data behind the maps</span>
       </div>
+      <a class="lshelf-item" href="explore.html">
+        <span class="lshelf-title">Compare series &rarr;</span>
+        <span class="lshelf-desc">Any two series on one axis, with only the comparisons that are valid</span>
+      </a>
       <a class="lshelf-item" href="datasets/">
         <span class="lshelf-title">Data catalogue &rarr;</span>
         <span class="lshelf-desc">61 documented tables, source notes, CSV and Parquet</span>
@@ -93,5 +118,5 @@
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
 </footer>
 <!-- /dd:footer -->
-<script src="assets/js/shell.js?v=bf1cc55f"></script>
+<script src="assets/js/shell.js?v=c610f9de"></script>
 </body></html>

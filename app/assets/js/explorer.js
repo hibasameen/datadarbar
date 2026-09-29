@@ -93,7 +93,104 @@
     return { wrap: wrap, sel: sel, cap: cap };
   }
 
+  /* ── navigation mode ──────────────────────────────────────────────────
+     A topic in a dropdown and its dataset in a second one made a reader open
+     two selects to learn what a page covered, and the dataset step was
+     usually a disabled select holding one table name - fbr_tax_collection -
+     which tells a reader nothing and takes a line. In this mode the topics are
+     a visible list grouped by theme, the topic on screen opens to show its
+     charts, and the dataset is not a step at all: which table a chart comes
+     from is in the source panel under it. Same state, same sync(), same
+     onChange, so the page drawing the charts does not change. */
+  function mountNav(cfg) {
+    var index = cfg.index, state = cfg.state, el = cfg.el;
+    var ALL = window.DDExplorer.ALL;
+    el.innerHTML = '';
+    el.classList.add('xnav');
+    if (cfg.listEl) cfg.listEl.hidden = true;
+
+    function esc(t) {
+      return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function sync(fire) {
+      state.ds = ALL;
+      var inTopic = index.filter(function (r) { return r.topic === state.topic; });
+      if (!inTopic.length) { state.topic = index[0].topic; inTopic = index.filter(function (r) { return r.topic === state.topic; }); }
+      var chosen = inTopic.filter(function (r) { return r.ind === state.ind; })[0] || inTopic[0];
+      state.ind = chosen.ind;
+      var h = '', theme = null, seen = {};
+      index.forEach(function (r) {
+        if (seen[r.topic]) return;
+        seen[r.topic] = 1;
+        if (r.theme !== theme) {
+          if (theme !== null) h += '</ul></div>';
+          h += '<div class="xnav-group"><h2 class="xnav-h">' + esc(r.theme) + '</h2><ul>';
+          theme = r.theme;
+        }
+        var on = r.topic === state.topic;
+        h += '<li><button type="button" class="topic-item xnav-topic' + (on ? ' on' : '')
+           + '" data-topic="' + esc(r.topic) + '"' + (on ? ' aria-current="page"' : '')
+           + '>' + esc(r.topicLabel) + '</button>';
+        if (on && inTopic.length > 1) {
+          h += '<ul class="xnav-charts">' + inTopic.map(function (c) {
+            var here = c.ind === state.ind;
+            return '<li><button type="button" class="xnav-chart' + (here ? ' is-on' : '')
+                 + '" data-ind="' + esc(c.ind) + '"' + (here ? ' aria-current="true"' : '')
+                 + '>' + esc(c.label) + '</button></li>';
+          }).join('') + '</ul>';
+        }
+        h += '</li>';
+      });
+      if (theme !== null) h += '</ul></div>';
+      el.innerHTML = h;
+      el.querySelectorAll('.xnav-topic').forEach(function (b) {
+        b.onclick = function () {
+          if (state.topic === b.dataset.topic) return;
+          state.topic = b.dataset.topic; state.ind = null; sync(true);
+        };
+      });
+      el.querySelectorAll('.xnav-chart').forEach(function (b) {
+        b.onclick = function () { state.ind = b.dataset.ind; sync(true); };
+      });
+      if (fire && cfg.onChange) cfg.onChange(chosen);
+      return chosen;
+    }
+
+    // Type to find, across every topic.
+    var box = cfg.searchEl;
+    if (box) {
+      var out = document.createElement('div');
+      out.className = 'xfind';
+      out.hidden = true;
+      box.parentNode.insertBefore(out, box.nextSibling);
+      box.addEventListener('input', function () {
+        var q = box.value.trim().toLowerCase();
+        if (q.length < 2) { out.hidden = true; out.innerHTML = ''; return; }
+        var hits = index.filter(function (r) {
+          return (r.label + ' ' + r.topicLabel + ' ' + r.theme).toLowerCase().indexOf(q) >= 0;
+        });
+        out.hidden = false;
+        out.innerHTML = hits.length ? hits.map(function (r) {
+          return '<button type="button" class="xfind-item" data-topic="' + esc(r.topic)
+               + '" data-ind="' + esc(r.ind) + '"><span class="xfind-name">' + esc(r.label)
+               + '</span><span class="xfind-meta">' + esc(r.topicLabel) + '</span></button>';
+        }).join('') : '<p class="xfind-none">No chart matches.</p>';
+        out.querySelectorAll('button').forEach(function (b) {
+          b.onclick = function () {
+            state.topic = b.dataset.topic; state.ind = b.dataset.ind;
+            box.value = ''; out.hidden = true; out.innerHTML = '';
+            sync(true);
+          };
+        });
+      });
+    }
+    return { sync: sync, levels: cfg.levels || [], selects: {} };
+  }
+
   function mount(cfg) {
+    if (cfg.nav) return mountNav(cfg);
     var index = cfg.index, state = cfg.state, el = cfg.el;
     var levels = cfg.levels || ['ds', 'topic', 'ind'];
     var names = cfg.labels || {};

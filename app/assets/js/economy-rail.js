@@ -78,7 +78,7 @@
   function build() {
     var cards = Array.prototype.slice.call(
       document.querySelectorAll('.card[data-topic][id]'));
-    if (!cards.length || !window.DDExplorer) return null;
+    if (!cards.length) return null;
 
     var index = [], missing = [];
     cards.forEach(function (card) {
@@ -101,133 +101,246 @@
     return index;
   }
 
+  /* ── the topic list ─────────────────────────────────────────────────────
+     A TOPIC IS A PLACE TO GO, NOT A VALUE TO SET. This page used to put its
+     fifteen topics in a dropdown, add a dataset dropdown under it and a list
+     of charts under that, so the year slider and the sector focus were pushed
+     down the sidebar and a reader could not scan what the page covered
+     without opening a select. The topics are a visible list again, grouped by
+     subject, each named for what it answers rather than for the table behind
+     it - and the dataset selector is gone: which table a chart comes from is
+     in the source panel under that chart, where it qualifies the number.
+
+     The federal budget's home is the State page now. It is listed here as a
+     link there, so a reader who looks for it under Economy still finds it,
+     and an old #t=budget link still opens the card on this page. */
+  var NAV = [
+    { group: 'GDP & growth', items: [
+      { t: 'structure', label: 'GDP, income and sector shares' },
+      { t: 'growth', label: 'What drove growth' },
+      { t: 'linkages', label: 'How sectors feed each other' } ] },
+    { group: 'Industry', items: [
+      { t: 'industry', label: 'Factory output' },
+      { t: 'censuses', label: 'Manufacturing censuses' } ] },
+    { group: 'Trade', items: [
+      { t: 'overtime', label: 'Exports and imports over time' },
+      { t: 'basket', label: 'What Pakistan trades' },
+      { t: 'partners', label: 'Trading partners' },
+      { t: 'movers', label: 'What is growing and shrinking' } ] },
+    { group: 'Prices & interest rates', items: [
+      { t: 'prices', label: 'Inflation' },
+      { t: 'rates', label: 'Interest rates' } ] },
+    { group: 'Money & banking', items: [
+      { t: 'money', label: 'Money supply and bad loans' } ] },
+    { group: 'Rupee & external balance', items: [
+      { t: 'rupee', label: 'The rupee' },
+      { t: 'external', label: 'Reserves and the balance of payments' },
+      { t: 'external', label: 'Remittances', card: 'sec-remit' } ] },
+    { group: 'Elsewhere', items: [
+      { href: 'state.html#t=budget', label: 'Government budget & tax', note: 'on State' },
+      { href: 'explore.html', label: 'Compare any two series', note: 'Compare' } ] },
+  ];
+
+  /* A chart with series in the explorer opens there with them chosen, so a
+     reader starts comparing from what they were looking at. */
+  var COMPARE = {
+    'sec-macro': 'na:gdp_tn~na:gva_tn', 'sec-qimonth': 'qim:overall',
+    'sec-usd': 'sbp:usd', 'sec-reer': 'sbp:reer~sbp:neer',
+    'sec-cpi': 'sbp:cpi_nat~sbp:cpi_urb~sbp:cpi_rur',
+    'sec-food': 'sbp:cpi_urbf~sbp:cpi_rurf', 'sec-policy': 'sbp:pol_target',
+    'sec-kibor': 'sbp:kib_6m~sbp:kib_1y', 'sec-spread': 'sbp:lend~sbp:depo',
+    'sec-res': 'sbp:res_sbp~sbp:res_banks', 'sec-bop': 'sbp:gx~sbp:gm',
+    'sec-m': 'sbp:m2', 'sec-npl': 'sbp:npl_ratio',
+    'sec-totals': 'trade:export~trade:import',
+  };
+
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function mount() {
     var index = build();
     if (!index || !index.length) return;
-
-    /* The sidebar these pages already have gets the search box, the topic
-       dropdown and the list of that topic's charts, in place of its own
-       nav. The charts themselves are untouched. */
     var side = document.querySelector('.eco-side');
-    var host = document.getElementById('rail');
-    if (!host) {
-      host = document.createElement('div');
-      host.id = 'rail';
-      host.className = 'xrail';
-    }
-    var search, list;
-    if (side) {
-      side.classList.add('xside');
-      /* Inserted at the top, not in place of everything. This used to be
-         side.innerHTML = '' - which took the rail's own panel and every
-         panel under it, so the year slider, the sector focus, the log/linear
-         toggle, the fiscal-year select, the country and the detail level
-         were all removed from the page the moment the rail mounted. The
-         code that drives them kept running against elements that no longer
-         existed, which d3 does silently, so nothing complained. */
-      var lab = document.createElement('label');
-      lab.className = 'xsearch';
-      lab.innerHTML =
-        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" '
-        + 'stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
-        + '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>'
-        + '<input id="xFind" type="search" placeholder="Find a series\u2026" '
-        + 'aria-label="Find a series" autocomplete="off"/>';
-      list = document.createElement('div');
-      list.className = 'xlist';
-      list.id = 'chartList';
-      var panel = document.createElement('div');
-      panel.className = 'eco-panel xpanel';
-      panel.appendChild(lab);
-      panel.appendChild(host);
-      panel.appendChild(list);
-      side.insertBefore(panel, side.firstChild);
-      search = lab.querySelector('#xFind');
-    } else {
-      var anchor = document.querySelector('.card[data-topic]');
-      if (!anchor || !anchor.parentNode) return;
-      anchor.parentNode.insertBefore(host, anchor);
-    }
+    var wrap = document.querySelector('.wrap');
+    if (!side || !wrap) return;
 
-    /* "Also in this topic" belongs under the chart, not in the sidebar. It was
-       inserted next to the rail, and once the rail moved into the sidebar it
-       went with it - sitting above the list of the very charts it repeats. */
-    var moreEl = document.getElementById('more');
-    if (!moreEl) {
-      moreEl = document.createElement('div');
-      moreEl.className = 'xmore';
-      moreEl.id = 'more';
-      moreEl.hidden = true;
-      var cards = document.querySelectorAll('.card[data-topic]');
-      var last = cards[cards.length - 1];
-      if (last && last.parentNode) {
-        last.parentNode.insertBefore(moreEl, last.nextSibling);
+    var topicHash = function () {
+      return new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
+    };
+    var labelOf = {};
+    NAV.forEach(function (g) {
+      g.items.forEach(function (it) {
+        if (it.t && !it.card && !labelOf[it.t]) labelOf[it.t] = it.label;
+      });
+    });
+
+    /* ── the controls move to the charts they drive ─────────────────────
+       The year slider, sector focus, scale, fiscal year, country and detail
+       level were panels down the sidebar under the navigation. They now sit
+       in a bar above the topic's charts that stays in view as they scroll.
+       The elements are moved, not rebuilt, so every script that shows, hides
+       or reads them by id keeps working. */
+    var bar = document.createElement('section');
+    bar.className = 'topic-bar';
+    bar.setAttribute('aria-label', 'This topic');
+    var head = document.createElement('div');
+    head.className = 'topic-head';
+    head.innerHTML = '<h1 class="topic-title" id="topicTitle"></h1>';
+    var desc = document.getElementById('topicDesc');
+    if (desc) {
+      var holder = desc.parentNode;
+      head.appendChild(desc);
+      if (holder && holder.classList.contains('eco-panel') && !holder.children.length) {
+        holder.remove();
       }
     }
-
-    /* All datasets by default, as Places does. With the dataset leading, a
-       topic showed only the charts of whichever table sorted first: External
-       balance listed the two SBP charts and hid both remittances and
-       emigration, which are the two anyone comes to that topic for. */
-    /* Booted from the hash, not from index[0]. The rail has always had a
-       hashchange listener, but a page opened AT a topic - a shared link, or
-       the money.html and trade.html redirects - fires no such event, so the
-       dropdown opened on whichever topic sorted first while the cards below
-       it were the ones the link asked for. */
-    var want = new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
-    var at = index.filter(function (r) { return r.topic === want; })[0]
-          || index[0];
-    var state = { ds: window.DDExplorer.ALL, topic: at.topic, ind: at.ind };
-    var rail = window.DDExplorer.mount({
-      el: host, index: index, state: state,
-      levels: ['topic', 'ds', 'ind'],
-      optional: { ds: true },
-      listLevel: list ? 'ind' : undefined, listEl: list, searchEl: search,
-      labels: { ind: 'Chart' }, moreEl: moreEl,
-      onChange: function (row) { go(row); },
+    bar.appendChild(head);
+    var ctl = document.createElement('div');
+    ctl.className = 'topic-ctl';
+    side.querySelectorAll('.eco-panel[id^="side"]').forEach(function (p) {
+      ctl.appendChild(p);
     });
+    bar.appendChild(ctl);
+    var meta = document.getElementById('topicMeta');
+    if (meta) bar.appendChild(meta);
 
-    /* Drive the page's own topic switch rather than reimplementing it, so
-       every show/hide rule it already has keeps working. All three pages
-       carry their state in the hash (#t=structure&y=2025-26) and listen for
-       hashchange, so setting t= is the supported way in. An earlier version
-       clicked a [data-topic] button; those buttons carry no data-topic, so
-       nothing switched and five of the seven cards stayed hidden. */
-    function setTopic(topic) {
+    // The long "Getting around" banner goes: the topic list says what is
+    // here, and each control says what it does where it is.
+    var help = wrap.querySelector('.navhelp');
+    if (help) help.remove();
+    wrap.insertBefore(bar, wrap.firstChild);
+
+    /* ── the sidebar: search, then the topics ─────────────────────────── */
+    var nav = document.createElement('nav');
+    nav.className = 'eco-nav';
+    nav.setAttribute('aria-label', 'Economy topics');
+    var find = document.createElement('label');
+    find.className = 'xsearch';
+    find.innerHTML =
+      '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" '
+      + 'stroke="currentColor" stroke-width="1.8" aria-hidden="true">'
+      + '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>'
+      + '<input id="xFind" type="search" placeholder="Find a chart…" '
+      + 'aria-label="Find a chart" autocomplete="off"/>';
+    var list = document.createElement('div');
+    list.className = 'eco-topics';
+    var hits = document.createElement('div');
+    hits.className = 'xfind';
+    hits.hidden = true;
+    nav.appendChild(find);
+    nav.appendChild(hits);
+    nav.appendChild(list);
+    var toggle = side.querySelector('.mobile-topic-toggle');
+    side.insertBefore(nav, toggle ? toggle.nextSibling : side.firstChild);
+
+    function draw() {
+      var cur = topicHash() || index[0].topic;
+      var h = '';
+      NAV.forEach(function (g) {
+        h += '<div class="eco-group"><h2 class="eco-group-h">' + esc(g.group) + '</h2><ul>';
+        g.items.forEach(function (it) {
+          if (it.href) {
+            h += '<li><a class="topic-item is-link" href="' + esc(it.href) + '">'
+               + esc(it.label) + ' <span class="eco-note">' + esc(it.note)
+               + ' →</span></a></li>';
+            return;
+          }
+          var on = it.t === cur && !it.card;
+          var sub = '';
+          if (on) {
+            var charts = index.filter(function (r) { return r.topic === it.t; });
+            if (charts.length > 1) {
+              sub = '<ul class="eco-charts">' + charts.map(function (r) {
+                return '<li><button type="button" data-card="' + esc(r.ind)
+                     + '" data-t="' + esc(r.topic) + '">' + esc(r.label)
+                     + '</button></li>';
+              }).join('') + '</ul>';
+            }
+          }
+          h += '<li><button type="button" class="topic-item' + (on ? ' on' : '') + '"'
+             + ' data-t="' + esc(it.t) + '"' + (it.card ? ' data-card="' + esc(it.card) + '"' : '')
+             + (on ? ' aria-current="page"' : '') + '>' + esc(it.label) + '</button>'
+             + sub + '</li>';
+        });
+        h += '</ul></div>';
+      });
+      list.innerHTML = h;
+      list.querySelectorAll('button[data-t]').forEach(function (b) {
+        b.onclick = function () { go(b.dataset.t, b.dataset.card); };
+      });
+      var title = document.getElementById('topicTitle');
+      if (title) title.textContent = labelOf[cur] || '';
+      // A chart scrolled to must land below the sticky bar, not under it.
+      requestAnimationFrame(function () {
+        var sticky = getComputedStyle(bar).position === 'sticky';
+        document.documentElement.style.scrollPaddingTop =
+          (sticky ? 56 + bar.offsetHeight + 10 : 10) + 'px';
+      });
+    }
+
+    /* Through the hash, which every module on this page already reads:
+       t= switches the topic and at= scrolls to a card once the module that
+       owns it has drawn it. A timer of our own guessed at when that would be
+       and lost the race whenever a topic fetched its data first. */
+    function go(topic, card) {
       var q = new URLSearchParams(location.hash.replace(/^#/, ''));
-      if (q.get('t') === topic) return false;
       q.set('t', topic);
-      location.hash = q.toString();
-      return true;
+      if (card) q.set('at', card); else q.delete('at');
+      var next = '#' + q.toString();
+      if (next !== location.hash) location.hash = next;
+      else if (card) {
+        var el = document.getElementById(card);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (!card) window.scrollTo({ top: 0, behavior: 'smooth' });
+      draw();
     }
 
-    function go(row) {
-      var moved = setTopic(row.topic);
-      var show = function () {
-        var card = document.getElementById(row.ind);
-        if (!card || card.offsetParent === null) return;
-        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        card.classList.add('is-picked');
-        setTimeout(function () { card.classList.remove('is-picked'); }, 1400);
-      };
-      // The page redraws on hashchange, so wait a frame for the card to exist.
-      if (moved) setTimeout(show, 90); else show();
-    }
-
-    rail.sync(false);
-
-    /* And the other way: a hash change from anywhere else - a shared link, the
-       back button - moves the rail with it, so the two can never disagree
-       about what is on screen. */
-    window.addEventListener('hashchange', function () {
-      var t = new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
-      if (!t || t === state.topic) return;
-      var first = index.filter(function (r) { return r.topic === t; })[0];
-      if (!first) return;                 // 'all' and anything not in the index
-      state.topic = first.topic;
-      state.ind = first.ind;
-      rail.sync(false);
+    /* Type to find any chart on the page, whichever topic it is filed under. */
+    var box = find.querySelector('input');
+    box.addEventListener('input', function () {
+      var q = box.value.trim().toLowerCase();
+      if (q.length < 2) { hits.hidden = true; hits.innerHTML = ''; return; }
+      var found = index.filter(function (r) {
+        return (r.label + ' ' + (labelOf[r.topic] || '') + ' ' + r.dsLabel)
+          .toLowerCase().indexOf(q) >= 0;
+      });
+      hits.hidden = false;
+      hits.innerHTML = found.length
+        ? found.map(function (r) {
+            return '<button type="button" class="xfind-item" data-t="' + esc(r.topic)
+                 + '" data-card="' + esc(r.ind) + '"><span class="xfind-name">'
+                 + esc(r.label) + '</span><span class="xfind-meta">'
+                 + esc(labelOf[r.topic] || r.topicLabel) + '</span></button>';
+          }).join('')
+        : '<p class="xfind-none">No chart matches. The Compare page searches '
+          + 'every series.</p>';
+      hits.querySelectorAll('button').forEach(function (b) {
+        b.onclick = function () {
+          box.value = ''; hits.hidden = true; hits.innerHTML = '';
+          go(b.dataset.t, b.dataset.card);
+        };
+      });
     });
+
+    /* Compare beside the chart. */
+    Object.keys(COMPARE).forEach(function (id) {
+      var card = document.getElementById(id);
+      if (!card || card.querySelector('.cmpbtn')) return;
+      var a = document.createElement('a');
+      a.className = 'cmpbtn';
+      a.href = 'explore.html?s=' + encodeURIComponent(COMPARE[id]).replace(/%3A/g, ':')
+                                                                   .replace(/%7E/g, '~');
+      a.textContent = 'Compare';
+      a.title = 'Open these series in Compare, to set them against any other';
+      var csv = card.querySelector('.csvbtn');
+      if (csv) csv.parentNode.insertBefore(a, csv); else card.insertBefore(a, card.firstChild);
+    });
+
+    window.addEventListener('hashchange', draw);
+    draw();
   }
 
   if (document.readyState === 'loading') {

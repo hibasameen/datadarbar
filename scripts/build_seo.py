@@ -108,6 +108,7 @@ DATASET_NAMES = {
     "sindh_crime_annual": "Sindh reported crime by category and year",
     "sindh_fir_daily": "Sindh first information reports, daily running totals",
     "nepra_plants": "Pakistan power plants, fuel and installed capacity",
+    "nepra_plant_years": "Pakistan power plants by report year, with the capacity reported that year",
     "nepra_disco_annual": "Pakistan electricity distribution companies, annual",
     "climate_events": "Pakistan flood, drought and cyclone alerts since 2001",
     "climate_impacts": "Pakistan monsoon deaths, injuries and damage, NDMA reports",
@@ -115,7 +116,7 @@ DATASET_NAMES = {
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
     "state.html": ("Pakistan Federal Tax Collection & Public Money \u2014 Data Darbar", "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish."),
-    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search 5,801 indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
+    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search {places_n} indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
     # trade.html and money.html were their own pages and are redirects now:
     # Economy is one page, and _retired() keeps them out of the sitemap. The
     # title below has to cover all fifteen topics, because it is the only
@@ -307,7 +308,13 @@ def build():
             f'{what} now lives on the <a href="methods.html{frag}">Methods</a> '
             'page. Redirecting&hellip;\n</body></html>\n')
 
+    # The count was typed into the description and went stale the first time
+    # the index changed - it said 5,801 for weeks after the index held 5,635.
+    # Read from the payload the page ships, as the homepage already does.
+    _px = (APP / "data/places_index.js").read_text()
+    places_n = f"{len(json.loads(_px[_px.index('{'):_px.rindex('}') + 1])['dp']):,}"
     for file, (title, description) in BASE_PAGES.items():
+        description = description.replace("{places_n}", places_n)
         patch_metadata(APP / file, title, description, "/" if file == "index.html" else "/" + file)
     sitemap = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
     paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if not _retired(p)]
