@@ -42,16 +42,21 @@ ART = {
         'fill="none" stroke="var(--green-900)" stroke-width="2.5"/>'
         '</svg>',
     'state':
+        # A public building rather than a chart: State is the institutions -
+        # courts, police, the treasury, the regulator - and a portico says that
+        # where one more bar chart would say "Economy" again.
         '<svg viewBox="0 0 220 130" role="img" aria-label="">'
-        '<rect x="34" y="82" width="22" height="26" fill="var(--teal-500)"/>'
-        '<rect x="66" y="62" width="22" height="46" fill="var(--teal-700)"/>'
-        '<rect x="98" y="76" width="22" height="32" fill="var(--teal-500)"/>'
-        '<rect x="130" y="50" width="22" height="58" fill="var(--teal-700)"/>'
-        '<rect x="162" y="36" width="22" height="72" fill="var(--teal-700)"/>'
-        '<line x1="26" y1="108" x2="196" y2="108" stroke="var(--teal-700)" stroke-width="2"/>'
-        '<polyline points="45,88 77,74 109,78 141,58 173,42" fill="none" '
-        'stroke="var(--gold-500)" stroke-width="2.5"/>'
-        '<circle cx="173" cy="42" r="4" fill="var(--gold-500)"/>'
+        '<path d="M110 14 L186 44 L34 44 Z" fill="var(--teal-700)"/>'
+        '<circle cx="110" cy="33" r="6" fill="var(--gold-500)"/>'
+        '<rect x="40" y="46" width="140" height="8" fill="var(--teal-500)"/>'
+        '<rect x="50" y="58" width="12" height="40" fill="var(--teal-700)"/>'
+        '<rect x="76" y="58" width="12" height="40" fill="var(--teal-500)"/>'
+        '<rect x="104" y="58" width="12" height="40" fill="var(--teal-700)"/>'
+        '<rect x="132" y="58" width="12" height="40" fill="var(--teal-500)"/>'
+        '<rect x="158" y="58" width="12" height="40" fill="var(--teal-700)"/>'
+        '<rect x="36" y="100" width="148" height="7" fill="var(--teal-300)"/>'
+        '<rect x="28" y="108" width="164" height="7" fill="var(--teal-500)"/>'
+        '<line x1="20" y1="116" x2="200" y2="116" stroke="var(--gold-500)" stroke-width="2.5"/>'
         '</svg>',
 }
 
@@ -117,35 +122,31 @@ def main():
     P = 'places.html?lv=district&'
     explorers = '\n'.join([
         card('places.html', 'places', 'Places',
-             'Every district and tehsil: people, education, work, housing, '
-             'health, poverty and wealth, night-time lights, rural facilities '
-             'and crops, on one frame.',
+             'Every district and tehsil: people, schooling, work, housing, '
+             'health, poverty, crops and night-time lights.',
              f'156 districts · 649 tehsils · {n(f["placesInd"])} indicators',
-             [('places.html', 'District & tehsil map'),
+             [('places.html', 'The map'),
               (P + 'g=literacy&i=literacy_ratio_all', 'Literacy'),
-              (P + 'g=employment&i=lfpr', 'Work and employment'),
+              (P + 'g=employment&i=lfpr', 'Work'),
               (P + 'g=mpi&i=H', 'Poverty'),
               (P + 'g=crops&i=crop%7C4%7Cproduction_000t', 'Crops')]),
         card('finance.html', 'economy', 'Economy',
-             'Output and growth since 1951, industry, every traded product and '
-             'partner, the rupee, prices, interest rates and the external '
-             'balance.',
+             'Output and growth since 1951, industry, trade by product and '
+             'partner, prices, the rupee and the external balance.',
              '15 topics · PBS and SBP series',
              [('finance.html#t=structure', 'GDP & growth'),
               ('finance.html#t=industry', 'Industry'),
-              ('finance.html#t=basket', 'Trade: products and partners'),
-              ('finance.html#t=prices', 'Prices & interest rates'),
-              ('finance.html#t=rupee', 'The rupee & reserves')]),
+              ('finance.html#t=basket', 'Trade'),
+              ('finance.html#t=prices', 'Prices'),
+              ('finance.html#t=rupee', 'The rupee')]),
         card('state.html', 'state', 'State',
-             'The state’s own statistics, by institution and year: the federal '
-             'budget and what the state collects, court case flows and pendency, '
-             'reported crime, power plants and disasters.',
-             f'{f["stateInd"]} charts · {f["stateDs"]} datasets · '
-             'Budget, FBR, LJCP, police, NEPRA',
-             [('state.html?t=tax', 'Government budget & tax'),
-              ('state.html?t=courts', 'Courts & judges'),
-              ('state.html?t=crime', 'Crime & policing'),
-              ('state.html?t=discos', 'Electricity & energy'),
+             'What the state reports about itself: the budget and tax, courts '
+             'and judges, crime, electricity and disasters.',
+             f'{f["stateInd"]} charts · {f["stateDs"]} datasets',
+             [('state.html?t=tax', 'Budget & tax'),
+              ('state.html?t=courts', 'Courts'),
+              ('state.html?t=crime', 'Crime'),
+              ('state.html?t=discos', 'Energy'),
               ('state.html?t=impacts', 'Disasters')]),
     ])
 
@@ -162,7 +163,7 @@ def main():
     <div class="lhero">
       <h1>Pakistan&rsquo;s official statistics, by place, by sector and by institution</h1>
       <p class="llede">Census, survey, trade and macroeconomic data from PBS and
-        the State Bank, drawn as maps and charts. Every chart downloads as CSV.</p>
+        the State Bank, as maps and charts. Every chart downloads as CSV.</p>
     </div>
 
     <div class="lcards">
@@ -172,14 +173,11 @@ def main():
     <div class="lshelf">
       <div class="lshelf-head">
         <span class="lshelf-eyebrow">For analysts</span>
-        <span class="lshelf-sub">The data behind the maps</span>
+        <span class="lshelf-sub">{n(f['rows'])} rows in {f['tables']} tables · release {E(f['generated'])}</span>
       </div>
 {links}
     </div>
 
-    <p class="lgen">{n(f['rows'])} rows across {f['tables']} documented tables,
-      including {n(f['census'])} census cells on the 2023 boundaries.
-      Warehouse release {E(f['generated'])}.</p>
   </div>
 </main>
 '''
