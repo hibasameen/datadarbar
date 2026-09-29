@@ -264,39 +264,78 @@ STATE = {
          'revenue-collection page lists FY2024-25. Wealth tax has no row '
          'from 2016 and is drawn as absent rather than as zero; no row in '
          'this dataset is reported as zero.'),
- 'taxLines': dict(publication='Revenue collection by head',
-    selection='each head as its own line', note='Nominal rupees.'),
+ 'taxGdp': dict(publication='Revenue collection by head',
+    selection='each head as a share of GDP, stacked to FBR\u2019s total',
+    calc='head divided by GDP at current market prices for the same fiscal '
+         'year (PBS national accounts, Table 4 from 1999-00; earlier years '
+         'spliced onto the 2015-16 base by the 1999-00 overlap ratio)',
+    note='Derived. The denominator before 1999-00 is a splice, not a '
+         'published figure, and those years are drawn dashed. FBR taxes '
+         'only: provincial and non-tax revenue are not in this ratio.'),
+ 'taxShift': dict(publication='Revenue collection by head',
+    selection='each head\u2019s share of the total in the first and last year',
+    calc='head divided by the total of the heads present that year'),
  'taxShare': dict(publication='Revenue collection by head',
     selection='each head as a share of the year\u2019s total',
     calc='head divided by the total of the heads present that year'),
- 'budgetPanel': dict(publication='Budget in Brief',
-    selection='what the eighteen budget documents contain, and where each '
-              'figure is drawn from',
-    note='Own-year Budget Estimates. This panel describes the extraction, not '
-         'a time series.'),
+ 'budgetTree': dict(publication='Budget in Brief; Explanatory Memorandum on '
+                                'Federal Receipts',
+    selection='one budget year, receipts or current expenditure, grouped',
+    note='Own-year budget estimates, not outturn. Groups rest on a crosswalk '
+         'between documents whose item labels drift; development spending is '
+         'budgeted separately and is not in it.'),
+ 'budgetGdp': dict(publication='Budget in Brief; Explanatory Memorandum on '
+                               'Federal Receipts',
+    selection='every budget year, grouped, as a share of GDP',
+    calc='group total divided by GDP at current market prices for the budget '
+         'year (PBS national accounts, Table 4)',
+    note='Derived. A budget year with no published GDP yet is left off this '
+         'view. Estimates as presented, not outturn.'),
+ 'budgetTrend': dict(publication='Budget in Brief; Explanatory Memorandum on '
+                                 'Federal Receipts',
+    selection='every budget year, grouped, in nominal rupees',
+    note='Nominal rupees, not inflation-adjusted. Estimates as presented.'),
  'courtsPending': dict(publication='Judicial Statistics of Pakistan',
-    selection='cases pending at year end, by court'),
+    selection='cases pending at year end, by court, one panel per court',
+    note='Each panel has its own scale from zero.'),
+ 'courtsNet': dict(publication='Judicial Statistics of Pakistan',
+    selection='the change in cases pending over each year, by court',
+    calc='closing stock minus opening stock, divided by the opening stock, '
+         'both as printed for that year',
+    note='The opening stock can differ from the previous year\u2019s closing '
+         'figure where cases transferred between courts.'),
  'courtsClearance': dict(publication='Judicial Statistics of Pakistan',
     selection='disposed against instituted, by court and year',
     calc='clearance = disposed / instituted',
     note='Clearance above 100 per cent means more cases were disposed of than '
          'filed that year. It does not on its own show the backlog fell, '
          'which depends on the opening stock.'),
- 'courtsFlow': dict(publication='Judicial Statistics of Pakistan',
-    selection='cases instituted and disposed, by court and year'),
  'courtsCategory': dict(publication='Judicial Statistics of Pakistan',
-    selection='civil against criminal, by court and year'),
+    selection='civil and criminal shares of cases pending, by court, latest year',
+    calc='each category divided by civil plus criminal'),
  'judgesComposition': dict(publication='Judicial strength returns',
     selection='sanctioned posts by rank: working, vacant, and neither'),
- 'judgesTrend': dict(publication='Judicial strength returns',
-    selection='working and vacant posts over time'),
+ 'judgesVacancy': dict(publication='Judicial strength returns',
+    selection='vacant posts as a share of sanctioned, by rank, first year '
+              'against last',
+    calc='vacant divided by sanctioned'),
+ 'crimeRate': dict(publication='Reported offences by police force',
+    selection='cases reported per 100,000 people, by force, latest year',
+    calc='cases divided by Census 2023 population, times 100,000',
+    note='Derived. Azad Jammu & Kashmir and Gilgit-Baltistan are outside the '
+         '2023 census frame and Railways polices no territory, so those three '
+         'forces are named without a rate. Offences reported, not committed.'),
+ 'crimeIndexed': dict(publication='Reported offences by police force',
+    selection='cases reported by force, as an index of the first year',
+    calc='each year divided by the force\u2019s own first-year figure, times 100'),
  'crimeForce': dict(publication='Reported offences by police force',
-    selection='cases reported, by force and year',
+    selection='cases reported, by force and year, stacked',
     note='The national figure reconciles to eight regional and force '
          'components plus Pakistan, not to nine independent forces. These are '
          'offences reported to police, not offences committed.'),
  'crimeOffence': dict(publication='Reported offences by police force',
-    selection='cases reported by offence, across Pakistan',
+    selection='cases reported by offence, across Pakistan, first year '
+              'against last',
     note='Reported offences, not offences committed.'),
  'crimeAjk': dict(publication='Reported offences by police force',
     selection='Azad Jammu & Kashmir, by district',
@@ -314,6 +353,13 @@ STATE = {
     selection='first information reports by day',
     note='Not every day is present. The series covers the days the returns '
          'were published for, not a complete daily record.'),
+ 'plantsMix': dict(publication='State of Industry Report, plants by fiscal year',
+    selection='the plants in every report year, grouped into fuel families '
+              'and stacked by report',
+    calc='capacity is what each report rated the plant at; a plant appears '
+         'in every bar it was reported in',
+    note='One bar per report. Nameplate capacity, not generation; plants '
+         'listed without a capacity add nothing.'),
  'plantsFuel': dict(publication='State of Industry Report, plants by fiscal year',
     selection='the plants in one chosen report year, grouped into fuel families',
     calc='capacity is what that report rated the plant at, not a maximum '
@@ -340,6 +386,14 @@ STATE = {
  # commercial losses (in RUPEES billed against collected). And
  # billing_collection_recovery is recovery, also in rupees. A unit that was
  # billed and never paid for is counted as SOLD in the series drawn here.
+ 'discoChange': dict(publication='State of Industry Report, units purchased, '
+                                 'sold and lost by distribution company',
+    selection='each company\u2019s first reported loss rate against its latest',
+    calc='units never billed divided by units entering the system, in each of '
+         'the two years',
+    note='SEPCO and TESCO enter the tables later than the rest and are '
+         'compared over the years they have. K-Electric\u2019s rate is on a '
+         'different base.'),
  'discoLosses': dict(publication='State of Industry Report, units purchased, '
                                  'sold and lost by distribution company',
     selection='transmission and distribution loss rate, by company and year',
@@ -369,6 +423,13 @@ STATE = {
     selection='alerts by hazard and year',
     note='Alerts issued, not events that occurred. These records do not join '
          'to the monsoon impact records: they are separate universes.'),
+ 'eventsCount': dict(publication='Disaster alerts',
+    selection='alerts per year, by hazard',
+    note='Counts of alerts issued, not of events or losses.'),
+ 'impactsPanel': dict(publication='Monsoon impact returns',
+    selection='deaths, injured, houses damaged and livestock perished, by '
+              'province, one panel each',
+    note='These records do not join to the alert records.'),
  'impactsMetric': dict(publication='Monsoon impact returns',
     selection='the selected impact measure, by province',
     note='These records do not join to the alert records.'),

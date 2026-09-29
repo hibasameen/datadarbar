@@ -53,7 +53,7 @@ still visibly lacks.
 | 3.4 | The right panel | remaining |
 | 3.5 | Drop `census_data.js` | remaining |
 | 3.6 | Facilities overlay | remaining |
-| **4** | Economy and State | State done (8 topics live); Economy merge remaining |
+| **4** | Economy and State | State done and redrawn 29 Sep (11 topics, 38 charts, story-first forms — see REDESIGN_IA §State, redrawn); Economy merge remaining |
 | **5** | Analysts' shelf | **geography half done in 1.4**; catalogue and census-panel pages remain |
 
 ### What the work changed about the plan

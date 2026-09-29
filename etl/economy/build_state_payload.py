@@ -44,11 +44,11 @@ Four things the shape of these tables forces on the queries below:
    the latest report is carried, and the country row is kept apart from the
    provinces rather than added to them.
 
-The federal budget is in the warehouse as budget_lines. It IS a series now -
-finance.html draws it as a treemap and a trend, deflated - so this page points
-at that chart instead of repeating the claim that it cannot be drawn. What
-stays true is the caveat: the item labels drift between documents, so the
-crosswalk behind that chart is a reading of them, not a fact about them.
+The federal budget is in the warehouse as budget_lines and is drawn on this
+page (treemap, share of GDP, nominal trend) from app/data/budget_data.js, the
+grouped extract that scripts/extract_budget_payload.py writes. What stays true
+is the caveat: the item labels drift between documents, so the crosswalk
+behind that chart is a reading of them, not a fact about them.
 It is 18 years of budget documents whose item labels drift between them -
 "EXPENDITURE (I + II)" one year, "Current Exp. on Revenue Receipts" another,
 some carrying figures inside the label - so no item name spans more than five of
@@ -294,6 +294,52 @@ def main():
     disco_rows, disco_dropped, disco_disagree = losses(a.warehouse)
     assert disco_rows, 'the distribution crosswalk produced nothing'
 
+
+    # ── derived denominators ─────────────────────────────────────────────
+    # Two numbers the State charts divide by, carried with the payload and
+    # marked as derived wherever they are used.
+    #
+    # GDP at current market prices, by fiscal year. PBS's Table 4 runs on the
+    # 2015-16 base from 1999-00; TABLE-2 runs on the old base back to 1960-61
+    # and prints 1999-00 on both bases in the same column. Earlier years are
+    # spliced onto the new base by that overlap ratio (about 1.64), which is
+    # a reading rather than a published figure, so each row says whether it
+    # was spliced and the chart draws those years dashed.
+    gdp_new = dict(rows(f"""
+        SELECT year, value FROM '{W_}/national_accounts.parquet'
+        WHERE table_sheet = 'Table 4' AND item LIKE 'G GDP at mp%'"""))
+    gdp_old = dict(rows(f"""
+        SELECT year, min(value) FROM '{W_}/national_accounts.parquet'
+        WHERE table_sheet = 'TABLE-2' AND item = 'GDP (MP)' GROUP BY 1"""))
+    splice = gdp_new['1999-00'] / gdp_old['1999-00']
+    gdp = []
+    for fy in sorted(set(gdp_old) | set(gdp_new)):
+        end = int(fy[:4]) + 1
+        if end < 1990:
+            continue
+        if fy in gdp_new:
+            gdp.append([fy, end, round(gdp_new[fy], 1), 0])
+        else:
+            gdp.append([fy, end, round(gdp_old[fy] * splice, 1), 1])
+
+    # Census 2023 population by province, summed from the district panel.
+    # Azad Jammu & Kashmir and Gilgit-Baltistan are outside the census frame
+    # and Railways polices no territory, so those three forces have no
+    # denominator here and the per-capita chart says so rather than guessing.
+    pop_name = {'PUNJAB': 'Punjab', 'SINDH': 'Sindh',
+                'KHYBER PAKHTUNKHWA': 'KP', 'BALOCHISTAN': 'Balochistan',
+                'ISLAMABAD': 'ICT'}
+    pop = rows(f"""
+        SELECT province_area, sum(value)
+        FROM '{W_}/census_panel_2023.parquet'
+        WHERE unit_type = 'district' AND table_id = '1'
+          AND locality = 'all' AND sex = 'all'
+          AND indicator = 'POPULATION-2023 / ALL SEXES'
+        GROUP BY 1""")
+    population = [[pop_name[p], 2023, int(v)] for p, v in pop]
+    population.append(['Pakistan', 2023, sum(int(v) for _, v in pop)])
+    assert abs(population[-1][2] - 241_499_431) < 1000, population[-1]
+
     # ── the indicator index ────────────────────────────────────────────────
     # One row per dataset x topic x indicator: what the three dropdowns offer
     # and what each one draws. Nothing here is a claim about the data - the
@@ -301,47 +347,79 @@ def main():
     # entry cannot outlive the series it describes.
     INDEX = [
         # ds, topic, indicator, label, chart, block, year-field
-        ('fbr_tax_collection', 'tax', 'stack', 'Collection by head, stacked',
-         'taxStack', 'tax', 'fy_end'),
-        ('fbr_tax_collection', 'tax', 'lines', 'Collection by head, as lines',
-         'taxLines', 'tax', 'fy_end'),
-        ('fbr_tax_collection', 'tax', 'share', 'Each head as a share of the total',
-         'taxShare', 'tax', 'fy_end'),
-        ('budget_lines', 'budget', 'panel',
-         'What eighteen budget documents contain, and where it is drawn',
-         'budgetPanel', None, None),
-        ('ljcp_case_flows', 'courts', 'pending', 'Cases pending at year end',
-         'courtsPending', 'courts', 'year'),
-        ('ljcp_case_flows', 'courts', 'clearance', 'Clearance rate',
-         'courtsClearance', 'courts', 'year'),
-        ('ljcp_case_flows', 'courts', 'flow', 'Instituted against disposed',
-         'courtsFlow', 'courts', 'year'),
-        ('ljcp_case_flows', 'courts', 'category', 'Civil against criminal',
-         'courtsCategory', 'courts', 'year'),
+        # Public money. The share of GDP leads because nominal rupees over
+        # thirty-three years are mostly inflation; the ratio is the number
+        # the reader wants and the one the story is about (7.1 to 8.8).
+        ('fbr_tax_collection', 'tax', 'gdp',
+         'Collection as a share of GDP, by head', 'taxGdp', 'tax', 'fy_end'),
+        ('fbr_tax_collection', 'tax', 'share',
+         'Each head as a share of the total', 'taxShare', 'tax', 'fy_end'),
+        ('fbr_tax_collection', 'tax', 'stack',
+         'Collection by head, nominal rupees', 'taxStack', 'tax', 'fy_end'),
+        ('fbr_tax_collection', 'tax', 'shift',
+         'Then and now: each head in the first and last year', 'taxShift',
+         'tax', 'fy_end'),
+        ('budget_lines', 'budget', 'tree',
+         'One budget year as a treemap', 'budgetTree', None, None),
+        ('budget_lines', 'budget', 'gdp',
+         'Eighteen budgets as a share of GDP', 'budgetGdp', None, None),
+        ('budget_lines', 'budget', 'trend',
+         'Eighteen budgets in nominal rupees', 'budgetTrend', None, None),
+        # Justice. One panel per court with its own scale, because Punjab is
+        # thirty times Balochistan and one axis flattened the other four.
+        ('ljcp_case_flows', 'courts', 'pending',
+         'Cases pending at year end, court by court', 'courtsPending',
+         'courts', 'year'),
+        ('ljcp_case_flows', 'courts', 'net',
+         'Net flow: instituted less disposed', 'courtsNet', 'courts', 'year'),
+        ('ljcp_case_flows', 'courts', 'clearance',
+         'Clearance rate against 100 per cent', 'courtsClearance', 'courts',
+         'year'),
+        ('ljcp_case_flows', 'courts', 'category',
+         'Civil and criminal shares of the backlog', 'courtsCategory',
+         'courts', 'year'),
         ('ljcp_judicial_strength', 'judges', 'composition',
          'Posts by rank: working, vacant, neither', 'judgesComposition',
          'judges', 'year'),
-        ('ljcp_judicial_strength', 'judges', 'trend',
-         'Working and vacant over time', 'judgesTrend', 'judges', 'year'),
-        ('police_crime_annual', 'crime', 'force', 'Reported cases by force',
-         'crimeForce', 'crime', 'year'),
+        ('ljcp_judicial_strength', 'judges', 'vacancy',
+         'Vacancy rate by rank, first year to last', 'judgesVacancy',
+         'judges', 'year'),
+        # Crime. Per head of population where a census denominator exists;
+        # ranked with the change since the first year everywhere else.
+        ('police_crime_annual', 'crime', 'rate',
+         'Reported cases per 100,000 people, by force', 'crimeRate', 'crime',
+         'year'),
+        ('police_crime_annual', 'crime', 'indexed',
+         'Growth since the first year, by force', 'crimeIndexed', 'crime',
+         'year'),
+        ('police_crime_annual', 'crime', 'force',
+         'Reported cases by force, stacked', 'crimeForce', 'crime', 'year'),
         ('police_crime_annual', 'crime', 'offence',
-         'By offence, across Pakistan', 'crimeOffence', 'offences', 'year'),
+         'By offence: latest year against the first', 'crimeOffence',
+         'offences', 'year'),
         ('police_crime_annual', 'crime', 'ajk',
-         'Azad Jammu & Kashmir, by district', 'crimeAjk', 'crimeDistricts',
-         'year'),
+         'Azad Jammu & Kashmir, by district: latest against the first',
+         'crimeAjk', 'crimeDistricts', 'year'),
         ('police_crime_annual', 'crime', 'kp',
-         'Khyber Pakhtunkhwa, seven serious offences', 'crimeKp',
-         'crimeDistricts', 'year'),
+         'Khyber Pakhtunkhwa, seven serious offences: latest against the first',
+         'crimeKp', 'crimeDistricts', 'year'),
         ('sindh_crime_annual', 'sindhCrime', 'group',
-         'Sindh, by category group', 'sindhGroup', 'sindhCrime', 'year'),
-        ('sindh_crime_annual', 'sindhCrime', 'category',
-         'Sindh, the twelve largest categories', 'sindhCategory', 'sindhCrime',
+         'Sindh, by category group, stacked', 'sindhGroup', 'sindhCrime',
          'year'),
+        ('sindh_crime_annual', 'sindhCrime', 'category',
+         'Sindh, the twelve largest categories: latest against the first',
+         'sindhCategory', 'sindhCrime', 'year'),
         ('sindh_crime_annual', 'sindhCrime', 'range',
-         'Sindh, by police range', 'sindhRange', 'sindhCrime', 'year'),
+         'Sindh, by police range: latest against the first', 'sindhRange',
+         'sindhCrime', 'year'),
         ('sindh_fir_daily', 'firs', 'daily',
-         'First information reports, daily', 'firsDaily', 'firs', None),
+         'First information reports, the days observed', 'firsDaily', 'firs',
+         None),
+        # Energy. The fuel mix across every report year leads; one year at a
+        # time is kept for the reader who wants a single report.
+        ('nepra_plant_years', 'plants', 'mix',
+         'Reported capacity by fuel, every report year', 'plantsMix',
+         'plants', 'fy'),
         ('nepra_plant_years', 'plants', 'fuel',
          'Reported capacity by fuel, one year at a time', 'plantsFuel',
          'plants', 'fy'),
@@ -349,11 +427,13 @@ def main():
          'The eighteen largest plants in the selected year', 'plantsLargest',
          'plants', 'fy'),
         ('nepra_plant_years', 'plants', 'reports',
-         'What NEPRA\u2019s reports covered, year by year', 'plantsReports',
+         'What NEPRA’s reports covered, year by year', 'plantsReports',
          'plants', 'fy'),
+        ('nepra_disco_annual', 'discos', 'change',
+         'Losses then and now, company by company', 'discoChange', 'discos',
+         'fy_end'),
         ('nepra_disco_annual', 'discos', 'losses',
-         'T&D losses as a share of units entering the system', 'discoLosses',
-         'discos', 'fy_end'),
+         'T&D losses year by year', 'discoLosses', 'discos', 'fy_end'),
         ('nepra_disco_annual', 'discos', 'latest',
          'The latest year, companies ranked', 'discoLatest', 'discos',
          'fy_end'),
@@ -362,6 +442,11 @@ def main():
          'fy_end'),
         ('climate_events', 'events', 'timeline', 'Alerts by hazard and year',
          'eventsTimeline', 'events', None),
+        ('climate_events', 'events', 'count', 'Alerts per year, by hazard',
+         'eventsCount', 'events', None),
+        ('climate_impacts', 'impacts', 'overview',
+         'Deaths, injuries, houses and livestock by province', 'impactsPanel',
+         None, None),
         ('climate_impacts', 'impacts', 'deaths_total', 'Deaths by province',
          'impactsMetric', None, None),
         ('climate_impacts', 'impacts', 'injured_total', 'Injured by province',
@@ -423,6 +508,12 @@ def main():
         },
         'discos': {'rows': disco_rows, 'cols': DISCO_COLS, 'areas': DISCO_AREA,
                    'rejected': disco_dropped, 'disagreements': disco_disagree},
+        'derived': {
+            'gdp': {'cols': ['fy', 'fy_end', 'gdp_mp_pkr_mn', 'spliced'],
+                    'rows': gdp, 'splice_factor': round(splice, 4)},
+            'population': {'cols': ['region', 'census_year', 'population'],
+                           'rows': population},
+        },
     }
     def span(block, field):
         """The years a block actually covers, read off the block itself."""

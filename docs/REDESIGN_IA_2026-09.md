@@ -342,3 +342,42 @@ sub-district frame was built from, and `cod_vs_pbs_district_iou.csv` comparing P
 the COD-AB digitisation — median IoU 0.90, 5th percentile 0.62. They are different digitisations,
 not the same lines.
 
+
+
+### State, redrawn (29 Sep 2026)
+
+State had all eleven topics live, and nearly every one opened on the same
+chart: several lines over five years, often on a log scale. That form hid
+what the deks said. Punjab is almost all of the rise in reported crime, but
+as a flat line three hundred times above the others it looked like nothing;
+clearance above 100 does not mean a backlog fell, but on a 0-100 axis all
+five courts sat on one line; the judges trend was twelve lines over two
+years. Each topic now opens on the chart that carries its story, with the
+other forms behind it as variants (38 charts, 11 topics; was 29).
+
+| topic | opens on | why |
+|---|---|---|
+| What the state collects | each head as a share of GDP, stacked | 33 years of nominal rupees are inflation; 7.1% of GDP in 1991-92, 8.8% in 2023-24 is the story, and the mix (customs to income and sales) is the other one. Variants: share of total, nominal, then-and-now dumbbell |
+| The federal budget | treemap of one year; share of GDP and nominal trends | moved here from Economy, as agreed; reads from `data/budget_data.js` (45 KB) rather than the 2.9 MB econ payload |
+| Case flows | one panel per court, own scale | Punjab at 1.5m flattened Balochistan at 19k. Variants: the backlog's movement over each year (diverging), clearance around 100 (diverging), civil/criminal shares |
+| Judges | composition bar; vacancy-rate dumbbell 2023 to 2024 | replaces the twelve-line trend |
+| Reported offences | cases per 100,000 people, ranked | Census 2023 denominator; AJK, GB and Railways named without a rate. Variants: indexed 2019=100, stacked by force, then-and-now dumbbells by offence, AJK district, KP offence |
+| Sindh | category groups stacked by year | the one place in the crime theme where the parts add. Categories and ranges as dumbbells |
+| FIRs | dots, no line | eleven observations are eleven dots |
+| Power plants | fuel mix stacked across all eight report years | the coal and nuclear additions are visible; one year at a time kept |
+| Distribution losses | first year against latest, company by company | eighteen years and the worst three barely moved |
+| Disasters | timeline; alerts per year by hazard | |
+| Monsoon impacts | four measures, one panel each | was four separate charts |
+
+Two derived denominators ride in the payload (`derived.gdp`, `derived.population`)
+and are named as derived on every chart and CSV that divides by them. GDP at
+current market prices is PBS Table 4 from 1999-00; earlier years are spliced
+onto the 2015-16 base by the 1999-00 overlap ratio (1.6355) and drawn hatched.
+The builder (`etl/economy/build_state_payload.py`) computes both; the
+committed `state_data.js` carries them already. `scripts/extract_budget_payload.py`
+writes the budget payload from the Economy build's crosswalk until that
+crosswalk moves into the warehouse build.
+
+Still to do on State: the Economy page still carries its own budget topic
+(remove once Economy is merged); a phone-width pass on the small-multiple
+and dumbbell forms.

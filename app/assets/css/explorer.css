@@ -174,3 +174,5 @@ a.tree-item{color:var(--green-800)}
 /* Coverage chips that name what is absent rather than leaving it to be read
    off a flat line at zero. */
 .coverage .cov-gap{color:var(--rust,#b5502a);font-weight:600}
+.coverage .cov-derived{color:var(--teal-700,#0f6e78);font-weight:600}
+.ctl-row select.seg{appearance:auto;padding:0 8px;background:var(--surface)}
