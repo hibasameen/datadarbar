@@ -28,6 +28,38 @@ def main():
     econ = json.loads(src[src.index('{'):src.rindex('}') + 1])
     budget = econ['budget']
     years = sorted(set(budget['receipts']) | set(budget['expenditure']))
+
+    # DEBT SERVICING IS ITS OWN GROUP. It sat inside "General Public Services"
+    # with pensions and the running of government, so the budget's headline -
+    # interest is now close to half of all current spending, 46 per cent in
+    # 2026-27 and 57 in 2024-25 - was one block among ten in every chart and
+    # could not be seen. It is lifted out as a group of its own, first and in
+    # the strongest colour, and what remains is named for what it is. The
+    # item is the same one in all eighteen documents, so nothing is re-read:
+    # the split moves an item between groups and the totals do not change.
+    DEBT = 'Debt servicing (mark-up)'
+    moved = 0
+    for y, groups in budget['expenditure'].items():
+        before = sum(c['bn'] for g in groups for c in g['children'])
+        out = []
+        for g in groups:
+            debt = [c for c in g['children'] if c['name'] == DEBT]
+            if g['label'] == 'General Public Services' and debt:
+                out.insert(0, {'label': 'Debt servicing (interest)',
+                               'key': 'Debt servicing', 'color': '#7b1e14',
+                               'children': debt})
+                rest = [c for c in g['children'] if c['name'] != DEBT]
+                if rest:
+                    out.append(dict(g, label='General public services, excluding debt',
+                                    color='#d88b73', children=rest))
+                moved += 1
+            else:
+                out.append(g)
+        after = sum(c['bn'] for g in out for c in g['children'])
+        assert abs(before - after) < 1e-6, f'{y}: the split changed the total'
+        budget['expenditure'][y] = out
+    assert moved == len(budget['expenditure']), (
+        f'debt servicing found in {moved} of {len(budget["expenditure"])} years')
     for side in ('receipts', 'expenditure'):
         for y, groups in budget[side].items():
             for g in groups:

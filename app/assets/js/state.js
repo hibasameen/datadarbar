@@ -611,7 +611,23 @@
     }
   }
 
-  function budgetColour(labels) { return palette(labels); }
+  /* Debt servicing is the one group drawn in its own colour, so the budget's
+     headline - interest is close to half of current spending - is the first
+     thing the eye finds. The other groups keep the site palette between
+     them, so their colours do not shift when debt is taken out. */
+  var DEBT = /^Debt servicing/;
+  function budgetColour(labels) {
+    // The palette's three reds - rust, sienna and brick, slots 3, 6 and 9 -
+    // are left out for the other groups, or Social Protection came out the
+    // same colour as debt. A placeholder holds each slot so nothing lands there.
+    var rest = labels.filter(function (l) { return !DEBT.test(l); }), dom = [];
+    rest.forEach(function (l) {
+      while ([3, 6, 9].indexOf(dom.length) >= 0) dom.push('\u0000' + dom.length);
+      dom.push(l);
+    });
+    var pick = palette(dom);
+    return function (k) { return DEBT.test(k) ? '#9a2c1f' : pick(k); };
+  }
 
   function drawBudgetTree(groups, total) {
     var host = chartHost();
