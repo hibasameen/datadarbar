@@ -2190,12 +2190,37 @@ def build(src: Path, district_only: bool = False) -> None:
     else:
         print("census panels…  skipped (no panel release found under --src)")
 
+    # ── catalogue metadata: shelf, period covered, place keys, sample rows ──
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from catalog_meta import KIND, KINDS, TIME_COLS, KEY_COLS
+    unfiled = [t["name"] for t in tables if t["name"] not in KIND]
+    if unfiled:
+        raise SystemExit(f"catalog_meta.KIND does not file: {', '.join(unfiled)}")
+    samples = {}
+    for t in tables:
+        path = (OUT / t["file"]).as_posix()
+        cols = [c["name"] for c in t["columns"]]
+        t["kind"] = KIND[t["name"]]
+        tc = next((c for c in TIME_COLS if c in cols), None)
+        if tc:
+            lo, hi = con.sql(f'SELECT min("{tc}")::VARCHAR, max("{tc}")::VARCHAR '
+                             f"FROM '{path}' WHERE \"{tc}\"::VARCHAR NOT IN ('overall', '-1') "
+                             f"AND \"{tc}\"::VARCHAR NOT LIKE 'Δ%'").fetchone()
+            t["span"] = {"column": tc, "from": lo, "to": hi}
+        t["keys"] = [k for k in KEY_COLS if k in cols]
+        # Five rows, as text, so a reader sees the shape before downloading.
+        rows = con.sql(f"SELECT * FROM '{path}' LIMIT 5").fetchall()
+        samples[t["name"]] = [[None if v is None else str(v)[:80] for v in r] for r in rows]
+    (OUT / "catalog_samples.json").write_text(
+        json.dumps(samples, ensure_ascii=False, separators=(",", ":")))
+
     # ── catalog ──────────────────────────────────────────────────────────────
     catalog = {
         "name": "Data Darbar",
         "version": 1,
         "generated": _today(),
         "license": "Derived data CC BY 4.0 · code MIT",
+        "kinds": [{"key": k, "label": l, "about": a} for k, l, a in KINDS],
         "tables": sorted(tables, key=lambda t: t["name"]),
         "examples": EXAMPLES,
     }

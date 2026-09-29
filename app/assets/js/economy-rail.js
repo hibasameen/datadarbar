@@ -138,21 +138,8 @@
       { t: 'external', label: 'Remittances', card: 'sec-remit' } ] },
     { group: 'Elsewhere', items: [
       { href: 'state.html#t=budget', label: 'Government budget & tax', note: 'on State' },
-      { href: 'explore.html', label: 'Compare any two series', note: 'Compare' } ] },
+      { href: 'query.html', label: 'Query the tables with SQL', note: 'Query' } ] },
   ];
-
-  /* A chart with series in the explorer opens there with them chosen, so a
-     reader starts comparing from what they were looking at. */
-  var COMPARE = {
-    'sec-macro': 'na:gdp_tn~na:gva_tn', 'sec-qimonth': 'qim:overall',
-    'sec-usd': 'sbp:usd', 'sec-reer': 'sbp:reer~sbp:neer',
-    'sec-cpi': 'sbp:cpi_nat~sbp:cpi_urb~sbp:cpi_rur',
-    'sec-food': 'sbp:cpi_urbf~sbp:cpi_rurf', 'sec-policy': 'sbp:pol_target',
-    'sec-kibor': 'sbp:kib_6m~sbp:kib_1y', 'sec-spread': 'sbp:lend~sbp:depo',
-    'sec-res': 'sbp:res_sbp~sbp:res_banks', 'sec-bop': 'sbp:gx~sbp:gm',
-    'sec-m': 'sbp:m2', 'sec-npl': 'sbp:npl_ratio',
-    'sec-totals': 'trade:export~trade:import',
-  };
 
   function esc(t) {
     return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -315,28 +302,14 @@
                  + esc(r.label) + '</span><span class="xfind-meta">'
                  + esc(labelOf[r.topic] || r.topicLabel) + '</span></button>';
           }).join('')
-        : '<p class="xfind-none">No chart matches. The Compare page searches '
-          + 'every series.</p>';
+        : '<p class="xfind-none">No chart matches. The <a href="datasets/">catalogue</a> '
+          + 'lists every table.</p>';
       hits.querySelectorAll('button').forEach(function (b) {
         b.onclick = function () {
           box.value = ''; hits.hidden = true; hits.innerHTML = '';
           go(b.dataset.t, b.dataset.card);
         };
       });
-    });
-
-    /* Compare beside the chart. */
-    Object.keys(COMPARE).forEach(function (id) {
-      var card = document.getElementById(id);
-      if (!card || card.querySelector('.cmpbtn')) return;
-      var a = document.createElement('a');
-      a.className = 'cmpbtn';
-      a.href = 'explore.html?s=' + encodeURIComponent(COMPARE[id]).replace(/%3A/g, ':')
-                                                                   .replace(/%7E/g, '~');
-      a.textContent = 'Compare';
-      a.title = 'Open these series in Compare, to set them against any other';
-      var csv = card.querySelector('.csvbtn');
-      if (csv) csv.parentNode.insertBefore(a, csv); else card.insertBefore(a, card.firstChild);
     });
 
     window.addEventListener('hashchange', draw);

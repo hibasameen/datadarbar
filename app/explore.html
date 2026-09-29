@@ -1,69 +1,10 @@
-<!DOCTYPE html><html lang="en" data-page="explore"><head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<meta name="theme-color" content="#0c3a1e"/>
-<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
-<meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta name="twitter:card" content="summary_large_image"/><meta property="og:type" content="website"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=9a398a62"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/css/explore.css?v=9a398a62"/>
-<title>Compare series — Data Darbar</title>
-<meta name="description" content="Put any two of Pakistan's official series on one axis: prices, rates, trade, tax, courts, electricity losses and reported crime, with the comparisons that are valid for them."/>
-</head><body>
-<!-- dd:header -->
-<header class="site-header">
-  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt=""/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in numbers</span></span></a>
-  <nav class="header-nav" aria-label="Sections"><a href="places.html" class="header-link">Places</a><a href="finance.html" class="header-link">Economy</a><a href="state.html" class="header-link">State</a><span class="header-sep"></span><a href="explore.html" class="header-link shelf active" aria-current="page">Compare</a><a href="datasets/" class="header-link shelf">Catalogue</a><a href="query.html" class="header-link shelf">Query</a><a href="methods.html" class="header-link shelf">Methods</a></nav>
-  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-</header>
-<nav id="mobileNav" class="mobile-nav hidden" aria-label="Sections"><a href="places.html" class="mobile-nav-link">Places</a><a href="finance.html" class="mobile-nav-link">Economy</a><a href="state.html" class="mobile-nav-link">State</a><div class="mobile-nav-label">For analysts</div><a href="explore.html" class="mobile-nav-link active" aria-current="page">Compare</a><a href="datasets/" class="mobile-nav-link">Catalogue</a><a href="query.html" class="mobile-nav-link">Query</a><a href="methods.html" class="mobile-nav-link">Methods</a></nav>
-<!-- /dd:header -->
-
-<main class="xp">
-  <aside class="xp-pick">
-    <label class="xp-search">
-      <input type="search" id="xpQ" placeholder="Search series, topics or units…" autocomplete="off"/>
-    </label>
-    <div class="xp-filters" id="xpFilters"></div>
-    <div class="xp-count" id="xpCount"></div>
-    <div class="xp-list" id="xpList"></div>
-  </aside>
-
-  <section class="xp-work">
-    <header class="xp-head">
-      <h1 id="xpTitle">Compare series</h1>
-      <p class="xp-dek" id="xpDek">Search on the left and add a series. Anything you add keeps the period and the series already chosen.</p>
-    </header>
-
-    <div class="xp-chips" id="xpChips"></div>
-
-    <div class="xp-ctl">
-      <span class="ctl-lbl">View</span>
-      <div class="seg-row" id="xpMode"></div>
-      <span class="ctl-lbl">From</span>
-      <select id="xpFrom"></select>
-      <span class="ctl-lbl">To</span>
-      <select id="xpTo"></select>
-      <button class="seg" id="xpCommon" type="button" title="Narrow to the period every selected series covers">Common period</button>
-      <span class="xp-spacer"></span>
-      <button class="seg" id="xpShare" type="button">Share</button>
-      <button class="seg" id="xpCsv" type="button">CSV</button>
-    </div>
-
-    <div class="xp-why" id="xpWhy"></div>
-    <div class="xp-chart" id="xpChart"></div>
-    <div class="xp-src" id="xpSrc"></div>
-  </section>
-</main>
-
-<!-- dd:footer -->
-<footer class="site-footer">
-  <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
-</footer>
-<!-- /dd:footer -->
-<script src="assets/js/d3.v7.min.js?v=9a398a62"></script>
-<script src="assets/js/palette.js?v=9a398a62"></script>
-<script src="data/explore_data.js?v=9a398a62"></script>
-<script src="assets/js/explore.js?v=9a398a62"></script>
-<script src="assets/js/shell.js?v=9a398a62"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>Data Darbar — Compare</title>
+<meta name="robots" content="noindex"/>
+<link rel="canonical" href="https://darbar.adaad.org/finance.html"/>
+<meta http-equiv="refresh" content="0; url=finance.html"/>
+<script>location.replace('finance.html');</script>
+</head><body style="font-family:system-ui;padding:40px;background:#faf7ef;color:#17301f">
+The Compare page has been retired. Its series are charted on the <a href="finance.html">Economy</a> page,
+and every table behind them is in the <a href="datasets/">catalogue</a> and the <a href="query.html">query console</a>.
 </body></html>

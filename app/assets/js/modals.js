@@ -116,7 +116,7 @@
         commodities, remittances by source, the money supply and bad loans.</li>
     </ul>
     <p>A fifth page, <strong>Query the Data</strong>, opens the whole warehouse — every table behind the four
-      views — to SQL in the browser, with nothing sent to a server. A <a href="dictionary.html">data dictionary</a>
+      views — to SQL in the browser, with nothing sent to a server. The <a href="datasets/">data catalogue</a>
       documents every table, column, unit and caveat.</p>
 
     <h3>Built by</h3>

@@ -150,13 +150,11 @@ def main():
     ])
 
     links = '\n'.join([
-        shelf('explore.html', 'Compare series',
-              'Any two series on one axis, with only the comparisons that are valid'),
         shelf('datasets/', 'Data catalogue',
               f'{f["tables"]} documented tables, source notes, CSV and Parquet'),
         shelf('query.html', 'Query with SQL', 'DuckDB in your browser, no signup'),
-        shelf('dictionary.html', 'Dictionary',
-              'Field definitions and coverage by table'),
+        shelf('datasets/#fields', 'Dictionary',
+              'Every field in every table, searchable'),
     ])
 
     body = f'''<main class="lmain">

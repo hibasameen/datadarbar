@@ -125,7 +125,6 @@ BASE_PAGES = {
     # page any of them has.
     "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
-    "dictionary.html": ("Pakistan Open Data Dictionary — Data Darbar", "Read field definitions, units, source coverage and limitations for Data Darbar's downloadable Pakistan research datasets."),
     "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),
 }
 
@@ -275,20 +274,22 @@ def build():
         page(path, title, description, body, schema)
         links.append(f'<li><a href="{path}">{ESC(name)} district</a><span>{ESC(str(province))} · Population {number(d["t1_2023_pop_total"])}</span></li>')
     page("/districts/", "Pakistan district profiles: Census 2023", "Population, literacy and schooling figures for selected districts of Pakistan, with readable tables, source definitions and CSV downloads.", '<p>These initial profiles use districts with available population and literacy data and no explicit boundary-change flag in the source record. More places and survey indicators remain available in the <a href="/map.html">district map</a>.</p><ul class="cards">' + ''.join(links) + '</ul><p><a href="/datasets/district-indicators/">Download the full district indicator dataset</a>.</p>')
-    dataset_links = []
-    for d in catalog["tables"]:
-        slug = d["name"].replace("_", "-")
-        path = f"/datasets/{slug}/"
-        title = DATASET_NAMES[d["name"]]
-        assert (APP / "data/warehouse" / d["file"]).is_file(), d["file"]
-        download = "/data/warehouse/" + d["file"]
-        body = f'<p><a href="/datasets/">All datasets</a> · <a href="{download}" download>Download Parquet</a> · <a href="/query.html">Query this table in the browser</a></p><dl><dt>Source</dt><dd>{ESC(d["source"])}</dd><dt>Rows in this release</dt><dd>{number(d["rows"])}</dd><dt>Units</dt><dd>{ESC(d["unit"] or "Vary by field or series; see definitions below.")}</dd><dt>Catalogue generated</dt><dd>{ESC(str(catalog["generated"]))}</dd></dl><aside><h2>Definitions and limitations</h2><p>{ESC(d["notes"])}</p></aside>'
-        body += table(["Field", "Type", "Definition"], [(c["name"], c["type"], c["description"]) for c in d["columns"]], title + " — data dictionary")
-        body += f'<h2>Reuse and citation</h2><p>Hiba Sameen / Data Darbar. {ESC(title)}. {ORIGIN}{path}. Cite the original source listed above and the catalogue release when reusing this table.</p><p><a href="/methods.html">Methodology</a> · <a href="https://adaad.org/datasets/">Adaad research datasets</a></p>'
-        schema = {"@type": "Dataset", "name": title, "alternateName": d["name"], "description": d["description"] + " " + d["notes"], "url": ORIGIN + path, "license": LICENSE, "creator": PERSON, "publisher": PUBLISHER, "spatialCoverage": {"@type": "Place", "name": "Pakistan"}, "variableMeasured": [{"@type": "PropertyValue", "name": c["name"], "description": c["description"]} for c in d["columns"]], "distribution": [{"@type": "DataDownload", "encodingFormat": "application/vnd.apache.parquet", "contentUrl": ORIGIN + download}], "includedInDataCatalog": {"@type": "DataCatalog", "name": "Data Darbar", "url": ORIGIN + "/datasets/"}}
-        page(path, title, d["description"], body, schema)
-        dataset_links.append(f'<li><a href="{path}">{ESC(title)}</a><span>{ESC(d["description"])}</span></li>')
-    page("/datasets/", "Pakistan open data catalogue", "Download documented census, trade, budget, national accounts, poverty and State Bank of Pakistan datasets. Each table has field definitions, source information and limitations.", '<ul class="cards">' + ''.join(dataset_links) + '</ul><p>The <a href="/query.html">browser query tool</a> opens these same tables. Read the units and warnings before combining or summing rows.</p>', {"@type": "DataCatalog", "name": "Data Darbar Pakistan open data catalogue", "url": ORIGIN + "/datasets/", "dataset": [{"@type": "Dataset", "name": DATASET_NAMES[d["name"]], "url": ORIGIN + "/datasets/" + d["name"].replace("_", "-") + "/", "description": d["description"]} for d in catalog["tables"]]})
+    # The catalogue - index, a page per table, the boundaries - is its own
+    # module; it reads the same catalog.json and uses this file's chrome.
+    from build_catalogue import build_catalogue
+    n_tables = build_catalogue(sys.modules[__name__])
+    # The dictionary folded into the catalogue's field search. Its old
+    # anchors named tables, so they still land on the table's own page.
+    (APP / "dictionary.html").write_text(
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>\n'
+        '<title>Data Darbar \u2014 Dictionary</title>\n'
+        '<meta name="robots" content="noindex"/>\n'
+        f'<link rel="canonical" href="{ORIGIN}/datasets/"/>\n'
+        '<meta http-equiv="refresh" content="0; url=datasets/#fields"/>\n'
+        "<script>var h=location.hash.slice(1);location.replace(h?'datasets/'+h.replace(/_/g,'-')+'/':'datasets/#fields');</script>\n"
+        '</head><body style="font-family:system-ui;padding:40px;background:#faf7ef;color:#17301f">\n'
+        'The dictionary is now part of the <a href="datasets/#fields">data catalogue</a>, '
+        'which searches every field in every table.\n</body></html>\n')
     # About and Methodology merged into Methods when the redesign collapsed
     # them. They stay as redirects rather than as pages, so an old link still
     # lands and the same text is not published at three URLs - which is both a
@@ -324,7 +325,7 @@ def build():
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))
     (APP / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {ORIGIN}/sitemap.xml\n")
-    print(f"Built {len(PROFILES)} district profiles, {len(catalog['tables'])} dataset pages and {len(set(paths))} sitemap entries.")
+    print(f"Built {len(PROFILES)} district profiles, {n_tables} dataset pages and {len(set(paths))} sitemap entries.")
 
 
 if __name__ == "__main__":

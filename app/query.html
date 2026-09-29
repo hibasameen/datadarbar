@@ -4,100 +4,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta name="twitter:card" content="summary_large_image"/><meta property="og:type" content="website"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=9a398a62"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=71a11182"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<style>
-:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-300:#c5cad3;--slate-200:#e2e5ea;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--shadow:0 2px 10px rgba(12,58,30,.07);--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;display:flex;flex-direction:column;padding-bottom:30px}
-
-/* ===== Unified site header ===== */
-.site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500);flex-shrink:0}
-
-/* ===== boot ===== */
-#boot{margin:auto;text-align:center;padding:40px 24px;max-width:520px;color:var(--slate-600);font-size:14px}
-#boot .spin{width:34px;height:34px;border:3px solid var(--slate-200);border-top-color:var(--gold-500);border-radius:50%;margin:0 auto 16px;animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-#boot code{font-family:var(--mono);font-size:12px;background:var(--slate-100);padding:1px 5px;border-radius:4px}
-
-/* ===== layout ===== */
-#console{display:none;flex:1;min-height:0;gap:0}
-.side{width:322px;flex-shrink:0;border-right:1px solid var(--slate-200);background:#fff;overflow-y:auto;padding:14px}
-.side h3{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--slate-500);margin:4px 0 8px}
-.side h3:not(:first-child){margin-top:20px}
-#examples{display:flex;flex-direction:column;gap:4px}
-.ex{text-align:left;font:inherit;font-size:12.5px;font-weight:600;color:var(--green-800);background:#f4f9f6;border:1px solid #dcece3;border-radius:7px;padding:7px 10px;cursor:pointer;transition:.13s}
-.ex:hover{background:#e8f4ee;border-color:var(--green-600)}
-
-.tbl{border:1px solid var(--slate-200);border-radius:9px;margin-bottom:6px;overflow:hidden;background:#fff}
-.tbl-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 10px;cursor:pointer}
-.tbl-head:hover{background:var(--slate-100)}
-.tbl-name{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--green-900);text-decoration:underline;text-decoration-color:var(--slate-300);text-underline-offset:2px}
-.tbl-name:hover{text-decoration-color:var(--gold-500)}
-.tbl-meta{font-size:10.5px;color:var(--slate-500);margin-left:auto}
-.chip{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:20px;background:var(--slate-100);color:var(--slate-500);border:1px solid var(--slate-200)}
-.chip.on{background:#e9f6ee;color:var(--green-600);border-color:#c4e4d1}
-.tbl-desc{font-size:11.5px;color:var(--slate-600);padding:0 10px 9px;line-height:1.45}
-.tbl-cols,.tbl-notes,.tbl-src{display:none}
-.tbl.open .tbl-cols,.tbl.open .tbl-notes,.tbl.open .tbl-src{display:block}
-.tbl-cols{border-top:1px solid var(--slate-200);padding:7px 10px}
-.col{padding:3px 0;font-size:11.5px;line-height:1.4}
-.col code{font-family:var(--mono);font-size:11px;color:var(--green-800);font-weight:600}
-.col .ty{font-size:9.5px;color:var(--slate-500);margin-left:6px;text-transform:lowercase}
-.col .cd{display:block;color:var(--slate-500);font-size:11px}
-.tbl-notes{padding:8px 10px;font-size:11.5px;color:var(--slate-600);background:#fffbea;border-top:1px solid #f2e6bd;line-height:1.5}
-.tbl-src{padding:7px 10px;font-size:10.5px;color:var(--slate-500);border-top:1px solid var(--slate-200)}
-
-.main{flex:1;min-width:0;display:flex;flex-direction:column}
-.editor{padding:14px 16px 0;flex-shrink:0}
-#sql{width:100%;height:168px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.6;padding:12px 14px;border:1px solid var(--slate-300);border-radius:10px;background:#fff;color:var(--ink);tab-size:2}
-#sql:focus{outline:none;border-color:var(--green-600);box-shadow:0 0 0 3px rgba(30,107,62,.11)}
-.bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 16px}
-.btn{font:inherit;font-size:13px;font-weight:700;border-radius:8px;padding:8px 15px;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px;transition:.13s}
-.btn.primary{background:var(--green-800);color:#fff}
-.btn.primary:hover{background:var(--green-600)}
-.btn.primary:disabled{opacity:.5;cursor:default}
-.btn.ghost{background:#fff;color:var(--green-800);border-color:var(--slate-300)}
-.btn.ghost:hover{border-color:var(--green-600)}
-.notes-opt{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--slate-600);cursor:pointer}.notes-opt input{accent-color:var(--green-600)}
-.bar.extract{padding-top:0;border-top:0}.extract-lbl{font-size:12.5px;font-weight:700;color:var(--slate-600)}
-#extractSel{font:inherit;font-size:13px;font-weight:600;padding:7px 10px;border:1px solid var(--slate-300);border-radius:8px;background:#fff;color:var(--green-800);max-width:340px}
-#extractMeta{font-size:11.5px;color:var(--slate-500)}
-.kbd{font-family:var(--mono);font-size:10.5px;color:var(--slate-500)}
-#status{font-size:12.5px;color:var(--slate-600);display:none}
-#meta{font-size:12px;color:var(--slate-500);margin-left:auto;font-variant-numeric:tabular-nums}
-#err{display:none;margin:0 16px 12px;padding:11px 13px;background:#fdf0ee;border:1px solid #f2c9c2;border-left:3px solid #c0392b;border-radius:8px;color:#8c2c20;font-family:var(--mono);font-size:12px;white-space:pre-wrap;line-height:1.5}
-
-.res{flex:1;min-height:0;overflow:auto;margin:0 16px 14px;border:1px solid var(--slate-200);border-radius:10px;background:#fff}
-.res:focus-visible{outline:2px solid var(--green-600);outline-offset:2px}
-.res table{border-collapse:collapse;width:100%;font-size:12.5px}
-.res th{position:sticky;top:0;background:var(--green-900);color:#fff;text-align:left;padding:8px 11px;font-size:11.5px;font-weight:700;white-space:nowrap;z-index:2}
-.res th .ty{display:block;font-weight:400;font-size:9.5px;color:rgba(255,255,255,.5);font-family:var(--mono)}
-.res td{padding:6px 11px;border-bottom:1px solid var(--slate-100);white-space:nowrap;max-width:420px;overflow:hidden;text-overflow:ellipsis}
-.res tr:hover td{background:#f6faf8}
-.res .n{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12px}
-.res .nul{color:var(--slate-300);font-style:normal;font-size:11px}
-.empty{padding:26px;text-align:center;color:var(--slate-500);font-size:13px}
-
-.hint{margin:0 16px 12px;font-size:11.5px;color:var(--slate-500);line-height:1.6}
-.hint b{color:var(--slate-700)}
-.hint code{font-family:var(--mono);font-size:11px;background:var(--slate-100);padding:1px 5px;border-radius:4px}
-.hint a{color:var(--green-600);font-weight:600}
-details.api{margin:0 16px 14px;border:1px solid var(--slate-200);border-radius:9px;background:#fff}
-details.api summary{cursor:pointer;padding:9px 13px;font-size:12.5px;font-weight:700;color:var(--green-800)}
-details.api pre{margin:0;padding:0 13px 13px;font-family:var(--mono);font-size:11.5px;color:var(--slate-700);white-space:pre-wrap;line-height:1.6}@media(max-width:900px){
-  html,body{height:auto}
-  body{min-height:100vh;min-height:100dvh;padding-bottom:0}
-  #console{flex:none;flex-direction:column}
-  .side{width:auto;max-height:230px;border-right:none;border-bottom:1px solid var(--slate-200)}
-  .main{flex:none}
-  .res{flex:none;max-height:60vh;max-height:60dvh}
-  .res td{max-width:200px}}
-
-/* ===== Fixed site footer bar ===== */
-.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:var(--green-900);color:rgba(255,255,255,.45);font-size:11px;line-height:1.2;border-top:1px solid rgba(255,255,255,.08)}@media(max-width:640px){.side{max-height:190px;padding:10px 12px}.bar{padding:8px 12px;gap:7px}.btn{padding:7px 11px;font-size:12.5px}#extractSel{max-width:100%;flex:1 1 200px}.hint{margin:0 12px 10px}details.api{margin:0 12px 12px}.editor textarea{min-height:120px}}</style><!-- SEO:START -->
+<link rel="stylesheet" href="assets/css/query.css?v=71a11182"/><!-- SEO:START -->
 <title>Download &amp; Query Pakistan Open Data — Data Darbar</title>
 <meta name="description" content="Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis.">
 <link rel="canonical" href="https://darbar.adaad.org/query.html">
@@ -109,58 +19,61 @@ details.api pre{margin:0;padding:0 13px 13px;font-family:var(--mono);font-size:1
 <meta property="og:site_name" content="Data Darbar">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/query.html#page", "url": "https://darbar.adaad.org/query.html", "name": "Download & Query Pakistan Open Data — Data Darbar", "description": "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
 <!-- SEO:END -->
-</head><body>
+</head><body class="qpage">
 <!-- dd:header -->
 <header class="site-header">
   <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt=""/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in numbers</span></span></a>
-  <nav class="header-nav" aria-label="Sections"><a href="places.html" class="header-link">Places</a><a href="finance.html" class="header-link">Economy</a><a href="state.html" class="header-link">State</a><span class="header-sep"></span><a href="explore.html" class="header-link shelf">Compare</a><a href="datasets/" class="header-link shelf">Catalogue</a><a href="query.html" class="header-link shelf active" aria-current="page">Query</a><a href="methods.html" class="header-link shelf">Methods</a></nav>
+  <nav class="header-nav" aria-label="Sections"><a href="places.html" class="header-link">Places</a><a href="finance.html" class="header-link">Economy</a><a href="state.html" class="header-link">State</a><span class="header-sep"></span><a href="datasets/" class="header-link shelf">Catalogue</a><a href="query.html" class="header-link shelf active" aria-current="page">Query</a><a href="methods.html" class="header-link shelf">Methods</a></nav>
   <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
-<nav id="mobileNav" class="mobile-nav hidden" aria-label="Sections"><a href="places.html" class="mobile-nav-link">Places</a><a href="finance.html" class="mobile-nav-link">Economy</a><a href="state.html" class="mobile-nav-link">State</a><div class="mobile-nav-label">For analysts</div><a href="explore.html" class="mobile-nav-link">Compare</a><a href="datasets/" class="mobile-nav-link">Catalogue</a><a href="query.html" class="mobile-nav-link active" aria-current="page">Query</a><a href="methods.html" class="mobile-nav-link">Methods</a></nav>
+<nav id="mobileNav" class="mobile-nav hidden" aria-label="Sections"><a href="places.html" class="mobile-nav-link">Places</a><a href="finance.html" class="mobile-nav-link">Economy</a><a href="state.html" class="mobile-nav-link">State</a><div class="mobile-nav-label">For analysts</div><a href="datasets/" class="mobile-nav-link">Catalogue</a><a href="query.html" class="mobile-nav-link active" aria-current="page">Query</a><a href="methods.html" class="mobile-nav-link">Methods</a></nav>
 <!-- /dd:header -->
 
 <div id="boot"><div class="spin"></div><div id="bootmsg">Starting…</div></div>
 
-<div id="console">
-  <aside class="side">
-    <h3>Example queries</h3>
-    <div id="examples"></div>
-    <h3>Tables <a href="dictionary.html" style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--green-600);margin-left:6px">dictionary ↗</a></h3>
-    <div id="tables"></div>
+<div class="qwrap" id="console" hidden>
+  <aside class="qrail" aria-label="Tables, examples and history">
+    <div class="qtabs" role="tablist">
+      <button class="qtab" role="tab" id="tab-tables" aria-selected="true" data-pane="tables">Tables</button>
+      <button class="qtab" role="tab" id="tab-examples" aria-selected="false" data-pane="examples">Examples</button>
+      <button class="qtab" role="tab" id="tab-history" aria-selected="false" data-pane="history">History</button>
+    </div>
+    <label class="qfind"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg><input type="search" id="find" placeholder="Find a table or field…" aria-label="Find a table or field" autocomplete="off"/></label>
+    <div class="qpanel" id="pane-tables" role="tabpanel" aria-labelledby="tab-tables"></div>
+    <div class="qpanel" id="pane-examples" role="tabpanel" aria-labelledby="tab-examples" hidden></div>
+    <div class="qpanel" id="pane-history" role="tabpanel" aria-labelledby="tab-history" hidden></div>
   </aside>
 
-  <main class="main">
-    <div class="editor">
-      <textarea id="sql" spellcheck="false" aria-label="SQL query"></textarea>
+  <main class="qmain">
+    <div class="qhead">
+      <div><div class="qeyebrow">For analysts</div><h1>Query with SQL</h1>
+        <p>Every table in the <a href="datasets/">catalogue</a>, queried in your browser. Nothing you type leaves this tab.</p></div>
+      <div class="qhead-acts"><span class="qengine" id="engine">DuckDB-WASM</span>
+        <button id="share" class="qbtn" type="button">Copy link</button></div>
     </div>
-    <div class="bar">
-      <button id="runbtn" class="btn primary">Run <span class="kbd">⌘⏎</span></button>
-      <button id="dl" class="btn ghost" style="display:none">Download CSV</button>
-      <button id="share" class="btn ghost" style="display:none">Copy link</button>
-      <label class="notes-opt" title="Bundle a README with the source, unit, caveats and column dictionary for every table in the download"><input type="checkbox" id="withNotes" checked/> with method notes</label>
+
+    <div class="qeditor"><div class="qgutter" id="gutter" aria-hidden="true">1</div>
+      <textarea id="sql" spellcheck="false" aria-label="SQL query"></textarea></div>
+    <div class="qrun">
+      <button id="runbtn" class="qbtn primary" type="button">Run <span class="qkbd">⌘⏎</span></button>
+      <span class="qhint" id="runhint">Runs the selection if there is one. Click a table or field on the left to insert it.</span>
       <span id="status"></span>
-      <span id="meta"></span>
     </div>
-    <div class="bar extract">
-      <span class="extract-lbl">Extract a whole table</span>
-      <select id="extractSel" aria-label="Table to extract"></select>
-      <button id="extractBtn" class="btn ghost">Download</button>
-      <span id="extractMeta"></span>
-    </div>
-    <div id="err"></div>
-    <div class="res" id="out" tabindex="0" role="region" aria-label="Query results"></div>
-    <div class="hint">
-      <b>How this works.</b> There is no server. The data sits in Parquet files on the CDN and
-      the query engine (<span id="engine">DuckDB-WASM</span>) runs inside your browser tab, so
-      nothing you type is sent anywhere. Full DuckDB SQL is available — CTEs, window functions,
-      <code>corr()</code>, <code>PIVOT</code>. Click a table name to start a query; click the row
-      to see its columns and caveats, or read the full <a href="dictionary.html">data dictionary</a>. Queries are shareable: the URL carries your SQL. Downloads can carry
-      their <b>method notes</b> — a README with each table's source, unit, caveats and column dictionary —
-      and whole tables can be pulled with the extract row above.
-    </div>
-    <details class="api">
-      <summary>Use the same data from Python, R or the DuckDB CLI</summary>
-<pre># The Parquet files are public static assets — query them over HTTP, no download step.
+    <pre id="err" hidden></pre>
+
+    <section class="qres" aria-label="Results">
+      <div class="qres-bar">
+        <span id="meta">Run a query to see rows here.</span>
+        <button id="dl" class="qbtn" type="button" hidden>Download CSV</button>
+        <button id="tsv" class="qbtn" type="button" hidden title="Copy the rows as tab-separated text, to paste into a spreadsheet">Copy for a spreadsheet</button>
+        <label class="qnotes" title="Bundle a README with the source, unit, caveats and column dictionary for every table the query reads"><input type="checkbox" id="withNotes" checked/> with method notes</label>
+      </div>
+      <div id="out" tabindex="0" role="region" aria-label="Query results"></div>
+    </section>
+
+    <div class="qfoot">
+      <details><summary>Use the same tables from Python, R or the DuckDB CLI</summary>
+<pre># The Parquet files are public static assets: query them over HTTP.
 import duckdb
 duckdb.sql("INSTALL httpfs; LOAD httpfs;")
 duckdb.sql("""
@@ -170,19 +83,18 @@ duckdb.sql("""
 """).show()
 
 # R
-# arrow::read_parquet("https://darbar.adaad.org/data/warehouse/mpi_districts.parquet")
-
-# The table list, schemas and caveats live in
-# https://darbar.adaad.org/data/warehouse/catalog.json</pre>
-    </details>
+arrow::read_parquet("https://darbar.adaad.org/data/warehouse/mpi_districts.parquet")</pre></details>
+      <details><summary>How this works</summary>
+        <p>There is no server. The tables are Parquet files beside this page and <span id="engine2">DuckDB-WASM</span> runs inside your browser: small tables load when the page opens, large ones only when a query names them, and only the parts it reads where the host allows. Full DuckDB SQL works: CTEs, window functions, <code>PIVOT</code>, <code>corr()</code>. The link carries your SQL, so a query can be shared. Downloads can carry method notes: a README with each table's source, unit, caveats and fields.</p></details>
+    </div>
   </main>
 </div>
-<script src="assets/js/warehouse.js?v=9a398a62"></script>
-<script src="assets/js/export.js?v=9a398a62"></script>
-<script src="assets/js/query.js?v=9a398a62"></script>
-<script src="assets/js/shell.js?v=9a398a62"></script>
-<script src="assets/js/modals.js?v=9a398a62"></script>
-<script src="assets/js/analytics.js?v=9a398a62"></script>
+<script src="assets/js/warehouse.js?v=71a11182"></script>
+<script src="assets/js/export.js?v=71a11182"></script>
+<script src="assets/js/query.js?v=71a11182"></script>
+<script src="assets/js/shell.js?v=71a11182"></script>
+<script src="assets/js/modals.js?v=71a11182"></script>
+<script src="assets/js/analytics.js?v=71a11182"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

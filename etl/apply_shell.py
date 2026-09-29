@@ -29,11 +29,10 @@ NAV = [
     {'href': 'state.html',    'label': 'State',     'match': ('state.html',)},
 ]
 SHELF = [
-    # The explorer sits with the analyst tools rather than in the main nav:
-    # it is where you go once you know which series you want, not the way in.
-    {'href': 'explore.html',  'label': 'Compare',   'match': ('explore.html',)},
-    {'href': 'datasets/',     'label': 'Catalogue', 'match': ('datasets/',)},
-    {'href': 'query.html',    'label': 'Query',     'match': ('query.html', 'dictionary.html')},
+    # Compare was retired on 29 September 2026: explore.html redirects to
+    # Economy, and the dictionary folded into the catalogue's field search.
+    {'href': 'datasets/',     'label': 'Catalogue', 'match': ('datasets/', 'dictionary.html')},
+    {'href': 'query.html',    'label': 'Query',     'match': ('query.html',)},
     {'href': 'methods.html',  'label': 'Methods',   'match': ('methods.html', 'about.html', 'methodology.html')},
 ]
 

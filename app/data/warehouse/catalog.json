@@ -3,6 +3,38 @@
  "version": 1,
  "generated": "2026-09-29",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
+ "kinds": [
+  {
+   "key": "geography",
+   "label": "Geography",
+   "about": "Boundaries, the identifiers that name places, and the crosswalks between every frame the site has used. Every other table joins on one of these keys."
+  },
+  {
+   "key": "census",
+   "label": "Census tables",
+   "about": "The 2017 and 2023 census tables as PBS published them, and the index of what can be mapped."
+  },
+  {
+   "key": "places",
+   "label": "Place indicators",
+   "about": "District and tehsil figures from surveys, satellites, the Mouza Census and administrative registers."
+  },
+  {
+   "key": "economy",
+   "label": "Economic series",
+   "about": "National accounts, industry, trade, prices, money and the external balance."
+  },
+  {
+   "key": "state",
+   "label": "State",
+   "about": "The budget, tax, courts, police, power and disasters: what institutions report about themselves."
+  },
+  {
+   "key": "reference",
+   "label": "Reference",
+   "about": "Where the source files came from."
+  }
+ ],
  "tables": [
   {
    "name": "budget_lines",
@@ -59,7 +91,14 @@
      "type": "BOOLEAN",
      "description": "TRUE = own-year Budget Estimate (the reliable column)"
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "doc_fy",
+    "from": "2009-10",
+    "to": "2026-27"
+   },
+   "keys": []
   },
   {
    "name": "census_enrolment_5_16_by_sex",
@@ -246,6 +285,11 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "census",
+   "keys": [
+    "district_key",
+    "district"
    ]
   },
   {
@@ -293,6 +337,10 @@
      "type": "BIGINT",
      "description": "structures enumerated"
     }
+   ],
+   "kind": "census",
+   "keys": [
+    "map_key"
    ]
   },
   {
@@ -400,6 +448,16 @@
      "type": "BOOLEAN",
      "description": "the series key is not unique within this table (31,963 rows)"
     }
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2017"
+   },
+   "keys": [
+    "map_key",
+    "district"
    ]
   },
   {
@@ -532,6 +590,19 @@
      "type": "VARCHAR",
      "description": "the district workbook this row was read from"
     }
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2023",
+    "to": "2023"
+   },
+   "keys": [
+    "dds_id",
+    "dd_id",
+    "adm3_pcode",
+    "map_key",
+    "district"
    ]
   },
   {
@@ -609,7 +680,14 @@
      "type": "VARCHAR",
      "description": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water"
     }
-   ]
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": []
   },
   {
    "name": "census_unit_map",
@@ -666,6 +744,16 @@
      "type": "BIGINT",
      "description": "2017 population, for averaging a rate across combined units"
     }
+   ],
+   "kind": "geography",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": [
+    "map_key",
+    "district"
    ]
   },
   {
@@ -788,7 +876,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "start_date",
+    "from": "2001-07-22",
+    "to": "2025-08-14"
+   },
+   "keys": []
   },
   {
    "name": "climate_impacts",
@@ -875,7 +970,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "period_start",
+    "from": "2026-06-26",
+    "to": "2026-06-26"
+   },
+   "keys": []
   },
   {
    "name": "crops_district_fy",
@@ -932,6 +1034,17 @@
      "type": "DOUBLE",
      "description": "tonnes per hectare; production divided by area"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "fy",
+    "from": "1981-82",
+    "to": "2024-25"
+   },
+   "keys": [
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -974,7 +1087,14 @@
      "type": "BIGINT",
      "description": "people"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2024"
+   },
+   "keys": []
   },
   {
    "name": "diaspora_emigrants_by_skill",
@@ -1006,7 +1126,14 @@
      "type": "BIGINT",
      "description": "people"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1971",
+    "to": "2025"
+   },
+   "keys": []
   },
   {
    "name": "diaspora_emigrants_district",
@@ -1053,6 +1180,17 @@
      "type": "BOOLEAN",
      "description": "TRUE on the 'overall' row \u2014 do not add it to the years"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2024"
+   },
+   "keys": [
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -1080,7 +1218,14 @@
      "type": "BIGINT",
      "description": "people"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2024",
+    "to": "2024"
+   },
+   "keys": []
   },
   {
    "name": "diaspora_remittances_monthly",
@@ -1107,7 +1252,14 @@
      "type": "DOUBLE",
      "description": "remittances, unit as the portal gives it"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2006",
+    "to": "2025"
+   },
+   "keys": []
   },
   {
    "name": "district_crosswalk_2017_2023",
@@ -1159,7 +1311,9 @@
      "type": "BOOLEAN",
      "description": "yes where the two 2017 figures agree to the person"
     }
-   ]
+   ],
+   "kind": "geography",
+   "keys": []
   },
   {
    "name": "district_indicators",
@@ -1236,6 +1390,17 @@
      "type": "VARCHAR",
      "description": "non-numeric value, if any"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
   },
   {
@@ -1283,7 +1448,14 @@
      "type": "BIGINT",
      "description": "PBS\u2019s own flag"
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fy",
+    "from": "1991-92",
+    "to": "2023-24"
+   },
+   "keys": []
   },
   {
    "name": "file_catalog",
@@ -1345,7 +1517,9 @@
      "type": "BOOLEAN",
      "description": "TRUE if its contents are in a table here"
     }
-   ]
+   ],
+   "kind": "reference",
+   "keys": []
   },
   {
    "name": "gdp_growth",
@@ -1397,7 +1571,14 @@
      "type": "VARCHAR",
      "description": "the government in office that year, as PBS labels it"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1951-52",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "gdp_indicators",
@@ -1444,7 +1625,14 @@
      "type": "BIGINT",
      "description": "PBS\u2019s own flag: provisional, revised or final"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1999-00",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "geography_keys",
@@ -1491,7 +1679,9 @@
      "type": "VARCHAR",
      "description": "what to do about it"
     }
-   ]
+   ],
+   "kind": "geography",
+   "keys": []
   },
   {
    "name": "gva_by_activity_annual",
@@ -1538,7 +1728,14 @@
      "type": "BIGINT",
      "description": "PBS\u2019s own flag"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1999-00",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "gva_by_activity_quarterly",
@@ -1590,7 +1787,14 @@
      "type": "BIGINT",
      "description": "PBS\u2019s own flag"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2015-16",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "health_access_district",
@@ -1707,6 +1911,12 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
   },
   {
@@ -1809,6 +2019,12 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "dd_id",
+    "district_key",
+    "province"
    ]
   },
   {
@@ -1996,6 +2212,15 @@
      "type": "VARCHAR",
      "description": ""
     }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
    ]
   },
   {
@@ -2103,6 +2328,16 @@
      "type": "VARCHAR",
      "description": "whether the stock and flow figures reconcile"
     }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "district",
+    "province"
    ]
   },
   {
@@ -2165,6 +2400,15 @@
      "type": "VARCHAR",
      "description": "what 'working' includes"
     }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
    ]
   },
   {
@@ -2257,6 +2501,15 @@
      "type": "VARCHAR",
      "description": ""
     }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2023",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
    ]
   },
   {
@@ -2299,7 +2552,14 @@
      "type": "DOUBLE",
      "description": "% change in the FYTD index"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "month",
+    "from": "2016-07",
+    "to": "2026-05"
+   },
+   "keys": []
   },
   {
    "name": "lsm_sector_indices",
@@ -2346,7 +2606,14 @@
      "type": "DOUBLE",
      "description": "monthly index level"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2005-06",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "mouza_crosswalk",
@@ -2413,6 +2680,14 @@
      "type": "VARCHAR",
      "description": "boundary-file names considered, where the match failed"
     }
+   ],
+   "kind": "geography",
+   "keys": [
+    "tehsil_code",
+    "dd_id",
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -3575,6 +3850,13 @@
      "type": "BIGINT",
      "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "tehsil_code",
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -3667,6 +3949,10 @@
      "type": "DOUBLE",
      "description": "censored headcount: housing (%)"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -3714,7 +4000,14 @@
      "type": "DOUBLE",
      "description": "value \u2014 unit depends on the table"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1951-52",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "nepra_disco_annual",
@@ -3801,7 +4094,14 @@
      "type": "BOOLEAN",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fy",
+    "from": "2006-07",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "nepra_plant_years",
@@ -3853,7 +4153,14 @@
      "type": "DOUBLE",
      "description": "generation that year, where reported"
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fiscal_year",
+    "from": "2017-18",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "nepra_plants",
@@ -3905,7 +4212,9 @@
      "type": "VARCHAR",
      "description": "last year it appears"
     }
-   ]
+   ],
+   "kind": "state",
+   "keys": []
   },
   {
    "name": "place_indicator_index",
@@ -4027,7 +4336,9 @@
      "type": "BOOLEAN",
      "description": ""
     }
-   ]
+   ],
+   "kind": "places",
+   "keys": []
   },
   {
    "name": "place_indicators",
@@ -4084,6 +4395,15 @@
      "type": "DOUBLE",
      "description": "the figure \u2014 unit depends on the indicator, see the index"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2026"
+   },
+   "keys": [
+    "map_key"
    ]
   },
   {
@@ -4211,7 +4531,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2024"
+   },
+   "keys": []
   },
   {
    "name": "police_crime_district",
@@ -4338,7 +4665,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2024"
+   },
+   "keys": []
   },
   {
    "name": "sbp_observations",
@@ -4380,7 +4714,14 @@
      "type": "VARCHAR",
      "description": "SBP status comment, usually empty"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "obs_date",
+    "from": "1947-08-31",
+    "to": "2026-08-31"
+   },
+   "keys": []
   },
   {
    "name": "sbp_series_catalog",
@@ -4723,7 +5064,9 @@
      "since": "2000-06",
      "upto": "2026-06"
     }
-   ]
+   ],
+   "kind": "economy",
+   "keys": []
   },
   {
    "name": "school_access_district",
@@ -4960,6 +5303,11 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district"
    ]
   },
   {
@@ -5102,6 +5450,11 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "dd_id",
+    "district_key"
    ]
   },
   {
@@ -5189,6 +5542,10 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -5271,7 +5628,9 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
-   ]
+   ],
+   "kind": "places",
+   "keys": []
   },
   {
    "name": "school_validation_district",
@@ -5638,6 +5997,10 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -5695,7 +6058,9 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
-   ]
+   ],
+   "kind": "places",
+   "keys": []
   },
   {
    "name": "school_validation_tehsil",
@@ -5857,6 +6222,10 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -6054,6 +6423,12 @@
      "type": "VARCHAR",
      "description": "release tag of this table"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
   },
   {
@@ -6251,7 +6626,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2025"
+   },
+   "keys": []
   },
   {
    "name": "sindh_fir_daily",
@@ -6353,7 +6735,14 @@
      "type": "VARCHAR",
      "description": ""
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "report_date",
+    "from": "2025-09-15",
+    "to": "2025-11-07"
+   },
+   "keys": []
   },
   {
    "name": "subdistrict_crosswalk_2017_2023",
@@ -6415,7 +6804,9 @@
      "type": "BOOLEAN",
      "description": "yes where the two agree"
     }
-   ]
+   ],
+   "kind": "geography",
+   "keys": []
   },
   {
    "name": "tehsil_nightlights",
@@ -6442,6 +6833,15 @@
      "type": "DOUBLE",
      "description": "nW/cm\u00b2/sr, population-weighted mean"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2026"
+   },
+   "keys": [
+    "tehsil_id"
    ]
   },
   {
@@ -6519,6 +6919,11 @@
      "type": "BIGINT",
      "description": "the year nl_latest refers to"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "tehsil_id",
+    "dk"
    ]
   },
   {
@@ -6586,7 +6991,14 @@
      "type": "DOUBLE",
      "description": "exports, US dollars"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "trade_by_group",
@@ -6633,7 +7045,14 @@
      "type": "BIGINT",
      "description": "exports, US dollars"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "trade_hs8",
@@ -6695,7 +7114,14 @@
      "type": "DOUBLE",
      "description": "fiscal-year cumulative value, thousand Rs"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fiscal_year",
+    "from": "2015-16",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "trade_monthly_totals",
@@ -6742,7 +7168,14 @@
      "type": "BIGINT",
      "description": "exports, US dollars"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2003",
+    "to": "2026"
+   },
+   "keys": []
   },
   {
    "name": "trade_reconciliation",
@@ -6869,7 +7302,14 @@
      "type": "BIGINT",
      "description": ""
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
   }
  ],
  "examples": [

@@ -301,10 +301,6 @@ html[data-page="trade"] .step{min-height:70vh}
    the charts. */
 .topic-ctl #sideScale .topic-desc{display:none}
 .topic-bar .eco-meta{background:none;margin:0;padding:0;border:0;font-size:11px;color:var(--muted)}
-.cmpbtn{float:right;margin-left:6px;font-size:11px;font-weight:700;color:var(--green-700);
-  text-decoration:none;padding:4px 9px;border:1px solid var(--line-strong);border-radius:6px;
-  background:var(--surface);line-height:1.4}
-.cmpbtn:hover{border-color:var(--green-500);background:var(--green-100)}
 @media(max-width:1000px){
   .eco-side>.eco-nav{display:none}
   .eco-side.open>.eco-nav{display:flex}
