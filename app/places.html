@@ -4,9 +4,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=a72edc35"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=a72edc35"/>
-<link rel="stylesheet" href="assets/css/places.css?v=a72edc35"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=a0e3ee4c"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=a0e3ee4c"/>
+<link rel="stylesheet" href="assets/css/places.css?v=a0e3ee4c"/>
 <!-- SEO:START -->
 <title>Pakistan District &amp; Tehsil Indicators Map — Data Darbar</title>
 <meta name="description" content="Search 5,635 indicators for Pakistan&#x27;s 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map.">
@@ -31,8 +31,12 @@
 
 <div class="places">
 
-  <aside class="picker" aria-label="Choose a measure">
+  <aside class="picker" id="picker" aria-label="Choose a measure">
     <div class="picker-top">
+      <div class="picker-sheet-head">
+        <span>Choose an indicator</span>
+        <button type="button" class="picker-close" id="pickerClose">Done</button>
+      </div>
       <!-- Search first: someone who knows the name of what they want should
            not have to know which topic it was filed under. -->
       <label class="search-box">
@@ -67,6 +71,11 @@
         <p class="mh-sum" id="legendSub"></p>
       </div>
       <div class="totals" id="totals" hidden></div>
+      <!-- On a phone the picker is a full-height sheet behind this button, so
+           the measure and its map lead the page instead of sitting below the
+           topic list. Hidden on wider screens, where the picker is always open. -->
+      <button type="button" class="mh-change" id="mhChange" aria-controls="picker"
+              aria-expanded="false">Change indicator</button>
     </header>
 
     <div class="map-stage">
@@ -130,11 +139,11 @@
 <!-- /dd:footer -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
-<script src="data/places_index.js?v=a72edc35"></script>
-<script src="assets/js/palette.js?v=a72edc35"></script>
-<script src="assets/js/explorer.js?v=a72edc35"></script>
-<script src="assets/js/places-rail.js?v=a72edc35"></script>
-<script src="assets/js/map-scales.js?v=a72edc35"></script>
-<script src="assets/js/places.js?v=a72edc35"></script>
-<script src="assets/js/shell.js?v=a72edc35"></script>
+<script src="data/places_index.js?v=a0e3ee4c"></script>
+<script src="assets/js/palette.js?v=a0e3ee4c"></script>
+<script src="assets/js/explorer.js?v=a0e3ee4c"></script>
+<script src="assets/js/places-rail.js?v=a0e3ee4c"></script>
+<script src="assets/js/map-scales.js?v=a0e3ee4c"></script>
+<script src="assets/js/places.js?v=a0e3ee4c"></script>
+<script src="assets/js/shell.js?v=a0e3ee4c"></script>
 </body></html>

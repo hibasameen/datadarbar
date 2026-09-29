@@ -688,6 +688,7 @@
 
   function choose(i, norm) {
     state.row = i;
+    if (state.closeSheet) state.closeSheet();
     if (norm !== undefined) state.norm = norm || '';
     /* A conversion does not survive a move to a series that cannot take one.
        Every route in - a search result, a hierarchy choice, a shared link, a
@@ -1727,6 +1728,26 @@
       zoomSnap: 0.25, zoomDelta: 0.5,
       scrollWheelZoom: true, minZoom: 4, maxZoom: 11,
     }).setView([30.2, 69.4], 5);
+
+    /* The picker as a sheet on a phone: opened by "Change indicator", closed
+       by Done, by Escape, or by choosing something - focus goes back to the
+       button that opened it. */
+    var sheet = function (open) {
+      $('picker').classList.toggle('open', open);
+      $('mhChange').setAttribute('aria-expanded', String(open));
+      if (open) { var f = $('indSearch'); if (f) f.focus(); }
+      else if (document.activeElement && $('picker').contains(document.activeElement)) {
+        $('mhChange').focus();
+      }
+    };
+    $('mhChange').onclick = function () { sheet(true); };
+    $('pickerClose').onclick = function () { sheet(false); };
+    $('picker').addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && $('picker').classList.contains('open')) sheet(false);
+    });
+    state.closeSheet = function () {
+      if ($('picker').classList.contains('open')) sheet(false);
+    };
 
     $('geoDistrict').onclick = function () { setLevel('district'); };
     $('geoTehsil').onclick = function () { setLevel('tehsil'); };

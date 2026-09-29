@@ -345,3 +345,25 @@
   /* A library that fits the phone rather than a strip over a 60vh map. */
   .library{position:fixed;inset:0;width:auto;z-index:2000}
 }
+
+/* ── phone: the measure and its map first, the picker as a sheet ─────────── */
+.mh-change,.picker-sheet-head{display:none}
+@media(max-width:860px){
+  .picker{order:0;display:none}
+  .picker.open{display:flex;position:fixed;inset:0;z-index:1500;width:auto;
+    height:100dvh;border:0}
+  .picker.open .rail{max-height:none}
+  .picker-sheet-head{display:flex;align-items:center;justify-content:space-between;
+    font-size:14px;font-weight:800;color:var(--green-900)}
+  .picker-close{height:32px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;
+    background:var(--surface);font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+  .map-wrap{order:1}
+  .detail{order:2}
+  .mh-change{display:inline-flex;align-items:center;height:34px;padding:0 14px;margin-left:auto;
+    border:0;border-radius:8px;background:var(--green-900);color:#fff;font:inherit;
+    font-size:13px;font-weight:700;cursor:pointer}
+  /* The key goes under the map rather than over half of it. */
+  .map-stage{height:auto;display:flex;flex-direction:column}
+  #placesMap{position:relative;inset:auto;height:56vh}
+  .legend{position:static;max-width:none;margin:10px 12px;border-radius:10px}
+}
