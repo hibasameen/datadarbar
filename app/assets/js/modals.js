@@ -89,6 +89,14 @@
 
   /* ---- content ---- */
   var ABOUT = `
+    <h3>Our ambition</h3>
+    <p>Our ambition is to build an open, harmonised research-data infrastructure for Pakistan —
+      a shared foundation for studying the country's economy, society and local development.</p>
+    <p>We are working towards linking data across sources and years through consistent geographical
+      identifiers, documented boundary changes and reproducible methods. The aim is to let researchers,
+      journalists and the public spend more time answering questions and less time rebuilding the data,
+      with clear guidance on where comparisons are reliable, approximate or not supported.</p>
+
     <h3>The project</h3>
     <p>Data Darbar is an open explorer of Pakistan's official statistics. It brings together the
       population census, household and labour-force surveys, 8-digit external-trade data, the national
