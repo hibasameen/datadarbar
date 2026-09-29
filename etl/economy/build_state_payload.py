@@ -128,6 +128,28 @@ def main():
         FROM '{W_}/ljcp_judicial_strength.parquet'
         GROUP BY 1, 2, 3 ORDER BY 1, 2, 4 DESC""")
 
+    # Courts by district, all provinces: the backlog against population and
+    # against the judges in post. Rates on the 2023 census for every year.
+    court_districts = rows(f"""
+        SELECT year, province, district, pending_end, population_2023,
+               pending_per_100k, working_judges, pending_per_working_judge,
+               clearance_rate_pct, sessions_included, hosted_districts
+        FROM '{W_}/ljcp_court_districts.parquet'
+        WHERE pending_end IS NOT NULL
+        ORDER BY year, province, district""")
+
+    # Consolidated strength, every province that printed one, summed over its
+    # session divisions. Islamabad prints working judges only, so its
+    # sanctioned stays empty rather than zero.
+    judges_prov = rows(f"""
+        SELECT year, province, max(as_of_date),
+               CASE WHEN count(sanctioned_judges) = count(*)
+                    THEN sum(sanctioned_judges) END,
+               sum(working_judges), sum(vacant_judges), count(*),
+               max(strength_date_status)
+        FROM '{W_}/ljcp_judges_province.parquet'
+        GROUP BY 1, 2 ORDER BY 1, 2""")
+
     # Crime, the comparable series: PBS's total for each of the nine forces,
     # with AJK's own yearbook total beside it where the two disagree.
     crime = rows(f"""
@@ -373,6 +395,9 @@ def main():
         ('ljcp_case_flows', 'courts', 'pending',
          'Cases pending at year end, court by court', 'courtsPending',
          'courts', 'year'),
+        ('ljcp_court_districts', 'courts', 'districts',
+         'Cases pending by district, per 100,000 people', 'courtsDistricts',
+         'courtDistricts', 'year'),
         ('ljcp_case_flows', 'courts', 'net',
          'Net flow: instituted less disposed', 'courtsNet', 'courts', 'year'),
         ('ljcp_case_flows', 'courts', 'clearance',
@@ -381,6 +406,9 @@ def main():
         ('ljcp_case_flows', 'courts', 'category',
          'Civil and criminal shares of the backlog', 'courtsCategory',
          'courts', 'year'),
+        ('ljcp_judges_province', 'judges', 'provinces',
+         'Judges in post against posts sanctioned, by province',
+         'judgesProvince', 'judgesProvince', 'year'),
         ('ljcp_judicial_strength', 'judges', 'composition',
          'Posts by rank: working, vacant, neither', 'judgesComposition',
          'judges', 'year'),
@@ -488,6 +516,15 @@ def main():
                    'cols': ['year', 'province', 'category', 'pending_start',
                             'instituted', 'disposed', 'pending_end',
                             'clearance_pct']},
+        'courtDistricts': {'rows': court_districts,
+                           'cols': ['year', 'province', 'district', 'pending_end',
+                                    'population_2023', 'per_100k', 'working_judges',
+                                    'per_judge', 'clearance_pct', 'sessions',
+                                    'hosted']},
+        'judgesProvince': {'rows': judges_prov,
+                           'cols': ['year', 'province', 'as_of', 'sanctioned',
+                                    'working', 'vacant', 'divisions',
+                                    'date_status']},
         'judges': {'rows': judges,
                    'cols': ['year', 'province', 'tier', 'sanctioned', 'working',
                             'vacant', 'unaccounted']},
@@ -560,7 +597,7 @@ def main():
         '   etl/economy/build_state_payload.py; do not edit by hand. */\n'
         'window.DD_STATE=' + json.dumps(payload, separators=(',', ':')) + ';\n')
 
-    for k in ('tax', 'courts', 'judges', 'crime', 'offences', 'crimeDistricts',
+    for k in ('tax', 'courts', 'courtDistricts', 'judges', 'judgesProvince', 'crime', 'offences', 'crimeDistricts',
               'sindhCrime', 'firs', 'plants', 'events', 'impacts'):
         print(f'  {k:15s} {len(payload[k]["rows"]):>6,} rows')
     print(f'  -> {out} ({out.stat().st_size/1e3:.1f} KB)')

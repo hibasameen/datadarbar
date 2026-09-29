@@ -1548,6 +1548,84 @@ def build(src: Path, district_only: bool = False) -> None:
          "court_tier": "which courts", "rank_coverage": "which ranks are counted"},
         "Law & Justice Commission of Pakistan", "judicial posts")
 
+    # District courts and consolidated staffing, all provinces. Selected
+    # columns only: the list-valued provenance fields stay in the desktop
+    # warehouse, and the lists that explain a unit are joined into text.
+    f = src / "ljcp/district_policy_indicators.parquet"
+    if f.exists():
+        register(
+            "ljcp_court_districts",
+            "Cases pending in each district's courts at year end, with the "
+            "population and the working judges beside them, 2020 to 2024.",
+            "One all-cases row per year and map district. Rates use the 2023 "
+            "census count for every year, not a population estimate for the "
+            "year. Sessions divisions are keyed to districts by name, "
+            "provisionally; two-seat Balochistan districts and Islamabad are "
+            "summed first, and a district with no court seat of its own is "
+            "added to its host's population (hosted_districts). Working judges "
+            "are matched in 384 of 585 rows: none in 2021, none for KP in 2024, "
+            "and Punjab 2022 is withheld because its staffing is dated 2021. A "
+            "low rate in a district with few courts can mean cases are not "
+            "filed there, not that they are decided quickly; the staffing "
+            "comparison is descriptive, not causal.",
+            {"year": "calendar year", "province": "province or area",
+             "district": "map district (ADM2 key)",
+             "sessions_included": "the sessions divisions summed into it",
+             "hosted_districts": "districts without a seat, counted in its population",
+             "pending_start": "cases pending at the start of the year",
+             "instituted": "cases filed", "disposed": "cases decided",
+             "pending_end": "cases pending at the end of the year",
+             "clearance_rate_pct": "disposals as a percentage of institutions",
+             "population_2023": "Census 2023 population of the district and any hosted",
+             "pending_per_100k": "pending_end per 100,000 people, 2023 census",
+             "pending_per_100k_interpolated": "the same on a population grown between censuses",
+             "working_judges": "judges in post, where matched",
+             "sanctioned_judges": "posts sanctioned, where matched",
+             "pending_per_working_judge": "pending_end / working_judges",
+             "crosswalk_status": "how the sessions division was keyed",
+             "judge_coverage_status": "whether staffing was matched",
+             "stock_flow_check": "whether the stock and flow figures reconcile"},
+            "Law & Justice Commission of Pakistan, annual judicial statistics",
+            f"""SELECT year, province, adm2_key AS district,
+                       array_to_string(sessions_included, '; ') AS sessions_included,
+                       array_to_string(hosted_districts, '; ') AS hosted_districts,
+                       pending_start, instituted, disposed, pending_end,
+                       round(clearance_rate_pct, 2) AS clearance_rate_pct,
+                       population AS population_2023,
+                       round(pending_per_100k_population, 2) AS pending_per_100k,
+                       round(pending_per_100k_interpolated, 2) AS pending_per_100k_interpolated,
+                       working_judges, sanctioned_judges,
+                       round(pending_per_working_judge, 2) AS pending_per_working_judge,
+                       crosswalk_status, judge_coverage_status, stock_flow_check
+                FROM '{f.as_posix()}' ORDER BY year, province, district""",
+            unit="district-years")
+
+    f = src / "ljcp/judicial_strength.parquet"
+    if f.exists():
+        register(
+            "ljcp_judges_province",
+            "Judicial posts sanctioned, filled and vacant in the district "
+            "judiciary, by province and session division, 2020 to 2024.",
+            "Consolidated strength, all ranks together, as each report prints "
+            "it. Not every year is there: no 2021 edition table, KP 2024 not "
+            "found, and Islamabad prints working judges only. Punjab's 2022 "
+            "edition is dated 31 December 2021 (strength_date_status). "
+            "Balochistan's figures sum four rank tables and, from 2022, exclude "
+            "ex-cadre posts, so its 2020 total is not strictly comparable.",
+            {"year": "report year", "as_of_date": "date the strength refers to",
+             "province": "province or area", "session_division": "the session division",
+             "sanctioned_judges": "posts on the establishment",
+             "working_judges": "posts filled", "vacant_judges": "posts unfilled",
+             "strength_date_status": "same_year, or the edition's date differs",
+             "rank_coverage": "how the ranks were counted",
+             "working_definition": "what 'working' includes"},
+            "Law & Justice Commission of Pakistan",
+            f"""SELECT year, as_of_date, province, session_division,
+                       sanctioned_judges, working_judges, vacant_judges,
+                       strength_date_status, rank_coverage, working_definition
+                FROM '{f.as_posix()}' ORDER BY year, province, session_division""",
+            unit="judicial posts")
+
     src_table(
         "police_crime_annual", "regional_police/crime_annual.parquet",
         "Reported offences by province, range and year, 2019 to 2024.",

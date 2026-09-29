@@ -103,6 +103,8 @@ DATASET_NAMES = {
     # explorer rather than held back in the desktop warehouse
     "ljcp_case_flows": "Pakistan court case flows and pendency by province",
     "ljcp_judicial_strength": "Pakistan judicial posts, filled and vacant",
+    "ljcp_court_districts": "Pakistan court backlog by district",
+    "ljcp_judges_province": "Pakistan judges in post by province",
     "police_crime_annual": "Pakistan reported offences by police force and year",
     "police_crime_district": "Pakistan reported offences by district",
     "sindh_crime_annual": "Sindh reported crime by category and year",

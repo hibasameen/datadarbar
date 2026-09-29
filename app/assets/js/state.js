@@ -63,6 +63,8 @@
     return { fy: r[0], fyEnd: r[1], type: r[2], head: r[3], mn: r[4] };
   });
   var courts = asObjects(D.courts), judges = asObjects(D.judges);
+  var courtDistricts = asObjects(D.courtDistricts);
+  var judgesProv = asObjects(D.judgesProvince);
   var crime = asObjects(D.crime), offences = asObjects(D.offences);
   var crimeDistricts = asObjects(D.crimeDistricts);
   var sindhCrime = asObjects(D.sindhCrime), firs = asObjects(D.firs);
@@ -125,7 +127,9 @@
       theme: 'Justice',
       title: 'Case flows and pendency',
       dek: 'What was pending, what came in and what was decided, across four '
-         + 'provinces and Islamabad, 2020 to 2024. Punjab carries 1.5 million '
+         + 'provinces and Islamabad and district by district, 2020 to 2024. '
+         + 'Lahore had 2,700 cases pending for every 100,000 people at the end '
+         + 'of 2024 and 1,291 for each judge in post. Punjab carries 1.5 million '
          + 'of the 1.96 million cases pending; only Khyber Pakhtunkhwa and '
          + 'Islamabad ended 2024 with fewer than they began it. A clearance rate above 100 per '
          + 'cent means a court decided more cases than it received that year. '
@@ -141,13 +145,15 @@
     judges: {
       theme: 'Justice',
       title: 'Judges and vacancies',
-      dek: 'Sanctioned posts against the judges actually sitting in them, by '
-         + 'rank. Of 337 posts in 2024, 235 were filled and 91 stood vacant — '
-         + 'more than a quarter of the bench, and the shortfall sits almost '
+      dek: 'Sanctioned posts against the judges actually sitting in them. '
+         + 'Punjab had 1,565 judges for 2,364 posts in 2024 — a third of its '
+         + 'district bench empty, every year since 2020 — while Sindh filled '
+         + 'nine in ten. In Balochistan, by rank, the shortfall sits almost '
          + 'entirely in the district and sessions ranks.',
-      note: 'Balochistan only, for 2023 and 2024. The other provinces’ '
-          + 'strength tables have not been extracted, so this is not a national '
-          + 'picture and should not be read as one. Working and vacant do not '
+      note: 'The province chart covers every province that printed a '
+          + 'consolidated strength; the charts by rank are Balochistan only, '
+          + 'for 2023 and 2024, because only its rank tables were extracted. '
+          + 'Working and vacant do not '
           + 'add to sanctioned: the source counts as working only judges '
           + 'sitting in their own cadre, so a post filled by an officer on '
           + 'deputation is neither, and the grey remainder is those posts.',
@@ -315,11 +321,13 @@
     budgetGdp: function () { renderBudget('gdp'); },
     budgetTrend: function () { renderBudget('trend'); },
     courtsPending: renderCourtsPending,
+    courtsDistricts: renderCourtsDistricts,
     courtsNet: renderCourtsNet,
     courtsClearance: renderCourtsClearance,
     courtsCategory: renderCourtsCategory,
     judgesComposition: renderJudges,
     judgesVacancy: renderJudgesVacancy,
+    judgesProvince: renderJudgesProvince,
     crimeRate: renderCrimeRate,
     crimeIndexed: renderCrimeIndexed,
     crimeForce: renderCrimeForce,
@@ -782,6 +790,106 @@
           .concat(extra || []));
   }
 
+  /* ── courts by district ──────────────────────────────────────────────── */
+  /* Every district as a dot on its province's line: the spread inside a
+     province is as much the story as the gap between them, and 150 names do
+     not fit a bar chart. The highest in each province is named. */
+  var CD_YEARS = Array.from(new Set(courtDistricts.map(function (d) { return d.year; }))).sort();
+  var cdYear = CD_YEARS[CD_YEARS.length - 1], cdMetric = 'per_100k';
+  function titleCase(s) {
+    return String(s).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function renderCourtsDistricts() {
+    var bar = ctlRow();
+    seg(bar, 'Year', CD_YEARS.map(function (y) { return [y, String(y)]; }), cdYear,
+        function (v) { cdYear = v; render(); });
+    var bar2 = ctlRow();
+    seg(bar2, 'Measure', [['per_100k', 'Per 100,000 people'],
+                          ['per_judge', 'Per working judge']], cdMetric,
+        function (v) { cdMetric = v; render(); });
+    var M = cdMetric, per = M === 'per_judge';
+    var all = courtDistricts.filter(function (d) { return d.year === cdYear; });
+    var rows = all.filter(function (d) { return d[M] != null; });
+    var provs = Array.from(new Set(rows.map(function (d) { return d.province; })))
+      .map(function (p) {
+        var v = rows.filter(function (d) { return d.province === p; })
+          .map(function (d) { return d[M]; }).sort(d3.ascending);
+        return { p: p, med: d3.median(v), n: v.length };
+      }).sort(function (a, b) { return b.med - a.med; });
+    var missing = Array.from(new Set(all.map(function (d) { return d.province; })))
+      .filter(function (p) { return !provs.some(function (q) { return q.p === p; }); });
+    cover([String(cdYear), rows.length + ' districts',
+           Math.round(d3.sum(all, function (d) { return d.pending_end; })).toLocaleString()
+             + ' cases pending',
+           per ? 'judges in post where matched' : 'rates on the 2023 census']);
+    if (!rows.length) {
+      var h0 = chartHost(120);
+      h0.say('No district has a matched count of working judges in ' + cdYear + '.',
+             'The 2021 report’s staffing tables were not extracted. Switch to '
+           + 'per 100,000 people to see this year.');
+      return;
+    }
+    var rowH = 46, host = chartHost(provs.length * rowH + 60);
+    var W = host.w, svg = host.svg;
+    var m = fit({ top: 24, right: 24, bottom: 30, left: 150 }, W);
+    var y = d3.scaleBand().domain(provs.map(function (d) { return d.p; }))
+      .range([m.top, m.top + provs.length * rowH]).padding(0.3);
+    var x = d3.scaleLinear().domain([0, d3.max(rows, function (d) { return d[M]; })]).nice()
+      .range([m.left, W - m.right]);
+    var fmt = function (v) { return Math.round(v).toLocaleString(); };
+    svg.append('g').selectAll('line').data(x.ticks(6)).join('line')
+      .attr('x1', x).attr('x2', x).attr('y1', m.top - 6)
+      .attr('y2', m.top + provs.length * rowH).attr('stroke', muted()).attr('opacity', 0.18);
+    provs.forEach(function (P) {
+      var cy = y(P.p) + y.bandwidth() / 2;
+      svg.append('line').attr('x1', m.left).attr('x2', W - m.right)
+        .attr('y1', cy).attr('y2', cy).attr('stroke', muted()).attr('opacity', 0.35);
+      svg.append('line').attr('x1', x(P.med)).attr('x2', x(P.med))
+        .attr('y1', cy - 12).attr('y2', cy + 12).attr('stroke', ink()).attr('stroke-width', 2);
+      svg.append('text').attr('x', m.left - 10).attr('y', cy - 2).attr('text-anchor', 'end')
+        .attr('font-size', 12).attr('fill', ink()).text(P.p);
+      svg.append('text').attr('x', m.left - 10).attr('y', cy + 12).attr('text-anchor', 'end')
+        .attr('font-size', 10.5).attr('fill', muted())
+        .text(P.n + (P.n === 1 ? ' unit' : ' districts') + ' · median ' + fmt(P.med));
+      var ds = rows.filter(function (d) { return d.province === P.p; });
+      svg.append('g').selectAll('circle').data(ds).join('circle')
+        .attr('cx', function (d) { return x(d[M]); }).attr('cy', cy)
+        .attr('r', 5.5).attr('fill', DDPalette.accent()).attr('fill-opacity', 0.55)
+        .attr('stroke', DDPalette.accent())
+        .append('title').text(function (d) {
+          return titleCase(d.district) + ', ' + d.province + ' · ' + cdYear
+            + '\n' + fmt(d.pending_end) + ' cases pending'
+            + '\n' + fmt(d.per_100k) + ' per 100,000 people (2023 census, '
+            + fmt(d.population_2023) + ')'
+            + (d.per_judge != null ? '\n' + fmt(d.per_judge) + ' per working judge ('
+                                     + d.working_judges + ' judges)' : '\nno matched staffing')
+            + (d.clearance_pct != null ? '\nclearance ' + d.clearance_pct.toFixed(0) + '%' : '')
+            + (d.sessions && d.sessions !== d.district ? '\nsessions: ' + titleCase(d.sessions) : '')
+            + (d.hosted ? '\nalso counts the population of ' + titleCase(d.hosted) : '');
+        });
+      var top = ds.reduce(function (a, b) { return b[M] > a[M] ? b : a; });
+      if (ds.length > 1) svg.append('text').attr('x', Math.min(x(top[M]), W - m.right - 4)).attr('y', cy - 10)
+        .attr('text-anchor', x(top[M]) > W - m.right - 60 ? 'end' : 'middle')
+        .attr('font-size', 10.5).attr('fill', ink()).text(titleCase(top.district));
+    });
+    svg.append('g').attr('transform', 'translate(0,' + (m.top + provs.length * rowH) + ')')
+      .call(d3.axisBottom(x).ticks(6).tickFormat(function (v) { return v.toLocaleString(); }))
+      .attr('color', muted()).attr('font-size', 11);
+    host.say((per ? 'Cases pending at the end of ' + cdYear + ' for each judge in post, '
+                  : 'Cases pending at the end of ' + cdYear + ' per 100,000 people, ')
+             + 'one dot per district, with each province’s median as a bar. '
+             + 'Hover a dot for the district.',
+             (per ? 'Judges are matched to districts in 384 of 585 district-years: none in '
+                  + '2021, none for Khyber Pakhtunkhwa in 2024, and Punjab 2022 is left out '
+                  + 'because its staffing is dated 2021. '
+                  : 'The population is the 2023 census for every year, not an estimate for '
+                  + 'the year. ')
+           + 'A low figure where courts are few can mean cases are not filed, not that '
+           + 'they are decided quickly; none of this shows that staffing causes backlog.'
+           + (missing.length ? ' Not in this view: ' + missing.join(', ') + '.' : ''));
+  }
+
   /* One panel per court, its own scale. The stock is a line with its points;
      the panel's caption carries where it ended and how far it moved. */
   function renderCourtsPending() {
@@ -963,7 +1071,9 @@
 
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
-    var m = fit({ top: 10, right: 120, bottom: 10, left: 196 }, W);
+    // The key sits in its own row above the bars: in the right gutter it
+    // collided with the longest bar's label.
+    var m = fit({ top: 34, right: 84, bottom: 10, left: 196 }, W);
     var parts = [['working', 'Working', '#1e6b3e'],
                  ['vacant', 'Vacant', '#d4a017'],
                  ['unaccounted', 'Neither', '#b9bfc6']];
@@ -999,19 +1109,77 @@
       ? '‘Neither’ is ' + tot('unaccounted') + ' posts counted as neither working '
         + 'nor vacant — the table excludes ex-cadre officers'
       : '';
-    host.say('Sanctioned posts, by what fills them · ' + year, foot);
-    legend(svg, parts.map(function (p) { return p[1]; }),
-           d3.scaleOrdinal().domain(parts.map(function (p) { return p[1]; }))
-             .range(parts.map(function (p) { return p[2]; })),
-           W, { top: 26, right: m.right },
-           function (k) {
-             var f = parts.filter(function (p) { return p[1] === k; })[0][0];
-             return k + '  ' + tot(f);
-           });
+    host.say('Balochistan: sanctioned posts, by what fills them · ' + year, foot);
+    var kx = m.left;
+    parts.forEach(function (p) {
+      if (!tot(p[0])) return;
+      var g = svg.append('g').attr('transform', 'translate(' + kx + ',8)');
+      g.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2).attr('fill', p[2]);
+      var t = g.append('text').attr('x', 15).attr('y', 9).attr('font-size', 11.5)
+        .attr('fill', ink()).text(p[1] + '  ' + tot(p[0]));
+      kx += 15 + t.node().getComputedTextLength() + 18;
+    });
   }
 
   /* Two years, six ranks: a dumbbell of the vacancy rate, which is what a
      twelve-line chart of working and vacant was trying to say. */
+  /* Every province that printed a consolidated strength: a track for the
+     posts sanctioned, filled to the judges in post. The empty end is the
+     shortfall, whatever the source calls it. */
+  var JP_YEARS = Array.from(new Set(judgesProv.filter(function (d) {
+    return d.sanctioned != null; }).map(function (d) { return d.year; }))).sort();
+  var jpYear = JP_YEARS[JP_YEARS.length - 1];
+
+  function renderJudgesProvince() {
+    var bar = ctlRow();
+    seg(bar, 'Year', JP_YEARS.map(function (y) { return [y, String(y)]; }), jpYear,
+        function (v) { jpYear = v; render(); });
+    var yr = judgesProv.filter(function (d) { return d.year === jpYear; });
+    var rows = yr.filter(function (d) { return d.sanctioned != null && d.working != null; })
+      .map(function (d) {
+        d.empty = 100 * (d.sanctioned - d.working) / d.sanctioned; return d; })
+      .sort(function (a, b) { return b.empty - a.empty; });
+    var off = yr.filter(function (d) { return rows.indexOf(d) < 0; });
+    var S = d3.sum(rows, function (d) { return d.sanctioned; }),
+        Wk = d3.sum(rows, function (d) { return d.working; });
+    cover([String(jpYear), rows.length + ' provinces',
+           Wk.toLocaleString() + ' judges in post of ' + S.toLocaleString() + ' posts',
+           Math.round(100 * (S - Wk) / S) + '% without a judge']);
+    var rowH = 54, host = chartHost(rows.length * rowH + 40);
+    var W = host.w, svg = host.svg;
+    var m = fit({ top: 10, right: 20, bottom: 10, left: 150 }, W);
+    var x = d3.scaleLinear().domain([0, 100]).range([m.left, W - m.right]);
+    rows.forEach(function (d, i) {
+      var top = m.top + i * rowH, h = 18;
+      var g = svg.append('g');
+      g.append('rect').attr('x', x(0)).attr('y', top + 8).attr('width', x(100) - x(0))
+        .attr('height', h).attr('rx', 3).attr('fill', 'var(--rust)').attr('opacity', 0.28);
+      g.append('rect').attr('x', x(0)).attr('y', top + 8)
+        .attr('width', x(100 - d.empty) - x(0)).attr('height', h).attr('rx', 3)
+        .attr('fill', DDPalette.accent());
+      g.append('text').attr('x', m.left - 10).attr('y', top + 21).attr('text-anchor', 'end')
+        .attr('font-size', 12).attr('fill', ink()).text(d.province);
+      g.append('text').attr('x', x(0)).attr('y', top + h + 22).attr('font-size', 10.5)
+        .attr('fill', muted())
+        .text(d.working.toLocaleString() + ' in post of ' + d.sanctioned.toLocaleString()
+              + ' sanctioned · ' + d.empty.toFixed(0) + '% without a judge'
+              + (d.date_status !== 'same_year' ? ' · as at ' + d.as_of : ''));
+      g.append('title').text(d.province + ', ' + jpYear + '\n' + d.sanctioned + ' sanctioned, '
+        + d.working + ' working, ' + d.vacant + ' reported vacant\n'
+        + d.divisions + ' session divisions · strength as at ' + d.as_of);
+    });
+    host.say('Judicial posts in the district courts, ' + jpYear + ': the full bar is the posts '
+           + 'sanctioned, the filled part the judges in post, the pale end the posts without one.',
+             'Working excludes officers on deputation outside their cadre, so working and '
+           + 'reported vacant do not always add to sanctioned. Balochistan sums four rank '
+           + 'tables and counts fewer ranks than the chart by rank. '
+           + (off.length ? 'Not drawn: ' + off.map(function (d) {
+               return d.province + (d.working ? ' (' + d.working + ' judges; no sanctioned figure)' : '');
+             }).join(', ') + '. ' : '')
+           + (jpYear === 2024 ? 'Khyber Pakhtunkhwa’s 2024 staffing was not found. ' : '')
+           + 'No 2021 staffing tables were extracted.');
+  }
+
   function renderJudgesVacancy() {
     var years = Array.from(new Set(judges.map(function (d) { return d.year; }))).sort(d3.ascending);
     var a = years[0], b = years[years.length - 1];
@@ -2477,6 +2645,7 @@
     impactsMetric: 'impacts', impactsPanel: 'impacts',
     eventsTimeline: 'events', eventsCount: 'events',
     judgesVacancy: 'judges', judgesComposition: 'judges',
+    courtsDistricts: 'courtDistricts', judgesProvince: 'judgesProvince',
     courtsPending: 'courts', courtsClearance: 'courts',
     courtsNet: 'courts', courtsCategory: 'courts',
     taxStack: 'tax', taxGdp: 'tax', taxShare: 'tax', taxShift: 'tax',
@@ -2504,6 +2673,13 @@
       var i = cols.indexOf('metric'), m = state.ind;
       return { rows: rows.filter(function (r) { return r[i] === m; }),
                view: { metric: m } };
+    },
+    courtsDistricts: function (rows, cols) {
+      var i = cols.indexOf('year');
+      return { rows: rows.filter(function (r) { return r[i] === cdYear; }),
+               view: { year: cdYear,
+                       'rates': 'per_100k uses the 2023 census for every year; '
+                              + 'per_judge = pending_end / working_judges' } };
     },
     plantsUsed: function (rows, cols) {
       var f = cols.indexOf('fy');

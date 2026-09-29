@@ -315,6 +315,23 @@ STATE = {
     calc='each category divided by civil plus criminal'),
  'judgesComposition': dict(publication='Judicial strength returns',
     selection='sanctioned posts by rank: working, vacant, and neither'),
+ 'courtsDistricts': dict(publication='Judicial Statistics of Pakistan, district tables',
+    selection='all cases pending at year end in each district\u2019s courts, '
+              'sessions divisions keyed to map districts',
+    calc='per 100,000 = pending / 2023 census population x 100,000; per judge '
+         '= pending / working judges in the same report',
+    note='Derived. The 2023 census is used for every year. Name matches between '
+         'sessions divisions and districts are provisional; two-seat districts '
+         'and Islamabad are summed, and districts without a court seat add their '
+         'population to the host. Staffing matched in 384 of 585 district-years. '
+         'Descriptive: it does not show that staffing causes backlog.'),
+ 'judgesProvince': dict(publication='Judicial strength returns, consolidated',
+    selection='posts sanctioned and judges working in the district judiciary, '
+              'summed over each province\u2019s session divisions',
+    calc='without a judge = (sanctioned - working) / sanctioned',
+    note='Islamabad prints working judges only and Balochistan 2022 lacks a '
+         'sanctioned figure for some divisions, so they are not drawn. Punjab\u2019s '
+         '2022 edition is dated 31 December 2021. KP 2024 was not found.'),
  'judgesVacancy': dict(publication='Judicial strength returns',
     selection='vacant posts as a share of sanctioned, by rank, first year '
               'against last',
@@ -467,6 +484,8 @@ STATE_PUBLISHER = {
     'budget_lines': 'Finance Division',
     'ljcp_case_flows': 'Law and Justice Commission of Pakistan',
     'ljcp_judicial_strength': 'Law and Justice Commission of Pakistan',
+    'ljcp_court_districts': 'Law and Justice Commission of Pakistan',
+    'ljcp_judges_province': 'Law and Justice Commission of Pakistan',
     'police_crime_annual': 'Pakistan Bureau of Statistics, from provincial police returns',
     'sindh_crime_annual': 'Sindh Police',
     'sindh_fir_daily': 'Sindh Police',

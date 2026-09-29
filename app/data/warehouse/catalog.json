@@ -298,7 +298,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201226,
+   "bytes": 8201176,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -1995,6 +1995,175 @@
      "name": "source_record_id",
      "type": "VARCHAR",
      "description": ""
+    }
+   ]
+  },
+  {
+   "name": "ljcp_court_districts",
+   "file": "ljcp_court_districts.parquet",
+   "bytes": 20233,
+   "rows": 585,
+   "description": "Cases pending in each district's courts at year end, with the population and the working judges beside them, 2020 to 2024.",
+   "notes": "One all-cases row per year and map district. Rates use the 2023 census count for every year, not a population estimate for the year. Sessions divisions are keyed to districts by name, provisionally; two-seat Balochistan districts and Islamabad are summed first, and a district with no court seat of its own is added to its host's population (hosted_districts). Working judges are matched in 384 of 585 rows: none in 2021, none for KP in 2024, and Punjab 2022 is withheld because its staffing is dated 2021. A low rate in a district with few courts can mean cases are not filed there, not that they are decided quickly; the staffing comparison is descriptive, not causal.",
+   "unit": "district-years",
+   "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "map district (ADM2 key)"
+    },
+    {
+     "name": "sessions_included",
+     "type": "VARCHAR",
+     "description": "the sessions divisions summed into it"
+    },
+    {
+     "name": "hosted_districts",
+     "type": "VARCHAR",
+     "description": "districts without a seat, counted in its population"
+    },
+    {
+     "name": "pending_start",
+     "type": "BIGINT",
+     "description": "cases pending at the start of the year"
+    },
+    {
+     "name": "instituted",
+     "type": "BIGINT",
+     "description": "cases filed"
+    },
+    {
+     "name": "disposed",
+     "type": "BIGINT",
+     "description": "cases decided"
+    },
+    {
+     "name": "pending_end",
+     "type": "BIGINT",
+     "description": "cases pending at the end of the year"
+    },
+    {
+     "name": "clearance_rate_pct",
+     "type": "DOUBLE",
+     "description": "disposals as a percentage of institutions"
+    },
+    {
+     "name": "population_2023",
+     "type": "BIGINT",
+     "description": "Census 2023 population of the district and any hosted"
+    },
+    {
+     "name": "pending_per_100k",
+     "type": "DOUBLE",
+     "description": "pending_end per 100,000 people, 2023 census"
+    },
+    {
+     "name": "pending_per_100k_interpolated",
+     "type": "DOUBLE",
+     "description": "the same on a population grown between censuses"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "judges in post, where matched"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts sanctioned, where matched"
+    },
+    {
+     "name": "pending_per_working_judge",
+     "type": "DOUBLE",
+     "description": "pending_end / working_judges"
+    },
+    {
+     "name": "crosswalk_status",
+     "type": "VARCHAR",
+     "description": "how the sessions division was keyed"
+    },
+    {
+     "name": "judge_coverage_status",
+     "type": "VARCHAR",
+     "description": "whether staffing was matched"
+    },
+    {
+     "name": "stock_flow_check",
+     "type": "VARCHAR",
+     "description": "whether the stock and flow figures reconcile"
+    }
+   ]
+  },
+  {
+   "name": "ljcp_judges_province",
+   "file": "ljcp_judges_province.parquet",
+   "bytes": 5455,
+   "rows": 466,
+   "description": "Judicial posts sanctioned, filled and vacant in the district judiciary, by province and session division, 2020 to 2024.",
+   "notes": "Consolidated strength, all ranks together, as each report prints it. Not every year is there: no 2021 edition table, KP 2024 not found, and Islamabad prints working judges only. Punjab's 2022 edition is dated 31 December 2021 (strength_date_status). Balochistan's figures sum four rank tables and, from 2022, exclude ex-cadre posts, so its 2020 total is not strictly comparable.",
+   "unit": "judicial posts",
+   "source": "Law & Justice Commission of Pakistan",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "report year"
+    },
+    {
+     "name": "as_of_date",
+     "type": "DATE",
+     "description": "date the strength refers to"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "session_division",
+     "type": "VARCHAR",
+     "description": "the session division"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts on the establishment"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "posts filled"
+    },
+    {
+     "name": "vacant_judges",
+     "type": "DOUBLE",
+     "description": "posts unfilled"
+    },
+    {
+     "name": "strength_date_status",
+     "type": "VARCHAR",
+     "description": "same_year, or the edition's date differs"
+    },
+    {
+     "name": "rank_coverage",
+     "type": "VARCHAR",
+     "description": "how the ranks were counted"
+    },
+    {
+     "name": "working_definition",
+     "type": "VARCHAR",
+     "description": "what 'working' includes"
     }
    ]
   },
@@ -3741,8 +3910,8 @@
   {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
-   "bytes": 123033,
-   "rows": 5664,
+   "bytes": 122522,
+   "rows": 5635,
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
