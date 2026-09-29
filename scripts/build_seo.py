@@ -125,6 +125,7 @@ BASE_PAGES = {
     # page any of them has.
     "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
+    "about.html": ("About Data Darbar — Pakistan in Numbers", "What Data Darbar is, what it covers across Places, Economy and State, how it is built and who built it."),
     "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),
 }
 
@@ -290,12 +291,11 @@ def build():
         '</head><body style="font-family:system-ui;padding:40px;background:#faf7ef;color:#17301f">\n'
         'The dictionary is now part of the <a href="datasets/#fields">data catalogue</a>, '
         'which searches every field in every table.\n</body></html>\n')
-    # About and Methodology merged into Methods when the redesign collapsed
-    # them. They stay as redirects rather than as pages, so an old link still
-    # lands and the same text is not published at three URLs - which is both a
-    # duplicate-content problem and a way for two copies to drift.
+    # Methodology merged into Methods when the redesign collapsed the pages.
+    # It stays as a redirect rather than a page, so an old link still lands and
+    # the same text is not published at two URLs. About came back as a page of
+    # its own (30 Sep 2026) and is in BASE_PAGES.
     for path, title, what, frag in (
-        ("/about.html", "About", "About Data Darbar", "#the-project"),
         ("/methodology.html", "Methodology", "Methodology and sources",
          "#places-the-map"),
     ):

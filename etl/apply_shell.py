@@ -33,7 +33,10 @@ SHELF = [
     # Economy, and the dictionary folded into the catalogue's field search.
     {'href': 'datasets/',     'label': 'Catalogue', 'match': ('datasets/', 'dictionary.html')},
     {'href': 'query.html',    'label': 'Query',     'match': ('query.html',)},
-    {'href': 'methods.html',  'label': 'Methods',   'match': ('methods.html', 'about.html', 'methodology.html')},
+    {'href': 'methods.html',  'label': 'Methods',   'match': ('methods.html', 'methodology.html')},
+    # About was folded into Methods in the redesign and came back as its own
+    # page on 30 September 2026: who built this and why is not a method.
+    {'href': 'about.html',    'label': 'About',     'match': ('about.html',)},
 ]
 
 BURGER = ('<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
