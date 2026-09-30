@@ -1313,7 +1313,7 @@
     crimeCover([base + ' = 100', keys.length - 1 + ' forces and the national total']);
     lineChart(rows, keys, years, 'value', 'reported cases, ' + base + ' = 100',
       function (v) { return Math.round(v); },
-      { colour: function (k) { return k === 'Pakistan' ? '#111' : palette(keys)(k); },
+      { colour: function (k) { return k === 'Pakistan' ? 'var(--teal-700)' : palette(keys)(k); },
         width: function (k) { return k === 'Pakistan' ? 3 : 1.8; },
         lede: 'Each force’s reported cases as an index of its own ' + base + ' figure. '
             + 'The thick black line is the national total.',
@@ -1583,7 +1583,7 @@
 
   var FAMILY_ORDER = ['Hydro', 'Nuclear', 'Coal', 'Gas', 'Oil and mixed thermal',
                       'Wind', 'Solar', 'Bagasse and biogas'];
-  var FAMILY_COLOUR = { Hydro: '#2f5d7c', Nuclear: '#6b4c7a', Coal: '#3a3a3a',
+  var FAMILY_COLOUR = { Hydro: '#2f5d7c', Nuclear: '#6b4c7a', Coal: '#7b5a3c',
                         Gas: '#b5651d', 'Oil and mixed thermal': '#a8452f',
                         Wind: '#3f9aa3', Solar: '#d4a017', 'Bagasse and biogas': '#5c6b3a' };
 
@@ -1684,7 +1684,7 @@
            'CPPA-G system, not K-Electric']);
     lineChart(rows, keys, years, 'value', '% of capacity used',
       function (v) { return v.toFixed(0) + '%'; },
-      { colour: function (k) { return k === ALL ? ink() : FAMILY_COLOUR[k]; },
+      { colour: function (k) { return k === ALL ? 'var(--teal-700)' : FAMILY_COLOUR[k]; },
         width: function (k) { return k === ALL ? 3.2 : 1.6; },
         tick: function (i) { return PLANT_YEARS[i]; },
         lede: 'Electricity generated as a share of what the reported capacity could '

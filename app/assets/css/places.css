@@ -405,3 +405,15 @@
 .pts-key{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--muted)}
 .pts-key span{display:inline-flex;align-items:center;gap:5px}
 .pts-src{margin-left:auto;font-size:10.5px;color:var(--muted-2)}
+
+/* Phones: the search box, the province menu and Share/CSV do not fit on one
+   row, and side by side the province menu ran under Share and CSV and pushed
+   the page wider than the screen. Search takes the first row; the province
+   menu shares the second with Share and CSV. */
+@media(max-width:700px){
+  .map-tools{left:12px;right:12px;top:10px;flex-wrap:wrap;gap:8px}
+  .map-tools .tool:first-child{flex:1 1 100%}
+  .map-tools .tool input{width:100%;min-width:0}
+  .map-tools #provFilter{flex:0 1 auto;width:calc(100% - 133px);min-width:0}
+  .map-tools-right{right:12px;top:52px}
+}
