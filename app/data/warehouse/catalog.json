@@ -2,7 +2,7 @@
  "name": "Data Darbar",
  "version": 1,
  "generated": "2026-09-30",
- "license": "Derived data CC BY 4.0 \u00b7 code MIT",
+ "license": "Derived data CC BY 4.0 · code MIT",
  "kinds": [
   {
    "key": "geography",
@@ -41,8 +41,8 @@
    "file": "budget_lines.parquet",
    "bytes": 118845,
    "rows": 23271,
-   "description": "Federal budget line items from the Budget in Brief documents, FY2009-10 \u2192 FY2026-27.",
-   "notes": "Rs million. Each printed row carried 1\u20134 numeric columns; is_own_year_be = TRUE marks the document's own-year Budget Estimate, which is the only column safe to string into a time series. The low-numbered 'Budget at a Glance' tables extract noisily and item wording drifts between years \u2014 match with ILIKE and sanity-check.",
+   "description": "Federal budget line items from the Budget in Brief documents, FY2009-10 → FY2026-27.",
+   "notes": "Rs million. Each printed row carried 1–4 numeric columns; is_own_year_be = TRUE marks the document's own-year Budget Estimate, which is the only column safe to string into a time series. The low-numbered 'Budget at a Glance' tables extract noisily and item wording drifts between years — match with ILIKE and sanity-check.",
    "unit": "Rs million",
    "source": "Finance Division, Budget in Brief (PDF)",
    "columns": [
@@ -105,8 +105,8 @@
    "file": "census_enrolment_5_16_by_sex.parquet",
    "bytes": 22611,
    "rows": 130,
-   "description": "Census 2023 Table 13(b): population and enrolment aged 5\u201316 by sex and rural/urban, one row per district on the 2017 boundary frame.",
-   "notes": "Successor districts are summed into their 2017 parents (constituents lists them), so rates are on the same frame as school_access_district; 130 rows. *_in_school_pct = enrolled \u00f7 population aged 5\u201316. *_never and *_out_of_school follow PBS's definitions (never attended; never attended plus dropped out). This is the age-matched outcome the piece uses; Table 12's all-ages complement runs about 0.7 points higher.",
+   "description": "Census 2023 Table 13(b): population and enrolment aged 5–16 by sex and rural/urban, one row per district on the 2017 boundary frame.",
+   "notes": "Successor districts are summed into their 2017 parents (constituents lists them), so rates are on the same frame as school_access_district; 130 rows. *_in_school_pct = enrolled ÷ population aged 5–16. *_never and *_out_of_school follow PBS's definitions (never attended; never attended plus dropped out). This is the age-matched outcome the piece uses; Table 12's all-ages complement runs about 0.7 points higher.",
    "unit": "persons; per cent",
    "source": "PBS Population and Housing Census 2023, district Table 13(b), via github.com/fahad-mirza/pakistan_census_2023_tables",
    "columns": [
@@ -118,122 +118,122 @@
     {
      "name": "girls_pop_5_16",
      "type": "DOUBLE",
-     "description": "girls pop, ages 5\u201316"
+     "description": "girls pop, ages 5–16"
     },
     {
      "name": "girls_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "girls enrolled, ages 5\u201316"
+     "description": "girls enrolled, ages 5–16"
     },
     {
      "name": "girls_never_5_16",
      "type": "DOUBLE",
-     "description": "girls never, ages 5\u201316"
+     "description": "girls never, ages 5–16"
     },
     {
      "name": "boys_pop_5_16",
      "type": "DOUBLE",
-     "description": "boys pop, ages 5\u201316"
+     "description": "boys pop, ages 5–16"
     },
     {
      "name": "boys_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "boys enrolled, ages 5\u201316"
+     "description": "boys enrolled, ages 5–16"
     },
     {
      "name": "boys_never_5_16",
      "type": "DOUBLE",
-     "description": "boys never, ages 5\u201316"
+     "description": "boys never, ages 5–16"
     },
     {
      "name": "girls_rural_pop_5_16",
      "type": "DOUBLE",
-     "description": "girls rural pop, ages 5\u201316"
+     "description": "girls rural pop, ages 5–16"
     },
     {
      "name": "girls_rural_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "girls rural enrolled, ages 5\u201316"
+     "description": "girls rural enrolled, ages 5–16"
     },
     {
      "name": "girls_rural_never_5_16",
      "type": "DOUBLE",
-     "description": "girls rural never, ages 5\u201316"
+     "description": "girls rural never, ages 5–16"
     },
     {
      "name": "boys_rural_pop_5_16",
      "type": "DOUBLE",
-     "description": "boys rural pop, ages 5\u201316"
+     "description": "boys rural pop, ages 5–16"
     },
     {
      "name": "boys_rural_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "boys rural enrolled, ages 5\u201316"
+     "description": "boys rural enrolled, ages 5–16"
     },
     {
      "name": "boys_rural_never_5_16",
      "type": "DOUBLE",
-     "description": "boys rural never, ages 5\u201316"
+     "description": "boys rural never, ages 5–16"
     },
     {
      "name": "girls_urban_pop_5_16",
      "type": "DOUBLE",
-     "description": "girls urban pop, ages 5\u201316"
+     "description": "girls urban pop, ages 5–16"
     },
     {
      "name": "girls_urban_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "girls urban enrolled, ages 5\u201316"
+     "description": "girls urban enrolled, ages 5–16"
     },
     {
      "name": "girls_urban_never_5_16",
      "type": "DOUBLE",
-     "description": "girls urban never, ages 5\u201316"
+     "description": "girls urban never, ages 5–16"
     },
     {
      "name": "boys_urban_pop_5_16",
      "type": "DOUBLE",
-     "description": "boys urban pop, ages 5\u201316"
+     "description": "boys urban pop, ages 5–16"
     },
     {
      "name": "boys_urban_enrolled_5_16",
      "type": "DOUBLE",
-     "description": "boys urban enrolled, ages 5\u201316"
+     "description": "boys urban enrolled, ages 5–16"
     },
     {
      "name": "boys_urban_never_5_16",
      "type": "DOUBLE",
-     "description": "boys urban never, ages 5\u201316"
+     "description": "boys urban never, ages 5–16"
     },
     {
      "name": "girls_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "girls out of school, ages 5\u201316"
+     "description": "girls out of school, ages 5–16"
     },
     {
      "name": "boys_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "boys out of school, ages 5\u201316"
+     "description": "boys out of school, ages 5–16"
     },
     {
      "name": "girls_rural_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "girls rural out of school, ages 5\u201316"
+     "description": "girls rural out of school, ages 5–16"
     },
     {
      "name": "boys_rural_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "boys rural out of school, ages 5\u201316"
+     "description": "boys rural out of school, ages 5–16"
     },
     {
      "name": "girls_urban_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "girls urban out of school, ages 5\u201316"
+     "description": "girls urban out of school, ages 5–16"
     },
     {
      "name": "boys_urban_out_of_school_5_16",
      "type": "DOUBLE",
-     "description": "boys urban out of school, ages 5\u201316"
+     "description": "boys urban out of school, ages 5–16"
     },
     {
      "name": "constituents",
@@ -243,37 +243,37 @@
     {
      "name": "girls_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls enrolled \u00f7 population 5\u201316, %"
+     "description": "girls enrolled ÷ population 5–16, %"
     },
     {
      "name": "boys_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys enrolled \u00f7 population 5\u201316, %"
+     "description": "boys enrolled ÷ population 5–16, %"
     },
     {
      "name": "girls_rural_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls rural enrolled \u00f7 population 5\u201316, %"
+     "description": "girls rural enrolled ÷ population 5–16, %"
     },
     {
      "name": "boys_rural_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys rural enrolled \u00f7 population 5\u201316, %"
+     "description": "boys rural enrolled ÷ population 5–16, %"
     },
     {
      "name": "girls_urban_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls urban enrolled \u00f7 population 5\u201316, %"
+     "description": "girls urban enrolled ÷ population 5–16, %"
     },
     {
      "name": "boys_urban_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys urban enrolled \u00f7 population 5\u201316, %"
+     "description": "boys urban enrolled ÷ population 5–16, %"
     },
     {
      "name": "enrol_gap_pp",
      "type": "DOUBLE",
-     "description": "boys_in_school_pct \u2212 girls_in_school_pct"
+     "description": "boys_in_school_pct − girls_in_school_pct"
     },
     {
      "name": "district_key",
@@ -297,8 +297,8 @@
    "file": "census_entities.parquet",
    "bytes": 61415,
    "rows": 15387,
-   "description": "Census 2023\u2019s count of enumerated structures \u2014 24 kinds, from schools and hospitals to factories, mosques and police stations \u2014 by district and tehsil.",
-   "notes": "The only table here that covers the whole frame Data Darbar draws: 156 districts and 649 tehsils, every district of Azad Jammu & Kashmir and Gilgit-Baltistan included. Neither census panel has a row for either, so for those 58 tehsils these are the only values on the site. Two cautions. A missing row is not a zero \u2014 a district with no jail has no jail row \u2014 so coverage varies by kind: hostels, hotels and hospitals reach all 156 districts, universities 74, orphanages 66. And \u2018Home\u2019 is returned for 9 districts of 156; the portal\u2019s own documentation says to treat it as unavailable, so it is here but deliberately not offered as a map indicator. The district and tehsil aggregations agree exactly for all 24 kinds.",
+   "description": "Census 2023’s count of enumerated structures — 24 kinds, from schools and hospitals to factories, mosques and police stations — by district and tehsil.",
+   "notes": "The only table here that covers the whole frame Data Darbar draws: 156 districts and 649 tehsils, every district of Azad Jammu & Kashmir and Gilgit-Baltistan included. Neither census panel has a row for either, so for those 58 tehsils these are the only values on the site. Two cautions. A missing row is not a zero — a district with no jail has no jail row — so coverage varies by kind: hostels, hotels and hospitals reach all 156 districts, universities 74, orphanages 66. And ‘Home’ is returned for 9 districts of 156; the portal’s own documentation says to treat it as unavailable, so it is here but deliberately not offered as a map indicator. The district and tehsil aggregations agree exactly for all 24 kinds.",
    "unit": "structures",
    "source": "PBS Digital Census 2023 via economic.data.gov.pk, pull of 2026-09-27",
    "columns": [
@@ -310,17 +310,17 @@
     {
      "name": "area_code",
      "type": "VARCHAR",
-     "description": "PBS\u2019s own district or tehsil code"
+     "description": "PBS’s own district or tehsil code"
     },
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "the shape this is drawn on \u2014 district code, or dds_id below that, or PBS-<code> for a tehsil outside the census"
+     "description": "the shape this is drawn on — district code, or dds_id below that, or PBS-<code> for a tehsil outside the census"
     },
     {
      "name": "unit_id",
      "type": "INTEGER",
-     "description": "PBS\u2019s own id for the kind of structure, 1\u201324"
+     "description": "PBS’s own id for the kind of structure, 1–24"
     },
     {
      "name": "unit_type",
@@ -330,7 +330,7 @@
     {
      "name": "area",
      "type": "VARCHAR",
-     "description": "the area\u2019s name as the portal gives it"
+     "description": "the area’s name as the portal gives it"
     },
     {
      "name": "count",
@@ -349,9 +349,9 @@
    "bytes": 8201176,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
-   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
+   "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
    "unit": "persons, households or housing units; rates and percentages where the indicator says so",
-   "source": "PBS Population and Housing Census 2017, per-district Excel tables (135 districts \u00d7 40 tables)",
+   "source": "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
    "columns": [
     {
      "name": "census_year",
@@ -361,7 +361,7 @@
     {
      "name": "province_area",
      "type": "VARCHAR",
-     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+     "description": "province, or FATA / Islamabad Capital Territory — the census frame has four provinces and two federal areas, not six provinces"
     },
     {
      "name": "table_id",
@@ -386,7 +386,7 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+     "description": "the PBS Digital Census 2023 shape this row is drawn on — the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
     },
     {
      "name": "map_relation",
@@ -401,7 +401,7 @@
     {
      "name": "map_note",
      "type": "VARCHAR",
-     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+     "description": "the reason, in words, for anything other than a straight match — written to be shown to a reader, not parsed"
     },
     {
      "name": "map_weight",
@@ -431,7 +431,7 @@
     {
      "name": "value",
      "type": "DOUBLE",
-     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+     "description": "the published figure — unit depends on the indicator, see notes"
     },
     {
      "name": "missing",
@@ -441,7 +441,7 @@
     {
      "name": "is_rate",
      "type": "BOOLEAN",
-     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census\u2019s own statement"
+     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census’s own statement"
     },
     {
      "name": "series_ambiguous",
@@ -466,7 +466,7 @@
    "bytes": 9229706,
    "rows": 4599521,
    "description": "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, sub-tehsil and sub-division level.",
-   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure \u2014 that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id \u2014 the key the site's own tehsil geometry uses \u2014 is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
+   "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure — that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id — the key the site's own tehsil geometry uses — is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
    "unit": "persons, households or housing units; rates and percentages where is_rate is TRUE",
    "source": "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
    "columns": [
@@ -478,7 +478,7 @@
     {
      "name": "province_area",
      "type": "VARCHAR",
-     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+     "description": "province, or FATA / Islamabad Capital Territory — the census frame has four provinces and two federal areas, not six provinces"
     },
     {
      "name": "table_id",
@@ -518,7 +518,7 @@
     {
      "name": "map_key",
      "type": "VARCHAR",
-     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+     "description": "the PBS Digital Census 2023 shape this row is drawn on — the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
     },
     {
      "name": "map_relation",
@@ -533,7 +533,7 @@
     {
      "name": "map_note",
      "type": "VARCHAR",
-     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+     "description": "the reason, in words, for anything other than a straight match — written to be shown to a reader, not parsed"
     },
     {
      "name": "map_weight",
@@ -563,7 +563,7 @@
     {
      "name": "value",
      "type": "DOUBLE",
-     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+     "description": "the published figure — unit depends on the indicator, see notes"
     },
     {
      "name": "missing",
@@ -611,7 +611,7 @@
    "bytes": 161410,
    "rows": 37971,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
-   "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured \u2014 a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
+   "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured — a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
    "source": "Derived from census_panel_2017 and census_panel_2023",
    "columns": [
@@ -623,7 +623,7 @@
     {
      "name": "unit_type",
      "type": "VARCHAR",
-     "description": "district or tehsil \u2014 the geography this series can be drawn on"
+     "description": "district or tehsil — the geography this series can be drawn on"
     },
     {
      "name": "indicator",
@@ -653,12 +653,12 @@
     {
      "name": "mappable_units",
      "type": "BIGINT",
-     "description": "shapes this series colours \u2014 shapes, not units: a 2017 unit that was later split is drawn across all of its successors, so it contributes several. Shapes with both a value and a boundary \u2014 the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row"
+     "description": "shapes this series colours — shapes, not units: a 2017 unit that was later split is drawn across all of its successors, so it contributes several. Shapes with both a value and a boundary — the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row"
     },
     {
      "name": "units_with_value",
      "type": "BIGINT",
-     "description": "census units carrying a value, whether or not they can be drawn \u2014 larger than mappable_units where a unit was split or redrawn and so has no 2023 shape"
+     "description": "census units carrying a value, whether or not they can be drawn — larger than mappable_units where a unit was split or redrawn and so has no 2023 shape"
     },
     {
      "name": "min_value",
@@ -678,7 +678,7 @@
     {
      "name": "table_title",
      "type": "VARCHAR",
-     "description": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water"
+     "description": "the table’s published title, as the ETL already records it. Titles are not interchangeable between years: 2017’s table 23 is a locality table and 2023’s is drinking water"
     }
    ],
    "kind": "census",
@@ -694,10 +694,10 @@
    "file": "census_unit_map.parquet",
    "bytes": 14750,
    "rows": 1398,
-   "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and \u2014 where that is not a straight match \u2014 why.",
+   "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and — where that is not a straight match — why.",
    "notes": "This is the crosswalk turned into a decision. A crosswalk says what happened to a unit; this says what a figure for it means when drawn on the 2023 frame. comparable is the field to read: yes where the figure belongs on the shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on weight for a rate; parent where a unit was split and its figure is drawn across every successor at once rather than divided between them; flagged where the district persists but its territory changed; no where nothing can honestly be drawn. map_key can therefore name several shapes, space-separated. Anything that totals or ranks must count units and not shapes: a parent drawn across its successors is visited once per shape, which turns a national total of 207,684,626 into 213.4 million.",
    "unit": "census units",
-   "source": "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+   "source": "Derived from the 2017→2023 crosswalks and PBS’s Digital Census 2023 layer",
    "columns": [
     {
      "name": "census_year",
@@ -764,7 +764,7 @@
    "description": "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
    "notes": "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a named episode with a start and end, and date_precision says how well the dates are known. These events do NOT join to climate_impacts: the impact records carry no event key, only their own report_id, so the two are separate universes and attributing an impact row to an event here would be an inference, not a lookup. An earlier note said climate_impacts carries what each one did, which invited a join that cannot be made.",
    "unit": "events",
-   "source": "Reanalysis of published disaster reporting",
+   "source": "GDACS (Global Disaster Alert and Coordination System, European Commission Joint Research Centre), Pakistan flood, drought and cyclone alerts, 2001 to 2025; CC BY 4.0",
    "columns": [
     {
      "name": "record_id",
@@ -893,7 +893,7 @@
    "description": "Impacts reported by disaster reporting: people affected, killed, displaced, and assets damaged, by place and reporting period.",
    "notes": "336 observations, keyed by report and place, not by event. There is no event key in this table and none that joins to climate_events, so an impact cannot be attributed to a named event by lookup - only by reading the period and the place, which is an inference. The metric column says what is counted and the figures come from whichever report covered that place, so coverage is uneven between places and between periods. Do not read a missing row as a zero.",
    "unit": "people, assets",
-   "source": "Reanalysis of published disaster reporting",
+   "source": "NDMA (National Disaster Management Authority) monsoon situation reports, September 2026, tables read off the PDFs; each row carries its report and page",
    "columns": [
     {
      "name": "observation_id",
@@ -984,8 +984,8 @@
    "file": "crops_district_fy.parquet",
    "bytes": 746807,
    "rows": 78425,
-   "description": "Area, production and yield by crop, district and fiscal year, 1981\u201382 to 2024\u201325.",
-   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all \u2014 every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi\u2019s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS\u2019s portal and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage varies by crop: the majors run from 1981\u201382, most vegetables and fruit from 2008\u201309.",
+   "description": "Area, production and yield by crop, district and fiscal year, 1981–82 to 2024–25.",
+   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all — every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi’s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central’s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS’s portal and are carried as ‘Unnamed crop (portal id 124/125)’ rather than dropped — 125 is not small, at 85,000 hectares in 2024–25. Coverage varies by crop: the majors run from 1981–82, most vegetables and fruit from 2008–09.",
    "unit": "thousand hectares, thousand tonnes, tonnes per hectare",
    "source": "PBS Agriculture Statistics via the national accounts portal, pull of 2026-09-27",
    "columns": [
@@ -997,7 +997,7 @@
     {
      "name": "district",
      "type": "VARCHAR",
-     "description": "district name as PBS\u2019s 2023 layer gives it"
+     "description": "district name as PBS’s 2023 layer gives it"
     },
     {
      "name": "province",
@@ -1007,7 +1007,7 @@
     {
      "name": "crop_id",
      "type": "BIGINT",
-     "description": "PBS\u2019s own crop id"
+     "description": "PBS’s own crop id"
     },
     {
      "name": "crop",
@@ -1053,9 +1053,9 @@
    "bytes": 12408,
    "rows": 1799,
    "description": "Registered emigrants by destination country and year, 2011 to 2024.",
-   "notes": "This one is genuinely by country, unlike the remittance and skill files from the same portal: 199 countries in 2024 with 102 distinct values. The totals match the Bureau of Emigration\u2019s published figures \u2014 859,740 in 2023 and 725,587 in 2024. Saudi Arabia takes about six in ten.",
+   "notes": "This one is genuinely by country, unlike the remittance and skill files from the same portal: 199 countries in 2024 with 102 distinct values. The totals match the Bureau of Emigration’s published figures — 859,740 in 2023 and 725,587 in 2024. Saudi Arabia takes about six in ten.",
    "unit": "people",
-   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "source": "Bureau of Emigration & Overseas Employment via PBS’s diaspora portal, pull of 2026-09-27",
    "columns": [
     {
      "name": "year",
@@ -1102,9 +1102,9 @@
    "bytes": 2111,
    "rows": 330,
    "description": "Registered emigrants by skill level and year.",
-   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. Skill levels are the Bureau of Emigration\u2019s own bands. Total is the sum of the others, so do not add it to them.",
+   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. Skill levels are the Bureau of Emigration’s own bands. Total is the sum of the others, so do not add it to them.",
    "unit": "people",
-   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "source": "Bureau of Emigration & Overseas Employment via PBS’s diaspora portal, pull of 2026-09-27",
    "columns": [
     {
      "name": "year",
@@ -1114,7 +1114,7 @@
     {
      "name": "mode",
      "type": "VARCHAR",
-     "description": "the portal\u2019s own breakdown mode"
+     "description": "the portal’s own breakdown mode"
     },
     {
      "name": "skill_level",
@@ -1140,10 +1140,10 @@
    "file": "diaspora_emigrants_district.parquet",
    "bytes": 9172,
    "rows": 2190,
-   "description": "Registered emigrants by district of origin, 2011\u20132024, from the Bureau of Emigration & Overseas Employment.",
-   "notes": "Two things to know before using it. The year 'overall' is NOT the sum of 2011\u20132024: it is 9,858,937 against 8,663,198, because the Bureau\u2019s register goes back well before 2011. is_cumulative marks it, and it is a separate indicator in place_indicators for the same reason. And the frame is partial \u2014 the file keys on PBS district codes and all 146 join cleanly, but eleven PBS districts have no row of their own: Chaman, Duki, Surab, Kharmang, Nagar, Shigar, Upper and Lower Kohistan, Upper Chitral and Keamari. The register has followed some recent splits and not others \u2014 Kolai Palas Kohistan and Lower Chitral appear, their siblings do not \u2014 so those eleven sit inside a parent\u2019s figure rather than being absent, and the parent is flagged in place_indicators.",
+   "description": "Registered emigrants by district of origin, 2011–2024, from the Bureau of Emigration & Overseas Employment.",
+   "notes": "Two things to know before using it. The year 'overall' is NOT the sum of 2011–2024: it is 9,858,937 against 8,663,198, because the Bureau’s register goes back well before 2011. is_cumulative marks it, and it is a separate indicator in place_indicators for the same reason. And the frame is partial — the file keys on PBS district codes and all 146 join cleanly, but eleven PBS districts have no row of their own: Chaman, Duki, Surab, Kharmang, Nagar, Shigar, Upper and Lower Kohistan, Upper Chitral and Keamari. The register has followed some recent splits and not others — Kolai Palas Kohistan and Lower Chitral appear, their siblings do not — so those eleven sit inside a parent’s figure rather than being absent, and the parent is flagged in place_indicators.",
    "unit": "people",
-   "source": "Bureau of Emigration & Overseas Employment, read through PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "source": "Bureau of Emigration & Overseas Employment, read through PBS’s diaspora portal, pull of 2026-09-27",
    "columns": [
     {
      "name": "district_code",
@@ -1153,7 +1153,7 @@
     {
      "name": "district",
      "type": "VARCHAR",
-     "description": "district name as PBS\u2019s 2023 layer gives it"
+     "description": "district name as PBS’s 2023 layer gives it"
     },
     {
      "name": "division",
@@ -1168,7 +1168,7 @@
     {
      "name": "year",
      "type": "VARCHAR",
-     "description": "2011\u20132024, or 'overall' for the whole register"
+     "description": "2011–2024, or 'overall' for the whole register"
     },
     {
      "name": "emigrants_registered",
@@ -1178,7 +1178,7 @@
     {
      "name": "is_cumulative",
      "type": "BOOLEAN",
-     "description": "TRUE on the 'overall' row \u2014 do not add it to the years"
+     "description": "TRUE on the 'overall' row — do not add it to the years"
     }
    ],
    "kind": "places",
@@ -1201,7 +1201,7 @@
    "description": "Registered emigrants by occupation, 2024.",
    "notes": "Forty occupation categories for one year. Labourer is the largest at 364,574, about half of all emigration that year.",
    "unit": "people",
-   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "source": "Bureau of Emigration & Overseas Employment via PBS’s diaspora portal, pull of 2026-09-27",
    "columns": [
     {
      "name": "year",
@@ -1233,9 +1233,9 @@
    "bytes": 1858,
    "rows": 236,
    "description": "Remittances to Pakistan by month, 2018 to 2025.",
-   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. The value is as the portal gives it, which its magnitude puts in millions of US dollars \u2014 34,662 for 2024 against roughly 30 billion published \u2014 but the portal does not label the unit, so treat the level with care and the shape as sound.",
+   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. The value is as the portal gives it, which its magnitude puts in millions of US dollars — 34,662 for 2024 against roughly 30 billion published — but the portal does not label the unit, so treat the level with care and the shape as sound.",
    "unit": "unlabelled by the source; magnitude suggests million US dollars",
-   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "source": "Bureau of Emigration & Overseas Employment via PBS’s diaspora portal, pull of 2026-09-27",
    "columns": [
     {
      "name": "year",
@@ -1267,9 +1267,9 @@
    "bytes": 4739,
    "rows": 127,
    "description": "Every district-level relationship between Census 2017 and Census 2023, as groups that cover the same ground.",
-   "notes": "A group is the smallest set of 2017 and 2023 units covering the same territory, so a merge has two 2017 units and one 2023 unit and a split has one and several. What makes this checkable rather than argued is the balances column: Census 2023 table 1 prints PBS\u2019s own restatement of the 2017 population on 2023 boundaries, and for every group the 2017 units\u2019 published population equals the 2023 units\u2019 restated figure. All 127 groups balance. A group that did not would mean the relation asserted for it is wrong.",
+   "notes": "A group is the smallest set of 2017 and 2023 units covering the same territory, so a merge has two 2017 units and one 2023 unit and a split has one and several. What makes this checkable rather than argued is the balances column: Census 2023 table 1 prints PBS’s own restatement of the 2017 population on 2023 boundaries, and for every group the 2017 units’ published population equals the 2023 units’ restated figure. All 127 groups balance. A group that did not would mean the relation asserted for it is wrong.",
    "unit": "districts and people",
-   "source": "Derived from census_panel_2017 and census_panel_2023; checked against PBS\u2019s own restatement",
+   "source": "Derived from census_panel_2017 and census_panel_2023; checked against PBS’s own restatement",
    "columns": [
     {
      "name": "relation",
@@ -1294,17 +1294,17 @@
     {
      "name": "population_2017",
      "type": "BIGINT",
-     "description": "the 2017 units\u2019 published 2017 population"
+     "description": "the 2017 units’ published 2017 population"
     },
     {
      "name": "restated_2017",
      "type": "BIGINT",
-     "description": "the 2023 units\u2019 POPULATION 2017, restated by PBS"
+     "description": "the 2023 units’ POPULATION 2017, restated by PBS"
     },
     {
      "name": "population_2023",
      "type": "BIGINT",
-     "description": "the 2023 units\u2019 2023 population"
+     "description": "the 2023 units’ 2023 population"
     },
     {
      "name": "balances",
@@ -1320,7 +1320,7 @@
    "file": "district_indicators.parquet",
    "bytes": 167488,
    "rows": 45829,
-   "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
+   "description": "Every district-level indicator in Data Darbar, one row per district × indicator × year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead. Census education source corrections dated 2026-09-25 use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. Missing source counts are unavailable, not zero.",
    "unit": null,
    "source": "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
@@ -1343,7 +1343,7 @@
     {
      "name": "dataset",
      "type": "VARCHAR",
-     "description": "source dataset (Census 2017/23, PSLM 2019-20, LFS, HIES, PDHS\u2026)"
+     "description": "source dataset (Census 2017/23, PSLM 2019-20, LFS, HIES, PDHS…)"
     },
     {
      "name": "group_key",
@@ -1408,7 +1408,7 @@
    "file": "fbr_tax_collection.parquet",
    "bytes": 2871,
    "rows": 264,
-   "description": "Federal tax collection by head and sub-head, 1991\u201392 to 2023\u201324.",
+   "description": "Federal tax collection by head and sub-head, 1991–92 to 2023–24.",
    "notes": "Direct and indirect tax by the heads FBR reports. tax_type, head and subhead nest, so filter to one level before summing.",
    "unit": "million rupees",
    "source": "FBR via PBS national accounts, pull of 2026-09-27",
@@ -1446,7 +1446,7 @@
     {
      "name": "status",
      "type": "BIGINT",
-     "description": "PBS\u2019s own flag"
+     "description": "PBS’s own flag"
     }
    ],
    "kind": "state",
@@ -1526,8 +1526,8 @@
    "file": "gdp_growth.parquet",
    "bytes": 3900,
    "rows": 74,
-   "description": "Real GDP growth and its sectoral components, 1951\u201352 to 2024\u201325.",
-   "notes": "Seventy-four fiscal years, the longest series on the site. government_label names the government of the day, which PBS\u2019s own dashboard carries and which is useful for reading the series but is a political attribution rather than a statistical one \u2014 a growth rate in a government\u2019s first months reflects decisions taken before it.",
+   "description": "Real GDP growth and its sectoral components, 1951–52 to 2024–25.",
+   "notes": "Seventy-four fiscal years, the longest series on the site. government_label names the government of the day, which PBS’s own dashboard carries and which is useful for reading the series but is a political attribution rather than a statistical one — a growth rate in a government’s first months reflects decisions taken before it.",
    "unit": "per cent",
    "source": "PBS national accounts (na.data.gov.pk), pull of 2026-09-27",
    "columns": [
@@ -1585,8 +1585,8 @@
    "file": "gdp_indicators.parquet",
    "bytes": 2107,
    "rows": 27,
-   "description": "GDP, national product, per-capita income and the exchange rate, 1999\u20132000 to 2025\u201326.",
-   "notes": "Constant prices on PBS\u2019s own base. status marks a year PBS flags as provisional or revised; the latest years are usually provisional and move.",
+   "description": "GDP, national product, per-capita income and the exchange rate, 1999–2000 to 2025–26.",
+   "notes": "Constant prices on PBS’s own base. status marks a year PBS flags as provisional or revised; the latest years are usually provisional and move.",
    "unit": "million rupees, rupees",
    "source": "PBS national accounts, pull of 2026-09-27",
    "columns": [
@@ -1623,7 +1623,7 @@
     {
      "name": "status",
      "type": "BIGINT",
-     "description": "PBS\u2019s own flag: provisional, revised or final"
+     "description": "PBS’s own flag: provisional, revised or final"
     }
    ],
    "kind": "economy",
@@ -1667,7 +1667,7 @@
     {
      "name": "unique_per_place",
      "type": "BOOLEAN",
-     "description": "FALSE means one value can name several places \u2014 do not join on it alone"
+     "description": "FALSE means one value can name several places — do not join on it alone"
     },
     {
      "name": "frame",
@@ -1689,7 +1689,7 @@
    "bytes": 6373,
    "rows": 594,
    "description": "Gross value added by sector and sub-sector, annual, at constant prices.",
-   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total: it equals Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, the exception being 2023-24, where the activity file and the annual table are different vintages and differ by Rs15.9bn. An earlier note here said the rows were three nested levels and that adding them double-counts, which is not what the file contains.",
+   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total: it equals Table 5’s GVA at basic prices to the rupee in 26 of the 27 years, the exception being 2023-24, where the activity file and the annual table are different vintages and differ by Rs15.9bn. An earlier note here said the rows were three nested levels and that adding them double-counts, which is not what the file contains.",
    "unit": "million rupees",
    "source": "PBS national accounts, pull of 2026-09-27",
    "columns": [
@@ -1726,7 +1726,7 @@
     {
      "name": "status",
      "type": "BIGINT",
-     "description": "PBS\u2019s own flag"
+     "description": "PBS’s own flag"
     }
    ],
    "kind": "economy",
@@ -1742,7 +1742,7 @@
    "file": "gva_by_activity_quarterly.parquet",
    "bytes": 9588,
    "rows": 880,
-   "description": "The same, quarterly, from 2015\u201316.",
+   "description": "The same, quarterly, from 2015–16.",
    "notes": "Quarterly national accounts are newer and thinner than the annual series and are revised more. The grain is the same as the annual file: one row per leaf activity, with sector and subsector as the path, so the rows of one quarter add up rather than double-count.",
    "unit": "million rupees",
    "source": "PBS national accounts, pull of 2026-09-27",
@@ -1760,7 +1760,7 @@
     {
      "name": "quarter",
      "type": "BIGINT",
-     "description": "Q1 is July\u2013September"
+     "description": "Q1 is July–September"
     },
     {
      "name": "sector",
@@ -1785,7 +1785,7 @@
     {
      "name": "status",
      "type": "BIGINT",
-     "description": "PBS\u2019s own flag"
+     "description": "PBS’s own flag"
     }
    ],
    "kind": "economy",
@@ -1802,14 +1802,14 @@
    "bytes": 11793,
    "rows": 147,
    "description": "Travel time to the nearest health facility by district (147): population-weighted medians and means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
-   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality \u2014 so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. *_popw_median is the population-weighted median (the piece's headline measure: 22 minutes motorised, 128 walking nationally); *_median the unweighted median of cells. Shares were fractions in the piece's file and are per cent here. Join mpi_districts on district_key for the poverty gradient (Spearman 0.76 between MPI and motorised time; the poorest MPI quintile is 47 minutes from care motorised against 5 for the least poor). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1.",
+   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality — so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. *_popw_median is the population-weighted median (the piece's headline measure: 22 minutes motorised, 128 walking nationally); *_median the unweighted median of cells. Shares were fractions in the piece's file and are per cent here. Join mpi_districts on district_key for the poverty gradient (Spearman 0.76 between MPI and motorised time; the poorest MPI quintile is 47 minutes from care motorised against 5 for the least poor). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1.",
    "unit": "minutes; per cent",
    "source": "Malaria Atlas Project accessibility surfaces (Weiss et al. 2020, Nature Medicine 26: motorised 2019, walking-only 2020), clipped to Pakistan; WorldPop 2020 UN-adjusted 1 km population; Data Darbar boundaries. Built for Adaad's September 2026 issue.",
    "columns": [
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar district key \u2014 joins district_indicators, mpi_districts, school_access_district"
+     "description": "Data Darbar district key — joins district_indicators, mpi_districts, school_access_district"
     },
     {
      "name": "district",
@@ -1925,14 +1925,14 @@
    "bytes": 26806,
    "rows": 553,
    "description": "Travel time to the nearest health facility by tehsil (553 ADM3 polygons): population-weighted means and shares of people beyond 30, 60 and 120 minutes, motorised and walking.",
-   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality \u2014 so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. mot_/wal_ = motorised / walking-only surface; *_mean is the unweighted mean of valid cells, *_popw_mean the population-weighted mean; *_pct_pop_gtN the share of people more than N minutes away. Manora Cantonment has no valid cells: its blanks are missing estimates, not zero. The tehsil grid holds 1,175,119 cells and 219.6 million people, 4,671 cells fewer than the district build because the two boundary files rasterise differently, so tehsil rows do not recombine exactly to health_access_district (22.10 v 22.13 minutes nationally). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1. This is the table the map's Health \u2192 Travel Time to Care (tehsil) layer draws.",
+   "notes": "Travel time is MODELLED: the cost of crossing each 1 km cell on the friction surface, summed along the least-cost path to the nearest mapped health facility. The facility set behind the surfaces is OpenStreetMap and Google Maps hospitals and clinics, public and private together, with no information on staffing, opening hours or quality — so this measures geographic access to a mapped point, not to a working service. Motorised assumes a vehicle is available; walking-only assumes none. Population weights are WorldPop 2020, which puts Gilgit-Baltistan at about 1.1 million against 1.7 million in the 2023 census, so the north's headcounts are understated. Thresholds are strictly greater than 30, 60 or 120 minutes. mot_/wal_ = motorised / walking-only surface; *_mean is the unweighted mean of valid cells, *_popw_mean the population-weighted mean; *_pct_pop_gtN the share of people more than N minutes away. Manora Cantonment has no valid cells: its blanks are missing estimates, not zero. The tehsil grid holds 1,175,119 cells and 219.6 million people, 4,671 cells fewer than the district build because the two boundary files rasterise differently, so tehsil rows do not recombine exactly to health_access_district (22.10 v 22.13 minutes nationally). The seven ex-FATA merged districts are Khyber Pakhtunkhwa and carry merged_district = 1. This is the table the map's Health → Travel Time to Care (tehsil) layer draws.",
    "unit": "minutes; per cent",
    "source": "Malaria Atlas Project accessibility surfaces (Weiss et al. 2020, Nature Medicine 26: motorised 2019, walking-only 2020), clipped to Pakistan; WorldPop 2020 UN-adjusted 1 km population; Data Darbar boundaries. Built for Adaad's September 2026 issue.",
    "columns": [
     {
      "name": "dd_id",
      "type": "VARCHAR",
-     "description": "ADM3 identifier \u2014 joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id, school_access_tehsil.dd_id"
+     "description": "ADM3 identifier — joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id, school_access_tehsil.dd_id"
     },
     {
      "name": "tehsil",
@@ -2033,7 +2033,7 @@
    "bytes": 545555,
    "rows": 25704,
    "description": "Public and private health facilities of Pakistan with positions: 25,704 hospitals, basic health units, rural health centres, dispensaries, clinics, laboratories, pharmacies and others (ALHASAN Systems, 2017).",
-   "notes": "A 2017 snapshot: facilities opened or closed since are not reflected, and status is recorded for only 619 rows. 7,399 are government and 18,305 private. care_group sorts the categories into care types; in_care_layer marks the 20,536 the Places map draws, leaving out medical stores (4,484), veterinary (347), opticians (334), ambulance services and the morgue. Positions are precise (4 to 6 decimal places, only 57 points share a location) and sit in the district the source names in 86 per cent of rows; nearly all the rest are spelling differences or 2017-to-2023 district splits (Karachi, Chitral, Duki, Sujawal), not misplaced points. Against Census 2023\u2019s count of hospital buildings, district totals of these hospitals correlate at 0.88 (log scale), and only eight districts have none. The public network is not complete: official counts of basic health units and dispensaries are higher than the 4,023 and 1,476 here. Phone, mobile, email, URL and street address are left out. district_code and district_key come from the point\u2019s position, not the source\u2019s district column. Published by ALHASAN Systems under CC0.",
+   "notes": "A 2017 snapshot: facilities opened or closed since are not reflected, and status is recorded for only 619 rows. 7,399 are government and 18,305 private. care_group sorts the categories into care types; in_care_layer marks the 20,536 the Places map draws, leaving out medical stores (4,484), veterinary (347), opticians (334), ambulance services and the morgue. Positions are precise (4 to 6 decimal places, only 57 points share a location) and sit in the district the source names in 86 per cent of rows; nearly all the rest are spelling differences or 2017-to-2023 district splits (Karachi, Chitral, Duki, Sujawal), not misplaced points. Against Census 2023’s count of hospital buildings, district totals of these hospitals correlate at 0.88 (log scale), and only eight districts have none. The public network is not complete: official counts of basic health units and dispensaries are higher than the 4,023 and 1,476 here. Phone, mobile, email, URL and street address are left out. district_code and district_key come from the point’s position, not the source’s district column. Published by ALHASAN Systems under CC0.",
    "unit": "facilities",
    "source": "ALHASAN Systems Private Limited, Pakistan Health Facilities (15 November 2017), published on the Humanitarian Data Exchange under CC0 - https://data.humdata.org/dataset/pakistan-health-facilities",
    "columns": [
@@ -2045,7 +2045,7 @@
     {
      "name": "source_object_id",
      "type": "BIGINT",
-     "description": "the source\u2019s OBJECTID"
+     "description": "the source’s OBJECTID"
     },
     {
      "name": "name",
@@ -2055,12 +2055,12 @@
     {
      "name": "category",
      "type": "VARCHAR",
-     "description": "the source\u2019s category, e.g. Basic Health Unit, General Physician, Medical Stores"
+     "description": "the source’s category, e.g. Basic Health Unit, General Physician, Medical Stores"
     },
     {
      "name": "sub_category",
      "type": "VARCHAR",
-     "description": "the source\u2019s sub-category: BHU, RHC, THQ, DHQ, MCH, CLINIC, MEDICAL SERVICES ..."
+     "description": "the source’s sub-category: BHU, RHC, THQ, DHQ, MCH, CLINIC, MEDICAL SERVICES ..."
     },
     {
      "name": "sector",
@@ -2080,7 +2080,7 @@
     {
      "name": "facility_class",
      "type": "VARCHAR",
-     "description": "the source\u2019s class, where given (619 rows)"
+     "description": "the source’s class, where given (619 rows)"
     },
     {
      "name": "status",
@@ -2145,7 +2145,7 @@
     {
      "name": "district_2023",
      "type": "VARCHAR",
-     "description": "that district\u2019s name on the PBS 2023 layer"
+     "description": "that district’s name on the PBS 2023 layer"
     },
     {
      "name": "province_2023",
@@ -2155,7 +2155,7 @@
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
     },
     {
      "name": "source",
@@ -2165,7 +2165,7 @@
     {
      "name": "release",
      "type": "DATE",
-     "description": "the source\u2019s own date"
+     "description": "the source’s own date"
     }
    ],
    "kind": "places",
@@ -2182,9 +2182,9 @@
    "bytes": 144560,
    "rows": 2638,
    "description": "Health amenities of Pakistan mapped on OpenStreetMap, as exported by healthsites.io in October 2019: 2,638 hospitals, clinics, pharmacies, doctors and dentists.",
-   "notes": "Volunteer-mapped and uneven: most points were last edited in 2016 to 2018, cities are far better covered than rural districts, and 50 of 156 districts have no clinic, hospital, doctor or dentist in it at all. District totals correlate with Census 2023\u2019s hospital buildings at 0.68, against 0.88 for health_facilities_pk, and 81 per cent of these care points have an ALHASAN facility within 250 metres, so for coverage use health_facilities_pk and treat this as a cross-check. amenity is OSM\u2019s tag. Contact numbers and the editors\u2019 usernames are left out. This table is OpenStreetMap data under the ODbL, not CC BY: a database made from it must credit OpenStreetMap contributors and stay under the ODbL.",
+   "notes": "Volunteer-mapped and uneven: most points were last edited in 2016 to 2018, cities are far better covered than rural districts, and 50 of 156 districts have no clinic, hospital, doctor or dentist in it at all. District totals correlate with Census 2023’s hospital buildings at 0.68, against 0.88 for health_facilities_pk, and 81 per cent of these care points have an ALHASAN facility within 250 metres, so for coverage use health_facilities_pk and treat this as a cross-check. amenity is OSM’s tag. Contact numbers and the editors’ usernames are left out. This table is OpenStreetMap data under the ODbL, not CC BY: a database made from it must credit OpenStreetMap contributors and stay under the ODbL.",
    "unit": "facilities",
-   "source": "\u00a9 OpenStreetMap contributors, exported by healthsites.io (9 October 2019); Open Database Licence (ODbL) 1.0 - https://healthsites.io, https://www.openstreetmap.org/copyright",
+   "source": "© OpenStreetMap contributors, exported by healthsites.io (9 October 2019); Open Database Licence (ODbL) 1.0 - https://healthsites.io, https://www.openstreetmap.org/copyright",
    "columns": [
     {
      "name": "row_id",
@@ -2264,7 +2264,7 @@
     {
      "name": "completeness_pct",
      "type": "DOUBLE",
-     "description": "healthsites.io\u2019s own completeness score"
+     "description": "healthsites.io’s own completeness score"
     },
     {
      "name": "last_edited",
@@ -2289,7 +2289,7 @@
     {
      "name": "district_2023",
      "type": "VARCHAR",
-     "description": "that district\u2019s name on the PBS 2023 layer"
+     "description": "that district’s name on the PBS 2023 layer"
     },
     {
      "name": "province_2023",
@@ -2299,7 +2299,7 @@
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
     },
     {
      "name": "source",
@@ -2309,7 +2309,7 @@
     {
      "name": "release",
      "type": "DATE",
-     "description": "the source\u2019s own date"
+     "description": "the source’s own date"
     }
    ],
    "kind": "places",
@@ -2324,7 +2324,7 @@
    "bytes": 13724,
    "rows": 75,
    "description": "Cases pending, instituted and disposed by province, court tier and category, 2020 to 2024.",
-   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions. Above 100 means more cases were decided than filed that year; it does NOT establish that the backlog fell, which depends on the opening stock and is answered by backlog_change. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so do not add the three together.",
+   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions. Above 100 means more cases were decided than filed that year; it does NOT establish that the backlog fell, which depends on the opening stock and is answered by backlog_change. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: ‘all’ contains civil and criminal, so do not add the three together.",
    "unit": "cases",
    "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
    "columns": [
@@ -2356,7 +2356,7 @@
     {
      "name": "category",
      "type": "VARCHAR",
-     "description": "all, civil or criminal \u2014 these nest"
+     "description": "all, civil or criminal — these nest"
     },
     {
      "name": "court_tier",
@@ -2708,7 +2708,7 @@
    "bytes": 6759,
    "rows": 266,
    "description": "Sanctioned, working and vacant judicial posts by rank and session division.",
-   "notes": "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength tables have not been extracted, so this is not a national picture and should not be read as one. Within Balochistan it is complete: 337 posts sanctioned in 2024 against 235 working.",
+   "notes": "Balochistan only, for 2023 and 2024 — the other provinces’ strength tables have not been extracted, so this is not a national picture and should not be read as one. Within Balochistan it is complete: 337 posts sanctioned in 2024 against 235 working.",
    "unit": "judicial posts",
    "source": "Law & Justice Commission of Pakistan",
    "columns": [
@@ -2912,14 +2912,14 @@
    "bytes": 17991,
    "rows": 595,
    "description": "Maps each PBS tehsil to the ADM3 polygon Data Darbar maps it on.",
-   "notes": "MANY-TO-ONE by design: PBS enumerates 595 tehsils against the boundary file's 553, because it carries sub-tehsils created after the polygons were drawn. Since every Mouza Census figure is a count of mouzas, summing several PBS tehsils into one polygon is the correct operation \u2014 group by tehsil_id and sum before taking any share. match records how each row was resolved: exact_name, variant (same place spelled differently), contained, fuzzy, only_tehsil_in_district, parent (a sub-tehsil folded into the unit it was carved from), and approx (no polygon exists for the area, so it was placed in a neighbour \u2014 treat those tehsils' placement as a judgement call). All 48,738 mouzas are assigned. The 10 unresolved rows all have zero mouzas.",
+   "notes": "MANY-TO-ONE by design: PBS enumerates 595 tehsils against the boundary file's 553, because it carries sub-tehsils created after the polygons were drawn. Since every Mouza Census figure is a count of mouzas, summing several PBS tehsils into one polygon is the correct operation — group by tehsil_id and sum before taking any share. match records how each row was resolved: exact_name, variant (same place spelled differently), contained, fuzzy, only_tehsil_in_district, parent (a sub-tehsil folded into the unit it was carved from), and approx (no polygon exists for the area, so it was placed in a neighbour — treat those tehsils' placement as a judgement call). All 48,738 mouzas are assigned. The 10 unresolved rows all have zero mouzas.",
    "unit": null,
-   "source": "PBS Mouza Census 2020 frame \u00d7 geoBoundaries PAK ADM3",
+   "source": "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3",
    "columns": [
     {
      "name": "tehsil_code",
      "type": "VARCHAR",
-     "description": "PBS tehsil code \u2014 joins to mouza_tehsil.tehsil_code"
+     "description": "PBS tehsil code — joins to mouza_tehsil.tehsil_code"
     },
     {
      "name": "tehsil",
@@ -2949,7 +2949,7 @@
     {
      "name": "dd_id",
      "type": "VARCHAR",
-     "description": "ADM3 identifier \u2014 joins to tehsil_satellite.tehsil_id"
+     "description": "ADM3 identifier — joins to tehsil_satellite.tehsil_id"
     },
     {
      "name": "dd_name",
@@ -2987,7 +2987,7 @@
    "bytes": 190122,
    "rows": 595,
    "description": "Mouza Census 2020 facility counts, one row per PBS tehsil.",
-   "notes": "Every column is a COUNT OF MOUZAS (revenue villages), never of people or households \u2014 a mouza of 12,000 and a mouza of 300 each count once. PBS publishes numerators without a denominator, and its own indicator blocks disagree about how many mouzas answered: only 33 of the 544 enumerated tehsils give a single consistent base, and blocks can differ by up to 181. Take each block's own row sum as its base rather than TotalMauzaCount. Existance/NotExistance pairs are exclusive; drinking water, health facility type, fuel, street surface and media are multiple response, so they can sum past the base. The frame is rural \u2014 cities are not revenue villages \u2014 but mouzas that urbanise stay in it (4.9% urban, 2.4% partly urban). 51 tehsils return all zeros: AJK and GB were not enumerated, nor were Mand and Tump in Kech or Kallag in Panjgur. Join to the ADM3 geography through mouza_crosswalk. Column names keep PBS's own casing and spelling; DuckDB matches them case-insensitively.",
+   "notes": "Every column is a COUNT OF MOUZAS (revenue villages), never of people or households — a mouza of 12,000 and a mouza of 300 each count once. PBS publishes numerators without a denominator, and its own indicator blocks disagree about how many mouzas answered: only 33 of the 544 enumerated tehsils give a single consistent base, and blocks can differ by up to 181. Take each block's own row sum as its base rather than TotalMauzaCount. Existance/NotExistance pairs are exclusive; drinking water, health facility type, fuel, street surface and media are multiple response, so they can sum past the base. The frame is rural — cities are not revenue villages — but mouzas that urbanise stay in it (4.9% urban, 2.4% partly urban). 51 tehsils return all zeros: AJK and GB were not enumerated, nor were Mand and Tump in Kech or Kallag in Panjgur. Join to the ADM3 geography through mouza_crosswalk. Column names keep PBS's own casing and spelling; DuckDB matches them case-insensitively.",
    "unit": null,
    "source": "PBS Mouza Census 2020 (mc2020.pbos.gov.pk)",
    "columns": [
@@ -4156,7 +4156,7 @@
    "bytes": 9876,
    "rows": 141,
    "description": "Alkire-Foster multidimensional poverty index by district, from PSLM 2019-20 microdata.",
-   "notes": "M0 = H \u00d7 A. Censored headcounts c_* are the share of people who are both poor and deprived in that indicator (%). low_n=1 marks districts whose sample is too small to be reliable \u2014 filter them out for rankings.",
+   "notes": "M0 = H × A. Censored headcounts c_* are the share of people who are both poor and deprived in that indicator (%). low_n=1 marks districts whose sample is too small to be reliable — filter them out for rankings.",
    "unit": null,
    "source": "PSLM/HIES 2019-20 microdata (PBS), Alkire-Foster method",
    "columns": [
@@ -4183,12 +4183,12 @@
     {
      "name": "H",
      "type": "DOUBLE",
-     "description": "headcount ratio \u2014 % of people who are MPI-poor"
+     "description": "headcount ratio — % of people who are MPI-poor"
     },
     {
      "name": "A",
      "type": "DOUBLE",
-     "description": "intensity \u2014 average share of weighted deprivations among the poor (%)"
+     "description": "intensity — average share of weighted deprivations among the poor (%)"
     },
     {
      "name": "rank",
@@ -4251,8 +4251,8 @@
    "file": "national_accounts.parquet",
    "bytes": 61883,
    "rows": 10526,
-   "description": "National accounts / GDP series, 1951-52 \u2192 2025-26 (PBS 2015-16 base).",
-   "notes": "Units vary BY TABLE: levels are Rs million (tables 2\u20135, 8\u201311), growth rates and shares are percentages (tables 6, 7a/b). Always read table_name before aggregating. Item labels on the Macro/Main-Aggregate sheets are best-effort.",
+   "description": "National accounts / GDP series, 1951-52 → 2025-26 (PBS 2015-16 base).",
+   "notes": "Units vary BY TABLE: levels are Rs million (tables 2–5, 8–11), growth rates and shares are percentages (tables 6, 7a/b). Always read table_name before aggregating. Item labels on the Macro/Main-Aggregate sheets are best-effort.",
    "unit": null,
    "source": "PBS National Accounts annual tables (2015-16 base)",
    "columns": [
@@ -4289,7 +4289,7 @@
     {
      "name": "value",
      "type": "DOUBLE",
-     "description": "value \u2014 unit depends on the table"
+     "description": "value — unit depends on the table"
     }
    ],
    "kind": "economy",
@@ -4305,8 +4305,8 @@
    "file": "nepra_disco_annual.parquet",
    "bytes": 168943,
    "rows": 20689,
-   "description": "Distribution company performance by year, 2006\u201307 to 2024\u201325.",
-   "notes": "Read straight off NEPRA\u2019s tables, which is why row_label and col_label are carried as printed rather than normalised: the tables change shape between editions and a single schema across nineteen years would have to invent correspondences. value_raw is the text as printed; filter on series, table_no and row_label to pull one measure.",
+   "description": "Distribution company performance by year, 2006–07 to 2024–25.",
+   "notes": "Read straight off NEPRA’s tables, which is why row_label and col_label are carried as printed rather than normalised: the tables change shape between editions and a single schema across nineteen years would have to invent correspondences. value_raw is the text as printed; filter on series, table_no and row_label to pull one measure.",
    "unit": "varies by row",
    "source": "NEPRA State of Industry reports",
    "columns": [
@@ -4328,7 +4328,7 @@
     {
      "name": "title",
      "type": "VARCHAR",
-     "description": "the table\u2019s title"
+     "description": "the table’s title"
     },
     {
      "name": "section",
@@ -4399,15 +4399,15 @@
    "file": "nepra_plant_years.parquet",
    "bytes": 13143,
    "rows": 909,
-   "description": "Every plant in NEPRA\u2019s reports, by fiscal year: what it burns and what it was rated at in that year.",
-   "notes": "One row per plant per fiscal year as reported, 2017-18 to 2024-25 \u2014 the observations behind nepra_plants, which collapses them to one row per plant at its maximum capacity. Use this table when the year matters: 22 plants have their capacity revised between reports, and the union of all eight years is 133 plants and 45,405 MW against 118 and 41,440 MW reported for 2024-25. Presence here is observed, not inferred: one plant is absent from a year inside its own first-to-last span. Rows with no installed_mw are kept rather than dropped, because a plant the report lists without a capacity is still a plant it listed: 11 of the 108 in 2017-18 are like this, falling to none from 2021-22. This is the reporting universe NEPRA published, not a register of every plant in the country.",
+   "description": "Every plant in NEPRA’s reports, by fiscal year: what it burns and what it was rated at in that year.",
+   "notes": "One row per plant per fiscal year as reported, 2017-18 to 2024-25 — the observations behind nepra_plants, which collapses them to one row per plant at its maximum capacity. Use this table when the year matters: 22 plants have their capacity revised between reports, and the union of all eight years is 133 plants and 45,405 MW against 118 and 41,440 MW reported for 2024-25. Presence here is observed, not inferred: one plant is absent from a year inside its own first-to-last span. Rows with no installed_mw are kept rather than dropped, because a plant the report lists without a capacity is still a plant it listed: 11 of the 108 in 2017-18 are like this, falling to none from 2021-22. This is the reporting universe NEPRA published, not a register of every plant in the country.",
    "unit": "megawatts",
    "source": "NEPRA State of Industry and performance reports",
    "columns": [
     {
      "name": "plant_id",
      "type": "VARCHAR",
-     "description": "NEPRA\u2019s own identifier"
+     "description": "NEPRA’s own identifier"
     },
     {
      "name": "plant",
@@ -4417,7 +4417,7 @@
     {
      "name": "fiscal_year",
      "type": "VARCHAR",
-     "description": "the report\u2019s fiscal year"
+     "description": "the report’s fiscal year"
     },
     {
      "name": "technology",
@@ -4459,14 +4459,14 @@
    "bytes": 7934,
    "rows": 133,
    "description": "Power plants on the national grid, with fuel, technology and installed capacity.",
-   "notes": "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, for 1,885 MW. Installed capacity is nameplate and not what a plant actually generates \u2014 see nepra_disco_annual for what was dispatched.",
+   "notes": "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, for 1,885 MW. Installed capacity is nameplate and not what a plant actually generates — see nepra_disco_annual for what was dispatched.",
    "unit": "megawatts",
    "source": "NEPRA State of Industry and performance reports",
    "columns": [
     {
      "name": "plant_id",
      "type": "VARCHAR",
-     "description": "NEPRA\u2019s own identifier"
+     "description": "NEPRA’s own identifier"
     },
     {
      "name": "plant_name",
@@ -4513,14 +4513,14 @@
    "bytes": 122522,
    "rows": 5635,
    "description": "One row per indicator Places can draw, curated and census alike.",
-   "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
+   "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are — place_indicators, or a census panel — which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
    "source": "Built by etl/places/build_all.py",
    "columns": [
     {
      "name": "level",
      "type": "VARCHAR",
-     "description": "district or tehsil \u2014 the geography this indicator draws on"
+     "description": "district or tehsil — the geography this indicator draws on"
     },
     {
      "name": "topic",
@@ -4605,7 +4605,7 @@
     {
      "name": "units",
      "type": "BIGINT",
-     "description": "census units carrying a value \u2014 differs from shapes wherever a unit is drawn across the shapes that replaced it"
+     "description": "census units carrying a value — differs from shapes wherever a unit is drawn across the shapes that replaced it"
     },
     {
      "name": "min_value",
@@ -4636,8 +4636,8 @@
    "file": "place_indicators.parquet",
    "bytes": 313794,
    "rows": 110077,
-   "description": "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
-   "notes": "Values only \u2014 the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators \u2014 dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have no index entry.",
+   "description": "Every curated district and tehsil indicator, on PBS’s 2023 frame.",
+   "notes": "Values only — the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators — dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags — which is why they have no index entry.",
    "unit": "indicator values",
    "source": "Built by etl/places/build_all.py",
    "columns": [
@@ -4654,7 +4654,7 @@
     {
      "name": "source_key",
      "type": "VARCHAR",
-     "description": "the identifier the source table used \u2014 a district slug, a dd_id, or a PBS tehsil code"
+     "description": "the identifier the source table used — a district slug, a dd_id, or a PBS tehsil code"
     },
     {
      "name": "relation",
@@ -4684,7 +4684,7 @@
     {
      "name": "value",
      "type": "DOUBLE",
-     "description": "the figure \u2014 unit depends on the indicator, see the index"
+     "description": "the figure — unit depends on the indicator, see the index"
     }
    ],
    "kind": "places",
@@ -4703,7 +4703,7 @@
    "bytes": 21231,
    "rows": 3210,
    "description": "Reported offences by province, range and year, 2019 to 2024.",
-   "notes": "Nine reporting regions, and the geography is not uniform between them: Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways police report one figure each. So a district map of this covers KP and AJK and nothing else. measure says what is counted \u2014 mostly reported_offence_count, which is offences reported to police and not crimes committed.",
+   "notes": "Nine reporting regions, and the geography is not uniform between them: Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways police report one figure each. So a district map of this covers KP and AJK and nothing else. measure says what is counted — mostly reported_offence_count, which is offences reported to police and not crimes committed.",
    "unit": "offences",
    "source": "Provincial and regional police annual reports",
    "columns": [
@@ -4859,7 +4859,7 @@
     {
      "name": "geography_id",
      "type": "VARCHAR",
-     "description": "the force\u2019s own identifier"
+     "description": "the force’s own identifier"
     },
     {
      "name": "geography_level",
@@ -4971,7 +4971,7 @@
    "bytes": 994032,
    "rows": 306875,
    "description": "The macro time-series panel: every observation of every SBP series held here.",
-   "notes": "One row per series \u00d7 date. UNITS ARE PER-SERIES \u2014 join to sbp_series_catalog and read `unit` before summing anything, because this table mixes rupees, dollars, percentages and index levels in one `value` column. value IS NULL where SBP suppressed or has not published the figure and `status` says which ('Normal', 'Missing value', \u2026) \u2014 a NULL is not a zero. Frequencies are mixed, so filter on the catalogue's `frequency` before resampling or averaging across series. DOUBLE-COUNTING TRAP (country-wise remittances, TS_GP_BOP_WR_M): the country series are hierarchical, so summing them all overstates the total by ~42% (FY2024-25: 54,384 vs the published 38,299 Mn USD). 'U.A.E.' already contains Dubai, Abu Dhabi, Sharjah and 'Other four U.A.E.'s States'; 'Other GCC Countries excluding Saudi Arabia & U.A.E.' already contains Bahrain, Kuwait, Oman and Qatar; 'ten European Countries' already contains Belgium, Denmark, France, Germany, Greece, Ireland, Italy, Netherland, Spain and Sweden \u2014 Norway and Switzerland are reported separately. The partition that reconciles exactly to the published total is: Saudi Arabia, U.A.E., U.K., U.S.A., Other GCC, ten European Countries, Norway, Switzerland, Australia, Canada, Japan, Malaysia, South Africa, South Korea, Other Countries. The same shape applies to province-wise banking (TS_GP_BAM_ADVDEP_HY), where 'all Pakistan' is the total of the regional series.",
+   "notes": "One row per series × date. UNITS ARE PER-SERIES — join to sbp_series_catalog and read `unit` before summing anything, because this table mixes rupees, dollars, percentages and index levels in one `value` column. value IS NULL where SBP suppressed or has not published the figure and `status` says which ('Normal', 'Missing value', …) — a NULL is not a zero. Frequencies are mixed, so filter on the catalogue's `frequency` before resampling or averaging across series. DOUBLE-COUNTING TRAP (country-wise remittances, TS_GP_BOP_WR_M): the country series are hierarchical, so summing them all overstates the total by ~42% (FY2024-25: 54,384 vs the published 38,299 Mn USD). 'U.A.E.' already contains Dubai, Abu Dhabi, Sharjah and 'Other four U.A.E.'s States'; 'Other GCC Countries excluding Saudi Arabia & U.A.E.' already contains Bahrain, Kuwait, Oman and Qatar; 'ten European Countries' already contains Belgium, Denmark, France, Germany, Greece, Ireland, Italy, Netherland, Spain and Sweden — Norway and Switzerland are reported separately. The partition that reconciles exactly to the published total is: Saudi Arabia, U.A.E., U.K., U.S.A., Other GCC, ten European Countries, Norway, Switzerland, Australia, Canada, Japan, Malaysia, South Africa, South Korea, Other Countries. The same shape applies to province-wise banking (TS_GP_BAM_ADVDEP_HY), where 'all Pakistan' is the total of the regional series.",
    "unit": null,
    "source": "State Bank of Pakistan, EasyData API (easydata.sbp.org.pk)",
    "columns": [
@@ -4988,7 +4988,7 @@
     {
      "name": "obs_date",
      "type": "DATE",
-     "description": "observation date \u2014 END of the period (see catalogue notes)"
+     "description": "observation date — END of the period (see catalogue notes)"
     },
     {
      "name": "value",
@@ -5020,7 +5020,7 @@
    "bytes": 285055,
    "rows": 22974,
    "description": "Every SBP EasyData series held here: name, unit, frequency, coverage, method note.",
-   "notes": "One row per series \u2014 browse this first, then join to sbp_observations on series_key. DATE CONVENTION: observations are stamped on the LAST day of their period, and annual series on the last day of the FISCAL year, so FY2023-24 appears as 2024-06-30. Not every annual series is fiscal though \u2014 population and literacy are calendar years. `available_upto` is SBP's own claim and several datasets are stale (province-wise banking stops at Jun-2023), so check it before presenting a series as current.",
+   "notes": "One row per series — browse this first, then join to sbp_observations on series_key. DATE CONVENTION: observations are stamped on the LAST day of their period, and annual series on the last day of the FISCAL year, so FY2023-24 appears as 2024-06-30. Not every annual series is fiscal though — population and literacy are calendar years. `available_upto` is SBP's own claim and several datasets are stale (province-wise banking stops at Jun-2023), so check it before presenting a series as current.",
    "unit": null,
    "source": "State Bank of Pakistan, EasyData API (easydata.sbp.org.pk)",
    "columns": [
@@ -5062,7 +5062,7 @@
     {
      "name": "unit",
      "type": "VARCHAR",
-     "description": "unit as published (PKR, USD, Percent, Index\u2026)"
+     "description": "unit as published (PKR, USD, Percent, Index…)"
     },
     {
      "name": "variable_type",
@@ -5149,7 +5149,7 @@
     },
     {
      "code": "TS_GP_ES_SWR_M",
-     "name": "Seasonally Adjusted Workers\u2019 Remittances",
+     "name": "Seasonally Adjusted Workers’ Remittances",
      "subject": "External Sector",
      "series": 2,
      "since": "2005-07",
@@ -5285,7 +5285,7 @@
     },
     {
      "code": "TS_GP_RL_CCSIND_M",
-     "name": "Consumer Confidence Survey \u2013 Indices",
+     "name": "Consumer Confidence Survey – Indices",
      "subject": "Real Sector",
      "series": 118,
      "since": "2012-01",
@@ -5293,7 +5293,7 @@
     },
     {
      "code": "TS_GP_RL_BCSIND_M",
-     "name": "Business Confidence Survey \u2013 Indices",
+     "name": "Business Confidence Survey – Indices",
      "subject": "Real Sector",
      "series": 107,
      "since": "2017-10",
@@ -5365,9 +5365,9 @@
    "bytes": 30428,
    "rows": 132,
    "description": "Distance to the nearest government school by sex, enrolment by sex, and school counts, one row per district (132).",
-   "notes": "all_km, boys_km, girls_km are POPULATION-WEIGHTED MEDIAN straight-line distances (Lambert conformal conic, km) from every populated 1 km cell to the nearest school of that network; *_min are walking minutes on the Malaria Atlas friction surface. gap_km = girls_km \u2212 boys_km (positive = girls further). Networks are by name designation; for Sindh the same medians under the attendance and girls-or-mixed definitions are in girls_km_attend / girls_km_mixed (the designation gap of 0.8 km falls to zero under attendance). tt_caveat flags districts where the friction surface is unreliable (GB) or mountain/desert cells make minutes an upper bound. *_in_school_pct_5_16 are Census 2023 Table 13(b) enrolment rates (enrolled / population aged 5\u201316) with successor districts summed into parents, so 123 of the 132 rows carry them. living_standards_deprivation_pslm is the (censored) MPI component; material_deprivation_pslm is an uncensored index from PSLM 2019-20 (no toilet, no flush, no piped water, food insecurity). *_n_schools count schools whose POINT falls in the district polygon (the basis of the piece's Figure 1); schools_listed / _with_coords / _in_analysis count rows by the SOURCE's district. The two bases differ where geocoded points cross a boundary. Distances depend on the whole network, not the district's own schools, so a district with few schools can still be close to the next district's.",
+   "notes": "all_km, boys_km, girls_km are POPULATION-WEIGHTED MEDIAN straight-line distances (Lambert conformal conic, km) from every populated 1 km cell to the nearest school of that network; *_min are walking minutes on the Malaria Atlas friction surface. gap_km = girls_km − boys_km (positive = girls further). Networks are by name designation; for Sindh the same medians under the attendance and girls-or-mixed definitions are in girls_km_attend / girls_km_mixed (the designation gap of 0.8 km falls to zero under attendance). tt_caveat flags districts where the friction surface is unreliable (GB) or mountain/desert cells make minutes an upper bound. *_in_school_pct_5_16 are Census 2023 Table 13(b) enrolment rates (enrolled / population aged 5–16) with successor districts summed into parents, so 123 of the 132 rows carry them. living_standards_deprivation_pslm is the (censored) MPI component; material_deprivation_pslm is an uncensored index from PSLM 2019-20 (no toilet, no flush, no piped water, food insecurity). *_n_schools count schools whose POINT falls in the district polygon (the basis of the piece's Figure 1); schools_listed / _with_coords / _in_analysis count rows by the SOURCE's district. The two bases differ where geocoded points cross a boundary. Distances depend on the whole network, not the district's own schools, so a district with few schools can still be close to the next district's.",
    "unit": "km, walking minutes, per cent",
-   "source": "Adaad school layer (schools_pk) \u00d7 WorldPop 2020 \u00d7 Malaria Atlas friction surface; PBS Census 2023 Table 13(b); PSLM 2019-20",
+   "source": "Adaad school layer (schools_pk) × WorldPop 2020 × Malaria Atlas friction surface; PBS Census 2023 Table 13(b); PSLM 2019-20",
    "columns": [
     {
      "name": "region",
@@ -5402,7 +5402,7 @@
     {
      "name": "gap_km",
      "type": "DOUBLE",
-     "description": "girls_km \u2212 boys_km"
+     "description": "girls_km − boys_km"
     },
     {
      "name": "all_min",
@@ -5422,7 +5422,7 @@
     {
      "name": "gap_min",
      "type": "DOUBLE",
-     "description": "girls_min \u2212 boys_min"
+     "description": "girls_min − boys_min"
     },
     {
      "name": "tt_caveat",
@@ -5432,17 +5432,17 @@
     {
      "name": "girls_in_school_pct_5_16",
      "type": "DOUBLE",
-     "description": "Census 2023 Table 13(b): girls 5\u201316 enrolled / girls 5\u201316, %"
+     "description": "Census 2023 Table 13(b): girls 5–16 enrolled / girls 5–16, %"
     },
     {
      "name": "boys_in_school_pct_5_16",
      "type": "DOUBLE",
-     "description": "Census 2023 Table 13(b): boys 5\u201316 enrolled / boys 5\u201316, %"
+     "description": "Census 2023 Table 13(b): boys 5–16 enrolled / boys 5–16, %"
     },
     {
      "name": "enrol_gap_pp_boys_minus_girls",
      "type": "DOUBLE",
-     "description": "boys_in_school_pct_5_16 \u2212 girls_in_school_pct_5_16, percentage points"
+     "description": "boys_in_school_pct_5_16 − girls_in_school_pct_5_16, percentage points"
     },
     {
      "name": "living_standards_deprivation_pslm",
@@ -5607,14 +5607,14 @@
    "bytes": 33340,
    "rows": 498,
    "description": "Distance to the nearest government school by sex and level, and school counts, one row per tehsil (498 of 553 ADM3 polygons).",
-   "notes": "The tehsil version of school_access_district, by the same method: population-weighted median straight-line km (Lambert conformal conic, 1 km WorldPop 2020 cells) to the nearest school of that sex and level in the cell's own REGION network \u2014 a tehsil's residents can use the next tehsil's schools, so its distance is not a function of its own school count. gap_*_km = girls \u2212 boys (positive = girls further). *_over5km_pct is the population share more than 5 km away. *_schools count schools whose point falls in the polygon. coverage_pct is the share of the polygon's population that lay inside the analysed region; rows under 50% (slivers of the merged districts and of AJK's other districts inside a neighbouring district polygon) are dropped, so 498 tehsils carry data and 55 do not. The 553 polygons are the Mouza Census ADM3 frame (mouza_crosswalk.dd_id) rather than PBS's 2023 tehsils. Read coord_tier before comparing across provinces: Punjab's positions are geocoded (half at settlement precision, the rest at markaz or tehsil centroids), so Punjab tehsil values are a district-scale picture, not a local one. Sindh networks are by name designation; the designated gap is an upper bound (see school_access_district's mixed and attendance columns). This is the table the map's Education \u2192 Distance to School layer draws.",
+   "notes": "The tehsil version of school_access_district, by the same method: population-weighted median straight-line km (Lambert conformal conic, 1 km WorldPop 2020 cells) to the nearest school of that sex and level in the cell's own REGION network — a tehsil's residents can use the next tehsil's schools, so its distance is not a function of its own school count. gap_*_km = girls − boys (positive = girls further). *_over5km_pct is the population share more than 5 km away. *_schools count schools whose point falls in the polygon. coverage_pct is the share of the polygon's population that lay inside the analysed region; rows under 50% (slivers of the merged districts and of AJK's other districts inside a neighbouring district polygon) are dropped, so 498 tehsils carry data and 55 do not. The 553 polygons are the Mouza Census ADM3 frame (mouza_crosswalk.dd_id) rather than PBS's 2023 tehsils. Read coord_tier before comparing across provinces: Punjab's positions are geocoded (half at settlement precision, the rest at markaz or tehsil centroids), so Punjab tehsil values are a district-scale picture, not a local one. Sindh networks are by name designation; the designated gap is an upper bound (see school_access_district's mixed and attendance columns). This is the table the map's Education → Distance to School layer draws.",
    "unit": "km, per cent",
-   "source": "Adaad school layer (schools_pk) \u00d7 WorldPop 2020 \u00d7 Data Darbar ADM3 polygons",
+   "source": "Adaad school layer (schools_pk) × WorldPop 2020 × Data Darbar ADM3 polygons",
    "columns": [
     {
      "name": "dd_id",
      "type": "VARCHAR",
-     "description": "ADM3 identifier \u2014 joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id"
+     "description": "ADM3 identifier — joins mouza_crosswalk.dd_id, tehsil_satellite.tehsil_id"
     },
     {
      "name": "tehsil",
@@ -5659,7 +5659,7 @@
     {
      "name": "gap_primary_km",
      "type": "DOUBLE",
-     "description": "girls \u2212 boys, any level"
+     "description": "girls − boys, any level"
     },
     {
      "name": "girls_middle_km",
@@ -5674,7 +5674,7 @@
     {
      "name": "gap_middle_km",
      "type": "DOUBLE",
-     "description": "girls \u2212 boys, middle"
+     "description": "girls − boys, middle"
     },
     {
      "name": "girls_high_km",
@@ -5689,7 +5689,7 @@
     {
      "name": "gap_high_km",
      "type": "DOUBLE",
-     "description": "girls \u2212 boys, high"
+     "description": "girls − boys, high"
     },
     {
      "name": "girls_middle_over5km_pct",
@@ -5754,9 +5754,9 @@
    "bytes": 22568,
    "rows": 832,
    "description": "Distance-to-school distributions by region and district, sex and school level (primary, middle-plus, high-plus).",
-   "notes": "One row per geography \u00d7 sex \u00d7 level. geography_type = 'region' rows are the seven analysis regions; 'district' rows carry district_key. mean_km and median_km are population-weighted over 1 km cells; share_over_2km/5km/10km are population shares beyond that straight-line distance. network_schools is the size of the REGION's network for that sex and level \u2014 the same number repeats on every district row of a region, because a district's residents can use the next district's schools. Per-district school counts are in school_access_district. tier and sector repeat the coverage ledger's grade and the 'government schools only' scope.",
+   "notes": "One row per geography × sex × level. geography_type = 'region' rows are the seven analysis regions; 'district' rows carry district_key. mean_km and median_km are population-weighted over 1 km cells; share_over_2km/5km/10km are population shares beyond that straight-line distance. network_schools is the size of the REGION's network for that sex and level — the same number repeats on every district row of a region, because a district's residents can use the next district's schools. Per-district school counts are in school_access_district. tier and sector repeat the coverage ledger's grade and the 'government schools only' scope.",
    "unit": "km, population shares",
-   "source": "Adaad school layer \u00d7 WorldPop 2020",
+   "source": "Adaad school layer × WorldPop 2020",
    "columns": [
     {
      "name": "region",
@@ -5929,9 +5929,9 @@
    "bytes": 46945,
    "rows": 147,
    "description": "External-validity test of the school layer against the Mouza Census 2020, one row per mouza district (147): count floors and village-reported distances.",
-   "notes": "The Mouza Census asked every rural mouza whether an institution for boys and one for girls exists at each level and, if not, how far the nearest is. It is sector-blind and counts villages, so it cannot audit the layer line by line; it puts a FLOOR under the count (a village with one has at least one) and gives an INDEPENDENT distance. ratio_* = schools in the layer \u00f7 mouzas reporting an institution of that sex and level: well under 1 means schools are missing or misclassified; above 1 is expected. The floor test is diagnostic only where private and co-educational provision is scarce \u2014 at primary level in Punjab a low ratio is private schools, and in Sindh 'girls undercounted relative to boys' fires by construction because designated boys' schools include the Mixed majority. status = 'absent from harvest' marks the 15 mouza districts the layer does not cover (7 merged districts, 8 AJK). village_* columns are means and medians of the villages' reported km; model_* are the layer's population-weighted medians and shares; *_gap_* are girls minus boys. Compare ranks and signs, not levels: village distances are unweighted, by road, any sector. Run on the released table (in_analysis rows), so these figures describe schools_pk, not the raw registers.",
+   "notes": "The Mouza Census asked every rural mouza whether an institution for boys and one for girls exists at each level and, if not, how far the nearest is. It is sector-blind and counts villages, so it cannot audit the layer line by line; it puts a FLOOR under the count (a village with one has at least one) and gives an INDEPENDENT distance. ratio_* = schools in the layer ÷ mouzas reporting an institution of that sex and level: well under 1 means schools are missing or misclassified; above 1 is expected. The floor test is diagnostic only where private and co-educational provision is scarce — at primary level in Punjab a low ratio is private schools, and in Sindh 'girls undercounted relative to boys' fires by construction because designated boys' schools include the Mixed majority. status = 'absent from harvest' marks the 15 mouza districts the layer does not cover (7 merged districts, 8 AJK). village_* columns are means and medians of the villages' reported km; model_* are the layer's population-weighted medians and shares; *_gap_* are girls minus boys. Compare ranks and signs, not levels: village distances are unweighted, by road, any sector. Run on the released table (in_analysis rows), so these figures describe schools_pk, not the raw registers.",
    "unit": null,
-   "source": "PBS Mouza Census 2020 microdata (Form-11 Part IV) \u00d7 schools_pk \u00d7 school_distance_stats",
+   "source": "PBS Mouza Census 2020 microdata (Form-11 Part IV) × schools_pk × school_distance_stats",
    "columns": [
     {
      "name": "region",
@@ -6036,17 +6036,17 @@
     {
      "name": "ratio_midplus_B",
      "type": "DOUBLE",
-     "description": "boys' midplus ratio: layer \u00f7 mouza floor"
+     "description": "boys' midplus ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_high_B",
      "type": "DOUBLE",
-     "description": "boys' high ratio: layer \u00f7 mouza floor"
+     "description": "boys' high ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_primary_B",
      "type": "DOUBLE",
-     "description": "boys' primary ratio: layer \u00f7 mouza floor"
+     "description": "boys' primary ratio: layer ÷ mouza floor"
     },
     {
      "name": "coll_midplus_G",
@@ -6056,22 +6056,22 @@
     {
      "name": "ratio_midplus_G",
      "type": "DOUBLE",
-     "description": "girls' midplus ratio: layer \u00f7 mouza floor"
+     "description": "girls' midplus ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_high_G",
      "type": "DOUBLE",
-     "description": "girls' high ratio: layer \u00f7 mouza floor"
+     "description": "girls' high ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_primary_G",
      "type": "DOUBLE",
-     "description": "girls' primary ratio: layer \u00f7 mouza floor"
+     "description": "girls' primary ratio: layer ÷ mouza floor"
     },
     {
      "name": "girls_to_boys_ratio_midplus",
      "type": "DOUBLE",
-     "description": "ratio_midplus_G \u00f7 ratio_midplus_B"
+     "description": "ratio_midplus_G ÷ ratio_midplus_B"
     },
     {
      "name": "village_mean_km_B_primary",
@@ -6226,62 +6226,62 @@
     {
      "name": "village_gap_km_primary",
      "type": "DOUBLE",
-     "description": "village mean km, girls \u2212 boys, primary"
+     "description": "village mean km, girls − boys, primary"
     },
     {
      "name": "model_gap_km_primary",
      "type": "DOUBLE",
-     "description": "layer median km, girls \u2212 boys, primary"
+     "description": "layer median km, girls − boys, primary"
     },
     {
      "name": "village_gap_share5_primary",
      "type": "DOUBLE",
-     "description": "village share beyond 5 km, girls \u2212 boys, primary"
+     "description": "village share beyond 5 km, girls − boys, primary"
     },
     {
      "name": "model_gap_share5_primary",
      "type": "DOUBLE",
-     "description": "layer share beyond 5 km, girls \u2212 boys, primary"
+     "description": "layer share beyond 5 km, girls − boys, primary"
     },
     {
      "name": "village_gap_km_middle",
      "type": "DOUBLE",
-     "description": "village mean km, girls \u2212 boys, middle"
+     "description": "village mean km, girls − boys, middle"
     },
     {
      "name": "model_gap_km_middle",
      "type": "DOUBLE",
-     "description": "layer median km, girls \u2212 boys, middle"
+     "description": "layer median km, girls − boys, middle"
     },
     {
      "name": "village_gap_share5_middle",
      "type": "DOUBLE",
-     "description": "village share beyond 5 km, girls \u2212 boys, middle"
+     "description": "village share beyond 5 km, girls − boys, middle"
     },
     {
      "name": "model_gap_share5_middle",
      "type": "DOUBLE",
-     "description": "layer share beyond 5 km, girls \u2212 boys, middle"
+     "description": "layer share beyond 5 km, girls − boys, middle"
     },
     {
      "name": "village_gap_km_high",
      "type": "DOUBLE",
-     "description": "village mean km, girls \u2212 boys, high"
+     "description": "village mean km, girls − boys, high"
     },
     {
      "name": "model_gap_km_high",
      "type": "DOUBLE",
-     "description": "layer median km, girls \u2212 boys, high"
+     "description": "layer median km, girls − boys, high"
     },
     {
      "name": "village_gap_share5_high",
      "type": "DOUBLE",
-     "description": "village share beyond 5 km, girls \u2212 boys, high"
+     "description": "village share beyond 5 km, girls − boys, high"
     },
     {
      "name": "model_gap_share5_high",
      "type": "DOUBLE",
-     "description": "layer share beyond 5 km, girls \u2212 boys, high"
+     "description": "layer share beyond 5 km, girls − boys, high"
     },
     {
      "name": "release",
@@ -6300,9 +6300,9 @@
    "bytes": 2130,
    "rows": 18,
    "description": "Rank agreement between the layer's district distances and the villages' own reports, by region and level.",
-   "notes": "Spearman rank correlations across matched districts between the layer's population-weighted median distance to the nearest girls' school and the villages' reported distance (rank_corr_level_girls), between the two shares beyond 5 km (rank_corr_share5_girls), and between the two girls-minus-boys gaps (rank_corr_gap); sign_agree_gap is the share of districts where both sources agree on the SIGN of the gap. Read it as a scorecard: the ordering of districts by how far girls are from school is confirmed (0.65\u20130.77 nationally at middle and high level); the ordering by the SIZE of the gap is confirmed at primary and middle and only weakly at high level (Balochistan 0.05); the sign of Punjab's gap is not supported (0.31\u20130.57), because both sources put it within a kilometre of zero. GB has seven districts \u2014 treat its rows as indicative.",
+   "notes": "Spearman rank correlations across matched districts between the layer's population-weighted median distance to the nearest girls' school and the villages' reported distance (rank_corr_level_girls), between the two shares beyond 5 km (rank_corr_share5_girls), and between the two girls-minus-boys gaps (rank_corr_gap); sign_agree_gap is the share of districts where both sources agree on the SIGN of the gap. Read it as a scorecard: the ordering of districts by how far girls are from school is confirmed (0.65–0.77 nationally at middle and high level); the ordering by the SIZE of the gap is confirmed at primary and middle and only weakly at high level (Balochistan 0.05); the sign of Punjab's gap is not supported (0.31–0.57), because both sources put it within a kilometre of zero. GB has seven districts — treat its rows as indicative.",
    "unit": null,
-   "source": "PBS Mouza Census 2020 microdata \u00d7 school_distance_stats",
+   "source": "PBS Mouza Census 2020 microdata × school_distance_stats",
    "columns": [
     {
      "name": "region",
@@ -6332,7 +6332,7 @@
     {
      "name": "rank_corr_gap",
      "type": "DOUBLE",
-     "description": "Spearman, girls \u2212 boys km gap"
+     "description": "Spearman, girls − boys km gap"
     },
     {
      "name": "sign_agree_gap",
@@ -6342,7 +6342,7 @@
     {
      "name": "rank_corr_gap_share5",
      "type": "DOUBLE",
-     "description": "Spearman, girls \u2212 boys share beyond 5 km"
+     "description": "Spearman, girls − boys share beyond 5 km"
     },
     {
      "name": "release",
@@ -6361,7 +6361,7 @@
    "description": "The same count-floor test by tehsil, for the provinces whose registers carry a tehsil (Sindh, Punjab, Balochistan, GB).",
    "notes": "Locates holes inside districts. 'absent from harvest' here is mostly a NAME mismatch rather than a hole: PBS enumerates sub-tehsils the registers do not carry (88 of Balochistan's 139), and the Karachi sub-divisions do not exist in the SELD roster. Sindh matches 104 of its 110 rural talukas. Read flags with the same caveats as school_validation_district, and with min_m = 5 mouzas rather than 10.",
    "unit": null,
-   "source": "PBS Mouza Census 2020 microdata \u00d7 schools_pk",
+   "source": "PBS Mouza Census 2020 microdata × schools_pk",
    "columns": [
     {
      "name": "region",
@@ -6471,17 +6471,17 @@
     {
      "name": "ratio_midplus_B",
      "type": "DOUBLE",
-     "description": "boys' midplus ratio: layer \u00f7 mouza floor"
+     "description": "boys' midplus ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_high_B",
      "type": "DOUBLE",
-     "description": "boys' high ratio: layer \u00f7 mouza floor"
+     "description": "boys' high ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_primary_B",
      "type": "DOUBLE",
-     "description": "boys' primary ratio: layer \u00f7 mouza floor"
+     "description": "boys' primary ratio: layer ÷ mouza floor"
     },
     {
      "name": "coll_midplus_G",
@@ -6491,22 +6491,22 @@
     {
      "name": "ratio_midplus_G",
      "type": "DOUBLE",
-     "description": "girls' midplus ratio: layer \u00f7 mouza floor"
+     "description": "girls' midplus ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_high_G",
      "type": "DOUBLE",
-     "description": "girls' high ratio: layer \u00f7 mouza floor"
+     "description": "girls' high ratio: layer ÷ mouza floor"
     },
     {
      "name": "ratio_primary_G",
      "type": "DOUBLE",
-     "description": "girls' primary ratio: layer \u00f7 mouza floor"
+     "description": "girls' primary ratio: layer ÷ mouza floor"
     },
     {
      "name": "girls_to_boys_ratio_midplus",
      "type": "DOUBLE",
-     "description": "ratio_midplus_G \u00f7 ratio_midplus_B"
+     "description": "ratio_midplus_G ÷ ratio_midplus_B"
     },
     {
      "name": "release",
@@ -6557,7 +6557,7 @@
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar district key of the source district (successors folded into parents) \u2014 joins district_indicators, mpi_districts, school_access_district"
+     "description": "Data Darbar district key of the source district (successors folded into parents) — joins district_indicators, mpi_districts, school_access_district"
     },
     {
      "name": "district_key_boundary",
@@ -6582,7 +6582,7 @@
     {
      "name": "level_std",
      "type": "VARCHAR",
-     "description": "primary | middle | high | other (Elementary \u2192 middle; Secondary, Higher Secondary, H.Sec. \u2192 high; Mosque \u2192 primary)"
+     "description": "primary | middle | high | other (Elementary → middle; Secondary, Higher Secondary, H.Sec. → high; Mosque → primary)"
     },
     {
      "name": "primary_plus",
@@ -7064,7 +7064,7 @@
     {
      "name": "ytd_firs",
      "type": "BIGINT",
-     "description": "FIRs so far that year \u2014 a running total, do not add"
+     "description": "FIRs so far that year — a running total, do not add"
     },
     {
      "name": "daily_raw",
@@ -7126,7 +7126,7 @@
    "bytes": 15774,
    "rows": 510,
    "description": "The same thing one tier down: 510 groups over the 537 sub-districts of 2017 and the 591 of 2023.",
-   "notes": "Pairs are matched by name within a district group, or \u2014 where the names give nothing \u2014 by a population that is identical and uniquely so within the group; matched_by records which. Dera Bugti\u2019s Phelawagh Tehsil and Qadirabad Sub-Division are one place under two names and only the 28,054 says so. Where several 2017 units became several 2023 ones, the group is marked restructured and the correspondence inside it is left open rather than guessed: the group balances, but which unit became which does not follow from that. The tier word is not a hierarchy \u2014 a unit published as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
+   "notes": "Pairs are matched by name within a district group, or — where the names give nothing — by a population that is identical and uniquely so within the group; matched_by records which. Dera Bugti’s Phelawagh Tehsil and Qadirabad Sub-Division are one place under two names and only the 28,054 says so. Where several 2017 units became several 2023 ones, the group is marked restructured and the correspondence inside it is left open rather than guessed: the group balances, but which unit became which does not follow from that. The tier word is not a hierarchy — a unit published as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
    "unit": "sub-districts and people",
    "source": "Derived from census_panel_2017 and census_panel_2023",
    "columns": [
@@ -7173,7 +7173,7 @@
     {
      "name": "restated_2017",
      "type": "BIGINT",
-     "description": "PBS\u2019s POPULATION 2017 for the 2023 units"
+     "description": "PBS’s POPULATION 2017 for the 2023 units"
     },
     {
      "name": "balances",
@@ -7190,7 +7190,7 @@
    "bytes": 16840,
    "rows": 3864,
    "description": "Night-time light radiance by tehsil and year (June VIIRS composites).",
-   "notes": "One row per tehsil \u00d7 year. Population-weighted mean radiance. Tehsils flagged nl_lowc in tehsil_satellite sit near the sensor's noise floor \u2014 their year-on-year movements are mostly noise.",
+   "notes": "One row per tehsil × year. Population-weighted mean radiance. Tehsils flagged nl_lowc in tehsil_satellite sit near the sensor's noise floor — their year-on-year movements are mostly noise.",
    "unit": null,
    "source": "NOAA VIIRS DNB monthly composites",
    "columns": [
@@ -7207,7 +7207,7 @@
     {
      "name": "radiance",
      "type": "DOUBLE",
-     "description": "nW/cm\u00b2/sr, population-weighted mean"
+     "description": "nW/cm²/sr, population-weighted mean"
     }
    ],
    "kind": "places",
@@ -7226,14 +7226,14 @@
    "bytes": 23023,
    "rows": 553,
    "description": "Tehsil-level (ADM3) satellite measures: relative wealth, population, night-lights.",
-   "notes": "RWI is Meta's Relative Wealth Index \u2014 note it USES night-time lights as one of its own inputs, so rwi and the light columns are NOT independent measurements; a correlation between them is partly mechanical. Lights are June VIIRS radiance, population-weighted. The full year-by-year series is in tehsil_nightlights.",
+   "notes": "RWI is Meta's Relative Wealth Index — note it USES night-time lights as one of its own inputs, so rwi and the light columns are NOT independent measurements; a correlation between them is partly mechanical. Lights are June VIIRS radiance, population-weighted. The full year-by-year series is in tehsil_nightlights.",
    "unit": null,
    "source": "Meta/Data for Good RWI, WorldPop 2020, NOAA VIIRS DNB monthly composites",
    "columns": [
     {
      "name": "tehsil_id",
      "type": "VARCHAR",
-     "description": "GADM/ADM3 identifier \u2014 joins to tehsil_nightlights.tehsil_id"
+     "description": "GADM/ADM3 identifier — joins to tehsil_nightlights.tehsil_id"
     },
     {
      "name": "name",
@@ -7253,7 +7253,7 @@
     {
      "name": "area",
      "type": "DOUBLE",
-     "description": "area, km\u00b2"
+     "description": "area, km²"
     },
     {
      "name": "rwi",
@@ -7273,7 +7273,7 @@
     {
      "name": "popdens",
      "type": "DOUBLE",
-     "description": "people per km\u00b2"
+     "description": "people per km²"
     },
     {
      "name": "nl_growth",
@@ -7288,7 +7288,7 @@
     {
      "name": "nl_latest",
      "type": "DOUBLE",
-     "description": "radiance in the most recent June (VIIRS, nW/cm\u00b2/sr)"
+     "description": "radiance in the most recent June (VIIRS, nW/cm²/sr)"
     },
     {
      "name": "nl_year",
@@ -7307,8 +7307,8 @@
    "file": "trade_by_country.parquet",
    "bytes": 983530,
    "rows": 71795,
-   "description": "Imports and exports by trading partner, fiscal year and period, 2003\u201304 onwards.",
-   "notes": "231 partners. Read the period column before using a total: FY_from_quarters is the four quarters added, and is what to use for a year \u2014 the portal\u2019s own whole-year rows are excluded because they overstate badly, 38.3 against a published 32.1 US dollars billion of exports for 2024-25. The quarterly rows still run a little over the totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; trade_reconciliation puts every period beside the totals so the gap can be seen. The dollar columns are zero before 2013-14 on every endpoint. This is aggregate trade and does not replace trade_hs8, which has the 8-digit product detail.",
+   "description": "Imports and exports by trading partner, fiscal year and period, 2003–04 onwards.",
+   "notes": "231 partners. Read the period column before using a total: FY_from_quarters is the four quarters added, and is what to use for a year — the portal’s own whole-year rows are excluded because they overstate badly, 38.3 against a published 32.1 US dollars billion of exports for 2024-25. The quarterly rows still run a little over the totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; trade_reconciliation puts every period beside the totals so the gap can be seen. The dollar columns are zero before 2013-14 on every endpoint. This is aggregate trade and does not replace trade_hs8, which has the 8-digit product detail.",
    "unit": "rupees and US dollars",
    "source": "PBS National Trade Database (trade.data.gov.pk), pull of 2026-09-27",
    "columns": [
@@ -7320,7 +7320,7 @@
     {
      "name": "period",
      "type": "VARCHAR",
-     "description": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters"
+     "description": "Q1–Q4, M01–M12, or FY_from_quarters"
     },
     {
      "name": "country",
@@ -7345,7 +7345,7 @@
     {
      "name": "pbs_country_code",
      "type": "VARCHAR",
-     "description": "PBS\u2019s own code"
+     "description": "PBS’s own code"
     },
     {
      "name": "imports_pkr",
@@ -7394,12 +7394,12 @@
     {
      "name": "period",
      "type": "VARCHAR",
-     "description": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters"
+     "description": "Q1–Q4, M01–M12, or FY_from_quarters"
     },
     {
      "name": "group",
      "type": "BIGINT",
-     "description": "commodity group 0\u20139, unlabelled by the portal"
+     "description": "commodity group 0–9, unlabelled by the portal"
     },
     {
      "name": "imports_pkr",
@@ -7435,8 +7435,8 @@
    "file": "trade_hs8.parquet",
    "bytes": 10206418,
    "rows": 1134442,
-   "description": "8-digit HS imports and exports, by commodity and partner country, FY2015-16 \u2192 FY2024-25.",
-   "notes": "Values are THOUSAND rupees. fy_* are full fiscal-year (Jul\u2013Jun) cumulative figures; month_* are June alone. country IS NULL marks the commodity total row \u2014 country rows sum to it, so filter one or the other or you will double-count. Years missing here exist only as PDFs upstream (see file_catalog).",
+   "description": "8-digit HS imports and exports, by commodity and partner country, FY2015-16 → FY2024-25.",
+   "notes": "Values are THOUSAND rupees. fy_* are full fiscal-year (Jul–Jun) cumulative figures; month_* are June alone. country IS NULL marks the commodity total row — country rows sum to it, so filter one or the other or you will double-count. Years missing here exist only as PDFs upstream (see file_catalog).",
    "unit": "thousand Rs",
    "source": "PBS External Trade Statistics (annual fixed-width TXT + D-10 workbooks)",
    "columns": [
@@ -7448,7 +7448,7 @@
     {
      "name": "fiscal_year",
      "type": "VARCHAR",
-     "description": "e.g. '2020-21' (Jul\u2013Jun)"
+     "description": "e.g. '2020-21' (Jul–Jun)"
     },
     {
      "name": "hs8",
@@ -7504,8 +7504,8 @@
    "file": "trade_monthly_totals.parquet",
    "bytes": 5739,
    "rows": 275,
-   "description": "Total imports and exports by calendar month, 2003\u201304 onwards.",
-   "notes": "The totals endpoint, which the country and group tables are reconciled against. The portal\u2019s month list has no June, so June appears only inside Q4.",
+   "description": "Total imports and exports by calendar month, 2003–04 onwards.",
+   "notes": "The totals endpoint, which the country and group tables are reconciled against. The portal’s month list has no June, so June appears only inside Q4.",
    "unit": "rupees and US dollars",
    "source": "PBS National Trade Database, pull of 2026-09-27",
    "columns": [
@@ -7558,8 +7558,8 @@
    "file": "trade_reconciliation.parquet",
    "bytes": 30236,
    "rows": 390,
-   "description": "Each period\u2019s totals beside the sum of its country rows and its group rows.",
-   "notes": "Read this before quoting a trade total. Monthly country and group rows match the totals endpoint to within 0.01 US dollars billion in every month except April 2021. Quarterly rows overshoot on exports, most often in Q4 \u2014 3.3 per cent on average \u2014 so a year built from quarters is close but not exact.",
+   "description": "Each period’s totals beside the sum of its country rows and its group rows.",
+   "notes": "Read this before quoting a trade total. Monthly country and group rows match the totals endpoint to within 0.01 US dollars billion in every month except April 2021. Quarterly rows overshoot on exports, most often in Q4 — 3.3 per cent on average — so a year built from quarters is close but not exact.",
    "unit": "rupees and US dollars",
    "source": "PBS National Trade Database, pull of 2026-09-27",
    "columns": [
@@ -7770,8 +7770,8 @@
    "sql": "-- The country series are hierarchical (U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, 'ten European Countries'\n-- contains Belgium..Sweden). Summing all of them overstates the total by 42%;\n-- these fifteen add up exactly to SBP's published figure.\nSELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n       round(sum(o.value)) AS mn_usd\nFROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\nWHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n  AND replace(c.series_name, 'Workers'' remittances received from ', '') IN (\n    'Saudi Arabia', 'U.A.E.', 'U.K.', 'U.S.A.',\n    'Other GCC Countries excluding Saudi Arabia & U.A.E.', 'ten European Countries',\n    'Norway', 'Switzerland', 'Australia', 'Canada', 'Japan', 'Malaysia',\n    'South Africa', 'South Korea', 'Other Countries')\nGROUP BY 1 ORDER BY mn_usd DESC;"
   },
   {
-   "title": "Census 2023 population by district \u2014 the safe filter",
-   "sql": "-- The panel nests levels: district rows and the tehsil rows inside them both\n-- exist, and locality sums to its own total, so pin both.\n-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n-- would still hand back the male, female and transgender rows. Name the\n-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\nSELECT province_area, unit AS district, value AS population\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'district'\n  AND indicator = 'POPULATION-2023 / ALL SEXES'\n  AND locality = 'all' AND NOT missing\nORDER BY population DESC;\n-- 136 rows adding to 241,499,431 \u2014 PBS's published national total."
+   "title": "Census 2023 population by district — the safe filter",
+   "sql": "-- The panel nests levels: district rows and the tehsil rows inside them both\n-- exist, and locality sums to its own total, so pin both.\n-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n-- would still hand back the male, female and transgender rows. Name the\n-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\nSELECT province_area, unit AS district, value AS population\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'district'\n  AND indicator = 'POPULATION-2023 / ALL SEXES'\n  AND locality = 'all' AND NOT missing\nORDER BY population DESC;\n-- 136 rows adding to 241,499,431 — PBS's published national total."
   },
   {
    "title": "Check a filter before you trust it",

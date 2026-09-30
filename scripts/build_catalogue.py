@@ -406,9 +406,17 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
            + "".join(f'<li><a href="/datasets/{slug(x["name"])}/">{E(short_title(name_of[x["name"]]))}</a>'
                      f'<code class="ctbl">{E(x["name"])}</code></li>' for x in related[:8])
            + '</ul></div>') if related else ""
+    # A table redistributed from a share-alike source keeps that source's
+    # licence: ODbL data cannot be relicensed as CC BY, so the page and its
+    # JSON-LD say ODbL and the cite line says so too.
+    odbl = "ODbL" in (t.get("source") or "")
+    lic_url = "https://opendatacommons.org/licenses/odbl/1-0/" if odbl else seo.LICENSE
+    lic_txt = ("Redistributed under the Open Database Licence (ODbL) 1.0, share-alike; "
+               "\u00a9 OpenStreetMap contributors" if odbl
+               else "Derived data CC BY 4.0; cite the original source above")
     cite = (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
             f'{E(title)}. {seo.ORIGIN}{path}. Release {E(str(cat["generated"]))}. '
-            f'Derived data CC BY 4.0; cite the original source above.</p></div>')
+            f'{lic_txt}.</p></div>')
 
     body = (head + fx + notes
             + '<div class="dgrid"><div class="dmain">' + dic + sample + sbp + '</div>'
@@ -418,7 +426,7 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
             + ex_html + rel + cite + '</aside></div>')
     schema = {"@type": "Dataset", "name": title, "alternateName": t["name"],
               "description": t["description"] + " " + (t.get("notes") or ""),
-              "url": seo.ORIGIN + path, "license": seo.LICENSE, "creator": seo.PERSON,
+              "url": seo.ORIGIN + path, "license": lic_url, "creator": seo.PERSON,
               "publisher": seo.PUBLISHER, "spatialCoverage": {"@type": "Place", "name": "Pakistan"},
               "variableMeasured": [{"@type": "PropertyValue", "name": c["name"],
                                     "description": c["description"]} for c in t["columns"]],

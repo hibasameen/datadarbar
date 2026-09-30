@@ -1726,12 +1726,12 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "event here would be an inference, not a lookup. An earlier note "
         "said climate_impacts carries what each one did, which invited a "
         "join that cannot be made.",
-        {"record_id": "the event", "source": "who recorded it",
+        {"record_id": "the event", "source": "who recorded it (gdacs)",
          "hazard": "flood, drought or tropical cyclone", "subtype": "finer type",
          "title": "how the source names it", "start_date": "when it began",
          "end_date": "when it ended",
          "date_precision": "how precisely the dates are known"},
-        "Reanalysis of published disaster reporting", "events")
+        "GDACS (Global Disaster Alert and Coordination System, European Commission Joint Research Centre), Pakistan flood, drought and cyclone alerts, 2001 to 2025; CC BY 4.0", "events")
 
     src_table(
         "climate_impacts", "climate_events/climate_impacts.parquet",
@@ -1750,7 +1750,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "admin_level": "how fine the place is", "metric": "what is counted",
          "value": "the figure", "period_start": "start of the period covered",
          "period_end": "end of the period covered"},
-        "Reanalysis of published disaster reporting", "people, assets")
+        "NDMA (National Disaster Management Authority) monsoon situation reports, September 2026, tables read off the PDFs; each row carries its report and page", "people, assets")
 
     # ── the national series: Economy and State ──────────────────────────────
     print("national accounts, trade and tax\u2026")

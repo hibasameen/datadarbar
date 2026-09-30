@@ -96,7 +96,9 @@ def footer(root=''):
         '<footer class="site-footer">\n'
         '  <span>&copy; 2026 Hiba Sameen</span>' + sep +
         '<span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" '
-        'rel="noopener">Pakistan Bureau of Statistics</a></span>' + sep +
+        'rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" '
+        'target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources '
+        '<a href="' + root + 'about.html#acknowledgements">acknowledged</a></span>' + sep +
         '<span>Code: <a href="https://opensource.org/licenses/MIT" '
         'target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: '
         '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
