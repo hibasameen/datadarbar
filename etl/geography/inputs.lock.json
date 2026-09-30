@@ -1,0 +1,815 @@
+{
+  "files": [
+    {
+      "bytes": 134767,
+      "path": "data_darbar_warehouse/stage1/census-2026-09-25-release/build_manifest.json",
+      "sha256": "6b092f6370884c8d6bfab8a39d33d9dba2689c1bc26f35f28c7dc79250ce532c"
+    },
+    {
+      "bytes": 7444,
+      "path": "data_darbar_warehouse/stage1/census-2026-09-25-release/indicator_dictionary.csv",
+      "sha256": "50c7da719b97d32077157106b3847accf0c693a2393dba8607a2f1f0747e8346"
+    },
+    {
+      "bytes": 2263009,
+      "path": "data_darbar_warehouse/stage1/census-2026-09-25-release/source_observations.csv",
+      "sha256": "fad2a7b11bc57af37058477f24803a0f72049e88df714f3402b6a17708f08a38"
+    },
+    {
+      "bytes": 74847,
+      "path": "data_darbar_warehouse/stage1/census-2026-09-25-release/source_units.csv",
+      "sha256": "697c07bb5004381fcd70215e26a50c8cd97c839c4026af4c9c0ddab44ea6e131"
+    },
+    {
+      "bytes": 1708,
+      "path": "raw_data/geography/2026-09-25-district-resolution/combined_retrieval_manifest.json",
+      "sha256": "dbc2dcef29b355a594939f5202c492010295707a771bc8fee37d7b1f0197bc4a"
+    },
+    {
+      "bytes": 3486562,
+      "path": "raw_data/geography/2026-09-25-district-resolution/district_059_jhang_2017.pdf",
+      "sha256": "d453745d0a0544cdf17af6aef54b639447be09556d0c3c05a50237f400fa5e99"
+    },
+    {
+      "bytes": 3185890,
+      "path": "raw_data/geography/2026-09-25-district-resolution/district_060_toba_tek_singh_2017.pdf",
+      "sha256": "0fe0484b76ee402c6b9820ca6caee192471847722d05104c50fdf6f790446349"
+    },
+    {
+      "bytes": 3031691,
+      "path": "raw_data/geography/2026-09-25-district-resolution/district_116_kachhi_2017.pdf",
+      "sha256": "5bd4dfb1b39ccee1c92bdcc5b6bfd5a55f6aeee777d104bf7b80e84bb8b61f47"
+    },
+    {
+      "bytes": 2448023,
+      "path": "raw_data/geography/2026-09-25-district-resolution/district_117_nasirabad_2017.pdf",
+      "sha256": "eb3754871e9dc3dc5d3e109792e52f763bf6bd3b9fd65203d8476bc000314ed7"
+    },
+    {
+      "bytes": 3404,
+      "path": "raw_data/geography/2026-09-25-district-resolution/retrieval_manifest.json",
+      "sha256": "9c19be117233deaf0485be2802777c6870e5e1a20b8cfe21256c4095f4289a25"
+    },
+    {
+      "bytes": 2840424,
+      "path": "raw_data/geography/2026-09-25-district-resolution/table31_balochistan_2023.pdf",
+      "sha256": "1d297644863319c6ab55914886ab383655f747dfa1e8970cb0831a3b6045bde9"
+    },
+    {
+      "bytes": 13395346,
+      "path": "raw_data/geography/2026-09-25-district-resolution/table31_punjab_2023.pdf",
+      "sha256": "601b3120b756291993a10a0e23ae9f35baf77806b38c18072218d6a0fc50c7c4"
+    },
+    {
+      "bytes": 187125,
+      "path": "raw_data/geography/2026-09-25-official/administrative_districts_2023.pdf",
+      "sha256": "5931fae7c6034dcc01ad4f8b99e85e766bbcadc0df2baa63e31329bb8bc7269e"
+    },
+    {
+      "bytes": 373106,
+      "path": "raw_data/geography/2026-09-25-official/administrative_units_2023.pdf",
+      "sha256": "8be95d0960427b4bcb602c7865d1efb4d8feb518604a1ecbcdfa75a8fab8604d"
+    },
+    {
+      "bytes": 2085560,
+      "path": "raw_data/geography/2026-09-25-official/census.html",
+      "sha256": "9e514e041d5b3d26ca91c88aaac58b40e00ed04d98e14be84d73ec4d1e31607d"
+    },
+    {
+      "bytes": 666012,
+      "path": "raw_data/geography/2026-09-25-official/censusarchive.html",
+      "sha256": "486a7f35f04d5c81a1fa58c4e2090bfbb3c72706dbcd2d0000a881a4c402869c"
+    },
+    {
+      "bytes": 263264,
+      "path": "raw_data/geography/2026-09-25-official/gis.html",
+      "sha256": "06fdeee17832f62bd91f776bf6db3312381fce6053da570333387cb5e514548f"
+    },
+    {
+      "bytes": 4736102,
+      "path": "raw_data/geography/2026-09-25-official/report_balochistan.pdf",
+      "sha256": "2cf75ea5c6f3ccc14d17625277d3008ee8c6cfe16b765a57c663e3a732128d8c"
+    },
+    {
+      "bytes": 4580922,
+      "path": "raw_data/geography/2026-09-25-official/report_kpk.pdf",
+      "sha256": "f89a60d03a82518e4ffc0963869e9a2d8f843f537aba1781e415fcee93041f4b"
+    },
+    {
+      "bytes": 4980601,
+      "path": "raw_data/geography/2026-09-25-official/report_punjab.pdf",
+      "sha256": "158c26de9420d87a3724025b5dc11e172c795e272cce4d9fe360ba81996b3de7"
+    },
+    {
+      "bytes": 4515533,
+      "path": "raw_data/geography/2026-09-25-official/report_sindh.pdf",
+      "sha256": "e27a1046cf13e78f111458f01fb0a199cf37d9040182e0bcd3503b3bcbc35d92"
+    },
+    {
+      "bytes": 3585,
+      "path": "raw_data/geography/2026-09-25-official/retrieval_manifest.json",
+      "sha256": "6929c3f5eed2c587aee746c9b7f2a331e66b64f5831dd584b9eb2d2d12df76c9"
+    },
+    {
+      "bytes": 35200,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/001_bannu_table1.pdf",
+      "sha256": "552445831b472dba7cff78d34f80f2cf2fd96baf5bed305dd3c5e2b6786981ba"
+    },
+    {
+      "bytes": 35195,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/002_lakki_marwat_table1.pdf",
+      "sha256": "a6cc34d0d1b5e7d6cbe318737a2f8675af830bfae2a6a15086b01d9d09bd1ffa"
+    },
+    {
+      "bytes": 38841,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/003_dera_ismail_khan_table1.pdf",
+      "sha256": "2ec4199866fba3910295991dfee8c474b4c28d6bb7a6d24da9b665b69206e4fa"
+    },
+    {
+      "bytes": 34200,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/004_tank_table1.pdf",
+      "sha256": "a1932957748d4b21f3b17bc28e3fbb803063c88883f230b9c861667c87a6364c"
+    },
+    {
+      "bytes": 35319,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/005_abbottabad_table1.pdf",
+      "sha256": "2822e12dc7bc810344c43810aedadc0d776e30a9813dd86040929bbbc8b4de7c"
+    },
+    {
+      "bytes": 35052,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/006_batagram_table1.pdf",
+      "sha256": "2afdaef189621678cf5b7bdb8bf520e07c7b1f06e14eabb19c67615ca2e407c2"
+    },
+    {
+      "bytes": 35205,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/007_haripur_table1.pdf",
+      "sha256": "0dece826ed3a115267ca77e5335d37be5f1293131261acedf76aeed20f908aa9"
+    },
+    {
+      "bytes": 35874,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/008_mansehra_table1.pdf",
+      "sha256": "0e7fc6c898e8fa8a795225d4a5d10131da11fda972a82c68a55f1a53e9c773e9"
+    },
+    {
+      "bytes": 35295,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/009_torghar_table1.pdf",
+      "sha256": "871faad16848591cdd8af593c56d84fbd7febd5787fce5ebde3a42a3c4257daf"
+    },
+    {
+      "bytes": 36873,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/010_kohistan_table1.pdf",
+      "sha256": "056b627c0417b27d3fb0bb95b03c54448e022412f4b5be59378c4a13f4095612"
+    },
+    {
+      "bytes": 35195,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/011_hangu_table1.pdf",
+      "sha256": "8bf7a3b919fc2a773e273522181bd0510655e002a4a244bef9b81096feee8017"
+    },
+    {
+      "bytes": 36075,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/012_karak_table1.pdf",
+      "sha256": "ad33d56112d74c5d7cef4818afa8d509d0b7823dc6ed0f119359a050b35e2447"
+    },
+    {
+      "bytes": 35260,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/013_kohat_table1.pdf",
+      "sha256": "1eb67b5f4fa42c4519097201995c7f9a5faf64df452880380126c792c9345f0f"
+    },
+    {
+      "bytes": 36140,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/014_mardan_table1.pdf",
+      "sha256": "52253fccd86c87becaccde9186d0bbad586b7c7574f7de0ce6bb5aa1d4c02ecc"
+    },
+    {
+      "bytes": 36817,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/015_swabi_table1.pdf",
+      "sha256": "01a967a7b96d01e78ed25c1318cd264e164186fbbbc3386003c4d2ad0d9dee09"
+    },
+    {
+      "bytes": 36140,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/016_charsadda_table1.pdf",
+      "sha256": "40ca9968e8bc5ce5d16a2b3121dee8dc40bf1272d3331625cd59778d7b8be3fe"
+    },
+    {
+      "bytes": 36214,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/017_nowshera_table1.pdf",
+      "sha256": "ec9eafaab0d60bd6c477d6ab3f51865f086d123770d4e87b9db64c5f3a8c4c94"
+    },
+    {
+      "bytes": 34211,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/018_peshawar_table1.pdf",
+      "sha256": "08959cc130df96bb26abbb417205a44496338fdd61c6b56a2c89a984e15eb14e"
+    },
+    {
+      "bytes": 36700,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/019_buner_table1.pdf",
+      "sha256": "4ef6b211975afcaaf8255a38621986f783d4172bae458d754f1ef07086f3d4aa"
+    },
+    {
+      "bytes": 35325,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/020_chitral_table1.pdf",
+      "sha256": "11e51a07577a8f47d734b9dec7ed88ba875e34dfaf96ec87bb80d92ac0488d6d"
+    },
+    {
+      "bytes": 35842,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/021_shangla_table1.pdf",
+      "sha256": "12aa88a2c569a38a0c00cc7a6b0b716977395c02b81c36a4de653cf364a90c0e"
+    },
+    {
+      "bytes": 39112,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/022_swat_table1.pdf",
+      "sha256": "5edd1191e5c6811c6938eb0c9e8713e0b371f683966d99b7374deb4942d213ce"
+    },
+    {
+      "bytes": 36634,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/023_lower_dir_table1.pdf",
+      "sha256": "a194e9b0dc9c5766101f872535f656decaed76763b611aae82afe24b45b99e62"
+    },
+    {
+      "bytes": 35942,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/024_upper_dir_table1.pdf",
+      "sha256": "3e96e6c780649e91ae0eb7ce2819cc2a381d42b61c0c8071b9c130f44f49cb9d"
+    },
+    {
+      "bytes": 35291,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/025_malakand_protected_area_table1.pdf",
+      "sha256": "d8bf40676a045ee51ea08165b2a309eff69d8781f024be565bddb9c4b2a2c03a"
+    },
+    {
+      "bytes": 36851,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/026_khyber_table1.pdf",
+      "sha256": "6a60f11aedd8e1d13415a8d492e2f2d8124216622ab21f711aebf2575877ccfd"
+    },
+    {
+      "bytes": 36221,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/027_kurram_table1.pdf",
+      "sha256": "e4e39ece88d52d4588423c317782343b633bd94fded11f8f5c8626aac47b582f"
+    },
+    {
+      "bytes": 38770,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/028_mohmand_table1.pdf",
+      "sha256": "115f0855ad3c9f9f628b03cb98bf5ccb565b51bf002b4b3f61c4d6aa493ed5db"
+    },
+    {
+      "bytes": 40603,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/029_north_waziristan_table1.pdf",
+      "sha256": "c1e8970e88308e1848be64eb80a7db0eacb7d5e3440f7c9591fcdbcfe1136c0e"
+    },
+    {
+      "bytes": 36748,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/030_orakzai_table1.pdf",
+      "sha256": "cb09008d8c6b64c206fda96cebf4869f734729e99945ebcd193f770a531ff450"
+    },
+    {
+      "bytes": 39792,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/031_south_waziristan_table1.pdf",
+      "sha256": "c1df5c9c0f759412ee483c7a4666a16a94ae2f00f1a73af7726300e019797501"
+    },
+    {
+      "bytes": 28294,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/032_bajaur_table1.pdf",
+      "sha256": "2fb62cd5306617ff499e2b12abbaff8209d6b418d39f6e41aee16555b8a515b7"
+    },
+    {
+      "bytes": 12192,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/033_fr_bannu_table1.pdf",
+      "sha256": "84f8f2c7615b6c0ee7b430baa1cc269ac7a714953d122cfc238969f86e05f587"
+    },
+    {
+      "bytes": 33220,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/034_fr_dikhan_table1.pdf",
+      "sha256": "ea2e2033d8a6a23b2e0551dc1b800501e78b3913be4b68eef232912137dbc5dd"
+    },
+    {
+      "bytes": 33203,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/035_fr_kohat_table1.pdf",
+      "sha256": "41bb073c5d9e436f115a387d0892754ea2992575619877430fb930c615d88f6b"
+    },
+    {
+      "bytes": 33507,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/036_fr_lakki_marwat_table1.pdf",
+      "sha256": "98e2996e629283d7975338243cec9d8c2246f5c66057f50d557dca05987f0f71"
+    },
+    {
+      "bytes": 33124,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/037_fr_peshawar_table1.pdf",
+      "sha256": "a9a72098a72b708388911c9f3b6493c6abfb4b2a6fd6a1402a73076b7669a5d6"
+    },
+    {
+      "bytes": 33053,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/038_fr_tank_table1.pdf",
+      "sha256": "aa1005a4ac8dbfb4b9442e7e81abc3cf28e669aebb6a50912b2feb1465d5774a"
+    },
+    {
+      "bytes": 48267,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/039_attock_table1.pdf",
+      "sha256": "4a7db62a8a78a265975153ce9b38080dddbb5f622072f9174ef57fd4e8a4d7bf"
+    },
+    {
+      "bytes": 37545,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/040_chakwal_table1.pdf",
+      "sha256": "d6afcb8894e5dcc242de67863db623d31815ae06a3917e675a89b6fdb0212fe8"
+    },
+    {
+      "bytes": 36904,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/041_jhelum_table1.pdf",
+      "sha256": "9a643a2824fd9cec5254182925b1498648420bb6034e593fad1aaa696246cea0"
+    },
+    {
+      "bytes": 39422,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/042_rawalpindi_table1.pdf",
+      "sha256": "e018277bd0b858236db08c1fed64da8c68de7d7c94e08b95615a3ea3a14e9a92"
+    },
+    {
+      "bytes": 40247,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/043_bhakkar_table1.pdf",
+      "sha256": "d8ff1a71c1327532d7be98a76d9731be272914db276fa0287bb2e9cc9c45e683"
+    },
+    {
+      "bytes": 36834,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/044_khushab_table1.pdf",
+      "sha256": "1cf005af74be6d59a0484bfa77b6d3f27a749bde88228eb279819c0e51cbcea1"
+    },
+    {
+      "bytes": 39054,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/045_sargodha_table1.pdf",
+      "sha256": "95862e5907c01b59edf87e16e5a4653ad622250a31c1a62f26b3e727ff4d299c"
+    },
+    {
+      "bytes": 36048,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/046_mianwali_table1.pdf",
+      "sha256": "d7f0eac417262e8c760200f38efa19b50ad82e2c9e017b5dbf7abd9d547458f6"
+    },
+    {
+      "bytes": 39234,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/047_gujranwala_table1.pdf",
+      "sha256": "6fc1a0a4e2b690a2a581ae7ae75597ce4f9fedf5be940c30a0cb69b976f12f7a"
+    },
+    {
+      "bytes": 36194,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/048_gujrat_table1.pdf",
+      "sha256": "247b6aab7825456119b60e6191ff3ad830a19e288dcbe72c76a5f084afa9e02e"
+    },
+    {
+      "bytes": 35220,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/049_hafizabad_table1.pdf",
+      "sha256": "0b8c37e7e03d6cbac4209243de2cb503931ad094a2c76050143607095de4451c"
+    },
+    {
+      "bytes": 36025,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/050_mandi_bahauddin_table1.pdf",
+      "sha256": "9ed5747cd2e2c2b30001e06cb13a784c18b92ee288ba1867bee59f4a7f664833"
+    },
+    {
+      "bytes": 39358,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/051_narowal_table1.pdf",
+      "sha256": "824c367622f45e771d4fbf5d5a4daedaefab02f53e1c66c489820f884cfa7215"
+    },
+    {
+      "bytes": 36807,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/052_sialkot_table1.pdf",
+      "sha256": "79103275bd03eff3f0e470f7e240950b4e631098e1b7fe250154f9a259966585"
+    },
+    {
+      "bytes": 37654,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/053_lahore_table1.pdf",
+      "sha256": "fc1c9eb3d28f750ca2cc403949ee093c12dbab0fccdb5b09e3f82a6e7ae18a88"
+    },
+    {
+      "bytes": 36873,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/054_kasur_table1.pdf",
+      "sha256": "c68e4bec140dab79d07206ec09e9f7ede4ffbfdf5d3e54c40ad94bbd4762b252"
+    },
+    {
+      "bytes": 38584,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/055_nankana_sahib_table1.pdf",
+      "sha256": "a9b768f66d053c8f90dc3b8f59f439f5643c4a56fef5ca682c314c477af8eb66"
+    },
+    {
+      "bytes": 37771,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/056_sheikhupura_table1.pdf",
+      "sha256": "6ffa8f787589a97426b10147048d2129fb54f5f2c5556912bcbbfaeb1c858a6d"
+    },
+    {
+      "bytes": 38576,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/057_faisalabad_table1.pdf",
+      "sha256": "9b4dea642fe6f726549aaf2d065b926fd3103285e9b16d6911b33b2577db37fc"
+    },
+    {
+      "bytes": 36096,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/058_chiniot_table1.pdf",
+      "sha256": "ebc7957cf1e9ef2c4f3117e1bd449a2cab87ea53e140be2dbb46caae94a2b616"
+    },
+    {
+      "bytes": 37021,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/059_jhang_table1.pdf",
+      "sha256": "24cf9f22881d6bf2030381d06f4e438b631319ec1b02de386590a206f6d73709"
+    },
+    {
+      "bytes": 37049,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/060_toba_tek_singh_table1.pdf",
+      "sha256": "baf8c7e5b6c6a0b32d6d8c47a073c8171a66891781efc2ad08993ac9fb9c1165"
+    },
+    {
+      "bytes": 35463,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/061_sahiwal_table1.pdf",
+      "sha256": "e1de87571df9109f3790fb5cdc5b75288c58ef42fbf598482782f3a4c9baf9af"
+    },
+    {
+      "bytes": 36179,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/062_okara_table1.pdf",
+      "sha256": "4d5048351e51fb3e4fd7c59875d522d910517a5f58bce1069b5bf8d33ab605c2"
+    },
+    {
+      "bytes": 85566,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/063_pakpattan_table1.pdf",
+      "sha256": "78a95ccee1ec3412fa9415a8983780c344609b9512b4c339b4671d67ae76fe6d"
+    },
+    {
+      "bytes": 47201,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/064_bahawalnagar_table1.pdf",
+      "sha256": "1ad33a31661ec9ab9e2ecfba37c4c7489c54e4b88e89c9f7a346c2cc1b15455a"
+    },
+    {
+      "bytes": 38619,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/065_bahawalpur_table1.pdf",
+      "sha256": "be8a7e1d6859fbafbffd2d21a487d17533d31d492ce9ffbebbcb7295652f630c"
+    },
+    {
+      "bytes": 36991,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/066_rahim_yar_khan_table1.pdf",
+      "sha256": "7d21480adb0fa5641d073914eb4249af5e23f34d595a976605056f26bfb66a93"
+    },
+    {
+      "bytes": 36870,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/067_dera_ghazi_khan_table1.pdf",
+      "sha256": "b1f6d8431953284ca1d00e80d491e1a653d1f773414d77363f29eead81130dca"
+    },
+    {
+      "bytes": 38260,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/068_rajanpur_table1.pdf",
+      "sha256": "48802e3b489056f597634dc99f835d6d4025b741a7f0a55b972d8152a994cfd3"
+    },
+    {
+      "bytes": 36026,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/069_layyah_table1.pdf",
+      "sha256": "af69ae09157e747a22a6f4b27e7cd8522d432d38fd45c62492c2c9b531934495"
+    },
+    {
+      "bytes": 37089,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/070_muzaffargarh_table1.pdf",
+      "sha256": "d7c37b9cffa412e4e9ba3d88d1f5ac52da8053e9280e6f3bcc4569df2320f69b"
+    },
+    {
+      "bytes": 37045,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/071_multan_table1.pdf",
+      "sha256": "d33e0f27324e1275cb990f225adadc1030330e097669f8e05e847f87b0fe9c23"
+    },
+    {
+      "bytes": 37150,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/072_khanewal_table1.pdf",
+      "sha256": "a062962350120bfda6479dd171b312f7877233c2d3152863f5588cb8f1454ddb"
+    },
+    {
+      "bytes": 36161,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/073_lodhran_table1.pdf",
+      "sha256": "b15da82a2a6eca36a7651bc68887a2ce44f59da4506e2aaaeadcc729cd6d4682"
+    },
+    {
+      "bytes": 36057,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/074_vehari_table1.pdf",
+      "sha256": "bed40073ae2b8e68afb47e1c8ca7a757b0c24401f3383c914e30a68a6bcbebe7"
+    },
+    {
+      "bytes": 36380,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/075_jacobabad_table1.pdf",
+      "sha256": "95140d1271933a51f22aabd4be553c0f70089fbf8722df0127f3469d84cf643c"
+    },
+    {
+      "bytes": 36060,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/076_kashmor_table1.pdf",
+      "sha256": "41035d9d509731984a0cf1e6257bdb36e2e00ad26ec9cb717b68ab718216ce57"
+    },
+    {
+      "bytes": 39633,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/077_kambar_shahdad_kot_table1.pdf",
+      "sha256": "8fce2bf1987ec50480c70b6406c228bcfaba926355490b347cbc00f42f4952fe"
+    },
+    {
+      "bytes": 36779,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/078_larkana_table1.pdf",
+      "sha256": "6edab5f4f1183a330d7ffc81be14e9994aefb83c2da60b75a2e4c7ee07d6586c"
+    },
+    {
+      "bytes": 36840,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/079_shikarpur_table1.pdf",
+      "sha256": "24213384f6de12d09d9a4297a773f18393beb7ad70da80305db074fbfe4f72b5"
+    },
+    {
+      "bytes": 37605,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/080_ghotki_table1.pdf",
+      "sha256": "159f43c1f71162387df3708482aaacc9407394cd092c07259db402541f17df30"
+    },
+    {
+      "bytes": 40108,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/081_khairpur_table1.pdf",
+      "sha256": "cfd799b532b9e445a43280075bd0b872bae7e991126c7827b8bfc952ea8ec528"
+    },
+    {
+      "bytes": 37797,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/082_sukkur_table1.pdf",
+      "sha256": "9d9258af44c0a2718011e6056ebbc81bac2752222061a34f7bda4715d16a26a7"
+    },
+    {
+      "bytes": 37682,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/083_badin_table1.pdf",
+      "sha256": "fd64c120814acfdde2e62e606b3f2c6fae732bb4cc41ca94c05ecd8753f02ec3"
+    },
+    {
+      "bytes": 36874,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/084_dadu_table1.pdf",
+      "sha256": "ca781a3b45b862a9043a424d9e154b535ccafa9a9018db5be5b4c813dd6b5d1c"
+    },
+    {
+      "bytes": 36770,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/085_hyderabad_table1.pdf",
+      "sha256": "0e10e69285a58f5929d3c89fc2695256e213043acf49f2a95b05a5867714873e"
+    },
+    {
+      "bytes": 37088,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/086_jamshoro_table1.pdf",
+      "sha256": "301b613f14417924c3a3b1d23032143672d6897539c4d59e581086444e82a8b7"
+    },
+    {
+      "bytes": 36139,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/087_matiari_table1.pdf",
+      "sha256": "54adda09469b61ccb964cdaccf573d00f83a23a52872c73238fbcfe5b8cfa94d"
+    },
+    {
+      "bytes": 37860,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/088_sujawal_table1.pdf",
+      "sha256": "a0199f73bdf88fe607371f480ce2af24771a51a19527f2047c4d5c412e643369"
+    },
+    {
+      "bytes": 36376,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/089_tando_allahyar_table1.pdf",
+      "sha256": "134480979c66dcf237169f913a1551fd3a8ec006109add0720b80abbf8f5ce59"
+    },
+    {
+      "bytes": 36256,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/090_tando_muhammad_khan_table1.pdf",
+      "sha256": "e8af51d2a397492b9f47dbb1cd42cf7666701fdf4b4a4bf2785a5f107e97a834"
+    },
+    {
+      "bytes": 36944,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/091_thatta_table1.pdf",
+      "sha256": "59933fba09e10369669e8d9d2f0c2022fcbe691abd3f49c8c21d678bd487e545"
+    },
+    {
+      "bytes": 37605,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/092_karachi_central_table1.pdf",
+      "sha256": "fccadbc6dcc12c31a39d127241c11600918f1b267fcc4f7c5a44a992c9c7043e"
+    },
+    {
+      "bytes": 36725,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/093_karachi_east_table1.pdf",
+      "sha256": "72aa7d9b067f173c787c59f7885e0bd2a20cb51539d50671f06fe562d1f53997"
+    },
+    {
+      "bytes": 37274,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/094_karachi_south_table1.pdf",
+      "sha256": "7985d3002e976199d81b39f5923253a991ba152393e51daa8bac693fac2d77ab"
+    },
+    {
+      "bytes": 39285,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/095_karachi_west_table1.pdf",
+      "sha256": "b6fc883f818b045ea5ad6be008d184e992a97b3c0e5358b0bde4f3e2f362eb97"
+    },
+    {
+      "bytes": 36827,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/096_korangi_table1.pdf",
+      "sha256": "f6975ab1b61dbe2e6bb7d8ac23ef75c8a4af27d7717b0ce24120b1904993310d"
+    },
+    {
+      "bytes": 38512,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/097_malir_table1.pdf",
+      "sha256": "478e7ebce96c423f5f44848466de9d3b27d34a296958de2c26a6c94f5821a442"
+    },
+    {
+      "bytes": 41517,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/098_mirpur_khas_table1.pdf",
+      "sha256": "ee83f5b6f70096c23c929a82c39bc9bb3504f3ec7c4f7c215afcaa5391407189"
+    },
+    {
+      "bytes": 39210,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/099_tharparkar_table1.pdf",
+      "sha256": "630e651f8eb5e2061aba9665d603cf20188c4273038ec03e5d91b40714d0ebca"
+    },
+    {
+      "bytes": 36862,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/100_umer_kot_table1.pdf",
+      "sha256": "463fa4abf2834e88bcda6700fdc16a377466247ea6a717dcd6e53d03d9e0c0bd"
+    },
+    {
+      "bytes": 38607,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/101_sanghar_table1.pdf",
+      "sha256": "6af3fa0481554e58d5bd15e8c9291567616afb6b8d80b286db3a5fc19adb4f19"
+    },
+    {
+      "bytes": 37673,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/102_naushahro_feroze_table1.pdf",
+      "sha256": "738532905189daeaa06dd33b8061a7299da44f17abf8ab75a9ef001be341c2d1"
+    },
+    {
+      "bytes": 36880,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/103_shaheed_benazirabad_table1.pdf",
+      "sha256": "98597817021f4c6bf30d11dd6730c19d0025bc31d860ed35a9669b331f6653ef"
+    },
+    {
+      "bytes": 37614,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/104_awaran_table1.pdf",
+      "sha256": "848de30340ae59c8ca79ab5de2719ff84d650c4a159b7fbf1d3a35430cd3f820"
+    },
+    {
+      "bytes": 41141,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/105_kalat_table1.pdf",
+      "sha256": "827a1aa36c9d2a313f711fbc60d2ff9b827b1528af8f68fcace3c19a55b581da"
+    },
+    {
+      "bytes": 35847,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/106_kharan_table1.pdf",
+      "sha256": "6a0730685914ca4ff7519bb07c574a3e8a9f53d2a87a8a9a314dca7a55529544"
+    },
+    {
+      "bytes": 40486,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/107_khuzdar_table1.pdf",
+      "sha256": "a31f4756e1c0e1870d7fff93d7a4616ae1476cc73a797efa14891bb4e9adde29"
+    },
+    {
+      "bytes": 40743,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/108_lasbela_table1.pdf",
+      "sha256": "09b8e11cf0166d3d4c9d98a8eb3658a17d71aae405d50afde04f470570644981"
+    },
+    {
+      "bytes": 36733,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/109_mastung_table1.pdf",
+      "sha256": "d2d93cf663390ec2eacfa04ed34fa551bf8451c3afca943abe8f428aa046ac9f"
+    },
+    {
+      "bytes": 38145,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/110_washuk_table1.pdf",
+      "sha256": "53e25ef1637b921c601472076064085b6a53903e26a8cc16cbad65fe67af23e4"
+    },
+    {
+      "bytes": 37760,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/111_gwadar_table1.pdf",
+      "sha256": "a5c356ab9213578a624ac76b0f8076e0b2be966b6e0aa4151c12e76083509e6c"
+    },
+    {
+      "bytes": 39759,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/112_kech_table1.pdf",
+      "sha256": "c713106588c1927234da2981ce2b89dc83f3a35b1d257e8f884e3b73146e66d4"
+    },
+    {
+      "bytes": 36701,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/113_panjgur_table1.pdf",
+      "sha256": "49f8111fd4ba1b6b8f7d09f846a12e522e9005a3f551faa7231de1aec6a87093"
+    },
+    {
+      "bytes": 36357,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/114_jaffarabad_table1.pdf",
+      "sha256": "69655b189197eb2225c010aeadc8710a6e62825bb2908a4174c7704fa203eb35"
+    },
+    {
+      "bytes": 36117,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/115_jhal_magsi_table1.pdf",
+      "sha256": "5e11e49be0993f88f0557d86ea2551a69f650b0931a2fa086a862f593413c4d7"
+    },
+    {
+      "bytes": 38124,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/116_kachhi_table1.pdf",
+      "sha256": "b67e43a0d7ad4586de12dedd7c10a0e7f6e1f9b88fb0c68f29b75602a598a37f"
+    },
+    {
+      "bytes": 37019,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/117_nasirabad_table1.pdf",
+      "sha256": "6320f56d5cd4243b1d7790382cc92f07fc88aead5dc2e64564f18e853a1b6e26"
+    },
+    {
+      "bytes": 35880,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/118_sohbatpur_table1.pdf",
+      "sha256": "dd3db021888008da2e633bc0f4108e5d8cc1faf5912dc8adc67ac23fa463e473"
+    },
+    {
+      "bytes": 36405,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/119_chagai_table1.pdf",
+      "sha256": "17ed49452429bd3c7b62c96e390225fa80d0da2121e3c4b3218bb0f8ff6d6c31"
+    },
+    {
+      "bytes": 36917,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/120_killa_abdullah_table1.pdf",
+      "sha256": "5a767e005fa48b1944a6eb14d02577f481175804ea14c916ed0f197a590bfb46"
+    },
+    {
+      "bytes": 36380,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/121_nushki_table1.pdf",
+      "sha256": "b9a976fcefd767126f84a94933f334e117042afc13b899df701f5e305a1ef381"
+    },
+    {
+      "bytes": 37575,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/122_pishin_table1.pdf",
+      "sha256": "ca0d6b9cbc4aac6d6bfa0d3eeb9a7ddc00416d64fee50d66b7f43b19edef614f"
+    },
+    {
+      "bytes": 39249,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/123_quetta_table1.pdf",
+      "sha256": "261f04609774fc9d19492edfb3ede26627b35918f0b709c54e041d4aaa887a0a"
+    },
+    {
+      "bytes": 39803,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/124_dera_bugti_table1.pdf",
+      "sha256": "dc90124507e2dfef41e190f7837ccd9dd10c49fd1b2d5cca876f7c4010031008"
+    },
+    {
+      "bytes": 36096,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/125_harnai_table1.pdf",
+      "sha256": "d1b7951de6d6dad1eec37502e2a2560e446ee502eba5338d3a78b804d934b71b"
+    },
+    {
+      "bytes": 37233,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/126_kohlu_table1.pdf",
+      "sha256": "563fde5324ab9e30bb10f737b15ccdaf566e4b890fea5f3b4749d6c26dd64fe1"
+    },
+    {
+      "bytes": 36711,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/127_sibi_table1.pdf",
+      "sha256": "b5ab13399155121b962210b217813ea231e4d8d3fdb66349c651ec961e0fd049"
+    },
+    {
+      "bytes": 35335,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/128_ziarat_table1.pdf",
+      "sha256": "98618f4e2f2952fa7885e8a73b7545b90ddc691f51b732110a267bd7424e8e1e"
+    },
+    {
+      "bytes": 34182,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/129_barkhan_table1.pdf",
+      "sha256": "e0531159da9865e1f57365cd46642c75336ca19fc07ceabab8982ee7f06ba67d"
+    },
+    {
+      "bytes": 38280,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/130_killa_saifullah_table1.pdf",
+      "sha256": "04495e38e31f7397aa41edf0f3d88e1c15d34c8cf72d69eba2c0890a2b7a5692"
+    },
+    {
+      "bytes": 36056,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/131_loralai_table1.pdf",
+      "sha256": "f80fe1e5e6c806121b03a9341ef32f726fcc2ede59d1d60e74fbff4063d0dbb1"
+    },
+    {
+      "bytes": 35758,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/132_musakhel_table1.pdf",
+      "sha256": "0f133509b1086703e2d29cdf438dbdc192763a4babc647bd1af878294ab47e99"
+    },
+    {
+      "bytes": 34297,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/133_sherani_table1.pdf",
+      "sha256": "3f0c9542550a978c5211a2b331a0e4c10bf2dbf8062697595b2679fdb7ba0ef8"
+    },
+    {
+      "bytes": 38249,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/134_zhob_table1.pdf",
+      "sha256": "3b65877ddf3ee31b3467c3f965576714747d61b208148e9b50b3b00df15740cc"
+    },
+    {
+      "bytes": 34285,
+      "path": "raw_data/pbs/Census 2017/pbs_2017_table01/135_islamabad_table1.pdf",
+      "sha256": "0a501c00b8d12f35e31d915ef532841b59a2fe196896a45a3e06a5318dd3beb1"
+    },
+    {
+      "bytes": 592795,
+      "path": "raw_data/pbs/stage1_sources/2026-09-25-official/table_1_balochistan_districts.pdf",
+      "sha256": "e119ee4fab9ab5371101fcbc7613b2914eddef959184c67f3471ce18f3d1a269"
+    },
+    {
+      "bytes": 17456,
+      "path": "raw_data/pbs/stage1_sources/2026-09-25-official/table_1_islamabad.pdf",
+      "sha256": "8deb2282dd70fc564a863c26c7a0adbd7651379aade08dbcc7f8279426423da3"
+    },
+    {
+      "bytes": 562894,
+      "path": "raw_data/pbs/stage1_sources/2026-09-25-official/table_1_kp_districts.pdf",
+      "sha256": "6005edb53117b1f319471ea15646b58ee3b99e0b0e18070766928cdbf79404a5"
+    },
+    {
+      "bytes": 571387,
+      "path": "raw_data/pbs/stage1_sources/2026-09-25-official/table_1_punjab_districts.pdf",
+      "sha256": "a6d71fcdff9e766bf679b0f084600c2d255028b7be659b048c29351d1731650d"
+    },
+    {
+      "bytes": 517605,
+      "path": "raw_data/pbs/stage1_sources/2026-09-25-official/table_1_sindh_districts.pdf",
+      "sha256": "765b0627293a312e6a68ba9a602e55c3af57e459b5fd9fc8a04fcabff4b63f58"
+    }
+  ],
+  "source_release_id": "census-audit-07f818302704d872"
+}

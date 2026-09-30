@@ -36,26 +36,26 @@ const fyOf = d => { const y = +d.slice(0, 4), m = +d.slice(5, 7); const f = m >=
 /* ---------------- series catalogue for the page ----------------
    key -> [label, colour]. Chart definitions below pick from these. */
 const SER = {
-  usd:['PKR per US$','#c0392b'], reer:['Real (REER)','#3d6db5'], neer:['Nominal (NEER)','#9ca3af'],
-  cpi_nat:['National CPI','#0c3a1e'], cpi_urb:['Urban CPI','#3d6db5'], cpi_rur:['Rural CPI','#c9862b'],
-  spi:['SPI (sensitive prices)','#7a5195'], wpi:['WPI (wholesale)','#9ca3af'],
-  cpi_urbf:['Urban food','#3d6db5'], cpi_rurf:['Rural food','#22804a'],
-  cpi_urbnf:['Urban non-food','#85b7eb'], cpi_rurnf:['Rural non-food','#97c459'],
-  cpi_urbc:['Urban core','#185fa5'], cpi_rurc:['Rural core','#3b6d11'],
-  pol_target:['Policy rate','#c0392b'], pol_rev:['Reverse repo (ceiling)','#5f5e5a'], pol_repo:['Repo (floor)','#9ca3af'],
+  usd:['PKR per US$','var(--negative)'], reer:['Real (REER)','var(--green-800)'], neer:['Nominal (NEER)','var(--muted-2)'],
+  cpi_nat:['National CPI','var(--green-900)'], cpi_urb:['Urban CPI','var(--green-800)'], cpi_rur:['Rural CPI','var(--gold-600)'],
+  spi:['SPI (sensitive prices)','var(--teal-700)'], wpi:['WPI (wholesale)','var(--muted-2)'],
+  cpi_urbf:['Urban food','var(--green-800)'], cpi_rurf:['Rural food','var(--green-600)'],
+  cpi_urbnf:['Urban non-food','var(--green-300)'], cpi_rurnf:['Rural non-food','var(--green-400)'],
+  cpi_urbc:['Urban core','var(--green-900)'], cpi_rurc:['Rural core','var(--green-800)'],
+  pol_target:['Policy rate','var(--negative)'], pol_rev:['Reverse repo (ceiling)','var(--body)'], pol_repo:['Repo (floor)','var(--muted-2)'],
   /* tenors run light->dark with maturity, but nothing lighter than mid-grey: the
      first cut used #d3d1c7 for 1 week and its label vanished against white */
-  kib_1w:['1 week','#9ca3af'], kib_2w:['2 weeks','#888780'], kib_1m:['1 month','#5f5e5a'],
-  kib_3m:['3 months','#85b7eb'], kib_6m:['6 months','#3d6db5'], kib_9m:['9 months','#185fa5'],
-  kib_1y:['1 year','#c9862b'], kib_2y:['2 years','#993c1d'], kib_3y:['3 years','#c0392b'],
-  lend:['Lending','#c0392b'], depo:['Deposits','#3d6db5'],
-  res_sbp:['SBP','#186636'], res_banks:['Banks','#9ca3af'], res_gold:['Gold','#d4a017'], res_imf:['IMF position','#7a5195'],
-  gx:['Goods exports','#22804a'], gm:['Goods imports','#c0392b'], sx:['Services exports','#97c459'],
-  sm:['Services imports','#f09595'], ca:['Current account','#3d6db5'], remit_bop:['Remittances','#0f6e56'],
-  m1:['M1','#c9862b'], m2:['M2','#186636'], m3:['M3','#3d6db5'], notes:['Notes in circulation','#9ca3af'],
-  npl_ratio:['NPL ratio','#c0392b']
+  kib_1w:['1 week','var(--muted-2)'], kib_2w:['2 weeks','var(--muted)'], kib_1m:['1 month','var(--body)'],
+  kib_3m:['3 months','var(--green-300)'], kib_6m:['6 months','var(--green-800)'], kib_9m:['9 months','var(--green-900)'],
+  kib_1y:['1 year','var(--gold-600)'], kib_2y:['2 years','var(--negative)'], kib_3y:['3 years','var(--negative)'],
+  lend:['Lending','var(--negative)'], depo:['Deposits','var(--green-800)'],
+  res_sbp:['SBP','var(--green-700)'], res_banks:['Banks','var(--muted-2)'], res_gold:['Gold','var(--gold-500)'], res_imf:['IMF position','var(--teal-700)'],
+  gx:['Goods exports','var(--green-600)'], gm:['Goods imports','var(--negative)'], sx:['Services exports','var(--green-400)'],
+  sm:['Services imports','var(--negative-100)'], ca:['Current account','var(--green-800)'], remit_bop:['Remittances','var(--teal-700)'],
+  m1:['M1','var(--gold-600)'], m2:['M2','var(--green-700)'], m3:['M3','var(--green-800)'], notes:['Notes in circulation','var(--muted-2)'],
+  npl_ratio:['NPL ratio','var(--negative)']
 };
-const lbl = k => SER[k] ? SER[k][0] : k, col = k => SER[k] ? SER[k][1] : '#888';
+const lbl = k => SER[k] ? SER[k][0] : k, col = k => SER[k] ? SER[k][1] : 'var(--muted)';
 
 /* chart -> {avail: keys offered as chips, def: default selection} */
 const CH = {
@@ -82,7 +82,7 @@ const TOPICS = [
   desc:'Every topic on one page, top to bottom.',
   meta:'All series come from the State Bank of Pakistan’s EasyData portal. Full sources are listed at the foot of the page.'},
  {k:'rupee', label:'The rupee',
-  desc:'The exchange rate since 1947, and whether the rupee is over-valued in real terms.',
+  desc:'The exchange rate since 1947, and how the rupee has moved against its trading partners in real terms.',
   meta:'SBP bank floating average exchange rates (monthly, from Aug-1947) and the nominal/real effective exchange rate indices, base 2010 (from Jul-2001).'},
  {k:'prices', label:'Prices',
   desc:'Consumer price inflation, its components, and the gap between town and country.',
@@ -101,7 +101,7 @@ const TOPIC_DRAWS = {
   rupee:    () => { drawUsd(); drawReer(); },
   prices:   () => { drawCpi(); drawFood(); },
   rates:    () => { drawPolicy(); drawKibor(); drawSpread(); },
-  external: () => { drawRes(); drawBop(); drawRemit(); },
+  external: () => { drawRes(); drawBop(); drawRemit(); drawEmig(); },
   money:    () => { drawMoney(); drawNpl(); }
 };
 const TOPIC_GROUPS = [
@@ -110,6 +110,26 @@ const TOPIC_GROUPS = [
  {label:'Rates & money', keys:['rates','money']},
  {label:'The outside world', keys:['external']}];
 const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
+
+/* An ES module since Economy became one page. Nothing here was renamed:
+   module scope keeps this file's TOPICS, start, writeHash, toCSV and the
+   rest to itself, including the ones that genuinely differ from finance.js
+   and trade.js - toCSV takes rows of arrays here and rows of objects there.
+   MINE is what this module answers for; when the hash names another
+   module's topic it hides its own cards, panels and KPI strip. */
+const MINE = TOPICS.map(t => t.k).filter(k => k !== 'all');
+const MY_PANELS = ['sideScale', 'sideFy', 'kpis', 'pageFoot'];
+function standDown() {
+  /* Forget the last hash we wrote - see finance.js. Leaving these topics and
+     returning to the same one matched _lastNavHash, so this module returned
+     early and its cards stayed hidden. */
+  _lastNavHash = '';
+  MY_PANELS.forEach(id => { const el = document.getElementById(id);
+    if (el) el.style.display = 'none'; });
+  d3.selectAll('[data-topic]')
+    .filter(function () { return MINE.indexOf(this.dataset.topic) >= 0; })
+    .classed('topic-hidden', true);
+}
 
 /* ---------------- chart scaffolding ---------------- */
 function frame(sel, hFrac, m, fallbackH) {
@@ -134,7 +154,7 @@ function axes(f, x, y, yFmt, xTicks) {
     .call(g => g.selectAll('.tick line').clone().attr('x2', f.W - f.m.r - f.m.l).attr('class', 'gl'));
 }
 const zeroLine = (f, x, y) => f.svg.append('line').attr('x1', f.m.l).attr('x2', f.W - f.m.r)
-  .attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--slate-300)');
+  .attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--line-strong)');
 const linePath = (f, pts, x, y, colour, w, dash) => f.svg.append('path').datum(pts)
   .attr('fill', 'none').attr('stroke', colour).attr('stroke-width', w || 2)
   .attr('stroke-dasharray', dash || null)
@@ -200,7 +220,7 @@ function chips(chart, onChange) {
     const on = SEL[chart].has(k);
     box.append('button').attr('class', 'chip' + (on ? ' on' : '')).attr('data-k', k)
       .style('background', on ? col(k) : null).style('border-color', on ? col(k) : null)
-      .html(`<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${on ? '#fff' : col(k)};margin-right:6px;vertical-align:middle"></span>${lbl(k)}`)
+      .html(`<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${on ? 'var(--surface)' : col(k)};margin-right:6px;vertical-align:middle"></span>${lbl(k)}`)
       .on('click', () => {
         if (on && SEL[chart].size === 1) return;          // never empty a chart
         if (on) SEL[chart].delete(k); else SEL[chart].add(k);
@@ -209,9 +229,63 @@ function chips(chart, onChange) {
   });
 }
 /* Generic multi-line time chart used by most panels. */
+/* SIX END DATES UNDER ONE BADGE. The payload is stamped 2026-08-28 and its
+   49 series end on six different dates, from 2026-08-31 back to 2020-02-04.
+   A single "latest" date would have been wrong for 43 of them.
+
+   KIBOR 2 years and 3 years are the sharp case: SBP stopped publishing those
+   tenors in February 2020, and 3 years is in this chart's DEFAULT selection,
+   so the page opened on a line six years dead drawn beside live ones with
+   nothing to say so.
+
+   Frequency decides what a last date means. An As-Needed series like the
+   policy rate has not gone stale when it has not moved - its last
+   observation is the last DECISION - so it is reported that way and never
+   flagged. Everything else is measured against the newest series on the same
+   chart, and anything more than a year behind it is named. */
+const STALE_DAYS = 400;
+function freshLine(chart, keys) {
+  const M = D.meta || {};
+  const rows = keys.map(k => {
+    const pts = S[k];
+    if (!pts || !pts.length) return null;
+    return { k: k, end: pts[pts.length - 1][0],
+             asNeeded: /as.?needed/i.test((M[k] || {}).freq || '') };
+  }).filter(Boolean);
+  if (!rows.length) return;
+  const dated = rows.filter(r => !r.asNeeded);
+  const newest = dated.length
+    ? dated.reduce((a, b) => (b.end > a.end ? b : a)).end : null;
+  const stale = newest ? dated.filter(r =>
+    (dt(newest) - dt(r.end)) / 86400000 > STALE_DAYS) : [];
+  let html = '';
+  if (newest) html += 'Observations to <b>' + newest + '</b>.';
+  const asn = rows.filter(r => r.asNeeded);
+  if (asn.length) html += (html ? ' ' : '')
+    + 'Set as needed, so the last date is the last change: '
+    + asn.map(r => lbl(r.k) + ' ' + r.end).join(', ') + '.';
+  if (stale.length) html += ' <span class="fresh-stale"><b>Ended: </b>'
+    + stale.map(r => lbl(r.k) + ' after ' + r.end).join(', ')
+    + ' \u2014 no longer published, not a flat line.</span>';
+  /* Every chart key is its card's suffix except this one, and relying on the
+     coincidence meant the money-supply chart silently got no freshness line
+     at all. Named, so the next mismatch fails visibly instead. */
+  const CARD_OF = { money: 'sec-m' };
+  const card = document.querySelector('#' + (CARD_OF[chart] || 'sec-' + chart));
+  if (!card) { console.warn('freshLine: no card for chart', chart); return; }
+  let el = card.querySelector('.freshness');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'freshness';
+    const src = card.querySelector(':scope > .src');
+    card.insertBefore(el, src || null);
+  }
+  el.innerHTML = html;
+}
 function multiLine(chart, sel, opts) {
   const keys = CH[chart].avail.filter(k => SEL[chart].has(k) && S[k] && S[k].length);
   if (!keys.length) return nodata(sel, 'Pick at least one series.');
+  freshLine(chart, keys);
   const f = frame(sel, opts.hFrac || 0.27, opts.m || { t: 16, r: 110, b: 28, l: 46 });
   const all = keys.flatMap(k => S[k]);
   const x = xTime(f, d3.extent(all, p => dt(p[0])));
@@ -220,9 +294,9 @@ function multiLine(chart, sel, opts) {
   axes(f, x, y, opts.yFmt);
   if (opts.refLine != null) {
     f.svg.append('line').attr('x1', f.m.l).attr('x2', f.W - f.m.r).attr('y1', y(opts.refLine)).attr('y2', y(opts.refLine))
-      .attr('stroke', 'var(--slate-300)').attr('stroke-dasharray', '3 3');
+      .attr('stroke', 'var(--line-strong)').attr('stroke-dasharray', '3 3');
     if (opts.refText) f.svg.append('text').attr('x', f.m.l + 4).attr('y', y(opts.refLine) - 5)
-      .attr('font-size', 10).attr('fill', 'var(--slate-400)').text(opts.refText);
+      .attr('font-size', 10).attr('fill', 'var(--muted-2)').text(opts.refText);
   } else if (lo < 0) zeroLine(f, x, y);
   if (opts.before) opts.before(f, x, y, keys);
   keys.forEach(k => {
@@ -281,6 +355,11 @@ function drawPolicy() {
   chips('policy', drawPolicy);
   const keys = CH.policy.avail.filter(k => SEL.policy.has(k) && S[k]);
   if (!keys.length) return nodata('#chPolicy', 'Pick at least one series.');
+  /* Drawn by hand rather than through multiLine, so it needs the freshness
+     line explicitly. These are As-Needed series and the helper reports them
+     as a last change rather than a stale end, which is the whole reason the
+     distinction exists. */
+  freshLine('policy', keys);
   const f = frame('#chPolicy', 0.28, { t: 16, r: 150, b: 28, l: 44 });
   const all = keys.flatMap(k => S[k]);
   const x = xTime(f, d3.extent(all, p => dt(p[0])));
@@ -342,18 +421,18 @@ function drawRes() {
       const y2 = d3.scaleLinear().domain([0, Math.max(9, d3.max(cover, p => p[1]))]).nice().range([f.H - f.m.b, f.m.t]);
       const ax = f.svg.append('g').attr('transform', `translate(${f.W - f.m.r + 44},0)`).attr('class', 'axis')
         .call(d3.axisRight(y2).ticks(5).tickFormat(d => d + ' m'));
-      ax.selectAll('text').attr('fill', '#b8860b');
-      ax.select('.domain').attr('stroke', '#e8b92e');
+      ax.selectAll('text').attr('fill', 'var(--gold-600)');
+      ax.select('.domain').attr('stroke', 'var(--gold-400)');
       f.svg.append('text').attr('x', f.W - f.m.r + 44).attr('y', f.m.t - 4).attr('font-size', 9.5)
-        .attr('fill', '#b8860b').text(f.narrow ? 'months' : 'months of imports');
-      f.svg.append('path').datum(cover).attr('fill', 'none').attr('stroke', '#d4a017')
+        .attr('fill', 'var(--gold-600)').text(f.narrow ? 'months' : 'months of imports');
+      f.svg.append('path').datum(cover).attr('fill', 'none').attr('stroke', 'var(--gold-500)')
         .attr('stroke-width', 1.6).attr('stroke-dasharray', '4 3')
         .attr('d', d3.line().x(p => x(dt(p[0]))).y(p => y2(p[1])));
       f.svg.append('line').attr('x1', x(dt(cover[0][0]))).attr('x2', f.W - f.m.r).attr('y1', y2(3)).attr('y2', y2(3))
-        .attr('stroke', '#d4a017').attr('opacity', .5).attr('stroke-dasharray', '2 4');
+        .attr('stroke', 'var(--gold-500)').attr('opacity', .5).attr('stroke-dasharray', '2 4');
       f.svg.append('text').attr('x', x(dt(cover[0][0])) + 4).attr('y', y2(3) - 4).attr('font-size', 9.5)
-        .attr('fill', '#b8860b').text('3 months’ cover');
-      endLabel(f, x, y2, cover[cover.length - 1], '#b8860b', cover[cover.length - 1][1].toFixed(1) + ' mths');
+        .attr('fill', 'var(--gold-600)').text('3 months’ cover');
+      endLabel(f, x, y2, cover[cover.length - 1], 'var(--gold-600)', cover[cover.length - 1][1].toFixed(1) + ' mths');
     } });
 }
 
@@ -364,8 +443,8 @@ const CREDITS = [['gx', 'Goods exports'], ['sx', 'Services exports'], ['remit_bo
                  ['sic_other', 'Other transfers in'], ['pic', 'Income received']];
 const DEBITS  = [['gm', 'Goods imports'], ['sm', 'Services imports'], ['pid', 'Income paid abroad'],
                  ['sid', 'Transfers out']];
-const CRED_COL = { gx:'#186636', sx:'#3b6d11', remit_bop:'#0f6e56', sic_other:'#5dcaa5', pic:'#97c459' };
-const DEB_COL  = { gm:'#a32d2d', sm:'#d85a30', pid:'#e24b4a', sid:'#f09595' };
+const CRED_COL = { gx:'var(--green-700)', sx:'var(--green-800)', remit_bop:'var(--teal-700)', sic_other:'var(--green-300)', pic:'var(--green-400)' };
+const DEB_COL  = { gm:'var(--negative)', sm:'var(--gold-600)', pid:'var(--negative)', sid:'var(--negative-100)' };
 const fySum = (k, f) => (S[k] || []).filter(p => fyOf(p[0]) === f).reduce((a, p) => a + p[1], 0);
 const bopMonths = f => (D.bop_months && D.bop_months[f]) || 0;
 
@@ -402,7 +481,7 @@ function sideTree(items, fi) {
       if (raw.length && sum > 0) {
         raw.sort((a, b) => b.val - a.val);
         node.children = raw.map((d, r) => build([...path, d.i], d.c.n, d.val, d.c.ch,
-          d3.interpolateRgb(colour, '#fff')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
+          d3.interpolateRgb(colour, 'var(--surface)')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
         node.scale = v / sum;     // area factor applied to children
         node.children.forEach(c => c.area = c.v * node.scale);
         return node;
@@ -448,7 +527,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
   svg.append('text').attr('x', x0).attr('y', 16).attr('font-size', 13).attr('font-weight', 800)
     .attr('fill', 'var(--green-900)').text(title);
   svg.append('text').attr('x', x0).attr('y', 32).attr('font-size', 11.5).attr('font-weight', 600)
-    .attr('fill', 'var(--slate-500)').text(subtitle);
+    .attr('fill', 'var(--muted)').text(subtitle);
   const nodes = root.descendants().filter(d => d.depth > 0);
   const cell = g.selectAll('g').data(nodes).join('g').attr('transform', d => `translate(${d.x0},${d.y0})`);
   const tipHtml = d => {
@@ -461,8 +540,8 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     return h;
   };
   cell.append('rect').attr('width', d => d.x1 - d.x0).attr('height', d => d.y1 - d.y0).attr('rx', 3)
-    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, '#fff')(0.78) : d.data.colour)
-    .attr('stroke', d => d.children ? d.data.colour : '#fff').attr('stroke-width', d => d.children ? 1.2 : 1)
+    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, 'var(--surface)')(0.78) : d.data.colour)
+    .attr('stroke', d => d.children ? d.data.colour : 'var(--surface)').attr('stroke-width', d => d.children ? 1.2 : 1)
     .attr('class', d => d.data.has ? 'zoom' : null)
     .on('mousemove', (e, d) => showTip(tipHtml(d), e)).on('mouseleave', hideTip)
     .on('click', (e, d) => { e.stopPropagation(); if (d.data.has) { hideTip(); toggleOpen(d.data.path); } });
@@ -474,7 +553,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     c.append('clipPath').attr('id', id).append('rect').attr('width', Math.max(0, w - 6)).attr('height', open ? 20 : h);
     const t = c.append('g').attr('clip-path', `url(#${id})`).style('pointer-events', 'none');
     const dark = !open && isDark(dd.colour);
-    const fg = open ? d3.color(dd.colour).darker(0.8) : (dark ? '#fff' : '#1a1a1a');
+    const fg = open ? d3.color(dd.colour).darker(0.8) : (dark ? 'var(--surface)' : 'var(--ink)');
     const fg2 = open ? d3.color(dd.colour).darker(0.4) : (dark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.65)');
     const words = dd.n.replace(/\s*\(.*$/, '').split(' ');
     let label = dd.n;
@@ -525,10 +604,10 @@ function drawBop() {
   nestedPanel(svg, sideTree(deb, fi), wc + gap, hdr, wd, H - hdr, 'Dollars out', td, sub(td), fi);
   /* the balance, in the gap */
   const gx = wc + gap / 2;
-  svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--slate-200)');
+  svg.append('line').attr('x1', gx).attr('x2', gx).attr('y1', hdr).attr('y2', H).attr('stroke', 'var(--line)');
   const bt = svg.append('text').attr('x', gx).attr('y', H / 2 + hdr / 2).attr('text-anchor', 'middle')
     .attr('transform', `rotate(-90 ${gx} ${H / 2 + hdr / 2})`).attr('font-size', 11).attr('font-weight', 800)
-    .attr('fill', bal < 0 ? '#a32d2d' : '#186636');
+    .attr('fill', bal < 0 ? 'var(--negative)' : 'var(--green-700)');
   bt.text(`${bal < 0 ? 'Deficit' : 'Surplus'} ${usdm(Math.abs(bal))}`);
   /* what is open, and a way to close it all */
   if (bopOpen.size) {
@@ -566,12 +645,112 @@ function drawRemit() {
   const tot = d3.sum(rows, r => r[2]);
   svg.selectAll('rect.b').data(rows).join('rect').attr('class', 'b')
     .attr('x', m.l).attr('y', r => y(r[0])).attr('height', y.bandwidth())
-    .attr('width', r => Math.max(0, x(r[2]) - m.l)).attr('fill', '#186636').attr('rx', 3)
+    .attr('width', r => Math.max(0, x(r[2]) - m.l)).attr('fill', 'var(--green-700)').attr('rx', 3)
     .on('mousemove', (e, r) => showTip(`<b>${r[0]}</b><br>${usdm(r[2])} in ${r[1]}<br>${(100 * r[2] / tot).toFixed(1)}% of total`, e))
     .on('mouseleave', hideTip);
   svg.selectAll('text.v').data(rows).join('text').attr('class', 'v cv')
     .attr('x', r => x(r[2]) + 6).attr('y', r => y(r[0]) + y.bandwidth() / 2 + 3)
-    .attr('fill', 'var(--slate-500)').text(r => usdm(r[2]));
+    .attr('fill', 'var(--muted)').text(r => usdm(r[2]));
+}
+
+/* ---------------- chart: emigration ----------------
+   The other end of the remittance story, from three warehouse tables nothing
+   drew. One thing the source does that has to be handled rather than trusted:
+   diaspora_destinations carries year = -1 on 197 rows, which is not a year
+   but the cumulative total since records began. The payload keeps it in its
+   own block for exactly that reason, and the destinations view is that total
+   - 8.67 million people - said as a total rather than folded into a series
+   whose years would then each be roughly double. */
+let emigMode = 'dest';
+
+function wireEmig() {
+  d3.selectAll('#emigMode .seg').on('click', function () {
+    emigMode = this.dataset.em;
+    drawEmig();
+  });
+}
+
+function drawEmig() {
+  const M = window.DD_MIGRATION;
+  if (!M) return nodata('#chEmig', 'No emigration data.');
+  d3.selectAll('#emigMode .seg').classed('on', function () {
+    return this.dataset.em === emigMode;
+  });
+
+  const el = d3.select('#chEmig'); el.selectAll('*').remove();
+  const W = el.node().clientWidth || 1100;
+
+  if (emigMode === 'skill') return emigSkill(M, el, W);
+  if (emigMode === 'occ') return emigBars(M.occupation.rows.slice(0, 20), el, W,
+    'Registered emigrants by occupation, 2024',
+    'The twenty largest of ' + M.occupation.rows.length + ' occupations. One '
+    + 'year only \u2014 the Bureau publishes this cut for 2024 alone.');
+
+  const tot = d3.sum(M.total.rows, r => r[2]);
+  return emigBars(M.total.rows.slice(0, 20).map(r => [r[0], r[2]]), el, W,
+    'Registered emigrants since records began, by destination',
+    d3.format(',')(tot) + ' people across ' + M.total.rows.length + ' countries. '
+    + 'This is the cumulative total the source publishes, not a single year: '
+    + M.annual.rows.length + ' annual rows exist from 2011 and are a different '
+    + 'universe, so the two are never added.');
+}
+
+function emigBars(rows, el, W, title, note) {
+  d3.select('#emigNote').text(note);
+  const H = Math.max(240, rows.length * 22 + 40), m = { t: 22, r: 96, b: 24, l: 190 };
+  const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
+  const x = d3.scaleLinear().domain([0, d3.max(rows, r => r[1]) * 1.06]).range([m.l, W - m.r]);
+  const y = d3.scaleBand().domain(rows.map(r => r[0])).range([m.t, H - m.b]).padding(.24);
+  svg.append('text').attr('x', m.l).attr('y', 12).attr('font-size', 10)
+    .attr('fill', 'var(--muted-2)').text(title);
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).attr('class', 'axis')
+    .call(d3.axisBottom(x).ticks(Math.floor((W - m.r) / 110)).tickFormat(d3.format('~s')));
+  svg.append('g').attr('transform', `translate(${m.l},0)`).attr('class', 'axis')
+    .call(d3.axisLeft(y));
+  const tot = d3.sum(rows, r => r[1]);
+  svg.selectAll('rect.b').data(rows).join('rect').attr('class', 'b')
+    .attr('x', m.l).attr('y', r => y(r[0])).attr('height', y.bandwidth())
+    .attr('width', r => Math.max(0, x(r[1]) - m.l))
+    .attr('fill', 'var(--green-700)').attr('rx', 3)
+    .on('mousemove', (e, r) => showTip(`<b>${r[0]}</b><br>${d3.format(',')(r[1])}`
+      + `<br>${(100 * r[1] / tot).toFixed(1)}% of those shown`, e))
+    .on('mouseleave', hideTip);
+  svg.selectAll('text.v').data(rows).join('text').attr('class', 'v cv')
+    .attr('x', r => x(r[1]) + 6).attr('y', r => y(r[0]) + y.bandwidth() / 2 + 3)
+    .attr('fill', 'var(--muted)').text(r => d3.format('~s')(r[1]));
+}
+
+function emigSkill(M, el, W) {
+  const rows = M.skill.rows;
+  const years = [...new Set(rows.map(r => r[0]))].sort((a, b) => a - b);
+  const levels = [...new Set(rows.map(r => r[2]))];
+  d3.select('#emigNote').text(
+    'Registered emigrants by skill level, ' + years[0] + ' to ' + years[years.length - 1]
+    + '. The Bureau\u2019s own categories, which are about the job applied for '
+    + 'rather than the qualification held.');
+  const H = 340, m = { t: 18, r: 150, b: 26, l: 58 };
+  const svg = el.append('svg').attr('width', W).attr('height', H).style('display', 'block');
+  const byLevel = d3.group(rows, r => r[2]);
+  const x = d3.scaleLinear().domain(d3.extent(years)).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, d3.max(rows, r => r[3])]).nice()
+    .range([H - m.b, m.t]);
+  const colour = window.DDPalette
+    ? window.DDPalette.ordinal(levels) : () => 'var(--green-700)';
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).attr('class', 'axis')
+    .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')));
+  svg.append('g').attr('transform', `translate(${m.l},0)`).attr('class', 'axis')
+    .call(d3.axisLeft(y).ticks(6).tickFormat(d3.format('~s')));
+  levels.forEach((lv, i) => {
+    const series = (byLevel.get(lv) || []).slice().sort((a, b) => a[0] - b[0]);
+    svg.append('path').datum(series).attr('fill', 'none')
+      .attr('stroke', colour(lv)).attr('stroke-width', 2)
+      .attr('d', d3.line().x(r => x(r[0])).y(r => y(r[3])));
+    const last = series[series.length - 1];
+    if (last) {
+      svg.append('text').attr('x', W - m.r + 6).attr('y', y(last[3]) + 3)
+        .attr('font-size', 11).attr('fill', colour(lv)).text(lv);
+    }
+  });
 }
 
 /* ---------------- charts: money & banks ---------------- */
@@ -580,7 +759,7 @@ function drawMoney() {
   multiLine('money', '#chMoney', { yFmt: d => d3.format('~s')(d / 1000), fmt: v => 'Rs ' + bn(v / 1000),
     m: { t: 16, r: 130, b: 28, l: 58 },
     before: f => f.svg.append('text').attr('x', f.m.l).attr('y', f.m.t - 4).attr('font-size', 10)
-      .attr('fill', 'var(--slate-400)').text('Rs trillion') });
+      .attr('fill', 'var(--muted-2)').text('Rs trillion') });
 }
 function drawNpl() {
   if (!S.npl_ratio) return nodata('#chNpl', 'No non-performing loan data.');
@@ -655,25 +834,52 @@ const CSV = {
                 : ['balance-of-payments-monthly', pairTable(['gx','gm','sx','sm','pic','pid','sic','remit_bop','sid','ca'])],
   remit:  () => ['remittances-by-source', [['source', 'fiscal_year', 'mn_usd'], ...D.remit]],
   money:  () => ['monetary-aggregates', pairTable(CH.money.avail)],
-  npl:    () => ['non-performing-loans', pairTable(['npl_ratio', 'npl_level'])]
+  npl:    () => ['non-performing-loans', pairTable(['npl_ratio', 'npl_level'])],
+  /* The emigration card shipped with a CSV button and no entry here, so the
+     button did nothing. It was not visible as a fault: the old initCsv bound
+     every .csvbtn and returned quietly on a key it did not know, and only
+     filtering the binding per module made the gap show up as an unbound
+     button. Exports whichever of the three views is on screen, as bop does. */
+  emig:   () => {
+    const M = window.DD_MIGRATION || {};
+    if (emigMode === 'skill') return ['emigrants-by-skill',
+      [['year', 'mode', 'skill_level', 'emigrants'], ...(M.skill || {}).rows || []]];
+    if (emigMode === 'occ') return ['emigrants-by-occupation',
+      [['occupation', 'emigrants'], ...(M.occupation || {}).rows || []]];
+    return ['emigrants-by-destination-cumulative',
+      [['country', 'continent', 'emigrants'], ...(M.total || {}).rows || []]];
+  }
 };
 const toCSV = rows => rows.map(r => r.map(v => { const s = v == null ? '' : String(v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n');
-function downloadCSV(name, rows) {
-  const b = new Blob([toCSV(rows)], { type: 'text/csv;charset=utf-8' });
+function provHead(card, view) {
+  if (!card || !window.DDProv) return '';
+  const esc = v => { v = String(v == null ? '' : v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const L = window.DDProv.header(card, view);
+  return L.length ? L.map(r => r.map(esc).join(',')).join('\n') + '\n#\n' : '';
+}
+function downloadCSV(name, rows, card, view) {
+  const b = new Blob([provHead(card, view) + toCSV(rows)], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name + '.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function initCsv() {
-  d3.selectAll('.csvbtn').on('click', function () {
-    const f = CSV[this.dataset.csv]; if (!f) return; const [name, rows] = f(); downloadCSV(name, rows);
+  /* Filtered, not guarded: d3's .on() replaces the handler, so binding every
+     .csvbtn would leave the other two modules' buttons doing nothing. */
+  d3.selectAll('.csvbtn').filter(function () { return this.dataset.csv in CSV; })
+    .on('click', function () {
+    const f = CSV[this.dataset.csv]; if (!f) return;
+    const card = this.closest('.card');
+    const [name, rows, view] = f(); downloadCSV(name, rows, card && card.id, view);
   });
 }
 
 /* ---------------- share ---------------- */
 function initShare() {
   document.querySelectorAll('.card[id]').forEach(card => {
+    if (card.querySelector('.sharebtn')) return;   // another module got there
     const b = document.createElement('button');
     b.className = 'sharebtn'; b.textContent = 'Share';
     b.style.right = card.querySelector('.csvbtn') ? '76px' : '14px';
@@ -696,7 +902,7 @@ function applyTopic(k, push) {
   const t = TOPICS.find(x => x.k === k);
   d3.selectAll('#topicList .topic-item').classed('on', function () { return this.dataset.k === k; });
   d3.select('#topicDesc').text(t.desc);
-  d3.select('#topicMeta').html('<b>Sources.</b> ' + t.meta);
+  d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
   const all = k === 'all';
   /* per-topic sidebar controls — every test needs the ||all branch */
   d3.select('#sideScale').style('display', (k === 'rupee' || all) ? null : 'none');
@@ -748,14 +954,16 @@ function readHashRaw() { let h = '';
   try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch (e) { h = location.hash.replace(/^#/, ''); }
   return h.includes('=') ? h : (h ? 't=' + h : ''); }
 function readHash() {
-  const raw = readHashRaw(); if (!raw) return { t: 'rupee' };
+  const raw = readHashRaw(); if (!raw) return { t: window.DDEcon.defaultTopic };
   const o = {}; new URLSearchParams(raw).forEach((v, k) => o[k] = v);
-  if (!o.t) o.t = 'rupee'; return o;
+  if (!o.t) o.t = window.DDEcon.defaultTopic; return o;
 }
 function applyStateFromHash() {
   if (_lastNavHash && '#' + new URLSearchParams(readHashRaw()).toString() === _lastNavHash) return;
   const o = readHash();
-  const k = TOPICS.some(t => t.k === o.t) ? o.t : 'rupee';
+  const k = window.DDEcon.current();
+  if (MINE.indexOf(k) < 0) { standDown(); return; }
+  (document.getElementById('pageFoot')||{style:{}}).style.display='';
   applyingHash = true;
   Object.keys(CH).forEach(c => {
     const v = o['c_' + c];
@@ -777,15 +985,8 @@ function applyStateFromHash() {
     if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140); }
 }
 function initTopics() {
-  const list = d3.select('#topicList'); list.selectAll('*').remove();
-  TOPIC_GROUPS.forEach((g, gi) => {
-    if (g.label) list.append('div').attr('class', 'topic-group' + (gi === 0 ? ' first' : '')).text(g.label);
-    g.keys.forEach(k => {
-      const t = TOPICS.find(x => x.k === k); if (!t) return;
-      list.append('button').attr('class', 'topic-item' + (k === 'all' ? ' all' : '')).attr('data-k', k)
-        .html(`<span class="t-dot"></span>${t.label}`).on('click', () => applyTopic(k, true));
-    });
-  });
+  // The topic list is the shell's: one list, fifteen topics, three modules.
+  window.DDEcon.register({ topics: TOPICS, groups: TOPIC_GROUPS });
   d3.selectAll('#scaleSeg button').on('click', function () { setScale(this.dataset.sc); });
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
   d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
@@ -826,11 +1027,12 @@ function buildFoot() {
 function start() {
   if (!window.DD_MONEY) { return setTimeout(start, 30); }
   D = window.DD_MONEY; S = D.series; M = D.meta;
-  buildFySelect(); buildFoot(); initCsv();
+  buildFySelect(); buildFoot(); initCsv(); wireEmig();
   initTopics();          // last: it triggers the first render via applyStateFromHash()
   let rt;
   window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
-    if (topic === 'all') drawAll(); else if (TOPIC_DRAWS[topic]) TOPIC_DRAWS[topic]();
+    if (MINE.indexOf(window.DDEcon.current()) < 0) return;   // another module's view
+    if (TOPIC_DRAWS[topic]) TOPIC_DRAWS[topic]();
     drawKpis();
   }, 150); });
 }

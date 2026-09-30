@@ -1,0 +1,20 @@
+{
+  "artifacts": 24,
+  "closure_checks": "423,345 of 423,345 pass, no tolerance",
+  "code_fingerprint": "6322129102a1ccba4b600a89f949e605cfb7559c5cb8df4eca5d457bf0c53ed3",
+  "input_bytes": 630698544,
+  "inputs": 285,
+  "published": false,
+  "regression_tests": "19 passed",
+  "release_id": "stage2-d1cd31fa08133667",
+  "repeat_build": "all 24 artifacts byte-identical to an independent rebuild in a fresh directory",
+  "runtime": {
+    "duckdb": "1.5.5",
+    "openpyxl": "3.1.5",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "poppler": "pdftotext version 21.11.0",
+    "python": "3.11.5"
+  },
+  "scope": "all 28 cross-tabulated Census 2023 tables, district and sub-district",
+  "verified_utc": "2026-09-26T07:39:12.589762+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "darbar-site",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "exec python3 -m http.server \"$PORT\" --bind 127.0.0.1 --directory app"],
+      "autoPort": true,
+      "port": 8791
+    }
+  ]
+}

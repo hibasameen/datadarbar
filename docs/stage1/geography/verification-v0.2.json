@@ -1,0 +1,61 @@
+{
+  "archive": {
+    "bytes": 51246351,
+    "files": 193,
+    "path": "data_darbar_warehouse/stage1/geography-2026-09-25-v0.2-reproduction.tar.gz",
+    "sha256": "f5a65b4a560f4db12245e22b9e8c992e74a1fd46bdbc9de79666e442f6a64883"
+  },
+  "individual_district_allocations_unresolved": [
+    "Jhang",
+    "Toba Tek Singh",
+    "Kachhi",
+    "Nasirabad"
+  ],
+  "isolated_rebuild": {
+    "byte_identical_files": 21,
+    "excluded": [
+      "run.json"
+    ],
+    "release_id": "geography-8cee002c8d474fd6"
+  },
+  "locality_correspondences": 270,
+  "new_panel_rows": 72,
+  "prior_census_and_geography_releases_unchanged": true,
+  "prior_panel_rows_unchanged": 4500,
+  "release_checks": {
+    "pass": 635,
+    "source_symbol_retained": 5
+  },
+  "release_id": "geography-8cee002c8d474fd6",
+  "resolution_scope": [
+    "Jhang + Toba Tek Singh",
+    "Kachhi + Nasirabad"
+  ],
+  "source_unit_coverage": [
+    {
+      "included_population": 207684626,
+      "included_source_units": 135,
+      "source_population": 207684626,
+      "source_units": 135,
+      "withheld_population": 0,
+      "withheld_source_units": 0,
+      "year": 2017
+    },
+    {
+      "included_population": 241499431,
+      "included_source_units": 136,
+      "source_population": 241499431,
+      "source_units": 136,
+      "withheld_population": 0,
+      "withheld_source_units": 0,
+      "year": 2023
+    }
+  ],
+  "total_panel_rows": 4572,
+  "unit_tests": {
+    "failed": 0,
+    "passed": 19,
+    "ran_in_isolated_package": true
+  },
+  "website_files_changed": false
+}

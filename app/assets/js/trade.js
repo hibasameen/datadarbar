@@ -1,7 +1,7 @@
 /* Data Darbar — Trade Atlas (Product 2). D3 v7 + window.ECON. */
-const SC={XI:'#1e6b3e',II:'#d4a017',V:'#3d6db5',VI:'#9b59b6',XVI:'#e07b39',XV:'#5b8c5a',IV:'#c0392b',I:'#16a085',VII:'#8e44ad',XVII:'#2c3e8f',III:'#b8941a',XVIII:'#0e8a8a',VIII:'#a0522d',X:'#7f8c8d',XIII:'#c39bd3',XII:'#d98880',IX:'#6d4c2b',XIV:'#e8b92e',XX:'#5d6d7e',XIX:'#34495e',XXI:'#95a5a6'};
+const SC={XI:'var(--green-700)',II:'var(--gold-500)',V:'var(--green-800)',VI:'var(--teal-700)',XVI:'var(--gold-500)',XV:'var(--green-400)',IV:'var(--negative)',I:'var(--teal-500)',VII:'var(--teal-700)',XVII:'var(--green-900)',III:'var(--gold-600)',XVIII:'var(--teal-700)',VIII:'var(--gold-800)',X:'var(--muted)',XIII:'var(--green-300)',XII:'var(--negative-100)',IX:'var(--gold-800)',XIV:'var(--gold-400)',XX:'var(--muted)',XIX:'var(--body)',XXI:'var(--muted)'};
 const SN={I:'Animals & products',II:'Vegetables',III:'Fats & oils',IV:'Food, bev, tobacco',V:'Minerals & fuels',VI:'Chemicals',VII:'Plastics & rubber',VIII:'Hides & leather',IX:'Wood',X:'Paper & pulp',XI:'Textiles',XII:'Footwear & headgear',XIII:'Stone, cement, glass',XIV:'Gems & precious metal',XV:'Base metals',XVI:'Machinery & electrical',XVII:'Transport equip.',XVIII:'Instruments',XIX:'Arms',XX:'Misc. manufactures',XXI:'Art & special'};
-const scolor=s=>SC[s]||'#95a5a6';
+const scolor=s=>SC[s]||'var(--muted)';
 const fmtBn=v=>v==null?'—':(Math.abs(v)>=1000?(v/1000).toFixed(v>=10000?0:1)+' tn':(Math.abs(v)>=1?Math.round(v).toLocaleString():v.toFixed(1))+' bn');
 const fmtRs=v=>v==null?'—':'Rs '+fmtBn(v);
 const tip=d3.select('#tip');
@@ -14,7 +14,7 @@ let E,D={},TX;
 const TOPICS=[
  {k:'all',label:'Everything',
   desc:'Every trade chart on one page, top to bottom.',
-  meta:'PBS External Trade Statistics (8-digit), 2015–2024; gaps flagged in the source note below.'},
+  meta:'PBS National Trade Database for totals and partners (2003–04 on); 8-digit External Trade Statistics for the product charts (2015–16 on). The two do not agree — see the source note below.'},
  {k:'basket',label:'What we trade',
   desc:'The full export/import basket as a drill-down treemap, plus the largest single products.',
   meta:'PBS External Trade Statistics — 8-digit imports & exports by commodity.'},
@@ -22,36 +22,52 @@ const TOPICS=[
   desc:'The biggest risers and fallers in the trade basket over the decade, at your chosen detail level.',
   meta:'PBS 8-digit trade; change between 2015-16 and 2024-25. Detail level set in the sidebar.'},
  {k:'overtime',label:'Trade over time',
-  desc:'Exports, imports and the trade balance year by year, 2015–2024.',
-  meta:'PBS External Trade Statistics; a few years’ gaps filled from UN Comtrade / Economic Survey (see note).'},
+  desc:'Exports, imports and the trade balance year by year, 2003–04 to 2025–26.',
+  meta:'PBS National Trade Database, monthly totals as published. This is the grand total, not the sum of the product detail shown elsewhere on this page.'},
  {k:'partners',label:'Trading partners',
   desc:'The largest countries Pakistan trades with — pick one for its own profile.',
-  meta:'PBS External Trade Statistics — trade by partner country.'}];
+  meta:'PBS National Trade Database, trade by partner country, 2003–04 on. Partner tables do not always account for the whole published total — how much they name is charted below.'}];
 const TOPIC_GROUPS=[
  {label:null,keys:['all']},
  {label:'What & how much',keys:['basket','movers','overtime']},
  {label:'With whom',keys:['partners']}];
-const TOPIC_DRAWS={basket:()=>{drawDrill();drawProducts();},movers:()=>drawMovers(),overtime:()=>drawTotals(),partners:()=>{drawPartners();drawCountry();}};
+const TOPIC_DRAWS={basket:()=>{drawDrill();drawProducts();},movers:()=>drawMovers(),overtime:()=>{drawTotals();drawRecon();},partners:()=>{drawPartners();drawCountry();}};
 const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
+
+/* An ES module since Economy became one page. Module scope keeps this file's
+   TOPICS, start, writeHash, fmtBn and the rest to itself - fmtBn here prints
+   sub-billion values to one decimal where finance.js rounds them, which is a
+   difference worth keeping rather than reconciling. MINE is what this module
+   answers for; on another module's topic it hides its own cards and panels. */
+const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+const MY_PANELS=['sideCountry','sideLevel','foot-trade'];
+function standDown(){
+ MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+ d3.selectAll('[data-topic]').filter(function(){return MINE.indexOf(this.dataset.topic)>=0;})
+   .classed('topic-hidden',true);
+}
 let topic='basket',tCountry='all',tLevel='section',mDir='export',mMeasure='abs',mMode='span',mWinIdx=0,applyingHash=false;
 const LEVEL_LABEL={section:'HS section',chapter:'HS chapter',product:'8-digit product'};
+let TR_FLAGS={},TR_CLEAN=null;
 
 function start(){
  if(!window.ECON){return setTimeout(start,30);}
  E=window.ECON;D.ser={};E.indicators.series.forEach(s=>D.ser[s.key]=s);
  TX=E.trade_extra||{sel:[],country:{},movers:{},meta:{}};
- initDrill();initPartners();initProducts();drawTotals();initMovers();initCountry();initCsv();initTopics();
- let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(topic==='all')drawAll();else if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
+ /* The artefact's totals were a sum of D-10 detail covering 93-100% of the
+    grand total, so they ran 7% under the published figure and began in
+    2015-16. DD_TRADE carries the published total from 2003-04. */
+ if(window.DD_TRADE){const W=window.DD_TRADE;E.totals=W.totals;E.partners=W.partners;
+  TR_FLAGS=W.flags||{};TR_CLEAN=W.last_clean||null;}
+ initDrill();initPartners();initProducts();drawTotals();initMovers();initCountry();initRecon();initCsv();initTopics();
+ let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
+  if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
+  if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
 }
 function lastPt(k){const s=D.ser[k];return s&&s.points.length?s.points[s.points.length-1]:null;}
 function initTopics(){
- const list=d3.select('#topicList');list.selectAll('*').remove();
- TOPIC_GROUPS.forEach((g,gi)=>{
-  if(g.label)list.append('div').attr('class','topic-group'+(gi===0?' first':'')).text(g.label);
-  g.keys.forEach(k=>{const t=TOPICS.find(x=>x.k===k);if(!t)return;
-   list.append('button').attr('class','topic-item'+(k==='all'?' all':'')).attr('data-k',k)
-    .html(`<span class="t-dot"></span>${t.label}`).on('click',()=>applyTopic(k,true));});
- });
+ // The topic list is the shell's: one list, fifteen topics, three modules.
+ window.DDEcon.register({topics:TOPICS,groups:TOPIC_GROUPS});
  window.addEventListener('hashchange',()=>{if(!applyingHash)applyStateFromHash();});
  window.addEventListener('popstate',()=>{if(!applyingHash)applyStateFromHash();});
  initShare();applyStateFromHash();
@@ -66,9 +82,12 @@ function writeHash(push){
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
 }
 function readHash(){let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}
- if(!h)return {t:'basket'};if(!h.includes('='))return {t:h};const o={};new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t='basket';return o;}
+ if(!h)return {t:window.DDEcon.defaultTopic};if(!h.includes('='))return {t:h};const o={};
+ new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t=window.DDEcon.defaultTopic;return o;}
 function applyStateFromHash(){
- const o=readHash();const k=TOPICS.some(t=>t.k===o.t)?o.t:'basket';
+ const o=readHash();const k=window.DDEcon.current();
+ if(MINE.indexOf(k)<0){standDown();return;}
+ (document.getElementById('foot-trade')||{style:{}}).style.display='';
  applyingHash=true;
  applyTopic(k,false);
  if(o.lvl){tLevel=o.lvl;d3.select('#tLevel').property('value',o.lvl);}
@@ -106,7 +125,7 @@ function applyTopic(k,push){
  topic=k;const t=TOPICS.find(x=>x.k===k);
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
- d3.select('#topicMeta').html('<b>Sources.</b> '+t.meta);
+ d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
  const all=k==='all';
  d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
  // topic-relevant sidebar controls
@@ -156,21 +175,21 @@ function drawDrill(){
    .on('click',(e,d)=>{if(dPath.length===0){hideTip();dPath=[d.data.key];drawDrill();}})
    .on('keydown',(e,d)=>{if(dPath.length===0&&(e.key==='Enter'||e.key===' ')){e.preventDefault();hideTip();dPath=[d.data.key];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%${dPath.length===0?'<br><span style=opacity:.7>click to zoom in</span>':''}`,e)).on('mouseleave',hideTip);
- grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','#123')
-   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff'):'#123')
+ grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
+   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
     .text(d=>{const w=d.x1-d.x0,m=Math.floor((w-10)/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  if(overview)grp.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>36).append('text')
    .attr('x',d=>d.x0+5).attr('y',d=>d.y0+29).attr('font-size',12).attr('font-weight',700).attr('pointer-events','none')
-   .attr('fill',d=>d3.hcl(d.data.color).l>62?'#1a1a1a':'#fff').text(d=>(100*d.value/total).toFixed(1)+'%');
+   .attr('fill',d=>d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
  // product leaves (depth 2)
  const leaf=svg.selectAll('g.lf').data(overview?[]:root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
  leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2)
-   .attr('fill',d=>d.parent.data.color).attr('stroke','#fff').attr('stroke-width',0.5)
+   .attr('fill',d=>d.parent.data.color).attr('stroke','var(--surface)').attr('stroke-width',0.5)
    .style('cursor',dPath.length===0?'pointer':'default')
    .on('click',(e,d)=>{if(dPath.length===0){dPath=[d.data.section];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>HS ${d.data.hs8} · Sec ${d.data.section}<br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(2)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>52&&(d.y1-d.y0)>20).append('text').attr('class','cl').attr('x',4).attr('y',13)
-   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'#1a1a1a':'#fff';})
+   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'var(--ink)':'var(--surface)';})
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/5.8);return d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name;});
  // breadcrumb
  const bc=d3.select('#crumb');bc.selectAll('*').remove();
@@ -182,37 +201,101 @@ function drawDrill(){
    bc.append('span').attr('class','cr'+(actionable?'':' on')).text(x.t).style('cursor',actionable?'pointer':'default')
      .attr('role',actionable?'button':null).attr('tabindex',actionable?0:null)
      .on('click',goBack).on('keydown',e=>{if(actionable&&(e.key==='Enter'||e.key===' ')){e.preventDefault();goBack();}});});
+ showGap('#drillGap', dDir, dYears[dYi]);
  d3.select('#drillMeta').text(`${dDir==='export'?'Exports':'Imports'} ${dYears[dYi]} · ${dPath.length===0?(overview?'sector overview — select a sector for products':'all products, grouped by section'):'section '+dPath[0]+', by chapter'} · total ${fmtRs(total)}`);
 }
 /* ---------- trade over time ---------- */
+/* Every other year fit when the series was ten years long. At twenty-three
+   it printed twelve labels into the width of six and they ran together into
+   "2003200420062007". The stride has to come from how many years there are
+   and how much room they have, not from a constant, and it is counted back
+   from the last year so the end of the series is always labelled. */
+function tickYears(years,W){
+ const want=W<420?4:W<700?6:8,step=Math.max(1,Math.ceil(years.length/want)),out=[];
+ for(let i=years.length-1;i>=0;i-=step)out.unshift(years[i]);
+ return out;
+}
 function drawTotalsInto(el,W,H,hi){
  const T=E.totals,years=T.years,m={t:16,r:64,b:28,l:54};
  const x=d3.scalePoint().domain(years).range([m.l,W-m.r]).padding(.5);
  const av=[];years.forEach(y=>['export','import','balance'].forEach(k=>{if(T[k][y]!=null)av.push(T[k][y]);}));
  const y=d3.scaleLinear().domain([Math.min(0,d3.min(av)),d3.max(av)]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H);
- svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%(W<420?3:2)===0)));
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(tickYears(years,W)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','#c5cad3');
- const ser=[['export','Exports',scolor('XI')],['import','Imports','#c0392b'],['balance','Balance','#3d6db5']];
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
+ const ser=[['export','Exports',scolor('XI')],['import','Imports','var(--negative)'],['balance','Balance','var(--green-800)']];
  const line=d3.line().defined(d=>d.v!=null).x(d=>x(d.y)).y(d=>y(d.v));
+ /* A flagged year is drawn, not dropped - hiding PBS's own published
+    figure would be its own kind of lie - but drawn dashed and faint, so the
+    eye does not read a data defect as a trend. The note below says which. */
+ const ci=TR_CLEAN?years.indexOf(TR_CLEAN):years.length-1,
+       cut=ci<0?years.length-1:ci;
  ser.forEach(s=>{const pts=years.map(yr=>({y:yr,v:T[s[0]][yr]}));
    const dim=(hi==='gap'&&s[0]==='balance')||(hi==='grow'&&s[0]==='balance');
-   svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('opacity',dim?0.25:1).attr('d',line);
+   svg.append('path').datum(pts.slice(0,cut+1)).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('opacity',dim?0.25:1).attr('d',line);
+   if(cut<years.length-1)svg.append('path').datum(pts.slice(cut)).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',3).attr('stroke-dasharray','5 4').attr('opacity',dim?0.15:0.4).attr('d',line);
    const lp=pts.filter(p=>p.v!=null).slice(-1)[0];if(lp)svg.append('text').attr('x',x(lp.y)+8).attr('y',y(lp.v)+4).attr('font-size',12).attr('font-weight',700).attr('fill',s[2]).attr('opacity',dim?0.3:1).text(s[1]);});
- if(hi==='gap'){const yr=years[years.length-1];const e=T.export[yr],im=T.import[yr];if(e&&im)svg.append('line').attr('x1',x(yr)).attr('x2',x(yr)).attr('y1',y(e)).attr('y2',y(im)).attr('stroke','#c0392b').attr('stroke-width',2).attr('stroke-dasharray','4 3');}
+ if(hi==='gap'){const yr=years[years.length-1];const e=T.export[yr],im=T.import[yr];if(e&&im)svg.append('line').attr('x1',x(yr)).attr('x2',x(yr)).attr('y1',y(e)).attr('y2',y(im)).attr('stroke','var(--negative)').attr('stroke-width',2).attr('stroke-dasharray','4 3');}
 }
-function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();drawTotalsInto(el,el.node().clientWidth||900,300,null);}
+function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();
+ drawTotalsInto(el,el.node().clientWidth||900,300,null);
+ const fy=Object.keys(TR_FLAGS).sort();
+ if(fy.length)el.append('div').attr('class','note').html(
+  'Drawn dashed and not to be quoted: '+fy.map(y=>'<b>'+y+'</b> \u2014 '+
+   TR_FLAGS[y].map(t=>t.replace(/</g,'&lt;')).join(' ')).join(' '));}
 
 /* ---------- partners & products (year slider) ---------- */
 let pDir='export',prDir='export';
-function setSlider(id,lblId,years,cb){const s=d3.select('#'+id);s.attr('min',0).attr('max',Math.max(0,years.length-1)).property('value',years.length-1);d3.select('#'+lblId).text(years[years.length-1]||'');s.on('input',function(){d3.select('#'+lblId).text(years[+this.value]);cb();});}
+/* A slider that opens on the newest year opens, here, on a year PBS has not
+   finished publishing and whose Q1 is not credible. def picks the last year
+   fit to be read without a caveat; the flagged year is still reachable, one
+   notch further right, which is the right place for it. */
+function setSlider(id,lblId,years,cb,def){const s=d3.select('#'+id);
+ let i=years.length-1;if(def!=null){const j=years.indexOf(def);if(j>=0)i=j;}
+ s.attr('min',0).attr('max',Math.max(0,years.length-1)).property('value',i);
+ d3.select('#'+lblId).text(years[i]||'');
+ s.on('input',function(){d3.select('#'+lblId).text(years[+this.value]);cb();});}
 const pYears=()=>Object.keys(E.partners[pDir]).sort();
 const prYears=()=>Object.keys(E.products[prDir]).sort();
-function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners);drawPartners();}
+function initPartners(){d3.selectAll('#pDir button').on('click',function(){d3.selectAll('#pDir button').classed('on',false);d3.select(this).classed('on',true);pDir=this.dataset.d;setSlider('pYr','pYrLbl',pYears(),drawPartners,TR_CLEAN);drawPartners();});setSlider('pYr','pYrLbl',pYears(),drawPartners,TR_CLEAN);drawPartners();}
 function initProducts(){d3.selectAll('#prDir button').on('click',function(){d3.selectAll('#prDir button').classed('on',false);d3.select(this).classed('on',true);prDir=this.dataset.d;setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();});setSlider('prYr','prYrLbl',prYears(),drawProducts);drawProducts();}
-function drawPartners(){const ys=pYears();const y=ys[+d3.select('#pYr').property('value')||ys.length-1];hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'#c0392b');}
-function drawProducts(){const ys=prYears();const y=ys[+d3.select('#prYr').property('value')||ys.length-1];hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
+/* A slider index of zero is a valid selection, and `+value || last` is not a
+   way to read one: 0 is falsy, so choosing the FIRST year silently drew the
+   LAST. Top partners at 2015-16 showed US exports of Rs1.6tn and China
+   Rs662bn - the 2024-25 figures - while the label said 2015-16; the real
+   values are Rs366.73bn and Rs175.70bn. The same expression sat in the two
+   charts and their two CSV handlers, so the export and the shared link
+   repeated the error rather than contradicting it. */
+function yearAt(sel, ys){
+ const raw = d3.select(sel).property('value');
+ const i = raw === null || raw === '' ? ys.length - 1 : Number(raw);
+ return ys[Number.isInteger(i) && i >= 0 && i < ys.length ? i : ys.length - 1];
+}
+/* A PROXY MARKED WHERE IT IS USED. PBS did not publish 8-digit exports for
+   2017-18, so that year of the treemap is UN Comtrade's calendar-2018
+   filing: a different source, a different twelve months, and only to section
+   level. The footnote said so; the chart did not, and a reader who slid the
+   year to 2017-18 saw bars like any other year's. E.meta.trade_gap_fill is
+   the record of which years those are, so this reads it rather than
+   hard-coding a year that could change under it. */
+function gapFill(dir, year){
+ const g = (E.meta && E.meta.trade_gap_fill) || {};
+ return g[dir + '_' + year] || null;
+}
+function showGap(sel, dir, year){
+ const el = d3.select(sel);
+ if(el.empty()) return;
+ const note = gapFill(dir, year);
+ el.attr('hidden', note ? null : true)
+   .html(note ? '<b>' + (dir === 'export' ? 'Exports' : 'Imports') + ' ' +
+         year + ' are not PBS 8-digit data.</b> ' + note.replace(/</g,'&lt;') +
+         ' Treat this year as a different series, not a continuation.' : '');
+}
+function drawPartners(){const ys=pYears();const y=yearAt('#pYr',ys);hbar('#partners',E.partners[pDir][y]||[],d=>d.country,()=>pDir==='export'?scolor('XI'):'var(--negative)');}
+function drawProducts(){const ys=prYears();const y=yearAt('#prYr',ys);
+ showGap('#prodGap', prDir, y);
+ hbar('#products',E.products[prDir][y]||[],d=>d.name,d=>scolor(d.section));}
 function hbar(elSel,rows,label,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,12);
  const W=el.node().clientWidth||500,rh=26,H=rows.length*rh+14,lblW=Math.max(96,Math.min(170,W*0.42)),maxc=Math.max(9,Math.floor(lblW/7.3));
@@ -220,9 +303,9 @@ function hbar(elSel,rows,label,color){
  const svg=el.append('svg').attr('width',W).attr('height',H);
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+7})`);
  g.append('title').text(d=>label(d));
- g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.35em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','#3d424d').text(d=>{const t=label(d);return t.length>maxc?t.slice(0,maxc-1)+'…':t;});
+ g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.35em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)').text(d=>{const t=label(d);return t.length>maxc?t.slice(0,maxc-1)+'…':t;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('width',d=>x(d.bn)-x(0)).attr('rx',4).attr('fill',d=>color(d)).on('mousemove',(e,d)=>showTip(`<b>${label(d)}</b><br>${fmtRs(d.bn)}`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',d=>x(d.bn)+6).attr('y',rh/2).attr('dy','.35em').attr('font-size',11).attr('font-weight',700).attr('fill','#505662').text(d=>fmtBn(d.bn));
+ g.append('text').attr('x',d=>x(d.bn)+6).attr('y',rh/2).attr('dy','.35em').attr('font-size',11).attr('font-weight',700).attr('fill','var(--body)').text(d=>fmtBn(d.bn));
 }
 
 /* ================= movers: risers & fallers ================= */
@@ -265,10 +348,10 @@ function moverRows(){
 }
 function drawMovers(){
  const el=d3.select('#movers');el.selectAll('*').remove();
- const rows=moverRows();const GREEN='#1e6b3e',RED='#c0392b';
+ const rows=moverRows();const GREEN='var(--green-700)',RED='var(--negative)';
  const isPct=mMeasure==='pct';
  const fmtV=v=>isPct?((v>=0?'+':'−')+Math.abs(v).toFixed(0)+'%'):((v>=0?'+':'−')+fmtBn(Math.abs(v)));
- if(!rows.length){el.append('div').style('padding','24px').style('color','var(--slate-500)').text('No data at this level.');return;}
+ if(!rows.length){el.append('div').style('padding','24px').style('color','var(--muted)').text('No data at this level.');return;}
  const W=el.node().clientWidth||900,rh=22,H=rows.length*rh+30;
  const lblW=Math.max(130,Math.min(230,W*0.3));
  const minV=Math.min(0,d3.min(rows,r=>r.val)),maxV=Math.max(0,d3.max(rows,r=>r.val));
@@ -276,11 +359,11 @@ function drawMovers(){
  const x=d3.scaleLinear().domain([minV,maxV]).range([lblW+12+neg,W-70]);
  const zero=x(0);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-24).attr('stroke','var(--slate-400)');
+ svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-24).attr('stroke','var(--muted-2)');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+4})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.name}</b>${tLevel==='product'?' · HS '+d.code:''}<br>${d.y0}: ${fmtRs(d.v0)} → ${d.y1}: ${fmtRs(d.v1)}<br><b>${(d.delta>=0?'+':'−')+fmtRs(Math.abs(d.delta))}</b>${d.pct!=null?`  ·  ${d.pct>=0?'+':''}${d.pct.toFixed(0)}%`:''}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2-2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600)
-  .attr('fill',d=>d.val<0?RED:'var(--slate-700)')
+  .attr('fill',d=>d.val<0?RED:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.1);return d.name.length>max?d.name.slice(0,max-1)+'…':d.name;});
  g.append('rect').attr('y',3).attr('height',rh-9).attr('rx',3)
   .attr('x',d=>Math.min(zero,x(d.val))).attr('width',d=>Math.max(1,Math.abs(x(d.val)-zero)))
@@ -315,33 +398,33 @@ function drawCountry(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%2===0)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- [['exp','Pakistan’s exports',scolor('XI')],['imp','Pakistan’s imports','#c0392b']].forEach(s=>{
+ [['exp','Pakistan’s exports',scolor('XI')],['imp','Pakistan’s imports','var(--negative)']].forEach(s=>{
   const pts=years.map(yr=>({y:yr,v:c.series[yr][s[0]]})).filter(p=>p.v!=null);
   const line=d3.line().x(p=>x(p.y)).y(p=>y(p.v));
   svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',2.5).attr('d',line);
-  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.y)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',s[2]).attr('stroke','#fff').attr('stroke-width',1)
+  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.y)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',s[2]).attr('stroke','var(--surface)').attr('stroke-width',1)
    .on('mousemove',(e,p)=>showTip(`<b>${s[1]}</b> · ${p.y}<br>${fmtRs(p.v)}`,e)).on('mouseleave',hideTip);
   const lp=pts.slice(-1)[0];if(lp)svg.append('text').attr('x',x(lp.y)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',s[2]).text(s[0]==='exp'?'exports':'imports');
  });
  // top items at chosen level
  const lvl=(c.level&&c.level[tLevel])||{exp:[],imp:[]};
  chbar('#cExp',lvl.exp||[],scolor('XI'));
- chbar('#cImp',lvl.imp||[],'#c0392b');
+ chbar('#cImp',lvl.imp||[],'var(--negative)');
  const lat=TX.meta.latest||{};
  d3.select('#cMeta').text(`${LEVEL_LABEL[tLevel]} breakdown · exports ${lat.export||''}, imports ${lat.import||''} · PBS 8-digit trade`);
 }
 function chbar(elSel,rows,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,10);
- if(!rows.length){el.append('div').style('padding','12px').style('color','var(--slate-400)').style('font-size','12px').text('No recorded trade at this level.');return;}
+ if(!rows.length){el.append('div').style('padding','12px').style('color','var(--muted-2)').style('font-size','12px').text('No recorded trade at this level.');return;}
  const W=el.node().clientWidth||440,rh=23,H=rows.length*rh+8,lblW=Math.max(96,Math.min(180,W*0.46));
  const x=d3.scaleLinear().domain([0,d3.max(rows,d=>d.bn)||1]).range([lblW+6,W-54]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+3})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.name}</b>${/^\d/.test(d.code)?' · HS '+d.code:''}<br>${fmtRs(d.bn)}`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-700)')
+ g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)')
   .text(d=>{const max=Math.floor(lblW/5.9);return d.name.length>max?d.name.slice(0,max-1)+'…':d.name;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('rx',3).attr('width',d=>Math.max(1,x(d.bn)-x(0))).attr('fill',color);
- g.append('text').attr('x',d=>x(d.bn)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10).attr('font-weight',700).attr('fill','var(--slate-600)').text(d=>fmtBn(d.bn));
+ g.append('text').attr('x',d=>x(d.bn)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10).attr('font-weight',700).attr('fill','var(--body)').text(d=>fmtBn(d.bn));
 }
 
 /* ================= CSV export ================= */
@@ -351,23 +434,35 @@ function toCSV(rows){
  const esc=v=>{if(v==null)v='';v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
  return [cols.join(',')].concat(rows.map(r=>cols.map(c=>esc(r[c])).join(','))).join('\n');
 }
-function downloadCSV(name,rows){
+function provHead(card,view){
+ if(!card||!window.DDProv)return '';
+ const esc=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+ const L=window.DDProv.header(card,view);
+ return L.length?L.map(r=>r.map(esc).join(',')).join('\n')+'\n#\n':'';
+}
+function downloadCSV(name,rows,card,view){
  if(!rows||!rows.length)return;
- const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8'});
+ const blob=new Blob([provHead(card,view)+toCSV(rows)],{type:'text/csv;charset=utf-8'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w.-]+/g,'_');
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
 }
 const r2=v=>v==null?null:Math.round(v*100)/100;
 const CSV={
- drill:()=>{const yr=dYears[dYi],secs=E.tree[dDir][yr]||[],out=[];
+ recon:()=>[`Pakistan_trade_coverage_${rcBasis}.csv`,
+   reconRows().map(r=>({fiscal_year:r.fy,basis:rcBasis.toUpperCase(),months_covered:r.months,
+     imports_named_by_partner_pct:r.c_imp,exports_named_by_partner_pct:r.c_exp,
+     imports_in_commodity_groups_pct:r.g_imp,exports_in_commodity_groups_pct:r.g_exp}))],
+ drill:()=>{const yr=dYears[dYi],secs=E.tree[dDir][yr]||[],out=[],gap=gapFill(dDir,yr);
    secs.forEach(s=>s.chapters.forEach(c=>c.products.forEach(p=>out.push({
      direction:dDir,year:yr,section:s.section,section_name:s.name,chapter_code:c.code,chapter:c.name,hs8:p.hs8,product:p.name,rs_bn:r2(p.bn)}))));
-   return [`Pakistan_trade_${dDir}_products_${yr}.csv`,out.sort((a,b)=>b.rs_bn-a.rs_bn)];},
- products:()=>{const ys=prYears(),yr=ys[+d3.select('#prYr').property('value')||ys.length-1];
+   return [`Pakistan_trade_${dDir}_products_${yr}.csv`,out.sort((a,b)=>b.rs_bn-a.rs_bn),
+     gap?{'not PBS 8-digit':gap}:null];},
+ products:()=>{const ys=prYears(),yr=yearAt('#prYr',ys);
    return [`Pakistan_top_products_${prDir}_${yr}.csv`,(E.products[prDir][yr]||[]).map(p=>({direction:prDir,year:yr,product:p.name,section:p.section,rs_bn:r2(p.bn)}))];},
  totals:()=>{const T=E.totals;
-   return ['Pakistan_trade_over_time.csv',T.years.map(y=>({year:y,exports_rs_bn:r2(T.export[y]),imports_rs_bn:r2(T.import[y]),balance_rs_bn:r2(T.balance[y])}))];},
- partners:()=>{const ys=pYears(),yr=ys[+d3.select('#pYr').property('value')||ys.length-1];
+   return ['Pakistan_trade_over_time.csv',T.years.map(y=>({year:y,exports_rs_bn:r2(T.export[y]),imports_rs_bn:r2(T.import[y]),balance_rs_bn:r2(T.balance[y]),
+     months_published:T.months?T.months[y]:null,caveat:(TR_FLAGS[y]||[]).join(' ')||null}))];},
+ partners:()=>{const ys=pYears(),yr=yearAt('#pYr',ys);
    return [`Pakistan_top_partners_${pDir}_${yr}.csv`,(E.partners[pDir][yr]||[]).map(p=>({direction:pDir,year:yr,partner:p.country,rs_bn:r2(p.bn)}))];},
  movers:()=>{const arr=moverList(),w=currentWindow();
    return [`Pakistan_trade_movers_${mDir}_${tLevel}_${w.key}.csv`,arr.slice().sort((a,b)=>b.delta-a.delta).map(r=>({
@@ -377,10 +472,102 @@ const CSV={
    return [`Pakistan_trade_with_${tCountry}.csv`,out];}
 };
 function initCsv(){
- d3.selectAll('.csvbtn').on('click',function(e){
+ /* Filtered, not guarded: d3's .on() replaces the handler, so binding every
+    .csvbtn would leave the other two modules' buttons doing nothing. */
+ d3.selectAll('.csvbtn').filter(function(){return this.dataset.csv in CSV;})
+  .on('click',function(e){
   e.stopPropagation();const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
-  try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}
+  const card=this.closest('.card');
+  try{const [name,rows,view]=fn();downloadCSV(name,rows,card&&card.id,view);}
+  catch(err){console.error('CSV',k,err);}
  });
 }
 
+
+/* ================= trade coverage ================= */
+/* window.DD_RECON, from trade_reconciliation: what share of each published
+   total the detailed tables on this page actually account for. Drawn because
+   the answer is not always "all of it" - before 2011-12 a seventh of imports
+   belongs to no named country - and a reader comparing partners across 2009
+   and 2019 is comparing two different degrees of completeness. */
+const RC_SERIES=[
+ {k:'c_imp', lbl:'Imports, by partner country',  c:'var(--rust)',      dash:null},
+ {k:'c_exp', lbl:'Exports, by partner country',  c:'var(--gold-600)',  dash:null},
+ {k:'g_imp', lbl:'Imports, by commodity group',  c:'var(--slate)',     dash:'4 3'},
+ {k:'g_exp', lbl:'Exports, by commodity group',  c:'var(--teal-500)',  dash:'4 3'}];
+let rcBasis='pkr';
+function initRecon(){
+ d3.select('#rcBasis').selectAll('button').on('click',function(){
+  d3.select('#rcBasis').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  rcBasis=this.dataset.rb;drawRecon();});
+ drawRecon();
+}
+function reconRows(){
+ const b=window.DD_RECON&&window.DD_RECON[rcBasis];
+ if(!b)return [];
+ /* The dollar columns are zero before 2015-16 because PBS did not publish
+    them, and a zero total divides into a null, not a nought. Those years are
+    dropped rather than drawn as a collapse in coverage that never happened. */
+ return b.rows.map(r=>{const o={};b.cols.forEach((c,i)=>o[c]=r[i]);o.n=+o.fy.slice(0,4)+1;return o;})
+   .filter(o=>RC_SERIES.some(s=>o[s.k]!=null));
+}
+function drawRecon(){
+ const el=d3.select('#recon');el.selectAll('*').remove();
+ const rows=reconRows();
+ if(!rows.length){el.append('p').attr('class','note').text('No coverage figures on this basis.');d3.select('#reconLegend').html('');return;}
+ const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(330,W*0.3)),m={t:16,r:118,b:34,l:44};
+ const vals=[];rows.forEach(r=>RC_SERIES.forEach(s=>{if(r[s.k]!=null)vals.push(r[s.k]);}));
+ const x=d3.scaleLinear().domain(d3.extent(rows,r=>r.n)).range([m.l,W-m.r]);
+ const y=d3.scaleLinear().domain([Math.min(82,d3.min(vals)-2),Math.max(108,d3.max(vals)+2)]).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ /* Everything below this line is trade the detail cannot name. */
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',Math.max(0,y(100)-m.t))
+  .attr('fill','var(--positive,var(--pine))').attr('opacity',.05);
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100))
+  .attr('stroke','var(--ink)').attr('stroke-width',1.2);
+ svg.append('text').attr('x',m.l+5).attr('y',y(100)-5).attr('font-size',10).attr('font-weight',700)
+  .attr('fill','var(--muted)').text('100% — the parts add to the total');
+ /* 2011-12 is where PBS's partner tables start naming almost everything. */
+ const brk=2012;
+ if(x(brk)>m.l&&x(brk)<W-m.r){
+  svg.append('line').attr('x1',x(brk)).attr('x2',x(brk)).attr('y1',m.t).attr('y2',H-m.b)
+   .attr('stroke','var(--muted)').attr('stroke-dasharray','2 3').attr('opacity',.8);
+  svg.append('text').attr('x',x(brk)+5).attr('y',H-m.b-7).attr('font-size',10).attr('font-style','italic')
+   .attr('fill','var(--muted)').text('partner tables close the gap');
+ }
+ RC_SERIES.forEach(s=>{
+  const pts=rows.filter(r=>r[s.k]!=null);
+  if(!pts.length)return;
+  const line=d3.line().x(r=>x(r.n)).y(r=>y(r[s.k])).curve(d3.curveMonotoneX);
+  const path=svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',s.c).attr('stroke-width',2.4);
+  if(s.dash)path.attr('stroke-dasharray',s.dash);
+  const l=pts[pts.length-1];
+  svg.append('circle').attr('cx',x(l.n)).attr('cy',y(l[s.k])).attr('r',3.2).attr('fill',s.c);
+ });
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis')
+  .call(d3.axisBottom(x).ticks(Math.min(9,Math.floor(W/110))).tickFormat(n=>`${n-1}-${String(n).slice(2)}`));
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis')
+  .call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'%'));
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',H-m.b-m.t).attr('fill','transparent')
+  .on('mousemove',function(e){
+   const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
+   const r=rows.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);
+   const gap=r.c_imp==null?null:(100-r.c_imp);
+   showTip(`<b>${r.fy}</b>${r.months<12?` <span style="opacity:.7">(${r.months} months)</span>`:''}<br>`
+    +RC_SERIES.map(s=>r[s.k]==null?null:
+      `<span class="sw" style="background:${s.c}"></span>${s.lbl} ${r[s.k].toFixed(1)}%`).filter(Boolean).join('<br>')
+    +(gap&&gap>1?`<br><span style="opacity:.75">${gap.toFixed(1)}% of imports named no country</span>`:''),e);
+  }).on('mouseleave',hideTip);
+ d3.select('#reconLegend').html(RC_SERIES.map(s=>
+  `<div class="li"><span class="sw" style="background:${s.c}"></span>${s.lbl}</div>`).join(''));
+}
+
+/* Last line on purpose. As a module this file is deferred, so document is
+   already parsed when it runs and start() fires here and now rather than on
+   DOMContentLoaded. Left where it was - two thirds of the way down, above
+   the trade-coverage block - start() called initRecon() before `let rcBasis`
+   below it had been initialised, and the whole module died in the temporal
+   dead zone. Classic scripts hid this: mid-parse readyState is "loading", so
+   the old build always waited for DOMContentLoaded and the file was fully
+   evaluated by then. */
 if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);

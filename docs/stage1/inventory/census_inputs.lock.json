@@ -1,0 +1,2689 @@
+{
+  "baseline_commit": "df174cf0e4c56db1162bb6c942db4c649dbd55c4",
+  "baseline_files": [
+    {
+      "bytes": 1752458,
+      "path": "districts.json",
+      "sha256": "611e1a2117acd7fb174d68992205ae39b5c2c6ceec1a28892a9a3abd63f8c608"
+    },
+    {
+      "bytes": 1868350,
+      "path": "census_data.js",
+      "sha256": "1249a7a949cc99919298900fdfe88950e892c0121f79d7b5a8a57078653a0a57"
+    },
+    {
+      "bytes": 427889,
+      "path": "pakistan_districts_province_boundries.geojson",
+      "sha256": "e0800ea3358d3398f8d170ef97479bacbfc5d3f04f5c566d116681a0f7586ccf"
+    },
+    {
+      "bytes": 167771,
+      "path": "warehouse/district_indicators.parquet",
+      "sha256": "d0a67134af8addb1c3758910c281d9226fb7c0d53c860bd909294b1fc929b97e"
+    },
+    {
+      "bytes": 139732,
+      "path": "warehouse/catalog.json",
+      "sha256": "327aad8fc17c6e2c96c7f15011b2163ebddde72021818b24a3f1090b22ce1e2b"
+    }
+  ],
+  "expected_source_rows": {
+    "census2017_education": 135,
+    "census2017_population": 135,
+    "census2023_education": 136,
+    "census2023_population": 136
+  },
+  "files": [
+    {
+      "bytes": 35200,
+      "path": "Census 2017/pbs_2017_table01/001_bannu_table1.pdf",
+      "publication_code": "001",
+      "role": "census2017_population",
+      "sha256": "552445831b472dba7cff78d34f80f2cf2fd96baf5bed305dd3c5e2b6786981ba",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00101.pdf"
+    },
+    {
+      "bytes": 35195,
+      "path": "Census 2017/pbs_2017_table01/002_lakki_marwat_table1.pdf",
+      "publication_code": "002",
+      "role": "census2017_population",
+      "sha256": "a6cc34d0d1b5e7d6cbe318737a2f8675af830bfae2a6a15086b01d9d09bd1ffa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00201.pdf"
+    },
+    {
+      "bytes": 38841,
+      "path": "Census 2017/pbs_2017_table01/003_dera_ismail_khan_table1.pdf",
+      "publication_code": "003",
+      "role": "census2017_population",
+      "sha256": "2ec4199866fba3910295991dfee8c474b4c28d6bb7a6d24da9b665b69206e4fa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00301.pdf"
+    },
+    {
+      "bytes": 34200,
+      "path": "Census 2017/pbs_2017_table01/004_tank_table1.pdf",
+      "publication_code": "004",
+      "role": "census2017_population",
+      "sha256": "a1932957748d4b21f3b17bc28e3fbb803063c88883f230b9c861667c87a6364c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00401.pdf"
+    },
+    {
+      "bytes": 35319,
+      "path": "Census 2017/pbs_2017_table01/005_abbottabad_table1.pdf",
+      "publication_code": "005",
+      "role": "census2017_population",
+      "sha256": "2822e12dc7bc810344c43810aedadc0d776e30a9813dd86040929bbbc8b4de7c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00501.pdf"
+    },
+    {
+      "bytes": 35052,
+      "path": "Census 2017/pbs_2017_table01/006_batagram_table1.pdf",
+      "publication_code": "006",
+      "role": "census2017_population",
+      "sha256": "2afdaef189621678cf5b7bdb8bf520e07c7b1f06e14eabb19c67615ca2e407c2",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00601.pdf"
+    },
+    {
+      "bytes": 35205,
+      "path": "Census 2017/pbs_2017_table01/007_haripur_table1.pdf",
+      "publication_code": "007",
+      "role": "census2017_population",
+      "sha256": "0dece826ed3a115267ca77e5335d37be5f1293131261acedf76aeed20f908aa9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00701.pdf"
+    },
+    {
+      "bytes": 35874,
+      "path": "Census 2017/pbs_2017_table01/008_mansehra_table1.pdf",
+      "publication_code": "008",
+      "role": "census2017_population",
+      "sha256": "0e7fc6c898e8fa8a795225d4a5d10131da11fda972a82c68a55f1a53e9c773e9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00801.pdf"
+    },
+    {
+      "bytes": 35295,
+      "path": "Census 2017/pbs_2017_table01/009_torghar_table1.pdf",
+      "publication_code": "009",
+      "role": "census2017_population",
+      "sha256": "871faad16848591cdd8af593c56d84fbd7febd5787fce5ebde3a42a3c4257daf",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00901.pdf"
+    },
+    {
+      "bytes": 36873,
+      "path": "Census 2017/pbs_2017_table01/010_kohistan_table1.pdf",
+      "publication_code": "010",
+      "role": "census2017_population",
+      "sha256": "056b627c0417b27d3fb0bb95b03c54448e022412f4b5be59378c4a13f4095612",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01001.pdf"
+    },
+    {
+      "bytes": 35195,
+      "path": "Census 2017/pbs_2017_table01/011_hangu_table1.pdf",
+      "publication_code": "011",
+      "role": "census2017_population",
+      "sha256": "8bf7a3b919fc2a773e273522181bd0510655e002a4a244bef9b81096feee8017",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01101.pdf"
+    },
+    {
+      "bytes": 36075,
+      "path": "Census 2017/pbs_2017_table01/012_karak_table1.pdf",
+      "publication_code": "012",
+      "role": "census2017_population",
+      "sha256": "ad33d56112d74c5d7cef4818afa8d509d0b7823dc6ed0f119359a050b35e2447",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01201.pdf"
+    },
+    {
+      "bytes": 35260,
+      "path": "Census 2017/pbs_2017_table01/013_kohat_table1.pdf",
+      "publication_code": "013",
+      "role": "census2017_population",
+      "sha256": "1eb67b5f4fa42c4519097201995c7f9a5faf64df452880380126c792c9345f0f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01301.pdf"
+    },
+    {
+      "bytes": 36140,
+      "path": "Census 2017/pbs_2017_table01/014_mardan_table1.pdf",
+      "publication_code": "014",
+      "role": "census2017_population",
+      "sha256": "52253fccd86c87becaccde9186d0bbad586b7c7574f7de0ce6bb5aa1d4c02ecc",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01401.pdf"
+    },
+    {
+      "bytes": 36817,
+      "path": "Census 2017/pbs_2017_table01/015_swabi_table1.pdf",
+      "publication_code": "015",
+      "role": "census2017_population",
+      "sha256": "01a967a7b96d01e78ed25c1318cd264e164186fbbbc3386003c4d2ad0d9dee09",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01501.pdf"
+    },
+    {
+      "bytes": 36140,
+      "path": "Census 2017/pbs_2017_table01/016_charsadda_table1.pdf",
+      "publication_code": "016",
+      "role": "census2017_population",
+      "sha256": "40ca9968e8bc5ce5d16a2b3121dee8dc40bf1272d3331625cd59778d7b8be3fe",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01601.pdf"
+    },
+    {
+      "bytes": 36214,
+      "path": "Census 2017/pbs_2017_table01/017_nowshera_table1.pdf",
+      "publication_code": "017",
+      "role": "census2017_population",
+      "sha256": "ec9eafaab0d60bd6c477d6ab3f51865f086d123770d4e87b9db64c5f3a8c4c94",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01701.pdf"
+    },
+    {
+      "bytes": 34211,
+      "path": "Census 2017/pbs_2017_table01/018_peshawar_table1.pdf",
+      "publication_code": "018",
+      "role": "census2017_population",
+      "sha256": "08959cc130df96bb26abbb417205a44496338fdd61c6b56a2c89a984e15eb14e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01801.pdf"
+    },
+    {
+      "bytes": 36700,
+      "path": "Census 2017/pbs_2017_table01/019_buner_table1.pdf",
+      "publication_code": "019",
+      "role": "census2017_population",
+      "sha256": "4ef6b211975afcaaf8255a38621986f783d4172bae458d754f1ef07086f3d4aa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01901.pdf"
+    },
+    {
+      "bytes": 35325,
+      "path": "Census 2017/pbs_2017_table01/020_chitral_table1.pdf",
+      "publication_code": "020",
+      "role": "census2017_population",
+      "sha256": "11e51a07577a8f47d734b9dec7ed88ba875e34dfaf96ec87bb80d92ac0488d6d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02001.pdf"
+    },
+    {
+      "bytes": 35842,
+      "path": "Census 2017/pbs_2017_table01/021_shangla_table1.pdf",
+      "publication_code": "021",
+      "role": "census2017_population",
+      "sha256": "12aa88a2c569a38a0c00cc7a6b0b716977395c02b81c36a4de653cf364a90c0e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02101.pdf"
+    },
+    {
+      "bytes": 39112,
+      "path": "Census 2017/pbs_2017_table01/022_swat_table1.pdf",
+      "publication_code": "022",
+      "role": "census2017_population",
+      "sha256": "5edd1191e5c6811c6938eb0c9e8713e0b371f683966d99b7374deb4942d213ce",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02201.pdf"
+    },
+    {
+      "bytes": 36634,
+      "path": "Census 2017/pbs_2017_table01/023_lower_dir_table1.pdf",
+      "publication_code": "023",
+      "role": "census2017_population",
+      "sha256": "a194e9b0dc9c5766101f872535f656decaed76763b611aae82afe24b45b99e62",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02301.pdf"
+    },
+    {
+      "bytes": 35942,
+      "path": "Census 2017/pbs_2017_table01/024_upper_dir_table1.pdf",
+      "publication_code": "024",
+      "role": "census2017_population",
+      "sha256": "3e96e6c780649e91ae0eb7ce2819cc2a381d42b61c0c8071b9c130f44f49cb9d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02401.pdf"
+    },
+    {
+      "bytes": 35291,
+      "path": "Census 2017/pbs_2017_table01/025_malakand_protected_area_table1.pdf",
+      "publication_code": "025",
+      "role": "census2017_population",
+      "sha256": "d8bf40676a045ee51ea08165b2a309eff69d8781f024be565bddb9c4b2a2c03a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02501.pdf"
+    },
+    {
+      "bytes": 36851,
+      "path": "Census 2017/pbs_2017_table01/026_khyber_table1.pdf",
+      "publication_code": "026",
+      "role": "census2017_population",
+      "sha256": "6a60f11aedd8e1d13415a8d492e2f2d8124216622ab21f711aebf2575877ccfd",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02601.pdf"
+    },
+    {
+      "bytes": 36221,
+      "path": "Census 2017/pbs_2017_table01/027_kurram_table1.pdf",
+      "publication_code": "027",
+      "role": "census2017_population",
+      "sha256": "e4e39ece88d52d4588423c317782343b633bd94fded11f8f5c8626aac47b582f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02701.pdf"
+    },
+    {
+      "bytes": 38770,
+      "path": "Census 2017/pbs_2017_table01/028_mohmand_table1.pdf",
+      "publication_code": "028",
+      "role": "census2017_population",
+      "sha256": "115f0855ad3c9f9f628b03cb98bf5ccb565b51bf002b4b3f61c4d6aa493ed5db",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02801.pdf"
+    },
+    {
+      "bytes": 40603,
+      "path": "Census 2017/pbs_2017_table01/029_north_waziristan_table1.pdf",
+      "publication_code": "029",
+      "role": "census2017_population",
+      "sha256": "c1e8970e88308e1848be64eb80a7db0eacb7d5e3440f7c9591fcdbcfe1136c0e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02901.pdf"
+    },
+    {
+      "bytes": 36748,
+      "path": "Census 2017/pbs_2017_table01/030_orakzai_table1.pdf",
+      "publication_code": "030",
+      "role": "census2017_population",
+      "sha256": "cb09008d8c6b64c206fda96cebf4869f734729e99945ebcd193f770a531ff450",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03001.pdf"
+    },
+    {
+      "bytes": 39792,
+      "path": "Census 2017/pbs_2017_table01/031_south_waziristan_table1.pdf",
+      "publication_code": "031",
+      "role": "census2017_population",
+      "sha256": "c1df5c9c0f759412ee483c7a4666a16a94ae2f00f1a73af7726300e019797501",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03101.pdf"
+    },
+    {
+      "bytes": 28294,
+      "path": "Census 2017/pbs_2017_table01/032_bajaur_table1.pdf",
+      "publication_code": "032",
+      "role": "census2017_population",
+      "sha256": "2fb62cd5306617ff499e2b12abbaff8209d6b418d39f6e41aee16555b8a515b7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03201.pdf"
+    },
+    {
+      "bytes": 12192,
+      "path": "Census 2017/pbs_2017_table01/033_fr_bannu_table1.pdf",
+      "publication_code": "033",
+      "role": "census2017_population",
+      "sha256": "84f8f2c7615b6c0ee7b430baa1cc269ac7a714953d122cfc238969f86e05f587",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03301.pdf"
+    },
+    {
+      "bytes": 33220,
+      "path": "Census 2017/pbs_2017_table01/034_fr_dikhan_table1.pdf",
+      "publication_code": "034",
+      "role": "census2017_population",
+      "sha256": "ea2e2033d8a6a23b2e0551dc1b800501e78b3913be4b68eef232912137dbc5dd",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03401.pdf"
+    },
+    {
+      "bytes": 33203,
+      "path": "Census 2017/pbs_2017_table01/035_fr_kohat_table1.pdf",
+      "publication_code": "035",
+      "role": "census2017_population",
+      "sha256": "41bb073c5d9e436f115a387d0892754ea2992575619877430fb930c615d88f6b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03501.pdf"
+    },
+    {
+      "bytes": 33507,
+      "path": "Census 2017/pbs_2017_table01/036_fr_lakki_marwat_table1.pdf",
+      "publication_code": "036",
+      "role": "census2017_population",
+      "sha256": "98e2996e629283d7975338243cec9d8c2246f5c66057f50d557dca05987f0f71",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03601.pdf"
+    },
+    {
+      "bytes": 33124,
+      "path": "Census 2017/pbs_2017_table01/037_fr_peshawar_table1.pdf",
+      "publication_code": "037",
+      "role": "census2017_population",
+      "sha256": "a9a72098a72b708388911c9f3b6493c6abfb4b2a6fd6a1402a73076b7669a5d6",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03701.pdf"
+    },
+    {
+      "bytes": 33053,
+      "path": "Census 2017/pbs_2017_table01/038_fr_tank_table1.pdf",
+      "publication_code": "038",
+      "role": "census2017_population",
+      "sha256": "aa1005a4ac8dbfb4b9442e7e81abc3cf28e669aebb6a50912b2feb1465d5774a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03801.pdf"
+    },
+    {
+      "bytes": 48267,
+      "path": "Census 2017/pbs_2017_table01/039_attock_table1.pdf",
+      "publication_code": "039",
+      "role": "census2017_population",
+      "sha256": "4a7db62a8a78a265975153ce9b38080dddbb5f622072f9174ef57fd4e8a4d7bf",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03901.pdf"
+    },
+    {
+      "bytes": 37545,
+      "path": "Census 2017/pbs_2017_table01/040_chakwal_table1.pdf",
+      "publication_code": "040",
+      "role": "census2017_population",
+      "sha256": "d6afcb8894e5dcc242de67863db623d31815ae06a3917e675a89b6fdb0212fe8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04001.pdf"
+    },
+    {
+      "bytes": 36904,
+      "path": "Census 2017/pbs_2017_table01/041_jhelum_table1.pdf",
+      "publication_code": "041",
+      "role": "census2017_population",
+      "sha256": "9a643a2824fd9cec5254182925b1498648420bb6034e593fad1aaa696246cea0",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04101.pdf"
+    },
+    {
+      "bytes": 39422,
+      "path": "Census 2017/pbs_2017_table01/042_rawalpindi_table1.pdf",
+      "publication_code": "042",
+      "role": "census2017_population",
+      "sha256": "e018277bd0b858236db08c1fed64da8c68de7d7c94e08b95615a3ea3a14e9a92",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04201.pdf"
+    },
+    {
+      "bytes": 40247,
+      "path": "Census 2017/pbs_2017_table01/043_bhakkar_table1.pdf",
+      "publication_code": "043",
+      "role": "census2017_population",
+      "sha256": "d8ff1a71c1327532d7be98a76d9731be272914db276fa0287bb2e9cc9c45e683",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04301.pdf"
+    },
+    {
+      "bytes": 36834,
+      "path": "Census 2017/pbs_2017_table01/044_khushab_table1.pdf",
+      "publication_code": "044",
+      "role": "census2017_population",
+      "sha256": "1cf005af74be6d59a0484bfa77b6d3f27a749bde88228eb279819c0e51cbcea1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04401.pdf"
+    },
+    {
+      "bytes": 39054,
+      "path": "Census 2017/pbs_2017_table01/045_sargodha_table1.pdf",
+      "publication_code": "045",
+      "role": "census2017_population",
+      "sha256": "95862e5907c01b59edf87e16e5a4653ad622250a31c1a62f26b3e727ff4d299c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04501.pdf"
+    },
+    {
+      "bytes": 36048,
+      "path": "Census 2017/pbs_2017_table01/046_mianwali_table1.pdf",
+      "publication_code": "046",
+      "role": "census2017_population",
+      "sha256": "d7f0eac417262e8c760200f38efa19b50ad82e2c9e017b5dbf7abd9d547458f6",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04601.pdf"
+    },
+    {
+      "bytes": 39234,
+      "path": "Census 2017/pbs_2017_table01/047_gujranwala_table1.pdf",
+      "publication_code": "047",
+      "role": "census2017_population",
+      "sha256": "6fc1a0a4e2b690a2a581ae7ae75597ce4f9fedf5be940c30a0cb69b976f12f7a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04701.pdf"
+    },
+    {
+      "bytes": 36194,
+      "path": "Census 2017/pbs_2017_table01/048_gujrat_table1.pdf",
+      "publication_code": "048",
+      "role": "census2017_population",
+      "sha256": "247b6aab7825456119b60e6191ff3ad830a19e288dcbe72c76a5f084afa9e02e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04801.pdf"
+    },
+    {
+      "bytes": 35220,
+      "path": "Census 2017/pbs_2017_table01/049_hafizabad_table1.pdf",
+      "publication_code": "049",
+      "role": "census2017_population",
+      "sha256": "0b8c37e7e03d6cbac4209243de2cb503931ad094a2c76050143607095de4451c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04901.pdf"
+    },
+    {
+      "bytes": 36025,
+      "path": "Census 2017/pbs_2017_table01/050_mandi_bahauddin_table1.pdf",
+      "publication_code": "050",
+      "role": "census2017_population",
+      "sha256": "9ed5747cd2e2c2b30001e06cb13a784c18b92ee288ba1867bee59f4a7f664833",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05001.pdf"
+    },
+    {
+      "bytes": 39358,
+      "path": "Census 2017/pbs_2017_table01/051_narowal_table1.pdf",
+      "publication_code": "051",
+      "role": "census2017_population",
+      "sha256": "824c367622f45e771d4fbf5d5a4daedaefab02f53e1c66c489820f884cfa7215",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05101.pdf"
+    },
+    {
+      "bytes": 36807,
+      "path": "Census 2017/pbs_2017_table01/052_sialkot_table1.pdf",
+      "publication_code": "052",
+      "role": "census2017_population",
+      "sha256": "79103275bd03eff3f0e470f7e240950b4e631098e1b7fe250154f9a259966585",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05201.pdf"
+    },
+    {
+      "bytes": 37654,
+      "path": "Census 2017/pbs_2017_table01/053_lahore_table1.pdf",
+      "publication_code": "053",
+      "role": "census2017_population",
+      "sha256": "fc1c9eb3d28f750ca2cc403949ee093c12dbab0fccdb5b09e3f82a6e7ae18a88",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05301.pdf"
+    },
+    {
+      "bytes": 36873,
+      "path": "Census 2017/pbs_2017_table01/054_kasur_table1.pdf",
+      "publication_code": "054",
+      "role": "census2017_population",
+      "sha256": "c68e4bec140dab79d07206ec09e9f7ede4ffbfdf5d3e54c40ad94bbd4762b252",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05401.pdf"
+    },
+    {
+      "bytes": 38584,
+      "path": "Census 2017/pbs_2017_table01/055_nankana_sahib_table1.pdf",
+      "publication_code": "055",
+      "role": "census2017_population",
+      "sha256": "a9b768f66d053c8f90dc3b8f59f439f5643c4a56fef5ca682c314c477af8eb66",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05501.pdf"
+    },
+    {
+      "bytes": 37771,
+      "path": "Census 2017/pbs_2017_table01/056_sheikhupura_table1.pdf",
+      "publication_code": "056",
+      "role": "census2017_population",
+      "sha256": "6ffa8f787589a97426b10147048d2129fb54f5f2c5556912bcbbfaeb1c858a6d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05601.pdf"
+    },
+    {
+      "bytes": 38576,
+      "path": "Census 2017/pbs_2017_table01/057_faisalabad_table1.pdf",
+      "publication_code": "057",
+      "role": "census2017_population",
+      "sha256": "9b4dea642fe6f726549aaf2d065b926fd3103285e9b16d6911b33b2577db37fc",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05701.pdf"
+    },
+    {
+      "bytes": 36096,
+      "path": "Census 2017/pbs_2017_table01/058_chiniot_table1.pdf",
+      "publication_code": "058",
+      "role": "census2017_population",
+      "sha256": "ebc7957cf1e9ef2c4f3117e1bd449a2cab87ea53e140be2dbb46caae94a2b616",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05801.pdf"
+    },
+    {
+      "bytes": 37021,
+      "path": "Census 2017/pbs_2017_table01/059_jhang_table1.pdf",
+      "publication_code": "059",
+      "role": "census2017_population",
+      "sha256": "24cf9f22881d6bf2030381d06f4e438b631319ec1b02de386590a206f6d73709",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05901.pdf"
+    },
+    {
+      "bytes": 37049,
+      "path": "Census 2017/pbs_2017_table01/060_toba_tek_singh_table1.pdf",
+      "publication_code": "060",
+      "role": "census2017_population",
+      "sha256": "baf8c7e5b6c6a0b32d6d8c47a073c8171a66891781efc2ad08993ac9fb9c1165",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06001.pdf"
+    },
+    {
+      "bytes": 35463,
+      "path": "Census 2017/pbs_2017_table01/061_sahiwal_table1.pdf",
+      "publication_code": "061",
+      "role": "census2017_population",
+      "sha256": "e1de87571df9109f3790fb5cdc5b75288c58ef42fbf598482782f3a4c9baf9af",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06101.pdf"
+    },
+    {
+      "bytes": 36179,
+      "path": "Census 2017/pbs_2017_table01/062_okara_table1.pdf",
+      "publication_code": "062",
+      "role": "census2017_population",
+      "sha256": "4d5048351e51fb3e4fd7c59875d522d910517a5f58bce1069b5bf8d33ab605c2",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06201.pdf"
+    },
+    {
+      "bytes": 85566,
+      "path": "Census 2017/pbs_2017_table01/063_pakpattan_table1.pdf",
+      "publication_code": "063",
+      "role": "census2017_population",
+      "sha256": "78a95ccee1ec3412fa9415a8983780c344609b9512b4c339b4671d67ae76fe6d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06301.pdf"
+    },
+    {
+      "bytes": 47201,
+      "path": "Census 2017/pbs_2017_table01/064_bahawalnagar_table1.pdf",
+      "publication_code": "064",
+      "role": "census2017_population",
+      "sha256": "1ad33a31661ec9ab9e2ecfba37c4c7489c54e4b88e89c9f7a346c2cc1b15455a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06401.pdf"
+    },
+    {
+      "bytes": 38619,
+      "path": "Census 2017/pbs_2017_table01/065_bahawalpur_table1.pdf",
+      "publication_code": "065",
+      "role": "census2017_population",
+      "sha256": "be8a7e1d6859fbafbffd2d21a487d17533d31d492ce9ffbebbcb7295652f630c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06501.pdf"
+    },
+    {
+      "bytes": 36991,
+      "path": "Census 2017/pbs_2017_table01/066_rahim_yar_khan_table1.pdf",
+      "publication_code": "066",
+      "role": "census2017_population",
+      "sha256": "7d21480adb0fa5641d073914eb4249af5e23f34d595a976605056f26bfb66a93",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06601.pdf"
+    },
+    {
+      "bytes": 36870,
+      "path": "Census 2017/pbs_2017_table01/067_dera_ghazi_khan_table1.pdf",
+      "publication_code": "067",
+      "role": "census2017_population",
+      "sha256": "b1f6d8431953284ca1d00e80d491e1a653d1f773414d77363f29eead81130dca",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06701.pdf"
+    },
+    {
+      "bytes": 38260,
+      "path": "Census 2017/pbs_2017_table01/068_rajanpur_table1.pdf",
+      "publication_code": "068",
+      "role": "census2017_population",
+      "sha256": "48802e3b489056f597634dc99f835d6d4025b741a7f0a55b972d8152a994cfd3",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06801.pdf"
+    },
+    {
+      "bytes": 36026,
+      "path": "Census 2017/pbs_2017_table01/069_layyah_table1.pdf",
+      "publication_code": "069",
+      "role": "census2017_population",
+      "sha256": "af69ae09157e747a22a6f4b27e7cd8522d432d38fd45c62492c2c9b531934495",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06901.pdf"
+    },
+    {
+      "bytes": 37089,
+      "path": "Census 2017/pbs_2017_table01/070_muzaffargarh_table1.pdf",
+      "publication_code": "070",
+      "role": "census2017_population",
+      "sha256": "d7c37b9cffa412e4e9ba3d88d1f5ac52da8053e9280e6f3bcc4569df2320f69b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07001.pdf"
+    },
+    {
+      "bytes": 37045,
+      "path": "Census 2017/pbs_2017_table01/071_multan_table1.pdf",
+      "publication_code": "071",
+      "role": "census2017_population",
+      "sha256": "d33e0f27324e1275cb990f225adadc1030330e097669f8e05e847f87b0fe9c23",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07101.pdf"
+    },
+    {
+      "bytes": 37150,
+      "path": "Census 2017/pbs_2017_table01/072_khanewal_table1.pdf",
+      "publication_code": "072",
+      "role": "census2017_population",
+      "sha256": "a062962350120bfda6479dd171b312f7877233c2d3152863f5588cb8f1454ddb",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07201.pdf"
+    },
+    {
+      "bytes": 36161,
+      "path": "Census 2017/pbs_2017_table01/073_lodhran_table1.pdf",
+      "publication_code": "073",
+      "role": "census2017_population",
+      "sha256": "b15da82a2a6eca36a7651bc68887a2ce44f59da4506e2aaaeadcc729cd6d4682",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07301.pdf"
+    },
+    {
+      "bytes": 36057,
+      "path": "Census 2017/pbs_2017_table01/074_vehari_table1.pdf",
+      "publication_code": "074",
+      "role": "census2017_population",
+      "sha256": "bed40073ae2b8e68afb47e1c8ca7a757b0c24401f3383c914e30a68a6bcbebe7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07401.pdf"
+    },
+    {
+      "bytes": 36380,
+      "path": "Census 2017/pbs_2017_table01/075_jacobabad_table1.pdf",
+      "publication_code": "075",
+      "role": "census2017_population",
+      "sha256": "95140d1271933a51f22aabd4be553c0f70089fbf8722df0127f3469d84cf643c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07501.pdf"
+    },
+    {
+      "bytes": 36060,
+      "path": "Census 2017/pbs_2017_table01/076_kashmor_table1.pdf",
+      "publication_code": "076",
+      "role": "census2017_population",
+      "sha256": "41035d9d509731984a0cf1e6257bdb36e2e00ad26ec9cb717b68ab718216ce57",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07601.pdf"
+    },
+    {
+      "bytes": 39633,
+      "path": "Census 2017/pbs_2017_table01/077_kambar_shahdad_kot_table1.pdf",
+      "publication_code": "077",
+      "role": "census2017_population",
+      "sha256": "8fce2bf1987ec50480c70b6406c228bcfaba926355490b347cbc00f42f4952fe",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07701.pdf"
+    },
+    {
+      "bytes": 36779,
+      "path": "Census 2017/pbs_2017_table01/078_larkana_table1.pdf",
+      "publication_code": "078",
+      "role": "census2017_population",
+      "sha256": "6edab5f4f1183a330d7ffc81be14e9994aefb83c2da60b75a2e4c7ee07d6586c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07801.pdf"
+    },
+    {
+      "bytes": 36840,
+      "path": "Census 2017/pbs_2017_table01/079_shikarpur_table1.pdf",
+      "publication_code": "079",
+      "role": "census2017_population",
+      "sha256": "24213384f6de12d09d9a4297a773f18393beb7ad70da80305db074fbfe4f72b5",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07901.pdf"
+    },
+    {
+      "bytes": 37605,
+      "path": "Census 2017/pbs_2017_table01/080_ghotki_table1.pdf",
+      "publication_code": "080",
+      "role": "census2017_population",
+      "sha256": "159f43c1f71162387df3708482aaacc9407394cd092c07259db402541f17df30",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08001.pdf"
+    },
+    {
+      "bytes": 40108,
+      "path": "Census 2017/pbs_2017_table01/081_khairpur_table1.pdf",
+      "publication_code": "081",
+      "role": "census2017_population",
+      "sha256": "cfd799b532b9e445a43280075bd0b872bae7e991126c7827b8bfc952ea8ec528",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08101.pdf"
+    },
+    {
+      "bytes": 37797,
+      "path": "Census 2017/pbs_2017_table01/082_sukkur_table1.pdf",
+      "publication_code": "082",
+      "role": "census2017_population",
+      "sha256": "9d9258af44c0a2718011e6056ebbc81bac2752222061a34f7bda4715d16a26a7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08201.pdf"
+    },
+    {
+      "bytes": 37682,
+      "path": "Census 2017/pbs_2017_table01/083_badin_table1.pdf",
+      "publication_code": "083",
+      "role": "census2017_population",
+      "sha256": "fd64c120814acfdde2e62e606b3f2c6fae732bb4cc41ca94c05ecd8753f02ec3",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08301.pdf"
+    },
+    {
+      "bytes": 36874,
+      "path": "Census 2017/pbs_2017_table01/084_dadu_table1.pdf",
+      "publication_code": "084",
+      "role": "census2017_population",
+      "sha256": "ca781a3b45b862a9043a424d9e154b535ccafa9a9018db5be5b4c813dd6b5d1c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08401.pdf"
+    },
+    {
+      "bytes": 36770,
+      "path": "Census 2017/pbs_2017_table01/085_hyderabad_table1.pdf",
+      "publication_code": "085",
+      "role": "census2017_population",
+      "sha256": "0e10e69285a58f5929d3c89fc2695256e213043acf49f2a95b05a5867714873e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08501.pdf"
+    },
+    {
+      "bytes": 37088,
+      "path": "Census 2017/pbs_2017_table01/086_jamshoro_table1.pdf",
+      "publication_code": "086",
+      "role": "census2017_population",
+      "sha256": "301b613f14417924c3a3b1d23032143672d6897539c4d59e581086444e82a8b7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08601.pdf"
+    },
+    {
+      "bytes": 36139,
+      "path": "Census 2017/pbs_2017_table01/087_matiari_table1.pdf",
+      "publication_code": "087",
+      "role": "census2017_population",
+      "sha256": "54adda09469b61ccb964cdaccf573d00f83a23a52872c73238fbcfe5b8cfa94d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08701.pdf"
+    },
+    {
+      "bytes": 37860,
+      "path": "Census 2017/pbs_2017_table01/088_sujawal_table1.pdf",
+      "publication_code": "088",
+      "role": "census2017_population",
+      "sha256": "a0199f73bdf88fe607371f480ce2af24771a51a19527f2047c4d5c412e643369",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08801.pdf"
+    },
+    {
+      "bytes": 36376,
+      "path": "Census 2017/pbs_2017_table01/089_tando_allahyar_table1.pdf",
+      "publication_code": "089",
+      "role": "census2017_population",
+      "sha256": "134480979c66dcf237169f913a1551fd3a8ec006109add0720b80abbf8f5ce59",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08901.pdf"
+    },
+    {
+      "bytes": 36256,
+      "path": "Census 2017/pbs_2017_table01/090_tando_muhammad_khan_table1.pdf",
+      "publication_code": "090",
+      "role": "census2017_population",
+      "sha256": "e8af51d2a397492b9f47dbb1cd42cf7666701fdf4b4a4bf2785a5f107e97a834",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09001.pdf"
+    },
+    {
+      "bytes": 36944,
+      "path": "Census 2017/pbs_2017_table01/091_thatta_table1.pdf",
+      "publication_code": "091",
+      "role": "census2017_population",
+      "sha256": "59933fba09e10369669e8d9d2f0c2022fcbe691abd3f49c8c21d678bd487e545",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09101.pdf"
+    },
+    {
+      "bytes": 37605,
+      "path": "Census 2017/pbs_2017_table01/092_karachi_central_table1.pdf",
+      "publication_code": "092",
+      "role": "census2017_population",
+      "sha256": "fccadbc6dcc12c31a39d127241c11600918f1b267fcc4f7c5a44a992c9c7043e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09201.pdf"
+    },
+    {
+      "bytes": 36725,
+      "path": "Census 2017/pbs_2017_table01/093_karachi_east_table1.pdf",
+      "publication_code": "093",
+      "role": "census2017_population",
+      "sha256": "72aa7d9b067f173c787c59f7885e0bd2a20cb51539d50671f06fe562d1f53997",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09301.pdf"
+    },
+    {
+      "bytes": 37274,
+      "path": "Census 2017/pbs_2017_table01/094_karachi_south_table1.pdf",
+      "publication_code": "094",
+      "role": "census2017_population",
+      "sha256": "7985d3002e976199d81b39f5923253a991ba152393e51daa8bac693fac2d77ab",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09401.pdf"
+    },
+    {
+      "bytes": 39285,
+      "path": "Census 2017/pbs_2017_table01/095_karachi_west_table1.pdf",
+      "publication_code": "095",
+      "role": "census2017_population",
+      "sha256": "b6fc883f818b045ea5ad6be008d184e992a97b3c0e5358b0bde4f3e2f362eb97",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09501.pdf"
+    },
+    {
+      "bytes": 36827,
+      "path": "Census 2017/pbs_2017_table01/096_korangi_table1.pdf",
+      "publication_code": "096",
+      "role": "census2017_population",
+      "sha256": "f6975ab1b61dbe2e6bb7d8ac23ef75c8a4af27d7717b0ce24120b1904993310d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09601.pdf"
+    },
+    {
+      "bytes": 38512,
+      "path": "Census 2017/pbs_2017_table01/097_malir_table1.pdf",
+      "publication_code": "097",
+      "role": "census2017_population",
+      "sha256": "478e7ebce96c423f5f44848466de9d3b27d34a296958de2c26a6c94f5821a442",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09701.pdf"
+    },
+    {
+      "bytes": 41517,
+      "path": "Census 2017/pbs_2017_table01/098_mirpur_khas_table1.pdf",
+      "publication_code": "098",
+      "role": "census2017_population",
+      "sha256": "ee83f5b6f70096c23c929a82c39bc9bb3504f3ec7c4f7c215afcaa5391407189",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09801.pdf"
+    },
+    {
+      "bytes": 39210,
+      "path": "Census 2017/pbs_2017_table01/099_tharparkar_table1.pdf",
+      "publication_code": "099",
+      "role": "census2017_population",
+      "sha256": "630e651f8eb5e2061aba9665d603cf20188c4273038ec03e5d91b40714d0ebca",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09901.pdf"
+    },
+    {
+      "bytes": 36862,
+      "path": "Census 2017/pbs_2017_table01/100_umer_kot_table1.pdf",
+      "publication_code": "100",
+      "role": "census2017_population",
+      "sha256": "463fa4abf2834e88bcda6700fdc16a377466247ea6a717dcd6e53d03d9e0c0bd",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10001.pdf"
+    },
+    {
+      "bytes": 38607,
+      "path": "Census 2017/pbs_2017_table01/101_sanghar_table1.pdf",
+      "publication_code": "101",
+      "role": "census2017_population",
+      "sha256": "6af3fa0481554e58d5bd15e8c9291567616afb6b8d80b286db3a5fc19adb4f19",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10101.pdf"
+    },
+    {
+      "bytes": 37673,
+      "path": "Census 2017/pbs_2017_table01/102_naushahro_feroze_table1.pdf",
+      "publication_code": "102",
+      "role": "census2017_population",
+      "sha256": "738532905189daeaa06dd33b8061a7299da44f17abf8ab75a9ef001be341c2d1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10201.pdf"
+    },
+    {
+      "bytes": 36880,
+      "path": "Census 2017/pbs_2017_table01/103_shaheed_benazirabad_table1.pdf",
+      "publication_code": "103",
+      "role": "census2017_population",
+      "sha256": "98597817021f4c6bf30d11dd6730c19d0025bc31d860ed35a9669b331f6653ef",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10301.pdf"
+    },
+    {
+      "bytes": 37614,
+      "path": "Census 2017/pbs_2017_table01/104_awaran_table1.pdf",
+      "publication_code": "104",
+      "role": "census2017_population",
+      "sha256": "848de30340ae59c8ca79ab5de2719ff84d650c4a159b7fbf1d3a35430cd3f820",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10401.pdf"
+    },
+    {
+      "bytes": 41141,
+      "path": "Census 2017/pbs_2017_table01/105_kalat_table1.pdf",
+      "publication_code": "105",
+      "role": "census2017_population",
+      "sha256": "827a1aa36c9d2a313f711fbc60d2ff9b827b1528af8f68fcace3c19a55b581da",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10501.pdf"
+    },
+    {
+      "bytes": 35847,
+      "path": "Census 2017/pbs_2017_table01/106_kharan_table1.pdf",
+      "publication_code": "106",
+      "role": "census2017_population",
+      "sha256": "6a0730685914ca4ff7519bb07c574a3e8a9f53d2a87a8a9a314dca7a55529544",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10601.pdf"
+    },
+    {
+      "bytes": 40486,
+      "path": "Census 2017/pbs_2017_table01/107_khuzdar_table1.pdf",
+      "publication_code": "107",
+      "role": "census2017_population",
+      "sha256": "a31f4756e1c0e1870d7fff93d7a4616ae1476cc73a797efa14891bb4e9adde29",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10701.pdf"
+    },
+    {
+      "bytes": 40743,
+      "path": "Census 2017/pbs_2017_table01/108_lasbela_table1.pdf",
+      "publication_code": "108",
+      "role": "census2017_population",
+      "sha256": "09b8e11cf0166d3d4c9d98a8eb3658a17d71aae405d50afde04f470570644981",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10801.pdf"
+    },
+    {
+      "bytes": 36733,
+      "path": "Census 2017/pbs_2017_table01/109_mastung_table1.pdf",
+      "publication_code": "109",
+      "role": "census2017_population",
+      "sha256": "d2d93cf663390ec2eacfa04ed34fa551bf8451c3afca943abe8f428aa046ac9f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10901.pdf"
+    },
+    {
+      "bytes": 38145,
+      "path": "Census 2017/pbs_2017_table01/110_washuk_table1.pdf",
+      "publication_code": "110",
+      "role": "census2017_population",
+      "sha256": "53e25ef1637b921c601472076064085b6a53903e26a8cc16cbad65fe67af23e4",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11001.pdf"
+    },
+    {
+      "bytes": 37760,
+      "path": "Census 2017/pbs_2017_table01/111_gwadar_table1.pdf",
+      "publication_code": "111",
+      "role": "census2017_population",
+      "sha256": "a5c356ab9213578a624ac76b0f8076e0b2be966b6e0aa4151c12e76083509e6c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11101.pdf"
+    },
+    {
+      "bytes": 39759,
+      "path": "Census 2017/pbs_2017_table01/112_kech_table1.pdf",
+      "publication_code": "112",
+      "role": "census2017_population",
+      "sha256": "c713106588c1927234da2981ce2b89dc83f3a35b1d257e8f884e3b73146e66d4",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11201.pdf"
+    },
+    {
+      "bytes": 36701,
+      "path": "Census 2017/pbs_2017_table01/113_panjgur_table1.pdf",
+      "publication_code": "113",
+      "role": "census2017_population",
+      "sha256": "49f8111fd4ba1b6b8f7d09f846a12e522e9005a3f551faa7231de1aec6a87093",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11301.pdf"
+    },
+    {
+      "bytes": 36357,
+      "path": "Census 2017/pbs_2017_table01/114_jaffarabad_table1.pdf",
+      "publication_code": "114",
+      "role": "census2017_population",
+      "sha256": "69655b189197eb2225c010aeadc8710a6e62825bb2908a4174c7704fa203eb35",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11401.pdf"
+    },
+    {
+      "bytes": 36117,
+      "path": "Census 2017/pbs_2017_table01/115_jhal_magsi_table1.pdf",
+      "publication_code": "115",
+      "role": "census2017_population",
+      "sha256": "5e11e49be0993f88f0557d86ea2551a69f650b0931a2fa086a862f593413c4d7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11501.pdf"
+    },
+    {
+      "bytes": 38124,
+      "path": "Census 2017/pbs_2017_table01/116_kachhi_table1.pdf",
+      "publication_code": "116",
+      "role": "census2017_population",
+      "sha256": "b67e43a0d7ad4586de12dedd7c10a0e7f6e1f9b88fb0c68f29b75602a598a37f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11601.pdf"
+    },
+    {
+      "bytes": 37019,
+      "path": "Census 2017/pbs_2017_table01/117_nasirabad_table1.pdf",
+      "publication_code": "117",
+      "role": "census2017_population",
+      "sha256": "6320f56d5cd4243b1d7790382cc92f07fc88aead5dc2e64564f18e853a1b6e26",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11701.pdf"
+    },
+    {
+      "bytes": 35880,
+      "path": "Census 2017/pbs_2017_table01/118_sohbatpur_table1.pdf",
+      "publication_code": "118",
+      "role": "census2017_population",
+      "sha256": "dd3db021888008da2e633bc0f4108e5d8cc1faf5912dc8adc67ac23fa463e473",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11801.pdf"
+    },
+    {
+      "bytes": 36405,
+      "path": "Census 2017/pbs_2017_table01/119_chagai_table1.pdf",
+      "publication_code": "119",
+      "role": "census2017_population",
+      "sha256": "17ed49452429bd3c7b62c96e390225fa80d0da2121e3c4b3218bb0f8ff6d6c31",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11901.pdf"
+    },
+    {
+      "bytes": 36917,
+      "path": "Census 2017/pbs_2017_table01/120_killa_abdullah_table1.pdf",
+      "publication_code": "120",
+      "role": "census2017_population",
+      "sha256": "5a767e005fa48b1944a6eb14d02577f481175804ea14c916ed0f197a590bfb46",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12001.pdf"
+    },
+    {
+      "bytes": 36380,
+      "path": "Census 2017/pbs_2017_table01/121_nushki_table1.pdf",
+      "publication_code": "121",
+      "role": "census2017_population",
+      "sha256": "b9a976fcefd767126f84a94933f334e117042afc13b899df701f5e305a1ef381",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12101.pdf"
+    },
+    {
+      "bytes": 37575,
+      "path": "Census 2017/pbs_2017_table01/122_pishin_table1.pdf",
+      "publication_code": "122",
+      "role": "census2017_population",
+      "sha256": "ca0d6b9cbc4aac6d6bfa0d3eeb9a7ddc00416d64fee50d66b7f43b19edef614f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12201.pdf"
+    },
+    {
+      "bytes": 39249,
+      "path": "Census 2017/pbs_2017_table01/123_quetta_table1.pdf",
+      "publication_code": "123",
+      "role": "census2017_population",
+      "sha256": "261f04609774fc9d19492edfb3ede26627b35918f0b709c54e041d4aaa887a0a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12301.pdf"
+    },
+    {
+      "bytes": 39803,
+      "path": "Census 2017/pbs_2017_table01/124_dera_bugti_table1.pdf",
+      "publication_code": "124",
+      "role": "census2017_population",
+      "sha256": "dc90124507e2dfef41e190f7837ccd9dd10c49fd1b2d5cca876f7c4010031008",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12401.pdf"
+    },
+    {
+      "bytes": 36096,
+      "path": "Census 2017/pbs_2017_table01/125_harnai_table1.pdf",
+      "publication_code": "125",
+      "role": "census2017_population",
+      "sha256": "d1b7951de6d6dad1eec37502e2a2560e446ee502eba5338d3a78b804d934b71b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12501.pdf"
+    },
+    {
+      "bytes": 37233,
+      "path": "Census 2017/pbs_2017_table01/126_kohlu_table1.pdf",
+      "publication_code": "126",
+      "role": "census2017_population",
+      "sha256": "563fde5324ab9e30bb10f737b15ccdaf566e4b890fea5f3b4749d6c26dd64fe1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12601.pdf"
+    },
+    {
+      "bytes": 36711,
+      "path": "Census 2017/pbs_2017_table01/127_sibi_table1.pdf",
+      "publication_code": "127",
+      "role": "census2017_population",
+      "sha256": "b5ab13399155121b962210b217813ea231e4d8d3fdb66349c651ec961e0fd049",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12701.pdf"
+    },
+    {
+      "bytes": 35335,
+      "path": "Census 2017/pbs_2017_table01/128_ziarat_table1.pdf",
+      "publication_code": "128",
+      "role": "census2017_population",
+      "sha256": "98618f4e2f2952fa7885e8a73b7545b90ddc691f51b732110a267bd7424e8e1e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12801.pdf"
+    },
+    {
+      "bytes": 34182,
+      "path": "Census 2017/pbs_2017_table01/129_barkhan_table1.pdf",
+      "publication_code": "129",
+      "role": "census2017_population",
+      "sha256": "e0531159da9865e1f57365cd46642c75336ca19fc07ceabab8982ee7f06ba67d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12901.pdf"
+    },
+    {
+      "bytes": 38280,
+      "path": "Census 2017/pbs_2017_table01/130_killa_saifullah_table1.pdf",
+      "publication_code": "130",
+      "role": "census2017_population",
+      "sha256": "04495e38e31f7397aa41edf0f3d88e1c15d34c8cf72d69eba2c0890a2b7a5692",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13001.pdf"
+    },
+    {
+      "bytes": 36056,
+      "path": "Census 2017/pbs_2017_table01/131_loralai_table1.pdf",
+      "publication_code": "131",
+      "role": "census2017_population",
+      "sha256": "f80fe1e5e6c806121b03a9341ef32f726fcc2ede59d1d60e74fbff4063d0dbb1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13101.pdf"
+    },
+    {
+      "bytes": 35758,
+      "path": "Census 2017/pbs_2017_table01/132_musakhel_table1.pdf",
+      "publication_code": "132",
+      "role": "census2017_population",
+      "sha256": "0f133509b1086703e2d29cdf438dbdc192763a4babc647bd1af878294ab47e99",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13201.pdf"
+    },
+    {
+      "bytes": 34297,
+      "path": "Census 2017/pbs_2017_table01/133_sherani_table1.pdf",
+      "publication_code": "133",
+      "role": "census2017_population",
+      "sha256": "3f0c9542550a978c5211a2b331a0e4c10bf2dbf8062697595b2679fdb7ba0ef8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13301.pdf"
+    },
+    {
+      "bytes": 38249,
+      "path": "Census 2017/pbs_2017_table01/134_zhob_table1.pdf",
+      "publication_code": "134",
+      "role": "census2017_population",
+      "sha256": "3b65877ddf3ee31b3467c3f965576714747d61b208148e9b50b3b00df15740cc",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13401.pdf"
+    },
+    {
+      "bytes": 34285,
+      "path": "Census 2017/pbs_2017_table01/135_islamabad_table1.pdf",
+      "publication_code": "135",
+      "role": "census2017_population",
+      "sha256": "0a501c00b8d12f35e31d915ef532841b59a2fe196896a45a3e06a5318dd3beb1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13501.pdf"
+    },
+    {
+      "bytes": 29136,
+      "path": "Census 2017/pbs_2017_table01/manifest.csv",
+      "role": "census2017_population_manifest",
+      "sha256": "7abb7a6eb61abaa25d671386ee85a2703faae8cc074a95ee07b05525afd74fef"
+    },
+    {
+      "bytes": 62104,
+      "path": "Census 2017/pbs_2017_table15/001_bannu_table15.pdf",
+      "publication_code": "001",
+      "role": "census2017_education",
+      "sha256": "4cc1b14502e36c14a402f51cf3ebe6d70c86d8b098f0a5cacaa06b410662ed21",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00115.pdf"
+    },
+    {
+      "bytes": 62336,
+      "path": "Census 2017/pbs_2017_table15/002_lakki_marwat_table15.pdf",
+      "publication_code": "002",
+      "role": "census2017_education",
+      "sha256": "a87ae5a31a88337852b77fd36a00f80faa43a43354efa9c0f11110fc98090cf8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00215.pdf"
+    },
+    {
+      "bytes": 66264,
+      "path": "Census 2017/pbs_2017_table15/003_dera_ismail_khan_table15.pdf",
+      "publication_code": "003",
+      "role": "census2017_education",
+      "sha256": "73a7cb894f37c15ae8c82716eab4195d34ffa1f212b4f5b0761c012efd39a2ea",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00315.pdf"
+    },
+    {
+      "bytes": 61963,
+      "path": "Census 2017/pbs_2017_table15/004_tank_table15.pdf",
+      "publication_code": "004",
+      "role": "census2017_education",
+      "sha256": "7abf7190358952189f2fcf0de102477687168ce46567ff6a7d47bd3e7c7be106",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00415.pdf"
+    },
+    {
+      "bytes": 62702,
+      "path": "Census 2017/pbs_2017_table15/005_abbottabad_table15.pdf",
+      "publication_code": "005",
+      "role": "census2017_education",
+      "sha256": "af4f289f86e9a257dfe8918d8e845da50a011e08a19cf34ce572ae5305113852",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00515.pdf"
+    },
+    {
+      "bytes": 60605,
+      "path": "Census 2017/pbs_2017_table15/006_batagram_table15.pdf",
+      "publication_code": "006",
+      "role": "census2017_education",
+      "sha256": "f491aaad2b094a821913486d9b37f312fc04c0c194c6672179b401a66ecbc354",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00615.pdf"
+    },
+    {
+      "bytes": 62702,
+      "path": "Census 2017/pbs_2017_table15/007_haripur_table15.pdf",
+      "publication_code": "007",
+      "role": "census2017_education",
+      "sha256": "55ba25992b19a31fabfd423c8d422c2fa1e1b95440f103074ad3ba5a05e62de1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00715.pdf"
+    },
+    {
+      "bytes": 62670,
+      "path": "Census 2017/pbs_2017_table15/008_mansehra_table15.pdf",
+      "publication_code": "008",
+      "role": "census2017_education",
+      "sha256": "cad59d2bf5899dd5554463f2b253d9755e02681793ed548b26560005178f2538",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00815.pdf"
+    },
+    {
+      "bytes": 59841,
+      "path": "Census 2017/pbs_2017_table15/009_torghar_table15.pdf",
+      "publication_code": "009",
+      "role": "census2017_education",
+      "sha256": "8f1ba2fa7110eaa42cc61f1d7e237ca9ed1a8793cd0b3b4a70743490ce600957",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/00915.pdf"
+    },
+    {
+      "bytes": 53117,
+      "path": "Census 2017/pbs_2017_table15/010_kohistan_table15.pdf",
+      "publication_code": "010",
+      "role": "census2017_education",
+      "sha256": "0c6fcce732ea8025fc20582c85c3b73900bd3f026b1f6768c155dd82bd6882d7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01015.pdf"
+    },
+    {
+      "bytes": 61686,
+      "path": "Census 2017/pbs_2017_table15/011_hangu_table15.pdf",
+      "publication_code": "011",
+      "role": "census2017_education",
+      "sha256": "948532c228a0803c703893bce2aef847796427afe08f9e56171cca62c3769d99",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01115.pdf"
+    },
+    {
+      "bytes": 71107,
+      "path": "Census 2017/pbs_2017_table15/012_karak_table15.pdf",
+      "publication_code": "012",
+      "role": "census2017_education",
+      "sha256": "9522d1e3f035555f3969273c9a5ceaf9ca4972c141676b771493bd17947096d9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01215.pdf"
+    },
+    {
+      "bytes": 66123,
+      "path": "Census 2017/pbs_2017_table15/013_kohat_table15.pdf",
+      "publication_code": "013",
+      "role": "census2017_education",
+      "sha256": "e054abb2d530b5d307c9e8d42ab41eb6dc35aa746bd2c036bbecaaccb453a212",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01315.pdf"
+    },
+    {
+      "bytes": 66069,
+      "path": "Census 2017/pbs_2017_table15/014_mardan_table15.pdf",
+      "publication_code": "014",
+      "role": "census2017_education",
+      "sha256": "6f1ff9d87d62ed5e32e122e1762cd8c29734763423a25ce1d2c39e4f5f387e12",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01415.pdf"
+    },
+    {
+      "bytes": 62654,
+      "path": "Census 2017/pbs_2017_table15/015_swabi_table15.pdf",
+      "publication_code": "015",
+      "role": "census2017_education",
+      "sha256": "df3bbef4c26c405d2fa47a90becece467b6f3b90013518b53cddcdc27a461077",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01515.pdf"
+    },
+    {
+      "bytes": 62188,
+      "path": "Census 2017/pbs_2017_table15/016_charsadda_table15.pdf",
+      "publication_code": "016",
+      "role": "census2017_education",
+      "sha256": "6a8a8a8ce0d00e458dbb66454b8a54301b3521adb217bcbf800ad198e269f119",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01615.pdf"
+    },
+    {
+      "bytes": 62448,
+      "path": "Census 2017/pbs_2017_table15/017_nowshera_table15.pdf",
+      "publication_code": "017",
+      "role": "census2017_education",
+      "sha256": "c19aa3b1d60102cccd8d98eb4bb6e4c173b9752a68493f98d6c4351c2525d322",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01715.pdf"
+    },
+    {
+      "bytes": 63344,
+      "path": "Census 2017/pbs_2017_table15/018_peshawar_table15.pdf",
+      "publication_code": "018",
+      "role": "census2017_education",
+      "sha256": "716db55d1f9b7bc9af17cf9f165664d04ede271182fe13cf6f7580feb041ce24",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01815.pdf"
+    },
+    {
+      "bytes": 60743,
+      "path": "Census 2017/pbs_2017_table15/019_buner_table15.pdf",
+      "publication_code": "019",
+      "role": "census2017_education",
+      "sha256": "b53d6de35dbd9e0d74d709641c495924d351935804cf2a2d2724c5e318d22ab4",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/01915.pdf"
+    },
+    {
+      "bytes": 61857,
+      "path": "Census 2017/pbs_2017_table15/020_chitral_table15.pdf",
+      "publication_code": "020",
+      "role": "census2017_education",
+      "sha256": "509082aa6726b660ef87311fbb76c370652148e64cff72c33d05a84ab0d4c228",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02015.pdf"
+    },
+    {
+      "bytes": 63659,
+      "path": "Census 2017/pbs_2017_table15/021_shangla_table15.pdf",
+      "publication_code": "021",
+      "role": "census2017_education",
+      "sha256": "7b3dd7d57d316776cb5961f7baaa016be8ea71623b23d6e0a0d6839c29df3be2",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02115.pdf"
+    },
+    {
+      "bytes": 66368,
+      "path": "Census 2017/pbs_2017_table15/022_swat_table15.pdf",
+      "publication_code": "022",
+      "role": "census2017_education",
+      "sha256": "04048514491e276713a195218a931ac18e029ad5d9878f42d7d9dbad2b4c3fed",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02215.pdf"
+    },
+    {
+      "bytes": 62301,
+      "path": "Census 2017/pbs_2017_table15/023_lower_dir_table15.pdf",
+      "publication_code": "023",
+      "role": "census2017_education",
+      "sha256": "41170522733eb2a48e1c3c13f45c2aa5f6f32044338de29153ea808b4c43faea",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02315.pdf"
+    },
+    {
+      "bytes": 61194,
+      "path": "Census 2017/pbs_2017_table15/024_upper_dir_table15.pdf",
+      "publication_code": "024",
+      "role": "census2017_education",
+      "sha256": "ceeae75508e201af7bc5ac928e5208b07b62efa2ebfb3036d5614d470679310e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02415.pdf"
+    },
+    {
+      "bytes": 62383,
+      "path": "Census 2017/pbs_2017_table15/025_malakand_protected_area_table15.pdf",
+      "publication_code": "025",
+      "role": "census2017_education",
+      "sha256": "a4761aaf21446c81de5817568ddc7b5c56eb1f0ee2eb3ad2a9fbdac2fe39ac50",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02515.pdf"
+    },
+    {
+      "bytes": 69852,
+      "path": "Census 2017/pbs_2017_table15/026_khyber_table15.pdf",
+      "publication_code": "026",
+      "role": "census2017_education",
+      "sha256": "7ff852f8b8dec143c6ff8e016f7944609d8c6980a82752016a7e6824d19dae7f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02615.pdf"
+    },
+    {
+      "bytes": 62098,
+      "path": "Census 2017/pbs_2017_table15/027_kurram_table15.pdf",
+      "publication_code": "027",
+      "role": "census2017_education",
+      "sha256": "570a3ec2e5cc4abe8b0f022d27fe67a83b03a94a8860ea1d49c1e44d0ca9c98e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02715.pdf"
+    },
+    {
+      "bytes": 63761,
+      "path": "Census 2017/pbs_2017_table15/028_mohmand_table15.pdf",
+      "publication_code": "028",
+      "role": "census2017_education",
+      "sha256": "45088f7e12f010e12e0631b6ef84af43ef71b727f0cf38f59c348e8128c1efaa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02815.pdf"
+    },
+    {
+      "bytes": 61685,
+      "path": "Census 2017/pbs_2017_table15/029_north_waziristan_table15.pdf",
+      "publication_code": "029",
+      "role": "census2017_education",
+      "sha256": "286ed36c61a7c5c33d7dacce021f063e01225031b36b92e83bd1ca45c13e1837",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/02915.pdf"
+    },
+    {
+      "bytes": 60881,
+      "path": "Census 2017/pbs_2017_table15/030_orakzai_table15.pdf",
+      "publication_code": "030",
+      "role": "census2017_education",
+      "sha256": "e1182f0b5ce087df6e6298a11183b9afe5377e35bf38e47161764fbe20faefd9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03015.pdf"
+    },
+    {
+      "bytes": 62611,
+      "path": "Census 2017/pbs_2017_table15/031_south_waziristan_table15.pdf",
+      "publication_code": "031",
+      "role": "census2017_education",
+      "sha256": "42267c46f99f0e82f9620d7ba48d35897ba9f7a5e771a90135a0340a22c76f5f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03115.pdf"
+    },
+    {
+      "bytes": 121116,
+      "path": "Census 2017/pbs_2017_table15/032_bajaur_table15.pdf",
+      "publication_code": "032",
+      "role": "census2017_education",
+      "sha256": "370dc08b6208f272e574cf127c08bff995d628b9c186e89ca8d2499f32fb17e8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03215.pdf"
+    },
+    {
+      "bytes": 119365,
+      "path": "Census 2017/pbs_2017_table15/033_fr_bannu_table15.pdf",
+      "publication_code": "033",
+      "role": "census2017_education",
+      "sha256": "ca9a68777aca99bad7d684ab0becfd55e6f7eab829273c1acf1a10496b0e8ed4",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03315.pdf"
+    },
+    {
+      "bytes": 64234,
+      "path": "Census 2017/pbs_2017_table15/034_fr_dikhan_table15.pdf",
+      "publication_code": "034",
+      "role": "census2017_education",
+      "sha256": "16fa135460190ba80ed078887358e27e07107f4cfa8c0917529d76a97918a71b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03415.pdf"
+    },
+    {
+      "bytes": 65596,
+      "path": "Census 2017/pbs_2017_table15/035_fr_kohat_table15.pdf",
+      "publication_code": "035",
+      "role": "census2017_education",
+      "sha256": "2772c773a68e3d11f7e29a2d443a65758228f0a21bf632ece977abde8f5d5120",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03515.pdf"
+    },
+    {
+      "bytes": 62800,
+      "path": "Census 2017/pbs_2017_table15/036_fr_lakki_marwat_table15.pdf",
+      "publication_code": "036",
+      "role": "census2017_education",
+      "sha256": "b0190cd044b1ddd0f3dc961e6cc2a26364d9db45bf9dca300c183ca2dc8f8284",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03615.pdf"
+    },
+    {
+      "bytes": 61780,
+      "path": "Census 2017/pbs_2017_table15/037_fr_peshawar_table15.pdf",
+      "publication_code": "037",
+      "role": "census2017_education",
+      "sha256": "53cd68112b5aa49541c9c8300c9c82743209bd066abd0cbcec5727575e92aa1d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03715.pdf"
+    },
+    {
+      "bytes": 61143,
+      "path": "Census 2017/pbs_2017_table15/038_fr_tank_table15.pdf",
+      "publication_code": "038",
+      "role": "census2017_education",
+      "sha256": "d19beacd08bb0c5ef4f2e112e9d350defd6d99e4f996192670a1487ab77ced1f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03815.pdf"
+    },
+    {
+      "bytes": 71837,
+      "path": "Census 2017/pbs_2017_table15/039_attock_table15.pdf",
+      "publication_code": "039",
+      "role": "census2017_education",
+      "sha256": "843e59a47897b9ba524c6d8ac9f9081ac203270528e5c666f690bd3ed03d9254",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/03915.pdf"
+    },
+    {
+      "bytes": 62411,
+      "path": "Census 2017/pbs_2017_table15/040_chakwal_table15.pdf",
+      "publication_code": "040",
+      "role": "census2017_education",
+      "sha256": "302f150d82aaad5efec6af42006560ce0bd2d68951732f61e16ed3324d7efb88",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04015.pdf"
+    },
+    {
+      "bytes": 62791,
+      "path": "Census 2017/pbs_2017_table15/041_jhelum_table15.pdf",
+      "publication_code": "041",
+      "role": "census2017_education",
+      "sha256": "78abb780bc647af02fca2488a2236bf24f6591ea80bf69186cf4fb6d4ac14ef9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04115.pdf"
+    },
+    {
+      "bytes": 63328,
+      "path": "Census 2017/pbs_2017_table15/042_rawalpindi_table15.pdf",
+      "publication_code": "042",
+      "role": "census2017_education",
+      "sha256": "de08fa69157affa1d1dc836a311edfff25c175d00bc606281004cac281faf8fe",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04215.pdf"
+    },
+    {
+      "bytes": 63476,
+      "path": "Census 2017/pbs_2017_table15/043_bhakkar_table15.pdf",
+      "publication_code": "043",
+      "role": "census2017_education",
+      "sha256": "dcca85cd261f1202050059e6f77db7c73a0547fcc560b6b11dd16d7030e7724b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04315.pdf"
+    },
+    {
+      "bytes": 62701,
+      "path": "Census 2017/pbs_2017_table15/044_khushab_table15.pdf",
+      "publication_code": "044",
+      "role": "census2017_education",
+      "sha256": "730edba91170db1c281bf9eab057dcac1282c6602496d1470d01595783972603",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04415.pdf"
+    },
+    {
+      "bytes": 72864,
+      "path": "Census 2017/pbs_2017_table15/045_sargodha_table15.pdf",
+      "publication_code": "045",
+      "role": "census2017_education",
+      "sha256": "ee49bb389d1ba2d4fb1652114eb5bb99c975dfd23e01a24ee8e487ff323304bb",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04515.pdf"
+    },
+    {
+      "bytes": 65614,
+      "path": "Census 2017/pbs_2017_table15/046_mianwali_table15.pdf",
+      "publication_code": "046",
+      "role": "census2017_education",
+      "sha256": "e1be2b2f41b7dbb0a27fe43e27a510ad9230c424eb2ccaf97d78ea5ef891d830",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04615.pdf"
+    },
+    {
+      "bytes": 64173,
+      "path": "Census 2017/pbs_2017_table15/047_gujranwala_table15.pdf",
+      "publication_code": "047",
+      "role": "census2017_education",
+      "sha256": "64d0be784f324243c67b04a79e316e168682a5d56390d0715886863b7622bcb8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04715.pdf"
+    },
+    {
+      "bytes": 63236,
+      "path": "Census 2017/pbs_2017_table15/048_gujrat_table15.pdf",
+      "publication_code": "048",
+      "role": "census2017_education",
+      "sha256": "d46745af1cdd5c7414235c287083f163bcc24d71d5ad3acff1ff730199b72492",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04815.pdf"
+    },
+    {
+      "bytes": 62800,
+      "path": "Census 2017/pbs_2017_table15/049_hafizabad_table15.pdf",
+      "publication_code": "049",
+      "role": "census2017_education",
+      "sha256": "98f66952ae2ee90de0d1e5b59c076601442d07e6e8502f68dfd0c0d9296217ed",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/04915.pdf"
+    },
+    {
+      "bytes": 62542,
+      "path": "Census 2017/pbs_2017_table15/050_mandi_bahauddin_table15.pdf",
+      "publication_code": "050",
+      "role": "census2017_education",
+      "sha256": "c13aa582f7dac51498e151fb36f8667e81bc9f9b57b6d087b905a221ba2c9b6d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05015.pdf"
+    },
+    {
+      "bytes": 65556,
+      "path": "Census 2017/pbs_2017_table15/051_narowal_table15.pdf",
+      "publication_code": "051",
+      "role": "census2017_education",
+      "sha256": "e3c7bf3a3d95109b08c36b0c3e56afd869d0d0a1bb22c4ebeb7b5042dc51646c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05115.pdf"
+    },
+    {
+      "bytes": 63477,
+      "path": "Census 2017/pbs_2017_table15/052_sialkot_table15.pdf",
+      "publication_code": "052",
+      "role": "census2017_education",
+      "sha256": "90a14010720f8f9547cdef91e187e6321a6c49d1e7319a8a19f72ffd3bbd86c8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05215.pdf"
+    },
+    {
+      "bytes": 62239,
+      "path": "Census 2017/pbs_2017_table15/053_lahore_table15.pdf",
+      "publication_code": "053",
+      "role": "census2017_education",
+      "sha256": "57f1a2d3d50479cba0858ffdc5d102b33a20e743fbc52f6e413e88f79421bdfb",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05315.pdf"
+    },
+    {
+      "bytes": 63422,
+      "path": "Census 2017/pbs_2017_table15/054_kasur_table15.pdf",
+      "publication_code": "054",
+      "role": "census2017_education",
+      "sha256": "2a7f12c430cf4c5dce9916b4ccfb93736ff8b5801be3bc307dbf9806f71658b0",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05415.pdf"
+    },
+    {
+      "bytes": 66073,
+      "path": "Census 2017/pbs_2017_table15/055_nankana_sahib_table15.pdf",
+      "publication_code": "055",
+      "role": "census2017_education",
+      "sha256": "a3b90561c299193eb632e8357e1ece7952afb6e4f640ac351b6cadf66499e8be",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05515.pdf"
+    },
+    {
+      "bytes": 63442,
+      "path": "Census 2017/pbs_2017_table15/056_sheikhupura_table15.pdf",
+      "publication_code": "056",
+      "role": "census2017_education",
+      "sha256": "0cde327e6ecb7633773eaa65eeeaa489c61d6bd4ec046ab5836f283ba09e1983",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05615.pdf"
+    },
+    {
+      "bytes": 72616,
+      "path": "Census 2017/pbs_2017_table15/057_faisalabad_table15.pdf",
+      "publication_code": "057",
+      "role": "census2017_education",
+      "sha256": "0da6bb9cfc334ee5af8efbef36ea74dcd5ba62881a9623fa4f895ac6118dbe47",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05715.pdf"
+    },
+    {
+      "bytes": 71634,
+      "path": "Census 2017/pbs_2017_table15/058_chiniot_table15.pdf",
+      "publication_code": "058",
+      "role": "census2017_education",
+      "sha256": "3de04af400075993157ba2b795baaf44f3edebd555a1c3abd0d5e02c97e1ce29",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05815.pdf"
+    },
+    {
+      "bytes": 62933,
+      "path": "Census 2017/pbs_2017_table15/059_jhang_table15.pdf",
+      "publication_code": "059",
+      "role": "census2017_education",
+      "sha256": "e4a130177de50493e449d04e9567c337dea2b862fb5c25f5512c52502b9a4d6f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/05915.pdf"
+    },
+    {
+      "bytes": 63138,
+      "path": "Census 2017/pbs_2017_table15/060_toba_tek_singh_table15.pdf",
+      "publication_code": "060",
+      "role": "census2017_education",
+      "sha256": "07c9a4f3a57651a01a2befc145b8279b5478d6f84b3bf7c9632c1a7342b3177b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06015.pdf"
+    },
+    {
+      "bytes": 62567,
+      "path": "Census 2017/pbs_2017_table15/061_sahiwal_table15.pdf",
+      "publication_code": "061",
+      "role": "census2017_education",
+      "sha256": "70e24d152f32622dd2f7a557695d103af7c2abe6e079d07a6131408262023ec9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06115.pdf"
+    },
+    {
+      "bytes": 63233,
+      "path": "Census 2017/pbs_2017_table15/062_okara_table15.pdf",
+      "publication_code": "062",
+      "role": "census2017_education",
+      "sha256": "06cb2844c4bde59b0284e6d3b15a3a806479d3e2027848bf7c9dceeacfaf3da1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06215.pdf"
+    },
+    {
+      "bytes": 63241,
+      "path": "Census 2017/pbs_2017_table15/063_pakpattan_table15.pdf",
+      "publication_code": "063",
+      "role": "census2017_education",
+      "sha256": "5b69a2ad4305c4281fb93699e7ecd8c05c6943c45ecc9e59826c80ceb1ddd553",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06315.pdf"
+    },
+    {
+      "bytes": 72963,
+      "path": "Census 2017/pbs_2017_table15/064_bahawalnagar_table15.pdf",
+      "publication_code": "064",
+      "role": "census2017_education",
+      "sha256": "a3adba1afc1372d229facf89a8967554513ab7fac9614b4cc2a1fa7dd301d78d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06415.pdf"
+    },
+    {
+      "bytes": 66231,
+      "path": "Census 2017/pbs_2017_table15/065_bahawalpur_table15.pdf",
+      "publication_code": "065",
+      "role": "census2017_education",
+      "sha256": "566efd57807c87a3562a7c82ab0db596077885e23101fba1ae76dc95c5f39db5",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06515.pdf"
+    },
+    {
+      "bytes": 63342,
+      "path": "Census 2017/pbs_2017_table15/066_rahim_yar_khan_table15.pdf",
+      "publication_code": "066",
+      "role": "census2017_education",
+      "sha256": "ffe3d8ef171d69195420f5508139540e4257251888941fa1bf740b9d66edb8fa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06615.pdf"
+    },
+    {
+      "bytes": 64939,
+      "path": "Census 2017/pbs_2017_table15/067_dera_ghazi_khan_table15.pdf",
+      "publication_code": "067",
+      "role": "census2017_education",
+      "sha256": "44402b8a4580b635de1575024de5ba60a9125ec48f1d79d38990cc48cfaf16ad",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06715.pdf"
+    },
+    {
+      "bytes": 70212,
+      "path": "Census 2017/pbs_2017_table15/068_rajanpur_table15.pdf",
+      "publication_code": "068",
+      "role": "census2017_education",
+      "sha256": "24c27d62fc4a898c32dbe24050df3685dfbcdb4d3a95b1261b85e6aa6c4822d7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06815.pdf"
+    },
+    {
+      "bytes": 62655,
+      "path": "Census 2017/pbs_2017_table15/069_layyah_table15.pdf",
+      "publication_code": "069",
+      "role": "census2017_education",
+      "sha256": "618bc43b3f8a479c1353f868f85de153b0e13cb4c43b041f885b0d36c06ec0d8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/06915.pdf"
+    },
+    {
+      "bytes": 66494,
+      "path": "Census 2017/pbs_2017_table15/070_muzaffargarh_table15.pdf",
+      "publication_code": "070",
+      "role": "census2017_education",
+      "sha256": "01c20377ebc0de64f4ac503de3d96c93829d2cd8b8aff0e7c2af23bd7e7d675f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07015.pdf"
+    },
+    {
+      "bytes": 63236,
+      "path": "Census 2017/pbs_2017_table15/071_multan_table15.pdf",
+      "publication_code": "071",
+      "role": "census2017_education",
+      "sha256": "305e98bf691d9aa6ef3516f2d1d212c94efa516a61f6954054cbaa87379faf99",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07115.pdf"
+    },
+    {
+      "bytes": 63056,
+      "path": "Census 2017/pbs_2017_table15/072_khanewal_table15.pdf",
+      "publication_code": "072",
+      "role": "census2017_education",
+      "sha256": "178cf94c994639a85f03db9008d209855661e95f0fbf4ee4b82db2e8692bf1fa",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07215.pdf"
+    },
+    {
+      "bytes": 62596,
+      "path": "Census 2017/pbs_2017_table15/073_lodhran_table15.pdf",
+      "publication_code": "073",
+      "role": "census2017_education",
+      "sha256": "cd09bf3b9484424ceccd219d73d73ba6fe7d790b6b0211f34b6377dddd77fa0e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07315.pdf"
+    },
+    {
+      "bytes": 62681,
+      "path": "Census 2017/pbs_2017_table15/074_vehari_table15.pdf",
+      "publication_code": "074",
+      "role": "census2017_education",
+      "sha256": "f8f818175590ca8c46d80de07f64098057b957c2982984016d1dbd79a7f0224c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07415.pdf"
+    },
+    {
+      "bytes": 62420,
+      "path": "Census 2017/pbs_2017_table15/075_jacobabad_table15.pdf",
+      "publication_code": "075",
+      "role": "census2017_education",
+      "sha256": "4a597df2e15557a74a2b83954f8cfa1413a4aa4557ec20fda824dedfdd191a3c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07515.pdf"
+    },
+    {
+      "bytes": 62681,
+      "path": "Census 2017/pbs_2017_table15/076_kashmor_table15.pdf",
+      "publication_code": "076",
+      "role": "census2017_education",
+      "sha256": "4c20e7fe85553e6710c66c2db9e717b00d9cc10b9731c66092f2d57adf094007",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07615.pdf"
+    },
+    {
+      "bytes": 62854,
+      "path": "Census 2017/pbs_2017_table15/077_kambar_shahdad_kot_table15.pdf",
+      "publication_code": "077",
+      "role": "census2017_education",
+      "sha256": "42313aa3796986ec1bbf759115fc8526f746e944e790b229e08f0f63009cd7e1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07715.pdf"
+    },
+    {
+      "bytes": 62999,
+      "path": "Census 2017/pbs_2017_table15/078_larkana_table15.pdf",
+      "publication_code": "078",
+      "role": "census2017_education",
+      "sha256": "619b5033e32e2ebc019197c8aeee6623f120c251691c86eff9331545404f6c5b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07815.pdf"
+    },
+    {
+      "bytes": 62883,
+      "path": "Census 2017/pbs_2017_table15/079_shikarpur_table15.pdf",
+      "publication_code": "079",
+      "role": "census2017_education",
+      "sha256": "d21fb1ad47f4bcf0e28756f67192b55ee3b4fb6b0b5acdfc6d0c1126406599b8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/07915.pdf"
+    },
+    {
+      "bytes": 63002,
+      "path": "Census 2017/pbs_2017_table15/080_ghotki_table15.pdf",
+      "publication_code": "080",
+      "role": "census2017_education",
+      "sha256": "fd7630e9bb4f7bdb08d6fa0c72e990b71d4125b88c0386c6a18874bd598b0852",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08015.pdf"
+    },
+    {
+      "bytes": 62401,
+      "path": "Census 2017/pbs_2017_table15/081_khairpur_table15.pdf",
+      "publication_code": "081",
+      "role": "census2017_education",
+      "sha256": "62efd15c258cee6cfa4b1a482e0d74b74408fe8912050d7a8e59216ce4081880",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08115.pdf"
+    },
+    {
+      "bytes": 63105,
+      "path": "Census 2017/pbs_2017_table15/082_sukkur_table15.pdf",
+      "publication_code": "082",
+      "role": "census2017_education",
+      "sha256": "a40ca4e2f409ee43815b429ded33a960c1bb809f82930aa81442fdd4397cba56",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08215.pdf"
+    },
+    {
+      "bytes": 62491,
+      "path": "Census 2017/pbs_2017_table15/083_badin_table15.pdf",
+      "publication_code": "083",
+      "role": "census2017_education",
+      "sha256": "065ee1d25c8345f9d5a996cd7c27151ad5beee40036fdbd96323061d87625a3c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08315.pdf"
+    },
+    {
+      "bytes": 62512,
+      "path": "Census 2017/pbs_2017_table15/084_dadu_table15.pdf",
+      "publication_code": "084",
+      "role": "census2017_education",
+      "sha256": "2af75645a13b1120bbbfd05a4b17109ef76e0ed46dedb42b094ffa8381fb86e8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08415.pdf"
+    },
+    {
+      "bytes": 65771,
+      "path": "Census 2017/pbs_2017_table15/085_hyderabad_table15.pdf",
+      "publication_code": "085",
+      "role": "census2017_education",
+      "sha256": "280619b41ac892f4b9e3dc94185c5a897c2781538799270642cc688891a74c72",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08515.pdf"
+    },
+    {
+      "bytes": 62753,
+      "path": "Census 2017/pbs_2017_table15/086_jamshoro_table15.pdf",
+      "publication_code": "086",
+      "role": "census2017_education",
+      "sha256": "eb38b5d1a1fd00a224056b6a8f79ca7850024df8a239706cfcf2997185fc0a95",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08615.pdf"
+    },
+    {
+      "bytes": 62250,
+      "path": "Census 2017/pbs_2017_table15/087_matiari_table15.pdf",
+      "publication_code": "087",
+      "role": "census2017_education",
+      "sha256": "b4d4a7bdb49a83b8c028a865017abe9e545129785621f259a816bf012e9a0587",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08715.pdf"
+    },
+    {
+      "bytes": 63785,
+      "path": "Census 2017/pbs_2017_table15/088_sujawal_table15.pdf",
+      "publication_code": "088",
+      "role": "census2017_education",
+      "sha256": "4c5b16fbc46bbbc7240cf674193fb1e47f035b71b5aaf028a7400fbd4e895a20",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08815.pdf"
+    },
+    {
+      "bytes": 62174,
+      "path": "Census 2017/pbs_2017_table15/089_tando_allahyar_table15.pdf",
+      "publication_code": "089",
+      "role": "census2017_education",
+      "sha256": "d5e1a1f79fdc41342bc4ec23ea18a83bea63fc739905fd587cdf14ffa7853e8a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/08915.pdf"
+    },
+    {
+      "bytes": 62375,
+      "path": "Census 2017/pbs_2017_table15/090_tando_muhammad_khan_table15.pdf",
+      "publication_code": "090",
+      "role": "census2017_education",
+      "sha256": "39723103770e6ebb34a3f6b0d4047bed346935e341fe7791dbb9779b79ace767",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09015.pdf"
+    },
+    {
+      "bytes": 61872,
+      "path": "Census 2017/pbs_2017_table15/091_thatta_table15.pdf",
+      "publication_code": "091",
+      "role": "census2017_education",
+      "sha256": "08cbcb14fb546dec6f6a6562d1756785167b55a8a8aeef7a85698e87d11d16ca",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09115.pdf"
+    },
+    {
+      "bytes": 61999,
+      "path": "Census 2017/pbs_2017_table15/092_karachi_central_table15.pdf",
+      "publication_code": "092",
+      "role": "census2017_education",
+      "sha256": "fd53587887fca59ad4691cd2bfc6c576b2f5e090ec34b9caaea4b487a3f3a559",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09215.pdf"
+    },
+    {
+      "bytes": 61806,
+      "path": "Census 2017/pbs_2017_table15/093_karachi_east_table15.pdf",
+      "publication_code": "093",
+      "role": "census2017_education",
+      "sha256": "3652b59799bb1550353cbe7d5ae67c58e3c45fc7c0ca87fe61a842e1af06ffe6",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09315.pdf"
+    },
+    {
+      "bytes": 62210,
+      "path": "Census 2017/pbs_2017_table15/094_karachi_south_table15.pdf",
+      "publication_code": "094",
+      "role": "census2017_education",
+      "sha256": "7559ee6c4ba9f7f833ca5c21703a4db495106d467ea85d82642db3b69ddf54bf",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09415.pdf"
+    },
+    {
+      "bytes": 63262,
+      "path": "Census 2017/pbs_2017_table15/095_karachi_west_table15.pdf",
+      "publication_code": "095",
+      "role": "census2017_education",
+      "sha256": "1ddc0e1b23e818cf8ecce8ffd21508c0a6408bd48079bb4f81771e1f6afd3168",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09515.pdf"
+    },
+    {
+      "bytes": 71655,
+      "path": "Census 2017/pbs_2017_table15/096_korangi_table15.pdf",
+      "publication_code": "096",
+      "role": "census2017_education",
+      "sha256": "a461385445bfdb7dc0dd1d49ce2b29d526bb46bf97cf2c27eac15381e485e078",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09615.pdf"
+    },
+    {
+      "bytes": 62859,
+      "path": "Census 2017/pbs_2017_table15/097_malir_table15.pdf",
+      "publication_code": "097",
+      "role": "census2017_education",
+      "sha256": "5d8ca58c68c28b4e0d252a1d983d8be6ab80c5dbc700d058e11773fc42be1ecf",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09715.pdf"
+    },
+    {
+      "bytes": 62919,
+      "path": "Census 2017/pbs_2017_table15/098_mirpur_khas_table15.pdf",
+      "publication_code": "098",
+      "role": "census2017_education",
+      "sha256": "b51385e28150a08b02db5b1efff91719c0a9c078094d43421a283745ab8fd488",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09815.pdf"
+    },
+    {
+      "bytes": 62647,
+      "path": "Census 2017/pbs_2017_table15/099_tharparkar_table15.pdf",
+      "publication_code": "099",
+      "role": "census2017_education",
+      "sha256": "6743bd141384ea3604ca956b1a1f77e6a4332244c84216d43f5e6b0d1782915f",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/09915.pdf"
+    },
+    {
+      "bytes": 62525,
+      "path": "Census 2017/pbs_2017_table15/100_umer_kot_table15.pdf",
+      "publication_code": "100",
+      "role": "census2017_education",
+      "sha256": "5b34f7c89e931ec74922aa8249dd5166384cd994113680ed70cbb9e8a3b1d695",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10015.pdf"
+    },
+    {
+      "bytes": 62462,
+      "path": "Census 2017/pbs_2017_table15/101_sanghar_table15.pdf",
+      "publication_code": "101",
+      "role": "census2017_education",
+      "sha256": "886b7c7abce3a7cc952c883c3bf52534570d57da3afd93b16e9b49ac4c0e21c0",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10115.pdf"
+    },
+    {
+      "bytes": 63094,
+      "path": "Census 2017/pbs_2017_table15/102_naushahro_feroze_table15.pdf",
+      "publication_code": "102",
+      "role": "census2017_education",
+      "sha256": "bf0e34cf57dcd1d3313a547e187567fa6e5de5b676eb9b104bfc2c8d6f3c188a",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10215.pdf"
+    },
+    {
+      "bytes": 63121,
+      "path": "Census 2017/pbs_2017_table15/103_shaheed_benazirabad_table15.pdf",
+      "publication_code": "103",
+      "role": "census2017_education",
+      "sha256": "8daee309cc3bea3a12e77c34bda61a1846b9712398db63446da677e3667842b1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10315.pdf"
+    },
+    {
+      "bytes": 70512,
+      "path": "Census 2017/pbs_2017_table15/104_awaran_table15.pdf",
+      "publication_code": "104",
+      "role": "census2017_education",
+      "sha256": "21d2e0fb870f84d88da37d2dced453d3d366158a70cafd4a25e80f4fa7147e86",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10415.pdf"
+    },
+    {
+      "bytes": 65085,
+      "path": "Census 2017/pbs_2017_table15/105_kalat_table15.pdf",
+      "publication_code": "105",
+      "role": "census2017_education",
+      "sha256": "3c48002a537fdf8c0242b79e6dca58b2f36fe1e958cae94a0210e9a97e842e75",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10515.pdf"
+    },
+    {
+      "bytes": 64523,
+      "path": "Census 2017/pbs_2017_table15/106_kharan_table15.pdf",
+      "publication_code": "106",
+      "role": "census2017_education",
+      "sha256": "4a178544a6186b0d5b7cca6c55d6dbd6f0749ee6271e81c659402632ea65b5c5",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10615.pdf"
+    },
+    {
+      "bytes": 65837,
+      "path": "Census 2017/pbs_2017_table15/107_khuzdar_table15.pdf",
+      "publication_code": "107",
+      "role": "census2017_education",
+      "sha256": "12bcd2863feb21ec7282fcd8039fd345308aa3a75a254a44120460c1be089661",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10715.pdf"
+    },
+    {
+      "bytes": 64966,
+      "path": "Census 2017/pbs_2017_table15/108_lasbela_table15.pdf",
+      "publication_code": "108",
+      "role": "census2017_education",
+      "sha256": "6e0e1e1f504fa0ec1e0c259cb0c72f0950c9bd10678c7148d8851c0aec3d08a0",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10815.pdf"
+    },
+    {
+      "bytes": 61184,
+      "path": "Census 2017/pbs_2017_table15/109_mastung_table15.pdf",
+      "publication_code": "109",
+      "role": "census2017_education",
+      "sha256": "53fa00c737de1759903c0cd23b5d483a2685031fe95be7f18435b23c9c79712b",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/10915.pdf"
+    },
+    {
+      "bytes": 60807,
+      "path": "Census 2017/pbs_2017_table15/110_washuk_table15.pdf",
+      "publication_code": "110",
+      "role": "census2017_education",
+      "sha256": "00658f2994b9be89eb560b07b4f71154e7744911137de66fde877e46bf0713e7",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11015.pdf"
+    },
+    {
+      "bytes": 61813,
+      "path": "Census 2017/pbs_2017_table15/111_gwadar_table15.pdf",
+      "publication_code": "111",
+      "role": "census2017_education",
+      "sha256": "ff24180a8660eadd75a7517e5d0d5dd4a35c9d06edd105d82da051937dbafa2d",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11115.pdf"
+    },
+    {
+      "bytes": 62672,
+      "path": "Census 2017/pbs_2017_table15/112_kech_table15.pdf",
+      "publication_code": "112",
+      "role": "census2017_education",
+      "sha256": "7f7c62ad663bd712842be510aa423917aee2e325a0aa853daf95621635da40b3",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11215.pdf"
+    },
+    {
+      "bytes": 61831,
+      "path": "Census 2017/pbs_2017_table15/113_panjgur_table15.pdf",
+      "publication_code": "113",
+      "role": "census2017_education",
+      "sha256": "435edad9cd2ea08f67facf5445bd22bc988d8e9bd3e19b4ee1af50873abc78a8",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11315.pdf"
+    },
+    {
+      "bytes": 61722,
+      "path": "Census 2017/pbs_2017_table15/114_jaffarabad_table15.pdf",
+      "publication_code": "114",
+      "role": "census2017_education",
+      "sha256": "aa197e76491f9a2cace4fa3af2226a03d683b96e90860a802ae1084fc69b6f34",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11415.pdf"
+    },
+    {
+      "bytes": 63783,
+      "path": "Census 2017/pbs_2017_table15/115_jhal_magsi_table15.pdf",
+      "publication_code": "115",
+      "role": "census2017_education",
+      "sha256": "78b9e6aeb1a478c2d5b2c65fa9e1a5847924e1067e06e2de8a58cf0f965bfc57",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11515.pdf"
+    },
+    {
+      "bytes": 70632,
+      "path": "Census 2017/pbs_2017_table15/116_kachhi_table15.pdf",
+      "publication_code": "116",
+      "role": "census2017_education",
+      "sha256": "91c4e91f988f5116fab8c506ac3758015764de719e7395447e9e2c3d6b4e5bd4",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11615.pdf"
+    },
+    {
+      "bytes": 64436,
+      "path": "Census 2017/pbs_2017_table15/117_nasirabad_table15.pdf",
+      "publication_code": "117",
+      "role": "census2017_education",
+      "sha256": "4171be00c737894dbe82b374ec591da8afab6a8319eec516b62952b7e9bfd557",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11715.pdf"
+    },
+    {
+      "bytes": 64073,
+      "path": "Census 2017/pbs_2017_table15/118_sohbatpur_table15.pdf",
+      "publication_code": "118",
+      "role": "census2017_education",
+      "sha256": "e76a0acf613f22a6fb64f3b345d4fa46e57fa2f2fc61b2aed35e6e0fd8b1afea",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11815.pdf"
+    },
+    {
+      "bytes": 60866,
+      "path": "Census 2017/pbs_2017_table15/119_chagai_table15.pdf",
+      "publication_code": "119",
+      "role": "census2017_education",
+      "sha256": "c83c9436f3223a7a7dd1f7e2f0d2c931dc583acaffb8ca82981fa37b5391ae46",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/11915.pdf"
+    },
+    {
+      "bytes": 62177,
+      "path": "Census 2017/pbs_2017_table15/120_killa_abdullah_table15.pdf",
+      "publication_code": "120",
+      "role": "census2017_education",
+      "sha256": "9855703f8e71c77eb38ff98dfc37c7be917d28a63b983ea4c41745d6b39d8512",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12015.pdf"
+    },
+    {
+      "bytes": 61671,
+      "path": "Census 2017/pbs_2017_table15/121_nushki_table15.pdf",
+      "publication_code": "121",
+      "role": "census2017_education",
+      "sha256": "1b140325b3878079245a34b9663da6a25d14d27c04f36e261419f870f44ab545",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12115.pdf"
+    },
+    {
+      "bytes": 62589,
+      "path": "Census 2017/pbs_2017_table15/122_pishin_table15.pdf",
+      "publication_code": "122",
+      "role": "census2017_education",
+      "sha256": "ce7c75d05668b48875d6e24e53905f4e21f6a040e701ce81b24748b0a74482ca",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12215.pdf"
+    },
+    {
+      "bytes": 66335,
+      "path": "Census 2017/pbs_2017_table15/123_quetta_table15.pdf",
+      "publication_code": "123",
+      "role": "census2017_education",
+      "sha256": "0eaea531e6538d3f27917aef689f212360d5af692d448c9b2628bdef92312bd1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12315.pdf"
+    },
+    {
+      "bytes": 64486,
+      "path": "Census 2017/pbs_2017_table15/124_dera_bugti_table15.pdf",
+      "publication_code": "124",
+      "role": "census2017_education",
+      "sha256": "f75f2a38081566284cccffebc2ce4298228ba6538a26d3d61f1a488bf3384bbd",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12415.pdf"
+    },
+    {
+      "bytes": 60746,
+      "path": "Census 2017/pbs_2017_table15/125_harnai_table15.pdf",
+      "publication_code": "125",
+      "role": "census2017_education",
+      "sha256": "affe88a97bcb3f9a2f0dabba14817f02c6cdf522ea92c1b652a77e59f6986fb9",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12515.pdf"
+    },
+    {
+      "bytes": 61490,
+      "path": "Census 2017/pbs_2017_table15/126_kohlu_table15.pdf",
+      "publication_code": "126",
+      "role": "census2017_education",
+      "sha256": "18b4886700cf373e49075e78b973acd0c3b7fb13621bdb772e5603bae0ef5963",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12615.pdf"
+    },
+    {
+      "bytes": 64801,
+      "path": "Census 2017/pbs_2017_table15/127_sibi_table15.pdf",
+      "publication_code": "127",
+      "role": "census2017_education",
+      "sha256": "ba4d9eda4a759f78c7fa190804c445fec7077c84d4acb1d35b5056a963dbba91",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12715.pdf"
+    },
+    {
+      "bytes": 64491,
+      "path": "Census 2017/pbs_2017_table15/128_ziarat_table15.pdf",
+      "publication_code": "128",
+      "role": "census2017_education",
+      "sha256": "102fa1b3b07bcd9ba19d37cf123772c6fe2a5e04e00a9babbe46dd1e772796f2",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12815.pdf"
+    },
+    {
+      "bytes": 61596,
+      "path": "Census 2017/pbs_2017_table15/129_barkhan_table15.pdf",
+      "publication_code": "129",
+      "role": "census2017_education",
+      "sha256": "31ab8d3517c792a7d7fe3e4de157a6bef456a7f38dfcdd59b9046540a146f644",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/12915.pdf"
+    },
+    {
+      "bytes": 70781,
+      "path": "Census 2017/pbs_2017_table15/130_killa_saifullah_table15.pdf",
+      "publication_code": "130",
+      "role": "census2017_education",
+      "sha256": "278120b5ccc4f1c8aa52b5dceebce0fd7ea65543a3ee3d477f76ed4daf4c29e1",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13015.pdf"
+    },
+    {
+      "bytes": 61671,
+      "path": "Census 2017/pbs_2017_table15/131_loralai_table15.pdf",
+      "publication_code": "131",
+      "role": "census2017_education",
+      "sha256": "485cc0563ed483dcf74d20fb0702231573529403b33bf8a7de7f4de28791ff2e",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13115.pdf"
+    },
+    {
+      "bytes": 64423,
+      "path": "Census 2017/pbs_2017_table15/132_musakhel_table15.pdf",
+      "publication_code": "132",
+      "role": "census2017_education",
+      "sha256": "41c5f84e5029defc41fef025105cac2c3963d230973b74e9c018a809707ea65c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13215.pdf"
+    },
+    {
+      "bytes": 69444,
+      "path": "Census 2017/pbs_2017_table15/133_sherani_table15.pdf",
+      "publication_code": "133",
+      "role": "census2017_education",
+      "sha256": "a96488a653ee0a944fdf93b3136d7491f53b4f19c8fedbc471231a60863db63c",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13315.pdf"
+    },
+    {
+      "bytes": 65552,
+      "path": "Census 2017/pbs_2017_table15/134_zhob_table15.pdf",
+      "publication_code": "134",
+      "role": "census2017_education",
+      "sha256": "7ae74f6f8b47b9f4e370d37acbb16ba4b9eeacc153fd0e1c1e280a7908e94dd2",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13415.pdf"
+    },
+    {
+      "bytes": 64144,
+      "path": "Census 2017/pbs_2017_table15/135_islamabad_table15.pdf",
+      "publication_code": "135",
+      "role": "census2017_education",
+      "sha256": "6d7c5db78c9e84eb01a7bfa9ded8e2f78de9b9d2e0353de96355992e85856d96",
+      "source_status": "archived_pdf_url_from_local_manifest",
+      "source_url": "https://www.pbs.gov.pk/sites/default/files/population/2017/results/13515.pdf"
+    },
+    {
+      "bytes": 28467,
+      "path": "Census 2017/pbs_2017_table15/manifest.csv",
+      "role": "census2017_education_manifest",
+      "sha256": "bb4892949a78869ac75824cdf73b1edbe0c41ac29cc07a99961173426fbad54c"
+    },
+    {
+      "bytes": 47885,
+      "path": "Census 2023/census2023_all_tables/table_1/table_1_balochistan_districts.csv",
+      "province": "balochistan",
+      "role": "legacy_census2023_population",
+      "sha256": "ad1f9f72fd8f59213f1ac4832bbd91b08f8d87618813be8c03c41c23713133a9",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 1033,
+      "path": "Census 2023/census2023_all_tables/table_1/table_1_islamabad.csv",
+      "province": "islamabad",
+      "role": "legacy_census2023_population",
+      "sha256": "1d01488d4d558d6ccc5854cdcae5f1cfbace3ed3def0a2deee76ca49075d1389",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 45589,
+      "path": "Census 2023/census2023_all_tables/table_1/table_1_kp_districts.csv",
+      "province": "kp",
+      "role": "legacy_census2023_population",
+      "sha256": "3fb70ce47deafcba6bee08cec1f7bdd5a718cacbb149dd0b1cdcaf384e796883",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 50998,
+      "path": "Census 2023/census2023_all_tables/table_1/table_1_punjab_districts.csv",
+      "province": "punjab",
+      "role": "legacy_census2023_population",
+      "sha256": "28740c71f9cb4be0dca9b7d4f0698aaf6ac1bd4922bf48a13940967a8559e03b",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 45099,
+      "path": "Census 2023/census2023_all_tables/table_1/table_1_sindh_districts.csv",
+      "province": "sindh",
+      "role": "legacy_census2023_population",
+      "sha256": "243469c2b46bc451f8e9d6bbe5849344ecad431d50292b24ce84db5ca0b9d41c",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 366315,
+      "path": "Census 2023/census2023_all_tables/table_13/table_13_balochistan_districts.csv",
+      "province": "balochistan",
+      "role": "legacy_census2023_education",
+      "sha256": "932c30e66c42daec19aaf9acc7c7568347d96b7ee920a1813c04aaf68618d2e5",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 13541,
+      "path": "Census 2023/census2023_all_tables/table_13/table_13_islamabad.csv",
+      "province": "islamabad",
+      "role": "legacy_census2023_education",
+      "sha256": "9c70cdb4b39de88dea5b1c3646e57022c94d5a00c06455e1be051efaf90e5ae9",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 406284,
+      "path": "Census 2023/census2023_all_tables/table_13/table_13_kp_districts.csv",
+      "province": "kp",
+      "role": "legacy_census2023_education",
+      "sha256": "7e573caacae18fc20368707219626dcd402d116aac4eb9ea6b1a71cd7da85d61",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 462162,
+      "path": "Census 2023/census2023_all_tables/table_13/table_13_punjab_districts.csv",
+      "province": "punjab",
+      "role": "legacy_census2023_education",
+      "sha256": "550ba56b03964f73bf32b50e2875c79797f3e5480b1a41310bb9b0078848b406",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 181481,
+      "path": "Census 2023/census2023_all_tables/table_13/table_13_sindh_districts.csv",
+      "province": "sindh",
+      "role": "legacy_census2023_education",
+      "sha256": "c491053b9e5e935dcfa9f3be2c13a0e0bca26873f2806a1273f7509cab98ec34",
+      "source_status": "local_extract; exact_original_retrieval_url_and_extraction_history_unverified",
+      "source_url": "https://www.pbs.gov.pk/census/"
+    },
+    {
+      "bytes": 3903,
+      "path": "stage1_sources/2026-09-25-official/retrieval_manifest.json",
+      "role": "census2023_retrieval_manifest",
+      "sha256": "66194d9d0bf7819816cde998d5faa5cb71fa4eebdfcebaabca2fb8eda832c2f7"
+    },
+    {
+      "bytes": 2085560,
+      "path": "stage1_sources/2026-09-25-official/source_page.html",
+      "role": "census2023_source_page",
+      "sha256": "206d10352f70b9ca9a53b1d2074cad6f14c62d0ecab4725e95334aab13965de6"
+    },
+    {
+      "bytes": 627985,
+      "path": "stage1_sources/2026-09-25-official/table_13_balochistan_districts.pdf",
+      "province": "balochistan",
+      "retrieved_at_utc": "2026-09-25T21:20:33.400047+00:00",
+      "role": "census2023_education",
+      "sha256": "800f5e046600b48fdb357272b0f0988d9ccd2cb9ef5265f6ac25e2a8d365b674",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_balochistan_districts.pdf"
+    },
+    {
+      "bytes": 23158,
+      "path": "stage1_sources/2026-09-25-official/table_13_islamabad.pdf",
+      "province": "islamabad",
+      "retrieved_at_utc": "2026-09-25T21:20:32.426594+00:00",
+      "role": "census2023_education",
+      "sha256": "e0d19d0fc1a6541e76216c17dc413746005fe0cfb7a157e6146c3c8f7a4191e1",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_islamabad.pdf"
+    },
+    {
+      "bytes": 655126,
+      "path": "stage1_sources/2026-09-25-official/table_13_kp_districts.pdf",
+      "province": "kp",
+      "retrieved_at_utc": "2026-09-25T21:20:34.938076+00:00",
+      "role": "census2023_education",
+      "sha256": "15fbfa81280f337e19b171bc55c8dfb11f5873ad2cfbc3139f76921e34cfb6e8",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_kp_districts.pdf"
+    },
+    {
+      "bytes": 692898,
+      "path": "stage1_sources/2026-09-25-official/table_13_punjab_districts.pdf",
+      "province": "punjab",
+      "retrieved_at_utc": "2026-09-25T21:20:33.451313+00:00",
+      "role": "census2023_education",
+      "sha256": "41df2a8907602522528c4a0747e78fd99fa2046d5cd12b40015b901a2719f044",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_punjab_districts.pdf"
+    },
+    {
+      "bytes": 592993,
+      "path": "stage1_sources/2026-09-25-official/table_13_sindh_districts.pdf",
+      "province": "sindh",
+      "retrieved_at_utc": "2026-09-25T21:20:37.822627+00:00",
+      "role": "census2023_education",
+      "sha256": "89854ec18d4f08082aeea52a609828f122c93fc103f7e399edac13e19d08cc01",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_13_sindh_districts.pdf"
+    },
+    {
+      "bytes": 592795,
+      "path": "stage1_sources/2026-09-25-official/table_1_balochistan_districts.pdf",
+      "province": "balochistan",
+      "retrieved_at_utc": "2026-09-25T21:20:36.573631+00:00",
+      "role": "census2023_population",
+      "sha256": "e119ee4fab9ab5371101fcbc7613b2914eddef959184c67f3471ce18f3d1a269",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_1_balochistan_districts.pdf"
+    },
+    {
+      "bytes": 17456,
+      "path": "stage1_sources/2026-09-25-official/table_1_islamabad.pdf",
+      "province": "islamabad",
+      "retrieved_at_utc": "2026-09-25T21:20:34.220878+00:00",
+      "role": "census2023_population",
+      "sha256": "8deb2282dd70fc564a863c26c7a0adbd7651379aade08dbcc7f8279426423da3",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_1_islamabad.pdf"
+    },
+    {
+      "bytes": 562894,
+      "path": "stage1_sources/2026-09-25-official/table_1_kp_districts.pdf",
+      "province": "kp",
+      "retrieved_at_utc": "2026-09-25T21:20:42.228313+00:00",
+      "role": "census2023_population",
+      "sha256": "6005edb53117b1f319471ea15646b58ee3b99e0b0e18070766928cdbf79404a5",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_1_kp_districts.pdf"
+    },
+    {
+      "bytes": 571387,
+      "path": "stage1_sources/2026-09-25-official/table_1_punjab_districts.pdf",
+      "province": "punjab",
+      "retrieved_at_utc": "2026-09-25T21:20:36.467085+00:00",
+      "role": "census2023_population",
+      "sha256": "a6d71fcdff9e766bf679b0f084600c2d255028b7be659b048c29351d1731650d",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_1_punjab_districts.pdf"
+    },
+    {
+      "bytes": 517605,
+      "path": "stage1_sources/2026-09-25-official/table_1_sindh_districts.pdf",
+      "province": "sindh",
+      "retrieved_at_utc": "2026-09-25T21:20:37.886118+00:00",
+      "role": "census2023_population",
+      "sha256": "765b0627293a312e6a68ba9a602e55c3af57e459b5fd9fc8a04fcabff4b63f58",
+      "source_status": "official_pdf_archived_with_retrieval_manifest",
+      "source_url": "https://www.pbs.gov.pk/wp-content/uploads/census_tables/tables/table_1_sindh_districts.pdf"
+    }
+  ],
+  "legacy_crosswalk_sha256": "74e77e16a01f4429b80b4802c2127fe9bde81f37a504b97a4c09c82292a1a267",
+  "limitations": [
+    "2017 publication codes are not longitudinal IDs.",
+    "2023 CSVs are legacy comparison inputs; source observations come directly from archived official PDFs.",
+    "No current-file date is used as a source release or retrieval date."
+  ],
+  "schema_version": "census-source-v0.1"
+}

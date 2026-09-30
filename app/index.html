@@ -1,61 +1,12 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html><html lang="en" data-explorer="places"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png"/><meta property="og:type" content="website"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<style>
-:root{--green-900:#0c3a1e;--green-800:#145228;--green-600:#1e6b3e;--gold-500:#d4a017;--gold-400:#e8b92e;--gold-300:#f0cc5a;--slate-700:#3d424d;--slate-600:#505662;--slate-500:#6b7280;--slate-300:#c5cad3;--slate-200:#dfe4df;--slate-100:#f1f2f5;--ink:#17301f;--bg:#faf7ef;--shadow:0 2px 8px rgba(12,58,30,.045)}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
-
-/* ===== Unified site header ===== */
-.site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900,#0c3a1e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,#d4a017);flex-shrink:0}
-.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-.header-logo{height:32px;width:auto}
-.header-text{display:flex;flex-direction:column;line-height:1}
-.header-title{font-size:20px;font-weight:800;color:var(--gold-400,#e8b92e);letter-spacing:-.01em}
-.header-tagline{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
-.header-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.header-link{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.65);background:none;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.15s;text-decoration:none}
-.header-link:hover{color:var(--gold-300,#f0cc5a);border-color:var(--gold-500,#d4a017);background:rgba(255,255,255,.05)}
-.header-link.active{color:var(--green-900,#0c3a1e);background:var(--gold-500,#d4a017);border-color:var(--gold-500,#d4a017)}
-.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px;color:rgba(255,255,255,.7);cursor:pointer}
-.mobile-nav{background:var(--green-800,#145228);padding:8px 16px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
-.mobile-nav.hidden{display:none}
-.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);font-size:14px;font-weight:600;text-decoration:none;border-radius:6px}
-.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:var(--gold-300,#f0cc5a)}
-.mobile-nav-link.active{color:var(--gold-400,#e8b92e)}
-@media(max-width:820px){.header-nav{display:none}.mobile-menu-btn{display:block}}
-
-.hero{width:100%;max-width:1060px;margin:0 auto;padding:32px 28px 0;text-align:center}
-.hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#886608}
-.hero h1{font-size:clamp(26px,3.2vw,32px);font-weight:800;letter-spacing:-.8px;color:var(--green-900);margin:10px auto 13px;line-height:1.18}
-.hero p{font-size:14px;color:var(--slate-600);max-width:66ch;margin:0 auto;line-height:1.65}
-.wrap{width:100%;max-width:1060px;margin:0 auto;padding:29px 28px 34px;flex:1}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-@media(max-width:620px){.cards{grid-template-columns:1fr}}
-.pcard{display:flex;flex-direction:column;align-items:flex-start;background:#fff;border:1px solid var(--slate-200);border-left:4px solid var(--accent);border-radius:12px;padding:22px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:border-color .16s;min-width:0}
-.pcard:hover{border-color:var(--accent)}
-.pcard:focus-visible{outline:3px solid var(--green-600);outline-offset:4px}
-
-.pcard-title{font-size:20px;font-weight:800;color:var(--green-900);letter-spacing:-.35px;line-height:1.3}
-.pcard-tag{font-size:12px;font-weight:600;color:var(--accent-text,var(--accent));margin:4px 0 10px}
-.pcard-desc{font-size:14px;color:var(--slate-600)}
-.pcard-go{padding-top:17px;margin-top:auto;font-size:13px;font-weight:600;color:var(--green-600)}
-.pcard:hover .pcard-go,.pcard:focus-visible .pcard-go{text-decoration:underline;text-underline-offset:4px}
-.foot{max-width:1120px;margin:26px auto 0;padding:0 20px;font-size:12.5px;color:var(--slate-500);text-align:center;line-height:1.7}
-.foot a{color:var(--green-600);font-weight:600}
-
-/* ===== In-flow footer: readable without covering the homepage cards ===== */
-.site-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;padding:12px 20px;background:var(--green-900);color:#b8c8bd;font-size:11px;font-weight:400;line-height:1.6;text-align:center;border-top:1px solid rgba(255,255,255,.08)}
-.site-footer a{color:#dce6df;text-decoration:underline;text-underline-offset:3px}
-.site-footer a:hover{color:var(--gold-300)}
-.footer-sep{color:#b8c8bd}
-@media(max-width:820px){.hero{padding:28px 22px 0}.wrap{padding:24px 22px 28px}}
-@media(max-width:620px){.hero{padding:25px 16px 0}.hero h1{font-size:26px;letter-spacing:-.5px}.hero h1 br{display:none}.wrap{padding:24px 16px 25px}.cards{gap:13px}.pcard{padding:19px}.pcard-go{padding-top:13px}.site-footer{padding:12px 16px}.site-footer .footer-sep{display:none}}
-</style><!-- SEO:START -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=1b7ef2d7"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="assets/css/landing.css?v=1b7ef2d7"/>
+<!-- SEO:START -->
 <title>Data Darbar — Pakistan Census, Trade &amp; Economic Data</title>
 <meta name="description" content="Data Darbar by Adaad brings Pakistan&#x27;s official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes.">
 <link rel="canonical" href="https://darbar.adaad.org/">
@@ -68,45 +19,97 @@ body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/#page", "url": "https://darbar.adaad.org/", "name": "Data Darbar — Pakistan Census, Trade & Economic Data", "description": "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}, {"@type": "WebSite", "@id": "https://darbar.adaad.org/#website", "url": "https://darbar.adaad.org/", "name": "Data Darbar", "alternateName": ["Pakistan in Numbers", "ڈیٹا دربار"], "description": "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes.", "inLanguage": "en", "isPartOf": {"@id": "https://adaad.org/#website"}, "creator": {"@type": "Person", "@id": "https://adaad.org/about/#hiba-sameen", "name": "Hiba Sameen", "url": "https://adaad.org/about/", "sameAs": ["https://github.com/hibasameen", "https://www.linkedin.com/in/hiba-sameen-86750819/", "https://scholar.google.com/citations?user=FaZDLEUAAAAJ"]}, "publisher": {"@type": "Organization", "@id": "https://adaad.org/#publisher", "name": "Adaad", "url": "https://adaad.org/"}}]}</script>
 <!-- SEO:END -->
 </head><body>
+<!-- dd:header -->
 <header class="site-header">
-  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt="Data Darbar"/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in Numbers</span></span></a>
-  <nav class="header-nav"><a href="index.html" class="header-link active">Home</a><div data-dd-nav></div><a href="about.html" class="header-link">About</a><a href="methodology.html" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="header-link">SBP ↗</a></nav>
-  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="header-brand" href="index.html"><img src="assets/img/logo.svg" class="header-logo" alt=""/><span class="header-text"><span class="header-title">Data Darbar</span><span class="header-tagline">Pakistan in numbers</span></span></a>
+  <nav class="header-nav" aria-label="Sections"><a href="places.html" class="header-link">Places</a><a href="finance.html" class="header-link">Economy</a><a href="state.html" class="header-link">State</a><span class="header-sep"></span><a href="datasets/" class="header-link shelf">Catalogue</a><a href="query.html" class="header-link shelf">Query</a><a href="methods.html" class="header-link shelf">Methods</a><a href="about.html" class="header-link shelf">About</a></nav>
+  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 </header>
-<nav id="mobileNav" class="mobile-nav hidden"><a href="index.html" class="mobile-nav-link active">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="about.html" class="mobile-nav-link">About</a><a href="methodology.html" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="mobile-nav-link">SBP ↗</a></nav>
-<div class="hero">
-  <div class="eyebrow">Pakistan in Numbers</div>
-  <h1>Explore Pakistan's census, survey,<br/> trade and macroeconomic data</h1>
-  <p>Official statistics, brought together in interactive maps and charts.<br/>Explore a topic below, then download the data behind it.</p>
-</div>
-<div class="wrap">
-  <div class="cards">
-    <a class="pcard" href="map.html" style="--accent:#1e6b3e">
-      <div class="pcard-body"><h2 class="pcard-title">District &amp; Tehsil Map</h2><div class="pcard-tag">Explore Pakistan, place by place</div><div class="pcard-desc">Census and survey indicators by district, multidimensional poverty, and satellite wealth, population and night-time lights by tehsil, with the Mouza Census of rural facilities. Compare the 2017 and 2023 censuses.</div></div>
-      <div class="pcard-go">Explore the map <span aria-hidden="true">→</span></div>
-    </a>
-    <a class="pcard" href="finance.html" style="--accent:#c0392b">
-      <div class="pcard-body"><h2 class="pcard-title">GDP &amp; Budget</h2><div class="pcard-tag">Output by sector, and the federal budget</div><div class="pcard-desc">Explore economic growth, sector shares and input-output flows, alongside federal receipts and spending.</div></div>
-      <div class="pcard-go">Explore GDP &amp; budget <span aria-hidden="true">→</span></div>
-    </a>
-    <a class="pcard" href="trade.html" style="--accent:#d4a017;--accent-text:#85620b">
-      <div class="pcard-body"><h2 class="pcard-title">Trade Atlas</h2><div class="pcard-tag">What Pakistan buys and sells</div><div class="pcard-desc">Explore imports and exports by sector, 8-digit product and trading partner, and see how trade changes over time.</div></div>
-      <div class="pcard-go">Explore trade <span aria-hidden="true">→</span></div>
-    </a>
-    <a class="pcard" href="money.html" style="--accent:#7a5195">
-      <div class="pcard-body"><h2 class="pcard-title">Monetary &amp; External</h2><div class="pcard-tag">Prices, the rupee and financial flows</div><div class="pcard-desc">Follow inflation, interest rates, the rupee, reserves, the current account, remittances and banking indicators.</div></div>
-      <div class="pcard-go">Explore monetary data <span aria-hidden="true">→</span></div>
-    </a>
-    <a class="pcard" href="datasets/" style="--accent:#0f6e78"><div class="pcard-body"><h2 class="pcard-title">Data Catalogue</h2><div class="pcard-tag">Sources, definitions and downloads</div><div class="pcard-desc">Browse the documented datasets behind the explorers and download tables for your own research.</div></div><div class="pcard-go">Browse datasets <span aria-hidden="true">→</span></div></a>
-    <a class="pcard" href="query.html" style="--accent:#5b3fa8">
-      <div class="pcard-body"><h2 class="pcard-title">Query the Data</h2><div class="pcard-tag">For analysts — SQL, straight in the browser</div><div class="pcard-desc">Query the underlying tables with SQL and download your results. No signup required; queries run in your browser.</div></div>
-      <div class="pcard-go">Open query console <span aria-hidden="true">→</span></div>
-    </a>
+<nav id="mobileNav" class="mobile-nav hidden" aria-label="Sections"><a href="places.html" class="mobile-nav-link">Places</a><a href="finance.html" class="mobile-nav-link">Economy</a><a href="state.html" class="mobile-nav-link">State</a><div class="mobile-nav-label">For analysts</div><a href="datasets/" class="mobile-nav-link">Catalogue</a><a href="query.html" class="mobile-nav-link">Query</a><a href="methods.html" class="mobile-nav-link">Methods</a><a href="about.html" class="mobile-nav-link">About</a></nav>
+<!-- /dd:header -->
+
+<main class="lmain">
+  <div class="lwrap">
+    <div class="lhero">
+      <h1>Pakistan&rsquo;s official statistics, by place, by sector and by institution</h1>
+      <p class="llede">Census, survey, trade and macroeconomic data from PBS and
+        the State Bank, as maps and charts. Every chart downloads as CSV.</p>
+    </div>
+
+    <div class="lcards">
+      <article class="lcard" data-accent="places">
+        <a class="lcard-art" href="places.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M44 58 L70 34 L104 40 L110 72 L78 92 L46 84 Z" fill="var(--green-300)"/><path d="M104 40 L140 30 L164 52 L150 78 L110 72 Z" fill="var(--green-700)"/><path d="M110 72 L150 78 L158 104 L120 114 L78 92 Z" fill="var(--green-400)"/><path d="M22 70 L44 58 L46 84 L30 96 Z" fill="var(--line-strong)"/><path d="M164 52 L192 62 L182 92 L158 104 L150 78 Z" fill="var(--green-200)"/></svg></a>
+        <div class="lcard-body">
+          <h2 class="lcard-title"><a href="places.html">Places</a></h2>
+          <p class="lcard-desc">Every district and tehsil: people, schooling, work, housing, health, poverty, crops and night-time lights.</p>
+          <ul class="lcard-links">
+            <li><a href="places.html">The map</a></li>
+            <li><a href="places.html?lv=district&amp;g=literacy&amp;i=literacy_ratio_all">Literacy</a></li>
+            <li><a href="places.html?lv=district&amp;g=employment&amp;i=lfpr">Work</a></li>
+            <li><a href="places.html?lv=district&amp;g=mpi&amp;i=H">Poverty</a></li>
+            <li><a href="places.html?lv=district&amp;g=crops&amp;i=crop%7C4%7Cproduction_000t">Crops</a></li>
+          </ul>
+          <div class="lcard-stat">156 districts · 649 tehsils · 5,635 indicators</div>
+        </div>
+      </article>
+      <article class="lcard" data-accent="economy">
+        <a class="lcard-art" href="finance.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M20 108 L20 74 L52 56 L84 70 L116 44 L148 62 L180 36 L200 48 L200 108 Z" fill="var(--gold-400)"/><path d="M20 108 L20 92 L52 80 L84 94 L116 74 L148 88 L180 66 L200 76 L200 108 Z" fill="var(--gold-600)"/><path d="M20 108 L20 102 L52 98 L84 104 L116 94 L148 102 L180 90 L200 96 L200 108 Z" fill="var(--gold-800)"/><polyline points="20,74 52,56 84,70 116,44 148,62 180,36 200,48" fill="none" stroke="var(--green-900)" stroke-width="2.5"/></svg></a>
+        <div class="lcard-body">
+          <h2 class="lcard-title"><a href="finance.html">Economy</a></h2>
+          <p class="lcard-desc">Output and growth since 1951, industry, trade by product and partner, prices, the rupee and the external balance.</p>
+          <ul class="lcard-links">
+            <li><a href="finance.html#t=structure">GDP &amp; growth</a></li>
+            <li><a href="finance.html#t=industry">Industry</a></li>
+            <li><a href="finance.html#t=basket">Trade</a></li>
+            <li><a href="finance.html#t=prices">Prices</a></li>
+            <li><a href="finance.html#t=rupee">The rupee</a></li>
+          </ul>
+          <div class="lcard-stat">15 topics · PBS and SBP series</div>
+        </div>
+      </article>
+      <article class="lcard" data-accent="state">
+        <a class="lcard-art" href="state.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 220 130" role="img" aria-label=""><path d="M110 14 L186 44 L34 44 Z" fill="var(--teal-700)"/><circle cx="110" cy="33" r="6" fill="var(--gold-500)"/><rect x="40" y="46" width="140" height="8" fill="var(--teal-500)"/><rect x="50" y="58" width="12" height="40" fill="var(--teal-700)"/><rect x="76" y="58" width="12" height="40" fill="var(--teal-500)"/><rect x="104" y="58" width="12" height="40" fill="var(--teal-700)"/><rect x="132" y="58" width="12" height="40" fill="var(--teal-500)"/><rect x="158" y="58" width="12" height="40" fill="var(--teal-700)"/><rect x="36" y="100" width="148" height="7" fill="var(--teal-300)"/><rect x="28" y="108" width="164" height="7" fill="var(--teal-500)"/><line x1="20" y1="116" x2="200" y2="116" stroke="var(--gold-500)" stroke-width="2.5"/></svg></a>
+        <div class="lcard-body">
+          <h2 class="lcard-title"><a href="state.html">State</a></h2>
+          <p class="lcard-desc">What the state reports about itself: the budget and tax, courts and judges, crime, electricity and disasters.</p>
+          <ul class="lcard-links">
+            <li><a href="state.html?t=tax">Budget &amp; tax</a></li>
+            <li><a href="state.html?t=courts">Courts</a></li>
+            <li><a href="state.html?t=crime">Crime</a></li>
+            <li><a href="state.html?t=discos">Energy</a></li>
+            <li><a href="state.html?t=impacts">Disasters</a></li>
+          </ul>
+          <div class="lcard-stat">43 charts · 13 datasets</div>
+        </div>
+      </article>
+    </div>
+
+    <div class="lshelf">
+      <div class="lshelf-head">
+        <span class="lshelf-eyebrow">For analysts</span>
+        <span class="lshelf-sub">11,073,981 rows in 65 tables · release 2026-09-30</span>
+      </div>
+      <a class="lshelf-item" href="datasets/">
+        <span class="lshelf-title">Data catalogue &rarr;</span>
+        <span class="lshelf-desc">65 documented tables, source notes, CSV and Parquet</span>
+      </a>
+      <a class="lshelf-item" href="query.html">
+        <span class="lshelf-title">Query with SQL &rarr;</span>
+        <span class="lshelf-desc">DuckDB in your browser, no signup</span>
+      </a>
+      <a class="lshelf-item" href="datasets/#fields">
+        <span class="lshelf-title">Dictionary &rarr;</span>
+        <span class="lshelf-desc">Every field in every table, searchable</span>
+      </a>
+    </div>
+
   </div>
-</div>
-<script>document.getElementById("mobileMenuBtn")&&document.getElementById("mobileMenuBtn").addEventListener("click",function(){document.getElementById("mobileNav").classList.toggle("hidden")});</script>
-<script src="assets/js/nav.js"></script>
-<script src="assets/js/modals.js"></script>
-<script src="assets/js/analytics.js"></script>
-<footer class="site-footer"><span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span data-research-links><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="https://adaad.org/">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor</a></span></footer>
+</main>
+
+<!-- dd:footer -->
+<footer class="site-footer">
+  <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
+</footer>
+<!-- /dd:footer -->
+<script src="assets/js/shell.js?v=1b7ef2d7"></script>
 </body></html>

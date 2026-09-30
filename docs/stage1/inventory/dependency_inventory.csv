@@ -1,0 +1,251 @@
+dataset_id,role,path_or_pattern,availability,file_count,evidence
+census2017_population,inputs,raw_data/pbs/Census 2017/pbs_2017_table01,present,136,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,inputs,raw_data/pbs/Census 2017/final tables/table1_combined_2017.csv,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,pipeline,datadarbar/etl/stage1/build_census.py,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,pipeline,datadarbar/etl/build_dataset.py,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,outputs,datadarbar/app/data/districts.json,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,outputs,datadarbar/app/data/census_data.js,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_population,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,"2017 table01 manifest, PDFs and build_dataset.py:load_table1"
+census2017_education,inputs,raw_data/pbs/Census 2017/pbs_2017_table15,present,136,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,inputs,raw_data/pbs/Census 2017/final tables/table15_combined_2017.csv,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,pipeline,datadarbar/etl/stage1/build_census.py,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,pipeline,datadarbar/etl/build_dataset.py,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,outputs,datadarbar/app/data/districts.json,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,outputs,datadarbar/app/data/census_data.js,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_education,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,2017 table15 manifest and PDFs; original extraction candidates in Census 2017 directory
+census2017_other,inputs,raw_data/pbs/Census 2017,present,851,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2017_other,pipeline,datadarbar/etl/build_dataset.py,present,1,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2017_other,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2017_other,outputs,datadarbar/app/data/districts.json,present,1,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2017_other,outputs,datadarbar/app/data/census_data.js,present,1,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2017_other,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,build_dataset.py and archived parsers/manifests; tables 5/12/14/16
+census2023_population,inputs,raw_data/pbs/stage1_sources/2026-09-25-official,present,12,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,inputs,raw_data/pbs/Census 2023/census2023_all_tables/table_1,present,5,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,inputs,raw_data/pbs/Census 2023/census2023_all_tables/xlsx,present,25,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,inputs,raw_data/pbs/Census 2023/final tables/table1_combined_2023.csv,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,pipeline,datadarbar/etl/stage1/build_census.py,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,pipeline,raw_data/pbs/Census 2023/parse and clean 2023 tables.py,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,pipeline,datadarbar/etl/build_dataset.py,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,outputs,datadarbar/app/data/districts.json,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,outputs,datadarbar/app/data/census_data.js,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_population,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,Official PDFs and retrieval manifest; Table 1 headcount footnote; historical extracts compared
+census2023_education,inputs,raw_data/pbs/stage1_sources/2026-09-25-official,present,12,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,inputs,raw_data/pbs/Census 2023/census2023_all_tables/table_13,present,5,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,inputs,raw_data/pbs/Census 2023/census2023_all_tables/xlsx,present,25,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,inputs,raw_data/pbs/Census 2023/final tables/table13_combined_2023.csv,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,pipeline,datadarbar/etl/stage1/build_census.py,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,pipeline,datadarbar/etl/rebuild_education_2023.py,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,pipeline,datadarbar/etl/build_dataset.py,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,outputs,datadarbar/app/data/districts.json,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,outputs,datadarbar/app/data/census_data.js,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_education,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,Official PDFs and retrieval manifest; legacy_extract_comparison.csv; CENSUS_2023_SPLIT_DISTRICTS.md
+census2023_other,inputs,raw_data/pbs/Census 2023,present,118,"Census 2023 local tables, parser source, correction note"
+census2023_other,pipeline,datadarbar/etl/build_dataset.py,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,pipeline,datadarbar/etl/census2023_schooling_by_sex.py,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,pipeline,datadarbar/etl/inline_districts.py,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,outputs,datadarbar/app/data/districts.json,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,outputs,datadarbar/app/data/census_data.js,present,1,"Census 2023 local tables, parser source, correction note"
+census2023_other,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,"Census 2023 local tables, parser source, correction note"
+pslm2019,inputs,raw_data/pbs/Microdata/PSLM 2019-20,present,25,README methodology; build_dataset.py PSLM loaders
+pslm2019,inputs,datadarbar/etl/pslm2019_district_fies.csv,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,pipeline,datadarbar/etl/build_dataset.py,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,pipeline,datadarbar/etl/pslm_sex_education.py,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,outputs,datadarbar/app/data/districts.json,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,outputs,datadarbar/app/data/census_data.js,present,1,README methodology; build_dataset.py PSLM loaders
+pslm2019,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,README methodology; build_dataset.py PSLM loaders
+hies2024,inputs,raw_data/pbs/Microdata/HEIS,present,29,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,inputs,raw_data/crosswalks/hies2425_pcode_district_crosswalk.csv,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,inputs,datadarbar/etl/hies2425_pcode_district_crosswalk.csv,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,pipeline,datadarbar/etl/build_dataset.py,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,outputs,datadarbar/app/data/districts.json,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,outputs,datadarbar/app/data/census_data.js,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+hies2024,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,HIES_CROSSWALK_BUG.md; HIES_DISTRICT_COVERAGE.md
+lfs2020,inputs,raw_data/pbs/Microdata/LFS/LFS2020-21*,present,2,build_dataset.py LFS loaders; README methodology
+lfs2020,pipeline,datadarbar/etl/build_dataset.py,present,1,build_dataset.py LFS loaders; README methodology
+lfs2020,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,build_dataset.py LFS loaders; README methodology
+lfs2020,outputs,datadarbar/app/data/districts.json,present,1,build_dataset.py LFS loaders; README methodology
+lfs2020,outputs,datadarbar/app/data/census_data.js,present,1,build_dataset.py LFS loaders; README methodology
+lfs2020,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,build_dataset.py LFS loaders; README methodology
+lfs2024,inputs,raw_data/pbs/Microdata/LFS/*2024-25*,present,3,build_dataset.py LFS loaders; README methodology
+lfs2024,pipeline,datadarbar/etl/build_dataset.py,present,1,build_dataset.py LFS loaders; README methodology
+lfs2024,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,build_dataset.py LFS loaders; README methodology
+lfs2024,outputs,datadarbar/app/data/districts.json,present,1,build_dataset.py LFS loaders; README methodology
+lfs2024,outputs,datadarbar/app/data/census_data.js,present,1,build_dataset.py LFS loaders; README methodology
+lfs2024,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,build_dataset.py LFS loaders; README methodology
+economic_census,inputs,raw_data/pbs/Economic Census,present,15,build_dataset.py:load_economic_census
+economic_census,pipeline,datadarbar/etl/build_dataset.py,present,1,build_dataset.py:load_economic_census
+economic_census,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,build_dataset.py:load_economic_census
+economic_census,outputs,datadarbar/app/data/districts.json,present,1,build_dataset.py:load_economic_census
+economic_census,outputs,datadarbar/app/data/census_data.js,present,1,build_dataset.py:load_economic_census
+economic_census,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,build_dataset.py:load_economic_census
+pdhs,inputs,raw_data/pbs/Microdata/DHS 2017-18,missing,0,dhs_district.py and README
+pdhs,inputs,datadarbar/etl/dhs_district_indicators.json,present,1,dhs_district.py and README
+pdhs,pipeline,datadarbar/etl/dhs_district.py,present,1,dhs_district.py and README
+pdhs,pipeline,datadarbar/etl/build_dataset.py,present,1,dhs_district.py and README
+pdhs,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,dhs_district.py and README
+pdhs,outputs,datadarbar/app/data/districts.json,present,1,dhs_district.py and README
+pdhs,outputs,datadarbar/app/data/census_data.js,present,1,dhs_district.py and README
+pdhs,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,dhs_district.py and README
+mics,inputs,datadarbar/etl/mics_district_indicators.json,present,1,mics_district.py source notes
+mics,inputs,../Adaad/data/pk-mics-districts,present,46,mics_district.py source notes
+mics,pipeline,datadarbar/etl/mics_district.py,present,1,mics_district.py source notes
+mics,pipeline,datadarbar/etl/build_dataset.py,present,1,mics_district.py source notes
+mics,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,mics_district.py source notes
+mics,outputs,datadarbar/app/data/districts.json,present,1,mics_district.py source notes
+mics,outputs,datadarbar/app/data/census_data.js,present,1,mics_district.py source notes
+mics,outputs,datadarbar/app/data/warehouse/district_indicators.parquet,present,1,mics_district.py source notes
+mpi,inputs,raw_data/pbs/Microdata/PSLM 2019-20,present,25,README poverty methodology and WAREHOUSE.md
+mpi,inputs,datadarbar/app/data/poverty_data.js,present,1,README poverty methodology and WAREHOUSE.md
+mpi,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,README poverty methodology and WAREHOUSE.md
+mpi,outputs,datadarbar/app/data/poverty_data.js,present,1,README poverty methodology and WAREHOUSE.md
+mpi,outputs,datadarbar/app/data/warehouse/mpi_districts.parquet,present,1,README poverty methodology and WAREHOUSE.md
+mouza2020,inputs,datadarbar/etl/mouza2020,present,6,etl/mouza2020/README.md and manual_map.py
+mouza2020,pipeline,datadarbar/etl/mouza2020/build_crosswalk.py,present,1,etl/mouza2020/README.md and manual_map.py
+mouza2020,pipeline,datadarbar/etl/mouza2020/build_payload.py,present,1,etl/mouza2020/README.md and manual_map.py
+mouza2020,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,etl/mouza2020/README.md and manual_map.py
+mouza2020,outputs,datadarbar/app/data/mouza_data.js,present,1,etl/mouza2020/README.md and manual_map.py
+mouza2020,outputs,datadarbar/app/data/warehouse/mouza_crosswalk.parquet,present,1,etl/mouza2020/README.md and manual_map.py
+mouza2020,outputs,datadarbar/app/data/warehouse/mouza_tehsil.parquet,present,1,etl/mouza2020/README.md and manual_map.py
+boundaries,inputs,raw_data/geospatial/boundaries,present,35,workspace boundary attribution files; existing map and crosswalk notes
+boundaries,inputs,datadarbar/app/data/pakistan_districts_province_boundries.geojson,present,1,workspace boundary attribution files; existing map and crosswalk notes
+boundaries,inputs,datadarbar/app/data/tehsils_geo.js,present,1,workspace boundary attribution files; existing map and crosswalk notes
+boundaries,pipeline,raw_data/geospatial/boundaries/Mapping Pakistan Districts.ipynb,present,1,workspace boundary attribution files; existing map and crosswalk notes
+boundaries,outputs,datadarbar/app/data/pakistan_districts_province_boundries.geojson,present,1,workspace boundary attribution files; existing map and crosswalk notes
+boundaries,outputs,datadarbar/app/data/tehsils_geo.js,present,1,workspace boundary attribution files; existing map and crosswalk notes
+rwi,inputs,raw_data/geospatial/ind_pak_relative_wealth_index.csv,present,1,README and warehouse catalogue; VIIRS clip README
+rwi,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,README and warehouse catalogue; VIIRS clip README
+rwi,outputs,datadarbar/app/data/poverty_data.js,present,1,README and warehouse catalogue; VIIRS clip README
+rwi,outputs,datadarbar/app/data/warehouse/tehsil_satellite.parquet,present,1,README and warehouse catalogue; VIIRS clip README
+worldpop,inputs,raw_data/geospatial/pak_ppp_2020_1km_Aggregated_UNadj.tif,present,1,README and warehouse catalogue; VIIRS clip README
+worldpop,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,README and warehouse catalogue; VIIRS clip README
+worldpop,outputs,datadarbar/app/data/poverty_data.js,present,1,README and warehouse catalogue; VIIRS clip README
+worldpop,outputs,datadarbar/app/data/warehouse/tehsil_satellite.parquet,present,1,README and warehouse catalogue; VIIRS clip README
+viirs,inputs,raw_data/geospatial/viirs_pak_clips,present,8,README and warehouse catalogue; VIIRS clip README
+viirs,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,README and warehouse catalogue; VIIRS clip README
+viirs,outputs,datadarbar/app/data/poverty_data.js,present,1,README and warehouse catalogue; VIIRS clip README
+viirs,outputs,datadarbar/app/data/warehouse/tehsil_satellite.parquet,present,1,README and warehouse catalogue; VIIRS clip README
+viirs,outputs,datadarbar/app/data/warehouse/tehsil_nightlights.parquet,present,1,README and warehouse catalogue; VIIRS clip README
+school_registers,inputs,datadarbar/etl/schools,present,15,etl/schools/README.md
+school_registers,inputs,../Adaad/data/pk-school-access,present,338,etl/schools/README.md
+school_registers,pipeline,datadarbar/etl/schools/build_schools_pk.py,present,1,etl/schools/README.md
+school_registers,pipeline,datadarbar/etl/schools/prepare_release.py,present,1,etl/schools/README.md
+school_registers,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,etl/schools/README.md
+school_registers,outputs,datadarbar/app/data/warehouse/schools_pk.parquet,present,1,etl/schools/README.md
+school_registers,outputs,datadarbar/app/data/warehouse/school_layer_coverage.parquet,present,1,etl/schools/README.md
+school_access,inputs,datadarbar/etl/schools,present,15,etl/schools/README.md; catalogue source metadata
+school_access,inputs,../Adaad/data/pk-school-access,present,338,etl/schools/README.md; catalogue source metadata
+school_access,pipeline,datadarbar/etl/schools/build_tehsil_access.py,present,1,etl/schools/README.md; catalogue source metadata
+school_access,pipeline,datadarbar/etl/schools/validate_released_layer.py,present,1,etl/schools/README.md; catalogue source metadata
+school_access,pipeline,datadarbar/etl/schools/build_map_payload.py,present,1,etl/schools/README.md; catalogue source metadata
+school_access,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/poverty_data.js,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_access_district.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_access_tehsil.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_distance_stats.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_validation_district.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_validation_tehsil.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/school_validation_summary.parquet,present,1,etl/schools/README.md; catalogue source metadata
+school_access,outputs,datadarbar/app/data/warehouse/census_enrolment_5_16_by_sex.parquet,present,1,etl/schools/README.md; catalogue source metadata
+health_access,inputs,raw_data/geospatial/map_atlas,present,3,etl/health_access/README.md
+health_access,inputs,datadarbar/etl/health_access,present,4,etl/health_access/README.md
+health_access,inputs,../Adaad/data/pk-health-access,present,49,etl/health_access/README.md
+health_access,pipeline,../Adaad/data/pk-health-access/build.py,present,1,etl/health_access/README.md
+health_access,pipeline,../Adaad/data/pk-health-access/build_tehsils.py,present,1,etl/health_access/README.md
+health_access,pipeline,datadarbar/etl/health_access/build_map_payload.py,present,1,etl/health_access/README.md
+health_access,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,etl/health_access/README.md
+health_access,outputs,datadarbar/app/data/poverty_data.js,present,1,etl/health_access/README.md
+health_access,outputs,datadarbar/app/data/warehouse/health_access_district.parquet,present,1,etl/health_access/README.md
+health_access,outputs,datadarbar/app/data/warehouse/health_access_tehsil.parquet,present,1,etl/health_access/README.md
+trade,inputs,raw_data/trade_data_8digit,present,108,raw manifest; warehouse README; script source
+trade,inputs,data_darbar_warehouse/trade_hs8.parquet,present,1,raw manifest; warehouse README; script source
+trade,pipeline,data_darbar_warehouse/build/build_trade.py,present,1,raw manifest; warehouse README; script source
+trade,pipeline,data_darbar_warehouse/build/build_trade_pdf.py,present,1,raw manifest; warehouse README; script source
+trade,pipeline,data_darbar_warehouse/build/build_trade_extra.py,present,1,raw manifest; warehouse README; script source
+trade,pipeline,data_darbar_warehouse/build/build_econ.py,present,1,raw manifest; warehouse README; script source
+trade,pipeline,data_darbar_warehouse/build/build_econ2.py,present,1,raw manifest; warehouse README; script source
+trade,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,raw manifest; warehouse README; script source
+trade,outputs,datadarbar/app/data/warehouse/trade_hs8.parquet,present,1,raw manifest; warehouse README; script source
+trade,outputs,datadarbar/app/data/econ_trade_extra.json,present,1,raw manifest; warehouse README; script source
+trade,outputs,datadarbar/app/assets/js/econ_data.js,present,1,raw manifest; warehouse README; script source
+national_accounts,inputs,raw_data/national_accounts,present,72,raw manifest; warehouse README; script source
+national_accounts,inputs,data_darbar_warehouse/national_accounts.parquet,present,1,raw manifest; warehouse README; script source
+national_accounts,pipeline,data_darbar_warehouse/build/build_na.py,present,1,raw manifest; warehouse README; script source
+national_accounts,pipeline,data_darbar_warehouse/build/build_structure.py,present,1,raw manifest; warehouse README; script source
+national_accounts,pipeline,data_darbar_warehouse/build/build_io.py,present,1,raw manifest; warehouse README; script source
+national_accounts,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,raw manifest; warehouse README; script source
+national_accounts,outputs,datadarbar/app/data/warehouse/national_accounts.parquet,present,1,raw manifest; warehouse README; script source
+national_accounts,outputs,datadarbar/app/data/econ_structure.json,present,1,raw manifest; warehouse README; script source
+national_accounts,outputs,datadarbar/app/assets/js/econ_data.js,present,1,raw manifest; warehouse README; script source
+budget,inputs,raw_data/budget_documents,present,84,raw manifest; warehouse README; script source
+budget,inputs,data_darbar_warehouse/budget_lines.parquet,present,1,raw manifest; warehouse README; script source
+budget,pipeline,data_darbar_warehouse/build/build_budget.py,present,1,raw manifest; warehouse README; script source
+budget,pipeline,data_darbar_warehouse/build/build_budget_receipts.py,present,1,raw manifest; warehouse README; script source
+budget,pipeline,data_darbar_warehouse/build/build_budget_expenditure.py,present,1,raw manifest; warehouse README; script source
+budget,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,raw manifest; warehouse README; script source
+budget,outputs,datadarbar/app/data/warehouse/budget_lines.parquet,present,1,raw manifest; warehouse README; script source
+budget,outputs,datadarbar/app/data/budget_receipts_detailed.json,present,1,raw manifest; warehouse README; script source
+budget,outputs,datadarbar/app/data/budget_expenditure_detailed.json,present,1,raw manifest; warehouse README; script source
+budget,outputs,datadarbar/app/assets/js/econ_data.js,present,1,raw manifest; warehouse README; script source
+industry,inputs,raw_data/industry_statistics,present,38,raw manifest; warehouse README; script source
+industry,inputs,data_darbar_warehouse/lsm_qim.parquet,present,1,raw manifest; warehouse README; script source
+industry,inputs,data_darbar_warehouse/lsm_sector_indices.parquet,present,1,raw manifest; warehouse README; script source
+industry,pipeline,data_darbar_warehouse/build/build_ind.py,present,1,raw manifest; warehouse README; script source
+industry,pipeline,data_darbar_warehouse/build/build_industry.py,present,1,raw manifest; warehouse README; script source
+industry,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,raw manifest; warehouse README; script source
+industry,outputs,datadarbar/app/data/warehouse/lsm_qim.parquet,present,1,raw manifest; warehouse README; script source
+industry,outputs,datadarbar/app/data/warehouse/lsm_sector_indices.parquet,present,1,raw manifest; warehouse README; script source
+industry,outputs,datadarbar/app/data/econ_industry.json,present,1,raw manifest; warehouse README; script source
+industry,outputs,datadarbar/app/assets/js/econ_data.js,present,1,raw manifest; warehouse README; script source
+sbp,inputs,data_darbar_warehouse/sbp_state,present,80,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,inputs,data_darbar_warehouse/sbp_observations.parquet,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,inputs,data_darbar_warehouse/sbp_series_catalog.parquet,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,pipeline,data_darbar_warehouse/build/build_sbp.py,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,pipeline,datadarbar/etl/build_money.py,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,outputs,datadarbar/app/data/warehouse/sbp_observations.parquet,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,outputs,datadarbar/app/data/warehouse/sbp_series_catalog.parquet,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+sbp,outputs,datadarbar/app/data/money_data.js,present,1,data_darbar_warehouse/SBP_EASYDATA.md
+file_catalog,inputs,raw_data/budget_documents/manifest.csv,present,1,WAREHOUSE.md and local manifests
+file_catalog,inputs,raw_data/national_accounts/manifest.csv,present,1,WAREHOUSE.md and local manifests
+file_catalog,inputs,raw_data/trade_data_8digit/manifest.csv,present,1,WAREHOUSE.md and local manifests
+file_catalog,inputs,data_darbar_warehouse/file_catalog.parquet,present,1,WAREHOUSE.md and local manifests
+file_catalog,pipeline,data_darbar_warehouse/build/assemble.py,present,1,WAREHOUSE.md and local manifests
+file_catalog,pipeline,data_darbar_warehouse/build/finalize.py,present,1,WAREHOUSE.md and local manifests
+file_catalog,pipeline,datadarbar/etl/build_web_warehouse.py,present,1,WAREHOUSE.md and local manifests
+file_catalog,outputs,datadarbar/app/data/warehouse/file_catalog.parquet,present,1,WAREHOUSE.md and local manifests
+nepra,inputs,data_darbar_warehouse/nepra*.parquet,present,11,data_darbar_warehouse/NEPRA.md
+nepra,inputs,../Adaad/SOI Reports,missing,0,data_darbar_warehouse/NEPRA.md
+nepra,inputs,../Adaad/PER,missing,0,data_darbar_warehouse/NEPRA.md
+nepra,inputs,../Adaad/Detail of Generation,missing,0,data_darbar_warehouse/NEPRA.md
+nepra,inputs,../Adaad/SOI Data,missing,0,data_darbar_warehouse/NEPRA.md
+nepra,pipeline,data_darbar_warehouse/build/build_nepra_*.py,present,5,data_darbar_warehouse/NEPRA.md
+nepra,outputs,data_darbar_warehouse/nepra*.parquet,present,11,data_darbar_warehouse/NEPRA.md
+ljcp,inputs,raw_data/ljcp,present,1593,"Local pipeline README, source manifests and quality reports"
+ljcp,inputs,datadarbar/etl/ljcp,present,15,"Local pipeline README, source manifests and quality reports"
+ljcp,pipeline,datadarbar/etl/ljcp/*.py,present,8,"Local pipeline README, source manifests and quality reports"
+ljcp,outputs,data_darbar_warehouse/ljcp,present,213,"Local pipeline README, source manifests and quality reports"
+regional_police,inputs,raw_data/regional_police,present,64,"Local pipeline README, source manifests and quality reports"
+regional_police,inputs,datadarbar/etl/regional_police,present,7,"Local pipeline README, source manifests and quality reports"
+regional_police,pipeline,datadarbar/etl/regional_police/*.py,present,2,"Local pipeline README, source manifests and quality reports"
+regional_police,outputs,data_darbar_warehouse/regional_police,present,40,"Local pipeline README, source manifests and quality reports"
+sindh_police,inputs,raw_data/sindh_police,present,46,"Local pipeline README, source manifests and quality reports"
+sindh_police,inputs,datadarbar/etl/sindh_police,present,8,"Local pipeline README, source manifests and quality reports"
+sindh_police,pipeline,datadarbar/etl/sindh_police/*.py,present,5,"Local pipeline README, source manifests and quality reports"
+sindh_police,outputs,data_darbar_warehouse/sindh_police,present,19,"Local pipeline README, source manifests and quality reports"
+sindh_fir,inputs,raw_data/sindh_fir,present,33,"Local pipeline README, source manifests and quality reports"
+sindh_fir,inputs,datadarbar/etl/sindh_fir,present,8,"Local pipeline README, source manifests and quality reports"
+sindh_fir,pipeline,datadarbar/etl/sindh_fir/*.py,present,2,"Local pipeline README, source manifests and quality reports"
+sindh_fir,outputs,data_darbar_warehouse/sindh_fir,present,26,"Local pipeline README, source manifests and quality reports"
+climate_events,inputs,raw_data/climate_events,present,41,"Local pipeline README, source manifests and quality reports"
+climate_events,inputs,datadarbar/etl/climate_events,present,4,"Local pipeline README, source manifests and quality reports"
+climate_events,pipeline,datadarbar/etl/climate_events/*.py,present,2,"Local pipeline README, source manifests and quality reports"
+climate_events,outputs,data_darbar_warehouse/climate_events,present,15,"Local pipeline README, source manifests and quality reports"
+legacy_pbs_payload,inputs,datadarbar/app/data/pbs_district_indicators.json,present,1,Tracked app/data asset; requires manual lineage review
+legacy_pbs_payload,outputs,datadarbar/app/data/pbs_district_indicators.json,present,1,Tracked app/data asset; requires manual lineage review

@@ -1,0 +1,17 @@
+{
+  "id": "sindh_police_district_fir_daily_ytd",
+  "title": "Sindh Police district daily and year-to-date FIR totals",
+  "publisher": "Sindh Police",
+  "geography": "police_district",
+  "frequency": "daily reports; incomplete recovered coverage",
+  "metrics": ["daily_firs", "ytd_firs"],
+  "status": "extracted_partial_indexed_sources",
+  "coverage_start": "2025-09-15",
+  "coverage_end": "2025-11-07",
+  "report_count": 11,
+  "district_count": 31,
+  "district_date_rows": 341,
+  "census_adm2_join": "not_verified",
+  "original_pdf_access": "blocked",
+  "source_section": "2. FIRs REGISTERED IN SINDH PROVINCE (DAILY BASIS)"
+}

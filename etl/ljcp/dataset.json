@@ -1,0 +1,49 @@
+{
+  "id": "ljcp_judicial_statistics",
+  "title": "LJCP Judicial Statistics of Pakistan",
+  "candidate_tier": 1,
+  "publisher": "Law and Justice Commission of Pakistan",
+  "source_catalog": "sources.json",
+  "annual_years_extracted": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "latest_halfyear": "2025-01-01/2025-06-30",
+  "primary_geography": "reported sessions division or district judicial unit",
+  "default_map_dataset": "district_policy_indicators",
+  "default_map_category": "all",
+  "default_population_basis": "fixed 2023 census benchmark",
+  "annual_gaps": {
+    "2019": "No annual edition located in the inspected current and archived publication catalogues.",
+    "2023_balochistan": "Provincial all/civil/criminal aggregates are available; district chapter has selected category tables but no consolidated district all/civil/criminal flows.",
+    "2025": "Annual edition not located; January-June provincial statistics are retained separately.",
+    "2021_categories_and_staffing": "Scanned edition: only the all/civil/criminal case tables were transcribed; no category tables or staffing.",
+    "2015_2016_2018_2019": "Never listed on LJCP or in any Wayback capture (checked 2026-09-06); treated as unpublished.",
+    "2017": "Exists (Wayback 2021-04-25 capture under the reused 2014 filename); catalogued, not yet retrieved or specified.",
+    "2024_kp_staffing": "Neither 2024 edition prints KP district staffing."
+  },
+  "crosswalk_caveat": "Name matches are provisional. Group complete Chitral, Kohistan and ICT subdivisions before joining population. Balochistan town seats are keyed to their containing map district and two-seat districts are summed. Districts without a court seat in a year (Korangi, Keamari, Sujawal pre-2023, Sherani, Sohbatpur, Washuk pre-2022, Harnai 2020) enter the host division's population denominator and receive no observation; see hosted_districts.",
+  "refresh_policy": "Manual reproducible run; source editions are checksum-pinned. New years and replacement editions require table and geography review. No scheduled scraping is configured.",
+  "category_map_dataset": "district_category_indicators",
+  "categories": [
+    "family",
+    "narcotics",
+    "murder",
+    "bail",
+    "rent",
+    "civil_appeals",
+    "criminal_appeals",
+    "civil_revisions",
+    "criminal_revisions",
+    "sentence_7yr_plus",
+    "hudood",
+    "miscellaneous"
+  ],
+  "population_bases": [
+    "fixed_2023_census_benchmark",
+    "geometric_2017_2023_interpolated_year_end (fallback to fixed 2023 where implied growth is outside 0-6%/yr)"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "release": "2026-09-30",
+  "rows": 125317,
+  "matched_punjab": 37917,
+  "punjab_roster": 38149,
+  "has_coords": 122840,
+  "punjab_has_coords": 38115,
+  "newly_positioned": 1820,
+  "in_analysis_frozen": 118673,
+  "flags": {
+    "historical_2017_point_verified": 37917,
+    "name_differs": 4826,
+    "outside_source_district": 1317,
+    "historical_gender_conflict": 634,
+    "shared_coordinate": 339,
+    "outside_district_polygons": 11
+  },
+  "source_sha256": "74bde4e4fd4f1afdc0d047a6d9b26da486c33d6c8a56401f79f510d77ad61b44",
+  "source_records": 52337,
+  "unmatched_historical_not_added": 14420,
+  "note": "Current roster attributes and published-analysis membership retained. Analysis coordinates preserved in analysis_* fields; derived distance tables remain September snapshots."
+}

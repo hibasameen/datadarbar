@@ -1,3 +1,55 @@
+# School coordinate revision — 30 September 2026
+
+`schools_pk_2026-09-30.csv.gz` is the current school table. The original
+`schools_pk_2026-09.csv.gz` remains the frozen input behind the published analysis.
+
+The revision integrates 37,917 historical Punjab school points from the 2017
+AEPAM layer linked by PIE. It matches the current SIS roster by removing the
+leading `1` from the historical institution ID. This convention is inferred
+from ID and name agreement, not documented in the source metadata. Only matched
+current schools receive coordinates; historical-only records are not appended.
+Current names, gender, level and membership remain intact. All 52,337 source
+records are archived in `punjab_public_schools_2017.json.gz`.
+
+`coord_source_year`, `coord_source_url`, `coord_source_id`, `historical_name`,
+`historical_gender`, `coord_validation` and `coord_review_flags` make the join
+and limitations explicit. The linked positions have been verified. The prior region-level `coord_tier` is retained rather than upgraded.
+Boundary membership is recomputed on the existing district polygons. Shared
+coordinates, name differences, historical gender conflicts and boundary
+conflicts are flagged, not silently discarded or resolved.
+
+The original position and its provenance are preserved in `analysis_lat`,
+`analysis_lng`, `analysis_district_key_boundary`, `analysis_coord_method`,
+`analysis_coord_precision`, `analysis_coord_tier`, `analysis_geocode_match`,
+`analysis_source`, `analysis_source_url` and `analysis_source_vintage`.
+`in_analysis`, `analysis_sex` and `analysis_note` remain the original analysis
+membership and exclusion reason. The companion distance, coverage and validation
+tables below remain September snapshots; they do not describe this revision's
+new coordinates. Use the original CSV or the analysis_* positions to reproduce
+the article. A new distance analysis is a separate calculation.
+
+Rebuild the revision and just its warehouse table:
+
+```
+python3 etl/schools/update_punjab.py \
+  --geojson app/data/pakistan_districts_province_boundries.geojson \
+  --darbar app/data/districts.json --warehouse app/data/warehouse
+python3 etl/build_web_warehouse.py --only schools_pk
+```
+
+Requires pandas, shapely and duckdb. The province-source builder also applies
+the same integration before writing the revised release. The warehouse uses
+`schools_pk_metadata.json` for consistent descriptions in both targeted and full
+rebuilds. See `punjab_integration_report.json` for counts and flags.
+
+Source: https://services3.arcgis.com/t6lYS2Pmd8iVx1fy/arcgis/rest/services/pak_punjab_edu_inst_aepam/FeatureServer/0
+Official map link: https://pie.gov.pk/ (Schools GIS Map).
+The source is publicly downloadable; its ArcGIS licence field is empty.
+
+---
+
+## Original September release documentation (historical)
+
 # The government school layer (release 2026-09)
 
 The tables in this folder are the data behind Adaad's *How far is the girls'

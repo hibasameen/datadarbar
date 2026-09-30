@@ -1,0 +1,272 @@
+[
+  {
+    "crime_category_raw": "Murder",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 1
+  },
+  {
+    "crime_category_raw": "Culpable Homicide (Not amounting to Murder)",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 2
+  },
+  {
+    "crime_category_raw": "Attempt To Murder",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 3
+  },
+  {
+    "crime_category_raw": "Karo Kari",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 4
+  },
+  {
+    "crime_category_raw": "Grievous Hurt",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 5
+  },
+  {
+    "crime_category_raw": "Simple Hurt",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 6
+  },
+  {
+    "crime_category_raw": "Rioting",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 7
+  },
+  {
+    "crime_category_raw": "Assault on Police",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 8
+  },
+  {
+    "crime_category_raw": "Assault on Others",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 9
+  },
+  {
+    "crime_category_raw": "Rape / Zine",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 10
+  },
+  {
+    "crime_category_raw": "Gang Rape",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 11
+  },
+  {
+    "crime_category_raw": "Kidnapping / Abduction",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 12
+  },
+  {
+    "crime_category_raw": "Kidnapping for Ransom",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 13
+  },
+  {
+    "crime_category_raw": "Child Lifting",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 14
+  },
+  {
+    "crime_category_raw": "Suicide",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 15
+  },
+  {
+    "crime_category_raw": "Attempt To Suicide",
+    "category_group": "CRIME AGAINST PERSON",
+    "row_type": "detail",
+    "source_row_index": 16
+  },
+  {
+    "crime_category_raw": "Highway Dacoity",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 17
+  },
+  {
+    "crime_category_raw": "Bank Dacoity",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 18
+  },
+  {
+    "crime_category_raw": "Petrol Pump Dacoity",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 19
+  },
+  {
+    "crime_category_raw": "Other Dacoity",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 20
+  },
+  {
+    "crime_category_raw": "Highway Robbery",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 21
+  },
+  {
+    "crime_category_raw": "Bank Robbery",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 22
+  },
+  {
+    "crime_category_raw": "Petrol Pump Robbery",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 23
+  },
+  {
+    "crime_category_raw": "Other Robbery",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 24
+  },
+  {
+    "crime_category_raw": "Burglary",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 25
+  },
+  {
+    "crime_category_raw": "Car Theft",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 26
+  },
+  {
+    "crime_category_raw": "Car Snatched",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 27
+  },
+  {
+    "crime_category_raw": "Motor Cycle Theft",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 28
+  },
+  {
+    "crime_category_raw": "Motor Cycle Snatched",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 29
+  },
+  {
+    "crime_category_raw": "Other Motor Vehicle Theft",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 30
+  },
+  {
+    "crime_category_raw": "Other Motor Vehicle Snatched",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 31
+  },
+  {
+    "crime_category_raw": "Cattle Theft",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 32
+  },
+  {
+    "crime_category_raw": "Other Theft",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 33
+  },
+  {
+    "crime_category_raw": "Receiving Stolen Property (S 411 PPC)",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 34
+  },
+  {
+    "crime_category_raw": "Theft U/S 382 PPC",
+    "category_group": "CRIME AGAINST PROPERTY",
+    "row_type": "detail",
+    "source_row_index": 35
+  },
+  {
+    "crime_category_raw": "Miscellaneous",
+    "category_group": "Miscellaneous",
+    "row_type": "detail",
+    "source_row_index": 36
+  },
+  {
+    "crime_category_raw": "Fatal",
+    "category_group": "ACCIDENTS",
+    "row_type": "detail",
+    "source_row_index": 37
+  },
+  {
+    "crime_category_raw": "Non Fatal",
+    "category_group": "ACCIDENTS",
+    "row_type": "detail",
+    "source_row_index": 38
+  },
+  {
+    "crime_category_raw": "Prohibition ord.",
+    "category_group": "LOCAL & SPECIAL LAWS",
+    "row_type": "detail",
+    "source_row_index": 39
+  },
+  {
+    "crime_category_raw": "Arms Act",
+    "category_group": "LOCAL & SPECIAL LAWS",
+    "row_type": "detail",
+    "source_row_index": 40
+  },
+  {
+    "crime_category_raw": "Gambling",
+    "category_group": "LOCAL & SPECIAL LAWS",
+    "row_type": "detail",
+    "source_row_index": 41
+  },
+  {
+    "crime_category_raw": "Smuggling",
+    "category_group": "LOCAL & SPECIAL LAWS",
+    "row_type": "detail",
+    "source_row_index": 42
+  },
+  {
+    "crime_category_raw": "Other Local and Special Laws",
+    "category_group": "LOCAL & SPECIAL LAWS",
+    "row_type": "detail",
+    "source_row_index": 43
+  },
+  {
+    "crime_category_raw": "BLASPHEMY (Offences relating to religion)",
+    "category_group": "BLASPHEMY",
+    "row_type": "detail",
+    "source_row_index": 44
+  },
+  {
+    "crime_category_raw": "T O T A L",
+    "category_group": "ALL CRIMES",
+    "row_type": "total",
+    "source_row_index": 45
+  }
+]

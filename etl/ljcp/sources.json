@@ -1,0 +1,119 @@
+[
+  {
+    "id": "halfyear_2024_h1",
+    "source_url": "https://ljcp.gov.pk/SiteImage/Misc/files/3bar%20(2).pdf",
+    "archive_timestamp": "20251022194324",
+    "archive_url": "https://web.archive.org/web/20251022194324id_/https://ljcp.gov.pk/SiteImage/Misc/files/3bar%20(2).pdf",
+    "required_for_build": true,
+    "sha256": "1fc1e4efe36d0bce9706a488224392dd0909c6c005491a5ab2bcc9f0f91769d2",
+    "role": "selected_halfyear"
+  },
+  {
+    "id": "annual_2024",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/6880(25)Judicial%20Statistics%202024%20(22-9-25).pdf",
+    "archive_timestamp": "20251111123208",
+    "archive_url": "https://web.archive.org/web/20251111123208id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/6880(25)Judicial%20Statistics%202024%20(22-9-25).pdf",
+    "required_for_build": true,
+    "sha256": "74304ef85264c12701d420f5c6dbac3f37efe4cc6ffad5f88e22defb0d20dff1",
+    "role": "selected_annual"
+  },
+  {
+    "id": "annual_2024_original",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/6880(25)Judicial%20Statistics%202024.pdf",
+    "archive_timestamp": "20251107151950",
+    "archive_url": "https://web.archive.org/web/20251107151950id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/6880(25)Judicial%20Statistics%202024.pdf",
+    "required_for_build": false,
+    "sha256": "81a19fc9fe0bf82a862efd75878ad000a21604aa042178174b64e1f8a9255ac1",
+    "role": "optional_archive"
+  },
+  {
+    "id": "halfyear_2023_h2",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/bar.pdf",
+    "archive_timestamp": "20251107195632",
+    "archive_url": "https://web.archive.org/web/20251107195632id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/bar.pdf",
+    "required_for_build": false,
+    "role": "optional_archive",
+    "note": "2nd Bi-Annual Report July-December 2023 (province-level district-judiciary totals). Live and archived; not yet retrieved or added to aggregates.py (2026-09-06)."
+  },
+  {
+    "id": "halfyear_2023_h1",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/bar1.pdf",
+    "archive_timestamp": "20251107200740",
+    "archive_url": "https://web.archive.org/web/20251107200740id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/bar1.pdf",
+    "required_for_build": true,
+    "sha256": "ecc56ebf3b45e316111b54873d9857efe7c437ee271ab427a500c94732063aca",
+    "role": "selected_halfyear"
+  },
+  {
+    "id": "halfyear_2024_h2",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/Bi-Annual%20Report%20Jul%20-%20Dec%2024.pdf",
+    "archive_timestamp": "20251107153641",
+    "archive_url": "https://web.archive.org/web/20251107153641id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/Bi-Annual%20Report%20Jul%20-%20Dec%2024.pdf",
+    "required_for_build": true,
+    "sha256": "5fd6432b813ec477ed63696f8f4ab6871d9c441b2bed812d6a289f1f40bc15be",
+    "role": "selected_halfyear"
+  },
+  {
+    "id": "annual_2023",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/F1669(24)Judicial%20Statistics%202023.pdf",
+    "archive_timestamp": "20251107154812",
+    "archive_url": "https://web.archive.org/web/20251107154812id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/F1669(24)Judicial%20Statistics%202023.pdf",
+    "required_for_build": true,
+    "sha256": "b39a194004437517ddf996826ea3113f7bd2225f8a17ddadba5c91ef1f52ec71",
+    "role": "selected_annual"
+  },
+  {
+    "id": "halfyear_2025_h1",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/Jan%20to%20June%202025(1).pdf",
+    "archive_timestamp": "20260202165428",
+    "archive_url": "https://web.archive.org/web/20260202165428id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/Jan%20to%20June%202025(1).pdf",
+    "required_for_build": true,
+    "sha256": "37044747d2a2566729d29ea943bfbcaf4d66f5d131461dbdce8172436b9c48a0",
+    "role": "selected_halfyear"
+  },
+  {
+    "id": "annual_2022",
+    "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/rep2.pdf",
+    "archive_timestamp": "20251107165400",
+    "archive_url": "https://web.archive.org/web/20251107165400id_/https://www.ljcp.gov.pk/SiteImage/Misc/files/rep2.pdf",
+    "required_for_build": true,
+    "sha256": "93d7af33cb8a22ab9bc1737cecb0b26dfd12743d71716da45417a0ac0c19ec08",
+    "role": "selected_annual"
+  },
+  {
+    "id": "annual_2014",
+    "source_url": "http://ljcp.gov.pk:80/nljcp/assets/dist/Publication/5a838-jsp_14.pdf",
+    "archive_timestamp": "20170829065104",
+    "archive_url": "https://web.archive.org/web/20170829065104id_/http://ljcp.gov.pk:80/nljcp/assets/dist/Publication/5a838-jsp_14.pdf",
+    "required_for_build": false,
+    "sha256": "baf0b09c6c83d41a30e9243952ece5648a859562bcf28a5f20f712bc5ee17f75",
+    "role": "optional_archive"
+  },
+  {
+    "id": "annual_2020",
+    "source_url": "http://ljcp.gov.pk/nljcp/assets/dist/Publication/JSP2020.pdf",
+    "archive_timestamp": "20210910122551",
+    "archive_url": "https://web.archive.org/web/20210910122551id_/http://ljcp.gov.pk/nljcp/assets/dist/Publication/JSP2020.pdf",
+    "required_for_build": true,
+    "sha256": "bb323b9c58108f86ce3c7e9d2ef01a8d8747d09fd506c3adb3b363596f33cc61",
+    "role": "selected_annual"
+  },
+  {
+    "id": "annual_2021",
+    "source_url": "http://ljcp.gov.pk/nljcp/assets/dist/Publication/JSP2021.pdf",
+    "archive_timestamp": "20230429131323",
+    "archive_url": "https://web.archive.org/web/20230429131323id_/http://ljcp.gov.pk/nljcp/assets/dist/Publication/JSP2021.pdf",
+    "required_for_build": true,
+    "sha256": "97a5093dc711a03022a47015bff1f94e2e3078119a056cc0044a1c76cf07b75d",
+    "role": "selected_annual"
+  },
+  {
+    "id": "annual_2017",
+    "source_url": "http://ljcp.gov.pk/nljcp/assets/dist/Publication/5a838-jsp_14.pdf",
+    "archive_timestamp": "20210425152118",
+    "archive_url": "https://web.archive.org/web/20210425152118id_/http://ljcp.gov.pk/nljcp/assets/dist/Publication/5a838-jsp_14.pdf",
+    "required_for_build": false,
+    "role": "optional_archive",
+    "note": "\"Judicial Statistics of Pakistan, Annual Report 2017\" (~205 pages, PDF created 2019-10-09). LJCP overwrote the 2014 edition under the SAME filename; the 2017-08-29 and 2018-03-29 captures are the 2014 edition (annual_2014), the 2021-04-25 capture is 2017. Fetch with --archive-only; the live URL is dead. Not yet retrieved or checksum-pinned (2026-09-06)."
+  }
+]

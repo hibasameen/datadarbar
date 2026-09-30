@@ -26,6 +26,7 @@ Usage:  python3 etl/build_web_warehouse.py [--src /path/to/data_darbar_warehouse
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import os
 import re
@@ -99,21 +100,17 @@ def _js_object_to_json(src: str) -> str:
     return s
 
 
-def load_indicator_groups(app_js: Path) -> dict:
-    s = app_js.read_text(encoding="utf-8")
-    i = s.index("const INDICATOR_GROUPS")
-    start = s.index("{", i)
-    depth, j = 0, start
-    while j < len(s):
-        if s[j] == "{":
-            depth += 1
-        elif s[j] == "}":
-            depth -= 1
-            if depth == 0:
-                j += 1
-                break
-        j += 1
-    return json.loads(_js_object_to_json(s[start:j]))
+def load_indicator_groups(_unused: Path = None) -> dict:
+    """The curated indicator vocabulary, from the ETL's own copy.
+
+    This used to parse app.js, because that is where the vocabulary lived. It
+    moved to etl/places/indicator_groups.json when map.html was retired: the
+    app is meant to read its labels from the warehouse, not the warehouse from
+    the app, and a build that parses a page's JavaScript breaks the moment the
+    page does.
+    """
+    src = REPO / "etl" / "places" / "indicator_groups.json"
+    return json.loads(src.read_text(encoding="utf-8"))
 
 
 def field_dictionary(groups: dict) -> dict:
@@ -223,7 +220,73 @@ def load_dd_pov(path: Path) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-def build(src: Path, district_only: bool = False) -> None:
+# ── census → map geometry -----------------------------------------------------
+# The map colours the 2015 district layer inlined in app/data/census_data.js,
+# whose key is normName(properties.districts). Resolving a census district onto
+# it is name work, and only two rules are allowed: an exact match after
+# normalisation, and a reviewed spelling difference listed below. A census unit
+# is never merged into a *different* unit to find it a polygon — Lower Chitral
+# and Upper Chitral would both land on 2015 Chitral and paint one district twice
+# with two different numbers, and FR Bannu is not Bannu. Units with no polygon
+# of their own stay unmapped and the map says how many there are.
+# Words that mark a figure as something other than a count, and so as something
+# that must not be added when two units are combined. 2023 carries PBS's own
+# is_rate; 2017 does not, so its labels are read for these.
+RATE_WORDS = ('RATIO|RATE|PER CENT|PERCENT|PROPORTION|AVERAGE|DENSITY'
+              '|PER SQ|HOUSEHOLD SIZE|PERSONS PER')
+
+def _norm_name(x: str) -> str:
+    """app.js normName(): lowercase, non-alphanumerics to single spaces."""
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", (x or "").lower())).strip()
+
+
+def _load_module(path: Path, name: str):
+    """Load one ETL module by path, without putting its folder on sys.path."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def census_table_titles(repo: Path) -> dict:
+    """{(year, table_id): PBS's own title}.
+
+    The titles are already written down twice in the ETL — table_spec.TITLES for
+    2023 and table_map.MAP for 2017 — so the map reuses them rather than
+    inventing a third set. They are not interchangeable between years: 2017's
+    table 23 is a locality table and 2023's is drinking water.
+    """
+    out = {}
+    try:
+        t23 = _load_module(repo / "etl" / "stage2" / "table_spec.py", "_dd_spec23")
+        out.update({(2023, k): v for k, v in t23.TITLES.items()})
+    except Exception as e:
+        print(f"    (no 2023 table titles: {e})")
+    try:
+        t17 = _load_module(repo / "etl" / "census2017" / "table_map.py", "_dd_map17")
+        out.update({(2017, k): v[2] for k, v in t17.MAP.items()})
+    except Exception as e:
+        print(f"    (no 2017 table titles: {e})")
+    return out
+
+
+# The 2015 district layer and its aliases lived here, matched by name against
+# census_data.js. Both went with map.html: districts key on PBS’s own code
+# now, through etl/census2017/census_unit_map.csv.
+
+
+
+def build(src: Path, district_only: bool = False, schools_only: bool = False,
+          health_only: bool = False) -> None:
+    if health_only:
+        from health_facilities.register_health import update_warehouse as update_health
+        update_health(OUT)
+        return
+    if schools_only:
+        from schools.update_punjab import update_warehouse
+        update_warehouse(OUT)
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
     tables: list[dict] = []
@@ -254,7 +317,7 @@ def build(src: Path, district_only: bool = False) -> None:
 
     # ── 1. district indicator panel (long format) ────────────────────────────
     print("districts…")
-    groups = load_indicator_groups(APP / "assets" / "js" / "app.js")
+    groups = load_indicator_groups()
     dic = field_dictionary(groups)
     prefixes = sorted({g["prefix"] for g in groups.values() if g.get("prefix")})
     districts = json.loads((APP / "data" / "districts.json").read_text())
@@ -563,61 +626,8 @@ def build(src: Path, district_only: bool = False) -> None:
         "nothing a department has not put online: no staff names, no contact details. "
     )
     schools_csv = (sc_dir / f"schools_pk_{sc_release}.csv.gz").as_posix()
-    register(
-        "schools_pk",
-        "Government schools of Pakistan with positions and provenance, one row per listed school (release 2026-09).",
-        "READ coord_method AND coord_precision BEFORE USING lat/lng. Only 82,000 of the 121,000 positioned rows "
-        "are school-level fixes (GPS at source in Balochistan and KP, RSU pins or positions multilaterated from "
-        "SELD checker distances in Sindh); 20,000 Punjab, GB and AJK rows sit at the named SETTLEMENT, 8,000 Punjab "
-        "rows at the MARKAZ (school-cluster) centroid and 9,800 Punjab rows at the TEHSIL centroid — those last two "
-        "are useless for anything finer than a district. coord_tier is the region's overall grade from the coverage "
-        "ledger (A to C). in_analysis marks the 118,673 rows that entered Adaad's distance analysis; analysis_note "
-        "says why the rest did not (no position, closed, sex not stated, not government). gender is the school's "
-        "name DESIGNATION (GG/GB, Boys/Girls); in Sindh most designated boys' schools are officially Mixed and "
-        "enrol girls — gender_official carries SEMIS's Boys/Girls/Mixed field and boys_/girls_enrolled the roster's "
-        "enrolment, so the girls' network can be redefined by attendance. level is the source's own label and "
-        "level_std collapses it to primary/middle/high; middle_plus and high_plus are the analysis's classes. "
-        "Coverage: settled KP only (the seven ex-FATA merged districts have no public locations), two of AJK's ten "
-        "districts, 78 federal schools in Islamabad; see school_layer_coverage. district_key is the source's "
-        "district mapped to Data Darbar's 147-district frame (successor districts folded into their parent); "
-        "district_key_boundary is the polygon the point falls in, which is what per-district counts in the piece "
-        "use — they differ for 3,500 rows. " + SCHOOLS_PORTAL_NOTE +
-        "Released under CC BY 4.0 as a compilation; the underlying records remain the departments'.",
-        {
-            "row_id": "row number in this release (stable within a release only)",
-            "school_id": "the source's own code: EMIS (Balochistan, KP, Punjab), SEMIS (Sindh), GB EMIS school code; blank for AJK and Islamabad",
-            "province": "province or territory", "region": "analysis region as the piece labels it (KP (settled), AJK (Mirpur+Kotli), Islamabad (ICT))",
-            "district": "district as the source writes it", "district_key": "Data Darbar district key of the source district (successors folded into parents) — joins district_indicators, mpi_districts, school_access_district",
-            "district_key_boundary": "Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)",
-            "tehsil": "tehsil or taluka as the source writes it; blank for KP, AJK, Islamabad",
-            "name": "school name as listed", "level": "level as the source labels it",
-            "level_std": "primary | middle | high | other (Elementary → middle; Secondary, Higher Secondary, H.Sec. → high; Mosque → primary)",
-            "primary_plus": "true for every school (any level serves the primary class)", "middle_plus": "middle level or above",
-            "high_plus": "high or higher-secondary level",
-            "gender": "name designation: Boys | Girls | Unknown", "gender_official": "Sindh only: SEMIS gender field Boys | Girls | Mixed",
-            "boys_enrolled": "Sindh only: boys enrolled per the SELD roster", "girls_enrolled": "Sindh only: girls enrolled per the SELD roster",
-            "enrolment_total": "total enrolment where the source gives it (Balochistan, Sindh)",
-            "status": "source status: Functional | Viable Closed | Closed | Non-Viable (Sindh); Open | Closed | Inaccessible (KP, non-primary only)",
-            "functional": "false where the source marks the school closed or inaccessible; NULL where the source carries no status",
-            "lat": "latitude, WGS84, 6 dp", "lng": "longitude, WGS84, 6 dp", "has_coords": "lat and lng present",
-            "coord_method": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL",
-            "coord_precision": "what the position identifies: school | settlement | cluster | markaz | tehsil | none",
-            "coord_tier": "region grade from the coverage ledger: A, A-, B, B-, C",
-            "coord_resid_m": "Sindh only: RMS residual, metres, of the multilateration solve",
-            "pin_vs_solved_m": "Sindh only: distance, metres, between the RSU pin and the solved position (NULL when no pin)",
-            "geocode_match": "the geocoder's or checker's own match class, kept verbatim",
-            "source": "register the row comes from", "source_url": "portal", "source_vintage": "when the register was read",
-            "in_analysis": "entered Adaad's distance analysis (functional, positioned, sex designated, government)",
-            "analysis_sex": "network the school belongs to in the analysis: G | B", "analysis_note": "why in_analysis is false",
-            "release": "release tag of this table",
-        },
-        SCHOOLS_SOURCE,
-        f"""SELECT * FROM read_csv('{schools_csv}', header=true, auto_detect=true,
-                   types={{'school_id':'VARCHAR','row_id':'INTEGER','boys_enrolled':'INTEGER','girls_enrolled':'INTEGER',
-                          'enrolment_total':'INTEGER','functional':'BOOLEAN','coord_resid_m':'DOUBLE','pin_vs_solved_m':'DOUBLE',
-                          'lat':'DOUBLE','lng':'DOUBLE'}})
-            ORDER BY row_id""",
-    )
+    from schools.update_punjab import register_table
+    register_table(register, sc_dir)
 
     register(
         "school_access_district",
@@ -906,6 +916,9 @@ def build(src: Path, district_only: bool = False) -> None:
         f"SELECT * FROM read_csv_auto('{(ha_dir / 'travel_time_districts_2026-09.csv').as_posix()}') ORDER BY province, district",
         unit="minutes; per cent",
     )
+    # Facility points: ALHASAN (CC0) and OpenStreetMap via healthsites.io (ODbL).
+    from health_facilities.register_health import register_tables as register_health
+    register_health(register)
     EXAMPLES.extend(HEALTH_EXAMPLES)
 
     # ── 3. macro tables lifted from the desktop warehouse ────────────────────
@@ -1087,12 +1100,1086 @@ def build(src: Path, district_only: bool = False) -> None:
     else:
         print("sbp…  skipped (run build_sbp.py catalog / observations / load first)")
 
+    # ── 5. census panels: the 2017 and 2023 unit tables ──────────────────────
+    # Two tables, deliberately not one. The years cannot be stacked yet: only 50
+    # of 2017's 377 indicator labels appear verbatim among 2023's 201, and most of
+    # the difference is cosmetic rather than real ("00 - 04" vs "00 -- 04"), so a
+    # stacked table would look comparable while silently splitting age bands into
+    # separate rows. The crosswalk that would make a cross-year join safe is the
+    # geography register work, which is not done.
+    def _latest(pattern):
+        hits = sorted(src.glob(pattern))
+        return hits[-1] if hits else None
+
+    CENSUS_SHARED = {
+        "census_year": "2017 or 2023",
+        "province_area": "province, or FATA / Islamabad Capital Territory — the census frame has "
+                         "four provinces and two federal areas, not six provinces",
+        "table_id": "PBS table number WITHIN that census. Numbering is not comparable across "
+                    "years: 2017's table 23 is a locality table, 2023's is drinking water",
+        "district": "district the unit sits in; equal to unit on district rows",
+        "unit": "the published unit's own name",
+        "unit_type": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT "
+                     "unit_type are nested, so summing across them double-counts",
+        "locality": "all, rural or urban. rural + urban = all, so pick one",
+        "sex": "all, male, female or transgender. The three sexes sum to all, so pick one",
+        "indicator": "the indicator as PBS labels it, joined with / down the header hierarchy",
+        "col_label": "the column heading the value sat under, kept because the same indicator "
+                     "can appear under several columns",
+        "value": "the published figure — unit depends on the indicator, see notes",
+        "missing": "the cell was printed as a dash rather than a number",
+    }
+
+    # Both censuses are drawn on one frame - PBS's Digital Census 2023 - and the
+    # unit map says, per unit, what that means: which shape it is, and whether a
+    # 2017 figure belongs on a 2023 shape at all. It is built by
+    # etl/census2017/build_unit_map_2023.py from the crosswalk, which is itself
+    # checked against PBS's own restatement of the 2017 population. Joining a
+    # reviewed table here, rather than matching names at build time, means the
+    # eight real boundary changes are handled by a decision instead of a
+    # near-miss.
+    UNIT_MAP = (REPO / 'etl' / 'census2017' / 'census_unit_map.csv').as_posix()
+
+    def _map_join(year):
+        return (f"LEFT JOIN read_csv('{UNIT_MAP}', header=true, quote='\"', escape='\"',\n"
+                "                   types={'census_year': 'INTEGER', 'map_key': 'VARCHAR',\n"
+                "                          'weight': 'DOUBLE'}) AS m\n"
+                f"  ON m.census_year = {year}\n"
+                " AND m.unit_type = CASE WHEN p.unit_type = 'district'\n"
+                "                        THEN 'district' ELSE 'tehsil' END\n"
+                " AND m.district = p.district AND m.unit = p.unit")
+
+    MAP_COLS = """nullif(m.map_key, '') AS map_key,
+                       m.relation AS map_relation,
+                       coalesce(m.comparable, 'no') AS map_comparable,
+                       nullif(m.note, '') AS map_note, m.weight AS map_weight"""
+
+    _MAP_DOCS = {
+        "map_key": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district "
+                   "code on district rows, dds_id below that. NULL where no 2023 shape can "
+                   "carry the figure, which for 2017 means the unit was split or redrawn",
+        "map_relation": "how this unit relates to the 2023 frame: exact, renamed, merged, "
+                        "split, boundary transfer, or restructured below the district",
+        "map_comparable": "yes where the figure belongs on the 2023 shape as published; "
+                          "combined where two 2017 units share one 2023 shape and must be "
+                          "added, or averaged on map_weight for a rate; flagged where the "
+                          "district persists but its territory changed; no where nothing can "
+                          "honestly be drawn",
+        "map_note": "the reason, in words, for anything other than a straight match \u2014 "
+                    "written to be shown to a reader, not parsed",
+        "map_weight": "2017 population, the weight for averaging a rate across units that "
+                      "combine into one 2023 shape",
+    }
+
+    p17 = _latest("census2017/*/panel/panel_2017.parquet")
+    if p17:
+        print("census 2017…")
+        register(
+            "census_panel_2017",
+            "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, "
+            "tehsil, sub-tehsil and sub-division level.",
+            "Do not sum across unit_type, locality or sex — each is a nested hierarchy and "
+            "adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or "
+            "PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the "
+            "indicator label before aggregating. missing = TRUE marks a cell PBS printed as a "
+            "dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, "
+            "read back from the combined district PDFs, so the zero is real rather than absent "
+            "— unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows "
+            "flags a series whose key is not unique within its table, so a filter on indicator "
+            "and col_label alone may return more than one series there. Tables 23–26 are the "
+            "individual-locality tables and are not in this panel. Comparing to "
+            "census_panel_2023 by table_id or indicator is unsafe: the numbering differs and "
+            "only 50 indicator labels match verbatim.",
+            {**CENSUS_SHARED, **_MAP_DOCS,
+             "is_rate": "the indicator reads as a rate, ratio, average, density or proportion "
+                        "and must not be summed. PBS publishes no such flag for 2017, unlike "
+                        "2023, so this is read off the label here: a guide, not the census\u2019s "
+                        "own statement",
+             "series_ambiguous": "the series key is not unique within this table (31,963 rows)"},
+            "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
+            f"""SELECT p.census_year, p.province_area, p.table_id, p.district, p.unit,
+                       p.unit_type, {MAP_COLS},
+                       p.locality, p.sex, p.indicator, p.col_label, p.value, p.missing,
+                       regexp_matches(upper(p.indicator || ' ' || p.col_label),
+                                      '{RATE_WORDS}') AS is_rate,
+                       p.series_ambiguous
+                FROM '{p17.as_posix()}' AS p
+                {_map_join(2017)}
+                ORDER BY p.table_id, p.unit_type, p.province_area, p.district, p.unit,
+                         p.locality, p.sex, p.indicator, p.col_label""",
+            unit="persons, households or housing units; rates and percentages where the indicator says so",
+        )
+
+    p23 = _latest("stage2/optionB-*/warehouse/census2023_observations.parquet")
+    if p23:
+        print("census 2023…")
+        register(
+            "census_panel_2023",
+            "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, "
+            "sub-tehsil and sub-division level.",
+            "Do not sum across unit_type, locality or sex — each is a nested hierarchy and "
+            "adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure — that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the "
+            "624,219 rows that are rates or percentages and must never be summed. missing = "
+            "TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 "
+            "panel the value is left NULL rather than recovered as zero, so a count of "
+            "non-missing cells is not comparable between the two years. renderings_disagree = "
+            "TRUE on 27,033 rows flags a figure where PBS's two published renderings of the "
+            "same table do not agree. adm3_pcode and dd_id are the geographic join keys and are "
+            "incomplete by design: both are NULL on every district row, and dd_id — the key the "
+            "site's own tehsil geometry uses — is present on 1,919,489 of 2,069,879 tehsil rows. "
+            "Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering "
+            "differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, "
+            "including 'EDUCATOINAL ATTAINMENT'.",
+            {**CENSUS_SHARED,
+             **_MAP_DOCS,
+             "dds_id": "Data Darbar sub-district identifier, present on every row",
+             "dd_id": "identifier used by the site's tehsil geometry; NULL on district rows",
+             "adm3_pcode": "COD-AB ADM3 code; NULL on district rows and on units without a match",
+             "is_rate": "the value is a rate or percentage and must not be summed",
+             "value_corrected": "the figure was corrected against the other rendering",
+             "renderings_disagree": "PBS's two renderings of this table disagree here",
+             "unit_source": "the district workbook this row was read from"},
+            "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
+            f"""-- Sub-district units key on dds_id, the census's own unit id,
+                -- because PBS's Digital Census 2023 layer draws one polygon per
+                -- unit under that id. The map used to key on dd_id, a 2017
+                -- boundary, and 51 units shared 23 of those shapes: Lahore City,
+                -- Model Town, Raiwind and Shalimar all landed on one 2017 Lahore
+                -- polygon, so none of them could be drawn without choosing
+                -- arbitrarily between them. All 591 are now drawable. Districts
+                -- key on PBS's own district code, which reaches all 136; the 2015
+                -- polygon layer this used to match names against reached 128.
+                SELECT 2023 AS census_year, p.province_area, p.table_id, p.dds_id, p.dd_id,
+                       p.adm3_pcode, p.district, p.unit, p.unit_type, {MAP_COLS},
+                       p.locality, p.sex, p.indicator, p.col_label,
+                       p.value, p.missing, p.is_rate, p.value_corrected,
+                       p.renderings_disagree, p.unit_source
+                FROM '{p23.as_posix()}' AS p
+                {_map_join(2023)}
+                ORDER BY p.table_id, p.unit_type, p.province_area, p.district, p.unit,
+                         p.locality, p.sex, p.indicator, p.col_label""",
+            unit="persons, households or housing units; rates and percentages where is_rate is TRUE",
+        )
+
+    if p17 or p23:
+        # The picker needs to know what can be mapped without loading 9 MB to
+        # find out. One row per selectable series, with the count of units that
+        # actually carry a value and a polygon, so a series that would colour
+        # four districts can be shown as such instead of looking empty.
+        titles = census_table_titles(REPO)
+        _title_values = ", ".join(
+            "(" + str(y) + ", '" + t + "', '" + ttl.replace("'", "''") + "')"
+            for (y, t), ttl in sorted(titles.items()))
+        parts = []
+        if p17:
+            parts.append(f"""
+              SELECT 2017 AS census_year, table_id,
+                     CASE WHEN unit_type = 'district' THEN 'district'
+                          ELSE 'tehsil' END AS unit_type, indicator, col_label,
+                     locality, sex, bool_or(is_rate) AS is_rate,
+                     -- map_key can name several shapes at once, where a unit
+                     -- that was later split is drawn across its successors, so
+                     -- the shapes are counted after expanding it rather than by
+                     -- counting keys.
+                     length(list_distinct(flatten(list(str_split(map_key, ' '))
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)))) AS mappable_units,
+                     count(DISTINCT district || '|' || unit) FILTER (WHERE value IS NOT NULL) AS units_with_value,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_2017.parquet').as_posix()}'
+              -- Every unit below the district sits on one layer: PBS publishes
+              -- some as tehsils, some as sub-divisions and some as sub-tehsils,
+              -- and its own 2023 boundary file draws all 591 in a single set.
+              -- They are one geography for the map, whatever PBS calls them.
+              GROUP BY ALL
+              -- The guarantee is one value per census unit, which is what makes
+              -- a series safe to draw. It is deliberately not one value per
+              -- shape: six 2017 districts absorbed an FR, so two 2017 units
+              -- legitimately share one 2023 shape and are combined when drawn.
+              -- Testing shapes instead of units dropped 13,553 series that are
+              -- perfectly well defined.
+              HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
+                 AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
+                   = count(DISTINCT district || '|' || unit)
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+        if p23:
+            parts.append(f"""
+              SELECT 2023 AS census_year, table_id,
+                     CASE WHEN unit_type = 'district' THEN 'district'
+                          ELSE 'tehsil' END AS unit_type, indicator, col_label,
+                     locality, sex, bool_or(is_rate) AS is_rate,
+                     -- map_key can name several shapes at once, where a unit
+                     -- that was later split is drawn across its successors, so
+                     -- the shapes are counted after expanding it rather than by
+                     -- counting keys.
+                     length(list_distinct(flatten(list(str_split(map_key, ' '))
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)))) AS mappable_units,
+                     count(DISTINCT district || '|' || unit) FILTER (WHERE value IS NOT NULL) AS units_with_value,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_2023.parquet').as_posix()}'
+              -- Every unit below the district sits on one layer: PBS publishes
+              -- some as tehsils, some as sub-divisions and some as sub-tehsils,
+              -- and its own 2023 boundary file draws all 591 in a single set.
+              -- They are one geography for the map, whatever PBS calls them.
+              GROUP BY 1, 2, 3, 4, 5, locality, sex
+              HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
+                 AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
+                   = count(DISTINCT district || '|' || unit)
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+        register(
+            "census_series_index",
+            "One row per census series that the district and tehsil map can colour, "
+            "for both census years.",
+            "This is a guide to the two census panels, not data in its own right: every row "
+            "points at a series in census_panel_2017 or census_panel_2023, which is where the "
+            "values are. mappable_units counts the units that have both a value and a boundary, "
+            "so it is the number of shapes that would actually be coloured — a series with a "
+            "low count is thin, not broken. is_rate marks series that must not be summed. "
+            "Series are listed per census year and must not be compared across years on "
+            "table_id or indicator; see either panel's notes.",
+            {
+                "census_year": "2017 or 2023",
+                "table_id": "PBS table number within that census",
+                "table_title": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water",
+                "unit_type": "district or tehsil — the geography this series can be drawn on",
+                "indicator": "the indicator as PBS labels it",
+                "col_label": "the column heading the values sat under",
+                "locality": "all, rural or urban",
+                "sex": "all, male, female or transgender",
+                "is_rate": "the series is a rate or percentage",
+                "units_with_value": "census units carrying a value, whether or not they can be drawn \u2014 larger than mappable_units where a unit was split or redrawn and so has no 2023 shape",
+                "mappable_units": "shapes this series colours \u2014 shapes, not units: a 2017 unit that was later split is drawn across all of its successors, so it contributes several. Shapes with both a value and a boundary — the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row",
+                "min_value": "smallest value in the series",
+                "max_value": "largest value in the series",
+            },
+            "Derived from census_panel_2017 and census_panel_2023",
+            "WITH ix AS (" + " UNION ALL ".join(parts) + "), tt(ty, tid, title) AS (VALUES "
+            + _title_values + ") "
+            + """SELECT ix.* EXCLUDE (table_id), ix.table_id, tt.title AS table_title
+                 FROM ix LEFT JOIN tt ON tt.ty = ix.census_year AND tt.tid = ix.table_id
+                 ORDER BY census_year, table_id, unit_type, indicator, col_label, locality, sex""",
+            unit="counts of units; the values themselves live in the panels",
+        )
+
+    # ── geography: the frames, the crosswalks, and which key joins what ──────
+    print("geography\u2026")
+    XW = REPO / "etl" / "census2017"
+    PL = REPO / "etl" / "places"
+    CSV_OPTS = "header=true, quote='\"', escape='\"'"
+
+    if (XW / "district_crosswalk_2017_2023.csv").exists():
+        register(
+            "district_crosswalk_2017_2023",
+            "Every district-level relationship between Census 2017 and Census 2023, "
+            "as groups that cover the same ground.",
+            "A group is the smallest set of 2017 and 2023 units covering the same "
+            "territory, so a merge has two 2017 units and one 2023 unit and a split "
+            "has one and several. What makes this checkable rather than argued is the "
+            "balances column: Census 2023 table 1 prints PBS\u2019s own restatement of the "
+            "2017 population on 2023 boundaries, and for every group the 2017 units\u2019 "
+            "published population equals the 2023 units\u2019 restated figure. All 127 "
+            "groups balance. A group that did not would mean the relation asserted for "
+            "it is wrong.",
+            {"relation": "exact, renamed, merged, split, or boundary transfer",
+             "units_2017": "the 2017 district(s) in this group, joined by +",
+             "units_2023": "the 2023 district(s) in this group, joined by +",
+             "province_area": "province or area, as the census names it",
+             "population_2017": "the 2017 units\u2019 published 2017 population",
+             "restated_2017": "the 2023 units\u2019 POPULATION 2017, restated by PBS",
+             "population_2023": "the 2023 units\u2019 2023 population",
+             "balances": "yes where the two 2017 figures agree to the person"},
+            "Derived from census_panel_2017 and census_panel_2023; checked against "
+            "PBS\u2019s own restatement",
+            f"SELECT * FROM read_csv('{(XW / 'district_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
+            unit="districts and people",
+        )
+        register(
+            "subdistrict_crosswalk_2017_2023",
+            "The same thing one tier down: 510 groups over the 537 sub-districts of "
+            "2017 and the 591 of 2023.",
+            "Pairs are matched by name within a district group, or \u2014 where the names "
+            "give nothing \u2014 by a population that is identical and uniquely so within "
+            "the group; matched_by records which. Dera Bugti\u2019s Phelawagh Tehsil and "
+            "Qadirabad Sub-Division are one place under two names and only the 28,054 "
+            "says so. Where several 2017 units became several 2023 ones, the group is "
+            "marked restructured and the correspondence inside it is left open rather "
+            "than guessed: the group balances, but which unit became which does not "
+            "follow from that. The tier word is not a hierarchy \u2014 a unit published "
+            "as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
+            {"district_group": "the district group this sits inside",
+             "relation": "exact, renamed, or restructured",
+             "matched_by": "name, population, or blank for a restructured group",
+             "district_2017": "the district the 2017 unit belongs to",
+             "district_2023": "the district the 2023 unit belongs to",
+             "units_2017": "the 2017 unit(s), joined by +",
+             "units_2023": "the 2023 unit(s), joined by +",
+             "population_2017": "published 2017 population",
+             "restated_2017": "PBS\u2019s POPULATION 2017 for the 2023 units",
+             "balances": "yes where the two agree"},
+            "Derived from census_panel_2017 and census_panel_2023",
+            f"SELECT * FROM read_csv('{(XW / 'subdistrict_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
+            unit="sub-districts and people",
+        )
+    if (XW / "census_unit_map.csv").exists():
+        register(
+            "census_unit_map",
+            "One row per census unit saying which PBS 2023 shape it is drawn on, and "
+            "\u2014 where that is not a straight match \u2014 why.",
+            "This is the crosswalk turned into a decision. A crosswalk says what "
+            "happened to a unit; this says what a figure for it means when drawn on "
+            "the 2023 frame. comparable is the field to read: yes where the figure "
+            "belongs on the shape as published; combined where two 2017 units share "
+            "one 2023 shape and must be added, or averaged on weight for a rate; "
+            "parent where a unit was split and its figure is drawn across every "
+            "successor at once rather than divided between them; flagged where the "
+            "district persists but its territory changed; no where nothing can "
+            "honestly be drawn. map_key can therefore name several shapes, "
+            "space-separated. Anything that totals or ranks must count units and not "
+            "shapes: a parent drawn across its successors is visited once per shape, "
+            "which turns a national total of 207,684,626 into 213.4 million.",
+            {"census_year": "2017 or 2023",
+             "unit_type": "district, or tehsil for everything below it",
+             "district": "the district the unit sits in",
+             "unit": "the unit, as the census names it",
+             "map_key": "the PBS 2023 shape(s) it is drawn on, space-separated",
+             "relation": "how it relates to the 2023 frame",
+             "comparable": "yes, combined, parent, flagged, or no",
+             "note": "the reason, in words written for a reader",
+             "weight": "2017 population, for averaging a rate across combined units"},
+            "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+            f"SELECT * FROM read_csv('{(XW / 'census_unit_map.csv').as_posix()}', {CSV_OPTS})",
+            unit="census units",
+        )
+
+    # ── the State: courts, policing, energy, disasters ──────────────────────
+    # These were built long ago and never published. They live in the desktop
+    # warehouse under their own folders, which is why a search of app/data found
+    # nothing and the State page said "not collected" about four themes that
+    # were in fact collected.
+    print("courts, policing, energy and disasters\u2026")
+
+    def src_table(name, rel, desc, notes, cols, source, unit):
+        f = src / rel
+        if not f.exists():
+            print(f"  {name:<28} skipped (no {rel})")
+            return
+        register(name, desc, notes, cols, source,
+                 f"SELECT * FROM '{f.as_posix()}'", unit=unit)
+
+    src_table(
+        "ljcp_case_flows", "ljcp/annual_provinces.parquet",
+        "Cases pending, instituted and disposed by province, court tier and "
+        "category, 2020 to 2024.",
+        "The stock and the flow together: pending at the start, what came in, "
+        "what was decided, and what was left. clearance_rate_pct is disposals "
+        "over institutions. Above 100 means more cases were decided than "
+        "filed that year; it does NOT establish that the backlog fell, "
+        "which depends on the opening stock and is answered by backlog_change. "
+        "stock_flow_check records whether opening plus instituted minus disposed "
+        "actually equals the closing figure PBS prints; where it does not, "
+        "transfers between courts usually explain it, and the residual columns "
+        "say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so "
+        "do not add the three together.",
+        {"year": "calendar year", "province": "province or area",
+         "category": "all, civil or criminal \u2014 these nest",
+         "court_tier": "which courts are counted",
+         "pending_start": "cases pending at the start of the year",
+         "instituted": "cases filed during the year",
+         "disposed": "cases decided during the year",
+         "pending_end": "cases pending at the end",
+         "clearance_rate_pct": "disposals as a percentage of institutions",
+         "backlog_change": "pending at the end minus pending at the start",
+         "stock_flow_check": "whether the stock and flow figures reconcile"},
+        "Law & Justice Commission of Pakistan, annual judicial statistics",
+        "cases")
+
+    src_table(
+        "ljcp_judicial_strength", "ljcp/judicial_strength_by_rank.parquet",
+        "Sanctioned, working and vacant judicial posts by rank and session "
+        "division.",
+        "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength "
+        "tables have not been extracted, so this is not a national picture and "
+        "should not be read as one. Within Balochistan it is complete: 337 posts "
+        "sanctioned in 2024 against 235 working.",
+        {"year": "calendar year", "province": "province",
+         "session_division": "the session division",
+         "sanctioned_judges": "posts on the establishment",
+         "working_judges": "posts filled", "vacant_judges": "posts unfilled",
+         "court_tier": "which courts", "rank_coverage": "which ranks are counted"},
+        "Law & Justice Commission of Pakistan", "judicial posts")
+
+    # District courts and consolidated staffing, all provinces. Selected
+    # columns only: the list-valued provenance fields stay in the desktop
+    # warehouse, and the lists that explain a unit are joined into text.
+    f = src / "ljcp/district_policy_indicators.parquet"
+    if f.exists():
+        register(
+            "ljcp_court_districts",
+            "Cases pending in each district's courts at year end, with the "
+            "population and the working judges beside them, 2020 to 2024.",
+            "One all-cases row per year and map district. Rates use the 2023 "
+            "census count for every year, not a population estimate for the "
+            "year. Sessions divisions are keyed to districts by name, "
+            "provisionally; two-seat Balochistan districts and Islamabad are "
+            "summed first, and a district with no court seat of its own is "
+            "added to its host's population (hosted_districts). Working judges "
+            "are matched in 384 of 585 rows: none in 2021, none for KP in 2024, "
+            "and Punjab 2022 is withheld because its staffing is dated 2021. A "
+            "low rate in a district with few courts can mean cases are not "
+            "filed there, not that they are decided quickly; the staffing "
+            "comparison is descriptive, not causal.",
+            {"year": "calendar year", "province": "province or area",
+             "district": "map district (ADM2 key)",
+             "sessions_included": "the sessions divisions summed into it",
+             "hosted_districts": "districts without a seat, counted in its population",
+             "pending_start": "cases pending at the start of the year",
+             "instituted": "cases filed", "disposed": "cases decided",
+             "pending_end": "cases pending at the end of the year",
+             "clearance_rate_pct": "disposals as a percentage of institutions",
+             "population_2023": "Census 2023 population of the district and any hosted",
+             "pending_per_100k": "pending_end per 100,000 people, 2023 census",
+             "pending_per_100k_interpolated": "the same on a population grown between censuses",
+             "working_judges": "judges in post, where matched",
+             "sanctioned_judges": "posts sanctioned, where matched",
+             "pending_per_working_judge": "pending_end / working_judges",
+             "crosswalk_status": "how the sessions division was keyed",
+             "judge_coverage_status": "whether staffing was matched",
+             "stock_flow_check": "whether the stock and flow figures reconcile"},
+            "Law & Justice Commission of Pakistan, annual judicial statistics",
+            f"""SELECT year, province, adm2_key AS district,
+                       array_to_string(sessions_included, '; ') AS sessions_included,
+                       array_to_string(hosted_districts, '; ') AS hosted_districts,
+                       pending_start, instituted, disposed, pending_end,
+                       round(clearance_rate_pct, 2) AS clearance_rate_pct,
+                       population AS population_2023,
+                       round(pending_per_100k_population, 2) AS pending_per_100k,
+                       round(pending_per_100k_interpolated, 2) AS pending_per_100k_interpolated,
+                       working_judges, sanctioned_judges,
+                       round(pending_per_working_judge, 2) AS pending_per_working_judge,
+                       crosswalk_status, judge_coverage_status, stock_flow_check
+                FROM '{f.as_posix()}' ORDER BY year, province, district""",
+            unit="district-years")
+
+    f = src / "ljcp/judicial_strength.parquet"
+    if f.exists():
+        register(
+            "ljcp_judges_province",
+            "Judicial posts sanctioned, filled and vacant in the district "
+            "judiciary, by province and session division, 2020 to 2024.",
+            "Consolidated strength, all ranks together, as each report prints "
+            "it. Not every year is there: no 2021 edition table, KP 2024 not "
+            "found, and Islamabad prints working judges only. Punjab's 2022 "
+            "edition is dated 31 December 2021 (strength_date_status). "
+            "Balochistan's figures sum four rank tables and, from 2022, exclude "
+            "ex-cadre posts, so its 2020 total is not strictly comparable.",
+            {"year": "report year", "as_of_date": "date the strength refers to",
+             "province": "province or area", "session_division": "the session division",
+             "sanctioned_judges": "posts on the establishment",
+             "working_judges": "posts filled", "vacant_judges": "posts unfilled",
+             "strength_date_status": "same_year, or the edition's date differs",
+             "rank_coverage": "how the ranks were counted",
+             "working_definition": "what 'working' includes"},
+            "Law & Justice Commission of Pakistan",
+            f"""SELECT year, as_of_date, province, session_division,
+                       sanctioned_judges, working_judges, vacant_judges,
+                       strength_date_status, rank_coverage, working_definition
+                FROM '{f.as_posix()}' ORDER BY year, province, session_division""",
+            unit="judicial posts")
+
+    src_table(
+        "police_crime_annual", "regional_police/crime_annual.parquet",
+        "Reported offences by province, range and year, 2019 to 2024.",
+        "Nine reporting regions, and the geography is not uniform between them: "
+        "Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while "
+        "Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways "
+        "police report one figure each. So a district map of this covers KP and "
+        "AJK and nothing else. measure says what is counted \u2014 mostly "
+        "reported_offence_count, which is offences reported to police and not "
+        "crimes committed.",
+        {"source_family": "which force reported it", "region": "province or force",
+         "geography": "the place, where the force reports one",
+         "geography_level": "province, range, district or national",
+         "year": "calendar year", "measure": "what is counted",
+         "value": "the count"},
+        "Provincial and regional police annual reports", "offences")
+
+    src_table(
+        "police_crime_district", "regional_police/district_crime_annual.parquet",
+        "The same, at district level where a force publishes it.",
+        "Only Khyber Pakhtunkhwa and Azad Jammu & Kashmir publish district "
+        "figures; everywhere else the province is the finest grain available. "
+        "Joining this to a district map leaves most of the country empty, which "
+        "is a fact about police reporting rather than about crime.",
+        {"region": "province or force", "geography": "district",
+         "geography_id": "the force\u2019s own identifier",
+         "year": "calendar year", "measure": "what is counted",
+         "value": "the count"},
+        "Provincial and regional police annual reports", "offences")
+
+    src_table(
+        "sindh_crime_annual", "sindh_police/sindh_crime_annual.parquet",
+        "Sindh police reported crime by category and year, 2019 to 2025.",
+        "Sindh reports in more detail than the other provinces and separately "
+        "from the national compilation, so it is kept as its own table rather "
+        "than folded in. Every row carries the source document and how it was "
+        "extracted.",
+        {"reporting_year": "the year as the report labels it",
+         "year": "calendar year", "source_url": "the report it came from",
+         "extraction_method": "how the figure was read off the page"},
+        "Sindh Police", "offences")
+
+    src_table(
+        "sindh_fir_daily", "sindh_fir/sindh_fir_observations.parquet",
+        "First information reports registered in Sindh, daily and year to date, "
+        "by district and range.",
+        "A daily operational series rather than an annual statistical one, so it "
+        "moves for reasons that are about reporting as much as about crime. "
+        "ytd_firs is the running total from the start of the year, so it is not "
+        "additive across dates.",
+        {"report_date": "the date reported", "geography_name": "district or range",
+         "police_range": "the police range", "daily_firs": "FIRs that day",
+         "ytd_firs": "FIRs so far that year \u2014 a running total, do not add"},
+        "Sindh Police daily FIR reports", "reports")
+
+    src_table(
+        "nepra_plants", "nepra_plants.parquet",
+        "Power plants on the national grid, with fuel, technology and installed "
+        "capacity.",
+        "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, "
+        "furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, "
+        "for 1,885 MW. Installed capacity is nameplate and not what a plant "
+        "actually generates \u2014 see nepra_disco_annual for what was dispatched.",
+        {"plant_id": "NEPRA\u2019s own identifier", "plant_name": "the plant",
+         "name_variants": "other spellings in the source documents",
+         "technology": "how it generates", "fuel": "what it burns or uses",
+         "installed_mw": "nameplate capacity, megawatts",
+         "first_fy": "first year it appears", "last_fy": "last year it appears"},
+        "NEPRA State of Industry and performance reports", "megawatts")
+
+    # ONE ROW PER PLANT WAS NOT ENOUGH. nepra_plants collapses the reports to
+    # a single row per plant with installed_mw taken as the MAXIMUM across
+    # every year it appears and a first/last fiscal year around it. Anything
+    # built from that is a union of eight reports, not a year: 133 plants and
+    # 45,405 MW, against 118 plants and 41,440 MW actually reported for
+    # 2024-25. It also cannot answer which year a capacity belongs to, and 22
+    # plants are revised between years, so the single figure is right for at
+    # most one of them.
+    #
+    # These are the observations themselves, one row per plant per fiscal
+    # year, so a chart can name the year it is drawing instead of inferring
+    # presence from a span.
+    if (src / "nepra_plant_month.parquet").exists():
+        register(
+            "nepra_plant_years",
+            "Every plant in NEPRA\u2019s reports, by fiscal year: what it burns "
+            "and what it was rated at in that year.",
+            "One row per plant per fiscal year as reported, 2017-18 to "
+            "2024-25 \u2014 the observations behind nepra_plants, which collapses "
+            "them to one row per plant at its maximum capacity. Use this "
+            "table when the year matters: 22 plants have their capacity "
+            "revised between reports, and the union of all eight years is "
+            "133 plants and 45,405 MW against 118 and 41,440 MW reported for "
+            "2024-25. Presence here is observed, not inferred: one plant is "
+            "absent from a year inside its own first-to-last span. Rows with "
+            "no installed_mw are kept rather than dropped, because a plant "
+            "the report lists without a capacity is still a plant it listed: "
+            "11 of the 108 in 2017-18 are like this, falling to none from "
+            "2021-22. This is the reporting universe NEPRA published, not a "
+            "register of every plant in the country.",
+            {"plant_id": "NEPRA\u2019s own identifier",
+             "plant": "the plant as that report names it",
+             "fiscal_year": "the report\u2019s fiscal year",
+             "technology": "how it generates", "fuel": "what it burns or uses",
+             "installed_mw": "nameplate capacity as reported THAT year",
+             "dependable_mw": "dependable capacity as reported that year",
+             "generation_gwh": "generation that year, where reported"},
+            "NEPRA State of Industry and performance reports",
+            f"""SELECT plant_id, plant, fiscal_year, technology, fuel,
+                       installed_mw, dependable_mw, generation_gwh
+                FROM '{(src / "nepra_plant_month.parquet").as_posix()}'
+                WHERE month = 'FY'
+                ORDER BY fiscal_year, installed_mw DESC NULLS LAST""",
+            unit="megawatts")
+
+    src_table(
+        "nepra_disco_annual", "nepra_disco_annual.parquet",
+        "Distribution company performance by year, 2006\u201307 to 2024\u201325.",
+        "Read straight off NEPRA\u2019s tables, which is why row_label and col_label "
+        "are carried as printed rather than normalised: the tables change shape "
+        "between editions and a single schema across nineteen years would have "
+        "to invent correspondences. value_raw is the text as printed; filter on "
+        "series, table_no and row_label to pull one measure.",
+        {"series": "which NEPRA publication", "report_year": "the edition",
+         "table_no": "table within it", "title": "the table\u2019s title",
+         "disco": "distribution company", "fy": "fiscal year the row is about",
+         "row_label": "the row as printed", "col_label": "the column as printed",
+         "value_raw": "the cell as printed"},
+        "NEPRA State of Industry reports", "varies by row")
+
+    src_table(
+        "climate_events", "climate_events/climate_events.parquet",
+        "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
+        "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a "
+        "named episode with a start and end, and date_precision says how well "
+        "the dates are known. These events do NOT join to climate_impacts: "
+        "the impact records carry no event key, only their own report_id, so "
+        "the two are separate universes and attributing an impact row to an "
+        "event here would be an inference, not a lookup. An earlier note "
+        "said climate_impacts carries what each one did, which invited a "
+        "join that cannot be made.",
+        {"record_id": "the event", "source": "who recorded it",
+         "hazard": "flood, drought or tropical cyclone", "subtype": "finer type",
+         "title": "how the source names it", "start_date": "when it began",
+         "end_date": "when it ended",
+         "date_precision": "how precisely the dates are known"},
+        "Reanalysis of published disaster reporting", "events")
+
+    src_table(
+        "climate_impacts", "climate_events/climate_impacts.parquet",
+        "Impacts reported by disaster reporting: people affected, killed, "
+        "displaced, and assets damaged, by place and reporting period.",
+        "336 observations, keyed by report and place, not by event. There "
+        "is no event key in this table and none that joins to "
+        "climate_events, so an impact cannot be attributed to a named event "
+        "by lookup - only by reading the period and the place, which is an "
+        "inference. The metric column says what is counted and the figures "
+        "come from whichever report covered that place, so coverage is "
+        "uneven between places and between periods. Do not read a missing "
+        "row as a zero.",
+        {"observation_id": "the observation", "report_id": "the report it came from",
+         "location_name": "the place as the report names it",
+         "admin_level": "how fine the place is", "metric": "what is counted",
+         "value": "the figure", "period_start": "start of the period covered",
+         "period_end": "end of the period covered"},
+        "Reanalysis of published disaster reporting", "people, assets")
+
+    # ── the national series: Economy and State ──────────────────────────────
+    print("national accounts, trade and tax\u2026")
+    PULL = REPO.parent / "raw_data" / "pbs_insight_explorer"
+    NA = PULL / "national_accounts_2026-09-27"
+    TR = PULL / "trade_2026-09-27"
+    CSV = "header=true, quote='\"', escape='\"'"
+
+    def csv_table(name, path, desc, notes, cols, source, unit):
+        if not path.exists():
+            print(f"  {name:<28} skipped (no {path.name})")
+            return
+        register(name, desc, notes, cols, source,
+                 f"SELECT * FROM read_csv('{path.as_posix()}', {CSV})", unit=unit)
+
+    csv_table(
+        "gdp_growth", NA / "gdp_growth_1952_2025.csv",
+        "Real GDP growth and its sectoral components, 1951\u201352 to 2024\u201325.",
+        "Seventy-four fiscal years, the longest series on the site. "
+        "government_label names the government of the day, which PBS\u2019s own "
+        "dashboard carries and which is useful for reading the series but is a "
+        "political attribution rather than a statistical one \u2014 a growth rate in a "
+        "government\u2019s first months reflects decisions taken before it.",
+        {"fy": "fiscal year, e.g. 2024-25", "fy_end": "calendar year it ends in",
+         "gdp_growth_pct": "real GDP growth, per cent",
+         "agriculture_growth_pct": "agriculture, per cent",
+         "industry_growth_pct": "industry, per cent",
+         "services_growth_pct": "services, per cent",
+         "commodity_producing_sector_growth_pct": "agriculture and industry together",
+         "government_label": "the government in office that year, as PBS labels it"},
+        "PBS national accounts (na.data.gov.pk), pull of 2026-09-27", "per cent")
+
+    csv_table(
+        "gdp_indicators", NA / "gdp_indicators_annual_2000_2026.csv",
+        "GDP, national product, per-capita income and the exchange rate, "
+        "1999\u20132000 to 2025\u201326.",
+        "Constant prices on PBS\u2019s own base. status marks a year PBS flags as "
+        "provisional or revised; the latest years are usually provisional and "
+        "move.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "gdp_constant_pkr_mn": "GDP at constant prices, million rupees",
+         "npi_constant_pkr_mn": "net national product, million rupees",
+         "per_capita_income_constant_rs": "per-capita income, rupees",
+         "exchange_rate_pkr_per_usd": "rupees per US dollar",
+         "status": "PBS\u2019s own flag: provisional, revised or final"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees, rupees")
+
+    csv_table(
+        "gva_by_activity_annual", NA / "gdp_by_activity_annual_constant_2000_2026.csv",
+        "Gross value added by sector and sub-sector, annual, at constant prices.",
+        "One row per leaf activity, 22 a year, with sector and subsector as "
+        "the path to it rather than rows of their own. Summing the rows is "
+        "therefore correct and reproduces the published total: it equals "
+        "Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, "
+        "the exception being 2023-24, where the activity file and the annual "
+        "table are different vintages and differ by Rs15.9bn. An earlier note "
+        "here said the rows were three nested levels and that adding them "
+        "double-counts, which is not what the file contains.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "sector": "the broad sector", "subsector": "within the sector",
+         "category": "within the sub-sector",
+         "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
+         "status": "PBS\u2019s own flag"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "gva_by_activity_quarterly", NA / "gdp_by_activity_quarterly_constant_2016_2025.csv",
+        "The same, quarterly, from 2015\u201316.",
+        "Quarterly national accounts are newer and thinner than the annual "
+        "series and are revised more. The grain is the same as the annual "
+        "file: one row per leaf activity, with sector and subsector as the "
+        "path, so the rows of one quarter add up rather than double-count.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "quarter": "Q1 is July\u2013September", "sector": "the broad sector",
+         "subsector": "within the sector", "category": "within the sub-sector",
+         "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
+         "status": "PBS\u2019s own flag"},
+        "PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "fbr_tax_collection", NA / "fbr_tax_collection_by_head_1992_2024.csv",
+        "Federal tax collection by head and sub-head, 1991\u201392 to 2023\u201324.",
+        "Direct and indirect tax by the heads FBR reports. tax_type, head and "
+        "subhead nest, so filter to one level before summing.",
+        {"fy": "fiscal year", "fy_end": "calendar year it ends in",
+         "tax_type": "direct or indirect", "head": "the tax head",
+         "subhead": "within the head",
+         "collection_pkr_mn": "collection, million rupees",
+         "status": "PBS\u2019s own flag"},
+        "FBR via PBS national accounts, pull of 2026-09-27", "million rupees")
+
+    csv_table(
+        "trade_by_country", TR / "trade_by_country_fy_period.csv",
+        "Imports and exports by trading partner, fiscal year and period, "
+        "2003\u201304 onwards.",
+        "231 partners. Read the period column before using a total: "
+        "FY_from_quarters is the four quarters added, and is what to use for a "
+        "year \u2014 the portal\u2019s own whole-year rows are excluded because they "
+        "overstate badly, 38.3 against a published 32.1 US dollars billion of "
+        "exports for 2024-25. The quarterly rows still run a little over the "
+        "totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; "
+        "trade_reconciliation puts every period beside the totals so the gap can "
+        "be seen. The dollar columns are zero before 2013-14 on every endpoint. "
+        "This is aggregate trade and does not replace trade_hs8, which has the "
+        "8-digit product detail.",
+        {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
+         "country": "partner as the portal names it", "iso2": "ISO 3166 alpha-2",
+         "iso3": "ISO 3166 alpha-3", "continent": "continent",
+         "pbs_country_code": "PBS\u2019s own code",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database (trade.data.gov.pk), pull of 2026-09-27",
+        "rupees and US dollars")
+
+    csv_table(
+        "trade_by_group", TR / "trade_by_commodity_group_fy_period.csv",
+        "Imports and exports by commodity group, fiscal year and period.",
+        "Ten groups, numbered 0 to 9. The portal does not label them; by their "
+        "values they are the one-digit SITC sections, but PBS does not say so and "
+        "they are carried as numbers rather than given names they may not have. "
+        "The period caution for trade_by_country applies here too.",
+        {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
+         "group": "commodity group 0\u20139, unlabelled by the portal",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    csv_table(
+        "trade_monthly_totals", TR / "trade_monthly_totals_2003_2026.csv",
+        "Total imports and exports by calendar month, 2003\u201304 onwards.",
+        "The totals endpoint, which the country and group tables are reconciled "
+        "against. The portal\u2019s month list has no June, so June appears only "
+        "inside Q4.",
+        {"fy": "fiscal year", "year": "calendar year", "month": "calendar month",
+         "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
+         "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    csv_table(
+        "trade_reconciliation", TR / "trade_reconciliation_fy_period.csv",
+        "Each period\u2019s totals beside the sum of its country rows and its group "
+        "rows.",
+        "Read this before quoting a trade total. Monthly country and group rows "
+        "match the totals endpoint to within 0.01 US dollars billion in every "
+        "month except April 2021. Quarterly rows overshoot on exports, most often "
+        "in Q4 \u2014 3.3 per cent on average \u2014 so a year built from quarters is "
+        "close but not exact.",
+        {"fy": "fiscal year", "period": "the period compared",
+         "totals_imports_pkr": "from the totals endpoint",
+         "totals_exports_pkr": "from the totals endpoint",
+         "countries_imports_pkr": "the country rows added",
+         "countries_exports_pkr": "the country rows added",
+         "groups_imports_pkr": "the group rows added",
+         "groups_exports_pkr": "the group rows added"},
+        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+
+    # ── the diaspora country files ──────────────────────────────────────────
+    DIA_NOTE = ("The portal serves this keyed by country and it is not country "
+                "data: 198 country keys return 21 distinct series and not one "
+                "country has a series of its own, with 141 of them returning the "
+                "same one. The national series is taken instead and the country "
+                "dimension dropped, because publishing one number against 141 "
+                "countries would present it as variation.")
+    for name, desc, notes, cols, unit in [
+        ("diaspora_remittances_monthly",
+         "Remittances to Pakistan by month, 2018 to 2025.",
+         DIA_NOTE + " The value is as the portal gives it, which its magnitude "
+         "puts in millions of US dollars \u2014 34,662 for 2024 against roughly 30 "
+         "billion published \u2014 but the portal does not label the unit, so treat "
+         "the level with care and the shape as sound.",
+         {"year": "calendar year", "month": "calendar month",
+          "value": "remittances, unit as the portal gives it"},
+         "unlabelled by the source; magnitude suggests million US dollars"),
+        ("diaspora_emigrants_by_skill",
+         "Registered emigrants by skill level and year.",
+         DIA_NOTE + " Skill levels are the Bureau of Emigration\u2019s own bands. "
+         "Total is the sum of the others, so do not add it to them.",
+         {"year": "calendar year", "mode": "the portal\u2019s own breakdown mode",
+          "skill_level": "highly qualified, highly skilled, skilled, "
+                         "semi-skilled, unskilled, or total",
+          "emigrants": "people"},
+         "people"),
+        ("diaspora_destinations",
+         "Registered emigrants by destination country and year, 2011 to 2024.",
+         "This one is genuinely by country, unlike the remittance and skill files "
+         "from the same portal: 199 countries in 2024 with 102 distinct values. "
+         "The totals match the Bureau of Emigration\u2019s published figures \u2014 "
+         "859,740 in 2023 and 725,587 in 2024. Saudi Arabia takes about six in "
+         "ten.",
+         {"year": "calendar year", "country": "destination as the portal names it",
+          "iso2": "ISO 3166 alpha-2", "iso3": "ISO 3166 alpha-3",
+          "continent": "continent code", "emigrants": "people"},
+         "people"),
+        ("diaspora_occupations",
+         "Registered emigrants by occupation, 2024.",
+         "Forty occupation categories for one year. Labourer is the largest at "
+         "364,574, about half of all emigration that year.",
+         {"year": "calendar year", "occupation": "category as the portal names it",
+          "emigrants": "people"},
+         "people"),
+    ]:
+        f = OUT / f"{name}.parquet"
+        if f.exists():
+            register(name, desc, notes, cols,
+                     "Bureau of Emigration & Overseas Employment via PBS\u2019s "
+                     "diaspora portal, pull of 2026-09-27",
+                     f"SELECT * FROM '{f.as_posix()}'", unit=unit)
+
+    f = OUT / "census_entities.parquet"
+    if f.exists():
+        register(
+            "census_entities",
+            "Census 2023\u2019s count of enumerated structures \u2014 24 kinds, from schools "
+            "and hospitals to factories, mosques and police stations \u2014 by district "
+            "and tehsil.",
+            "The only table here that covers the whole frame Data Darbar draws: 156 "
+            "districts and 649 tehsils, every district of Azad Jammu & Kashmir and "
+            "Gilgit-Baltistan included. Neither census panel has a row for either, so "
+            "for those 58 tehsils these are the only values on the site. Two "
+            "cautions. A missing row is not a zero \u2014 a district with no jail has no "
+            "jail row \u2014 so coverage varies by kind: hostels, hotels and hospitals "
+            "reach all 156 districts, universities 74, orphanages 66. And \u2018Home\u2019 is "
+            "returned for 9 districts of 156; the portal\u2019s own documentation says to "
+            "treat it as unavailable, so it is here but deliberately not offered as "
+            "a map indicator. The district and tehsil aggregations agree exactly for "
+            "all 24 kinds.",
+            {"level": "district or tehsil",
+             "area_code": "PBS\u2019s own district or tehsil code",
+             "map_key": "the shape this is drawn on \u2014 district code, or dds_id "
+                        "below that, or PBS-<code> for a tehsil outside the census",
+             "unit_id": "PBS\u2019s own id for the kind of structure, 1\u201324",
+             "unit_type": "what the structure is",
+             "area": "the area\u2019s name as the portal gives it",
+             "count": "structures enumerated"},
+            "PBS Digital Census 2023 via economic.data.gov.pk, pull of 2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="structures",
+        )
+
+    f = OUT / "crops_district_fy.parquet"
+    if f.exists():
+        register(
+            "crops_district_fy",
+            "Area, production and yield by crop, district and fiscal year, "
+            "1981\u201382 to 2024\u201325.",
+            "108 crops over 123 districts and 44 fiscal years. All 123 district "
+            "codes join the PBS 2023 layer exactly, but the frame is older than "
+            "that layer: 33 of the 156 districts Data Darbar draws have no crop "
+            "rows at all \u2014 every district of Azad Jammu & Kashmir and "
+            "Gilgit-Baltistan, which have their own agricultural authorities, six "
+            "of Karachi\u2019s seven, and the most recently created districts "
+            "(Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower "
+            "Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s "
+            "code, and is vestigial rather than city-wide: six crops and nothing "
+            "at all in recent years. Two crops are unlabelled on PBS\u2019s portal "
+            "and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than "
+            "dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage "
+            "varies by crop: the majors run from 1981\u201382, most vegetables and "
+            "fruit from 2008\u201309.",
+            {"district_code": "PBS 2023 district code, joining to geography_keys",
+             "district": "district name as PBS\u2019s 2023 layer gives it",
+             "province": "province or area",
+             "crop_id": "PBS\u2019s own crop id",
+             "crop": "crop name, or a placeholder where the portal gives none",
+             "fy": "fiscal year, e.g. 2024-25",
+             "area_000ha": "thousand hectares sown",
+             "production_000t": "thousand tonnes produced",
+             "yield_t_per_ha": "tonnes per hectare; production divided by area"},
+            "PBS Agriculture Statistics via the national accounts portal, pull of "
+            "2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="thousand hectares, thousand tonnes, tonnes per hectare",
+        )
+
+    f = OUT / "diaspora_emigrants_district.parquet"
+    if f.exists():
+        register(
+            "diaspora_emigrants_district",
+            "Registered emigrants by district of origin, 2011\u20132024, from the Bureau "
+            "of Emigration & Overseas Employment.",
+            "Two things to know before using it. The year 'overall' is NOT the sum of "
+            "2011\u20132024: it is 9,858,937 against 8,663,198, because the Bureau\u2019s "
+            "register goes back well before 2011. is_cumulative marks it, and it is a "
+            "separate indicator in place_indicators for the same reason. And the frame "
+            "is partial \u2014 the file keys on PBS district codes and all 146 join "
+            "cleanly, but eleven PBS districts have no row of their own: Chaman, Duki, "
+            "Surab, Kharmang, Nagar, Shigar, Upper and Lower Kohistan, Upper Chitral "
+            "and Keamari. The register has followed some recent splits and not others "
+            "\u2014 Kolai Palas Kohistan and Lower Chitral appear, their siblings do not "
+            "\u2014 so those eleven sit inside a parent\u2019s figure rather than being absent, "
+            "and the parent is flagged in place_indicators.",
+            {"district_code": "PBS 2023 district code, joining to geography_keys",
+             "district": "district name as PBS\u2019s 2023 layer gives it",
+             "division": "division, as the register gives it",
+             "province": "province or area",
+             "year": "2011\u20132024, or 'overall' for the whole register",
+             "emigrants_registered": "people registered as emigrating in that period",
+             "is_cumulative": "TRUE on the 'overall' row \u2014 do not add it to the years"},
+            "Bureau of Emigration & Overseas Employment, read through PBS\u2019s diaspora "
+            "portal, pull of 2026-09-27",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="people",
+        )
+
+    f = OUT / "geography_keys.parquet"
+    if f.exists():
+        register(
+            "geography_keys",
+            "Which identifier names a Pakistani place, and which of them can safely "
+            "be joined on.",
+            "Six identifiers name places in this warehouse and they are not "
+            "interchangeable; unique_per_place is the column that decides whether a "
+            "join is safe. dd_id is the trap: 591 census sub-districts share 471 of "
+            "them, so joining on it and keeping one row per polygon returns a "
+            "plausible answer with units missing. Every count here is measured from "
+            "the boundary files rather than asserted.",
+            {"key": "the column name as it appears in the tables",
+             "level": "district or sub-district",
+             "what": "what the identifier is",
+             "distinct_values": "how many distinct values exist, measured",
+             "unique_per_place": "FALSE means one value can name several places \u2014 "
+                                 "do not join on it alone",
+             "frame": "the boundary set it belongs to",
+             "notes": "what to do about it"},
+            "Measured from the PBS Digital Census 2023 layers and the warehouse tables",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="identifiers",
+        )
+
+    PLACE_COLS = {
+        "place_indicators": {
+            "level": "district or tehsil",
+            "map_key": "the PBS 2023 shape(s) this row is drawn on, space-separated "
+                       "where a unit was later split",
+            "source_key": "the identifier the source table used \u2014 a district slug, a "
+                          "dd_id, or a PBS tehsil code",
+            "relation": "how the unit relates to the 2023 frame: exact, alias, split, "
+                        "or shared",
+            "note": "the reason, in words, for anything other than a straight match",
+            "group_key": "the indicator group, joining to place_indicator_index",
+            "indicator": "the indicator id within that group",
+            "year": "the year, where the series has one; NULL where it does not",
+            "value": "the figure \u2014 unit depends on the indicator, see the index",
+        },
+        "place_indicator_index": {
+            "level": "district or tehsil \u2014 the geography this indicator draws on",
+            "topic": "the topic it browses under",
+            "topic_label": "that topic, as a reader sees it",
+            "group_key": "the group, joining to place_indicators.group_key",
+            "group_label": "that group, as a reader sees it",
+            "dataset": "the source dataset and release",
+            "indicator": "the indicator id, joining to place_indicators.indicator",
+            "label": "the indicator, as a reader sees it",
+            "dp": "decimal places to show; NULL for a count",
+            "source": "where the values are: place_indicators, or a census panel",
+            "years": "how many years the series has",
+            "shapes": "PBS 2023 shapes this indicator colours",
+            "units": "census units carrying a value \u2014 differs from shapes wherever a "
+                     "unit is drawn across the shapes that replaced it",
+            "min_value": "smallest value",
+            "max_value": "largest value",
+        },
+    }
+    for name, desc, notes, src in [
+        ("place_indicators",
+         "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
+         "Values only \u2014 the words belong to place_indicator_index, because "
+         "repeating a label 90,000 times is most of what makes a payload large. "
+         "map_key names the PBS 2023 shape(s) a row is drawn on and follows the same "
+         "convention as census_unit_map: a unit that was later split names all of its "
+         "successors, so count units and not shapes when totalling. 73 of the fields "
+         "here are provenance rather than indicators \u2014 dhs_coverage, "
+         "hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have "
+         "no index entry.",
+         "place_indicators"),
+        ("place_indicator_index",
+         "One row per indicator Places can draw, curated and census alike.",
+         "The picker reads this and nothing else: 296 curated indicators beside "
+         "37,971 census series, with the words a reader sees and the number of shapes "
+         "behind each. source says where the values are \u2014 place_indicators, or a "
+         "census panel \u2014 which is what lets one list cover both without copying 17 MB "
+         "of census into a table it does not fit. shapes counts shapes and units "
+         "counts census units; they differ wherever a unit is drawn across its "
+         "successors.",
+         "place_indicator_index"),
+    ]:
+        f = OUT / f"{src}.parquet"
+        if f.exists():
+            register(name, desc, notes, PLACE_COLS.get(name, {}),
+                     "Built by etl/places/build_all.py",
+                     f"SELECT * FROM '{f.as_posix()}'",
+                     unit="indicator values" if src == "place_indicators" else "indicators")
+
+    if p17 or p23:
+        EXAMPLES.extend(CENSUS_PANEL_EXAMPLES)
+    else:
+        print("census panels…  skipped (no panel release found under --src)")
+
+    # ── catalogue metadata: shelf, period covered, place keys, sample rows ──
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from catalog_meta import KIND, KINDS, TIME_COLS, KEY_COLS
+    unfiled = [t["name"] for t in tables if t["name"] not in KIND]
+    if unfiled:
+        raise SystemExit(f"catalog_meta.KIND does not file: {', '.join(unfiled)}")
+    samples = {}
+    for t in tables:
+        path = (OUT / t["file"]).as_posix()
+        cols = [c["name"] for c in t["columns"]]
+        t["kind"] = KIND[t["name"]]
+        tc = next((c for c in TIME_COLS if c in cols), None)
+        if tc:
+            lo, hi = con.sql(f'SELECT min("{tc}")::VARCHAR, max("{tc}")::VARCHAR '
+                             f"FROM '{path}' WHERE \"{tc}\"::VARCHAR NOT IN ('overall', '-1') "
+                             f"AND \"{tc}\"::VARCHAR NOT LIKE 'Δ%'").fetchone()
+            t["span"] = {"column": tc, "from": lo, "to": hi}
+        t["keys"] = [k for k in KEY_COLS if k in cols]
+        # Five rows, as text, so a reader sees the shape before downloading.
+        rows = con.sql(f"SELECT * FROM '{path}' LIMIT 5").fetchall()
+        samples[t["name"]] = [[None if v is None else str(v)[:80] for v in r] for r in rows]
+    (OUT / "catalog_samples.json").write_text(
+        json.dumps(samples, ensure_ascii=False, separators=(",", ":")))
+
     # ── catalog ──────────────────────────────────────────────────────────────
     catalog = {
         "name": "Data Darbar",
         "version": 1,
         "generated": _today(),
         "license": "Derived data CC BY 4.0 · code MIT",
+        "kinds": [{"key": k, "label": l, "about": a} for k, l, a in KINDS],
         "tables": sorted(tables, key=lambda t: t["name"]),
         "examples": EXAMPLES,
     }
@@ -1183,13 +2270,13 @@ EXAMPLES = [
 # Sindh "boys'" school is usually mixed.
 SCHOOL_EXAMPLES = [
     {"title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-     "sql": ("-- Count by the polygon the point falls in (district_key_boundary), which is\n"
+     "sql": ("-- Count by the polygon the point falls in (analysis_district_key_boundary), which is\n"
              "-- how the piece counts; district_key is the register's own district.\n"
-             "SELECT district_key_boundary AS district,\n"
+             "SELECT analysis_district_key_boundary AS district,\n"
              "       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n"
              "       count(*) FILTER (analysis_sex = 'B') AS boys_schools\n"
              "FROM schools_pk\n"
-             "WHERE in_analysis AND middle_plus AND district_key_boundary IS NOT NULL\n"
+             "WHERE in_analysis AND middle_plus AND analysis_district_key_boundary IS NOT NULL\n"
              "GROUP BY 1 ORDER BY girls_schools DESC;")},
     {"title": "How precise are the positions, by province?",
      "sql": ("-- Never map Punjab's tehsil-centroid rows as if they were GPS fixes.\n"
@@ -1263,6 +2350,62 @@ HEALTH_EXAMPLES = [
 # The State Bank tables are long: one row per series x date, and the series are
 # identified by name in sbp_series_catalog. Every example therefore starts from
 # the catalogue, by name, so it reads as English rather than as a code.
+CENSUS_PANEL_EXAMPLES = [
+    {"title": "Census 2023 population by district — the safe filter",
+     "sql": ("-- The panel nests levels: district rows and the tehsil rows inside them both\n"
+             "-- exist, and locality sums to its own total, so pin both.\n"
+             "-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n"
+             "-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n"
+             "-- would still hand back the male, female and transgender rows. Name the\n"
+             "-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\n"
+             "SELECT province_area, unit AS district, value AS population\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit_type = 'district'\n"
+             "  AND indicator = 'POPULATION-2023 / ALL SEXES'\n"
+             "  AND locality = 'all' AND NOT missing\n"
+             "ORDER BY population DESC;\n"
+             "-- 136 rows adding to 241,499,431 — PBS's published national total.")},
+    {"title": "Check a filter before you trust it",
+     "sql": ("-- Worth doing on any table_id you have not used before: if a single unit\n"
+             "-- returns more than one row, your filter is not yet a series.\n"
+             "SELECT indicator, col_label, locality, sex, count(*) AS rows_, sum(value) AS total\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit = 'LAHORE DISTRICT'\n"
+             "GROUP BY 1, 2, 3, 4\n"
+             "ORDER BY rows_ DESC, total DESC\n"
+             "LIMIT 20;")},
+    {"title": "Tehsil populations joined to the map geometry",
+     "sql": ("-- dd_id is the key the site's tehsil layer uses. It is NULL on district rows\n"
+             "-- and missing for about 150,000 tehsil rows, so an inner join silently drops\n"
+             "-- units; count what you lose before mapping.\n"
+             "SELECT count(*) AS tehsil_rows,\n"
+             "       count(dd_id) AS joinable_to_geometry,\n"
+             "       count(*) - count(dd_id) AS would_be_dropped\n"
+             "FROM census_panel_2023\n"
+             "WHERE table_id = '1' AND unit_type = 'tehsil'\n"
+             "  AND locality = 'all' AND sex = 'all' AND indicator ILIKE '%POPULATION%';")},
+    {"title": "Why 2017 and 2023 cannot simply be joined",
+     "sql": ("-- Both panels use the same column names, which makes a cross-year join look\n"
+             "-- easy. It is not: the indicator vocabularies barely overlap, and most of the\n"
+             "-- difference is punctuation rather than meaning. Until a crosswalk exists,\n"
+             "-- read this before comparing anything across the two censuses.\n"
+             "WITH a AS (SELECT DISTINCT indicator FROM census_panel_2017),\n"
+             "     b AS (SELECT DISTINCT indicator FROM census_panel_2023)\n"
+             "SELECT (SELECT count(*) FROM a) AS labels_2017,\n"
+             "       (SELECT count(*) FROM b) AS labels_2023,\n"
+             "       (SELECT count(*) FROM a SEMI JOIN b USING (indicator)) AS identical_labels;")},
+    {"title": "A dash means different things in the two panels",
+     "sql": ("-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n"
+             "-- 2023 left them NULL. So a count of populated cells is not comparable across\n"
+             "-- the years, and neither is an average taken over missing rows.\n"
+             "SELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\n"
+             "FROM census_panel_2017 GROUP BY 1, 2\n"
+             "UNION ALL\n"
+             "SELECT 2023, missing, count(*), count(value)\n"
+             "FROM census_panel_2023 GROUP BY 1, 2\n"
+             "ORDER BY census_year, missing;")},
+]
+
 SBP_EXAMPLES = [
     {"title": "Find a State Bank series by name",
      "sql": ("-- sbp_observations is one row per series x date. Start here: find the\n"
@@ -1317,8 +2460,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
-    ap.add_argument("--only", choices=["district_indicators"], help="rebuild only the website district panel")
+    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health"],
+                    help="rebuild only one table family into the existing warehouse")
     a = ap.parse_args()
     if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
-    build(a.src, district_only=bool(a.only))
+    build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk",
+          health_only=a.only == "health")

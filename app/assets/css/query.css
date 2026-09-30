@@ -1,0 +1,130 @@
+/* Data Darbar — the SQL console.
+   ------------------------------------------------------------------
+   The explorers' frame applied to a tool: a left rail that finds things
+   (tables and their fields, examples, your history) and a main column that
+   does things (write, run, read, export). Tokens and chrome from shell.css;
+   the visual rules are the catalogue's: white panels on hairlines, uppercase
+   labels, gold monospace for anything you type. */
+
+html,body{height:100%}
+body.qpage{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+.qwrap{flex:1;min-height:0;display:flex}
+
+/* ── boot ── */
+#boot{margin:auto;text-align:center;padding:40px 24px;max-width:520px;color:var(--body);font-size:14px}
+#boot .spin{width:32px;height:32px;border:3px solid var(--line);border-top-color:var(--gold-500);border-radius:50%;margin:0 auto 14px;animation:qsp .8s linear infinite}
+@keyframes qsp{to{transform:rotate(360deg)}}
+#boot code{font-family:var(--mono);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:4px}
+
+/* ── rail ── */
+.qrail{width:316px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.qtabs{flex-shrink:0;display:grid;grid-template-columns:repeat(3,1fr);margin:14px 14px 10px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);overflow:hidden}
+.qtab{font:inherit;font-size:12.5px;font-weight:600;padding:7px 0;background:var(--surface);color:var(--ink);border:0;border-left:1px solid var(--line-strong);cursor:pointer}
+.qtab:first-child{border-left:0}
+.qtab[aria-selected="true"]{background:var(--green-900);color:#fff;font-weight:700}
+.qfind{flex-shrink:0;display:flex;align-items:center;gap:8px;margin:0 14px 8px;height:36px;padding:0 11px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);color:var(--muted)}
+.qfind:focus-within{border-color:var(--green-700);box-shadow:0 0 0 3px rgba(30,107,62,.1)}
+.qfind input{border:0;outline:0;font:inherit;font-size:13px;color:var(--ink);width:100%;min-width:0;background:transparent}
+.qpanel{flex:1;min-height:0;overflow-y:auto;padding:2px 8px 14px}
+.qgroup{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 8px 6px}
+.qgroup:first-child{padding-top:4px}
+.qnote{font-size:12px;color:var(--muted);padding:10px 8px;line-height:1.5}
+
+.qt{border-radius:7px}
+.qt-head{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 4px;border-radius:7px}
+.qt-head:hover{background:var(--green-100)}
+.qt.open>.qt-head{background:var(--green-100)}
+.qt-tog{flex:0 0 18px;height:18px;border:0;background:none;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;border-radius:4px;padding:0}
+.qt-tog svg{transition:transform .12s}
+.qt.open .qt-tog svg{transform:rotate(90deg)}
+.qt-name{flex:1;min-width:0;text-align:left;font-family:var(--mono);font-size:12px;font-weight:500;color:var(--green-900);background:none;border:0;cursor:pointer;padding:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qt-name:hover{color:var(--green-700);text-decoration:underline;text-underline-offset:2px}
+.qt-n{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.qt-dot{width:6px;height:6px;border-radius:50%;background:var(--line-strong);flex-shrink:0}
+.qt-dot.on{background:var(--green-700)}
+.qt-body{display:none;padding:4px 6px 10px 28px}
+.qt.open>.qt-body{display:block}
+.qt-desc{font-size:11.5px;color:var(--body);line-height:1.45;margin-bottom:6px}
+.qt-acts{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.qmini{font:inherit;font-size:11px;font-weight:600;height:24px;padding:0 8px;border-radius:6px;border:1px solid var(--line-strong);background:var(--surface);color:var(--green-800);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.qmini:hover{border-color:var(--green-700);background:var(--green-100)}
+.qcols{list-style:none;display:flex;flex-direction:column}
+.qcol{display:flex;align-items:baseline;gap:6px;padding:2px 4px;border-radius:5px;cursor:pointer;font-size:11.5px;border:0;background:none;text-align:left;width:100%;font-family:inherit}
+.qcol:hover{background:var(--gold-100)}
+.qcol code{font-family:var(--mono);font-size:11px;color:var(--gold-700);white-space:nowrap}
+.qcol .ty{font-family:var(--mono);font-size:9.5px;color:var(--muted-2);white-space:nowrap}
+.qcol .d{color:var(--muted);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.qcol mark,.qt-name mark{background:var(--gold-100);color:inherit}
+
+.qex{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:8px 10px;border-radius:7px;border:0;background:none;cursor:pointer;font:inherit}
+.qex:hover{background:var(--green-100)}
+.qex b{font-size:12.5px;color:var(--green-900);font-weight:600}
+.qex span{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── main ── */
+.qmain{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;padding:18px 22px 14px;gap:12px}
+.qhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.qeyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-700)}
+.qhead h1{font-size:22px;font-weight:800;letter-spacing:-.3px;color:var(--green-900);line-height:1.2}
+.qhead p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.qhead-acts{display:flex;gap:8px;align-items:center}
+.qengine{font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.qengine::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green-700)}
+
+.qbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:var(--radius-sm);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);text-decoration:none}
+.qbtn:hover{border-color:var(--green-700)}
+.qbtn.primary{background:var(--green-900);border-color:var(--green-900);color:#fff;font-weight:700}
+.qbtn.primary:hover{background:var(--green-800)}
+.qbtn:disabled{opacity:.5;cursor:default}
+.qbtn.done{border-color:var(--green-700);background:var(--green-100)}
+.qkbd{font-family:var(--mono);font-size:10.5px;opacity:.65}
+
+.qeditor{display:flex;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);overflow:hidden;flex-shrink:0}
+.qeditor:focus-within{border-color:var(--green-700);box-shadow:0 0 0 3px rgba(30,107,62,.1)}
+.qgutter{padding:12px 8px 12px 12px;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--muted-2);text-align:right;user-select:none;background:var(--ground);border-right:1px solid var(--line);white-space:pre;overflow:hidden;min-width:40px}
+#sql{flex:1;min-width:0;height:170px;min-height:90px;resize:vertical;border:0;outline:0;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--ink);background:var(--surface);tab-size:2;white-space:pre;overflow:auto}
+.qrun{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qrun .qhint{font-size:11.5px;color:var(--muted)}
+#status{font-size:12px;color:var(--body)}
+#err{margin:0;padding:11px 14px;background:var(--negative-100);border:1px solid #e6c4bd;border-radius:var(--radius-sm);color:var(--negative);font-family:var(--mono);font-size:12px;white-space:pre-wrap;line-height:1.5}
+
+.qres{flex:1;min-height:180px;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.qres-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--line)}
+.qres-bar .qbtn{height:28px;font-size:11.5px;padding:0 10px}
+#meta{font-size:12px;color:var(--body);font-variant-numeric:tabular-nums;margin-right:auto}
+#meta b{color:var(--green-900)}
+.qnotes{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--body);cursor:pointer}
+.qnotes input{accent-color:var(--green-700)}
+#out{flex:1;min-height:0;overflow:auto}
+#out:focus-visible{outline:2px solid var(--gold-500);outline-offset:-2px}
+#out table{border-collapse:collapse;width:100%;font-size:12.5px}
+#out th{position:sticky;top:0;z-index:1;background:var(--surface);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line-strong);white-space:nowrap;cursor:pointer;user-select:none}
+#out th .c{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--gold-700)}
+#out th .ty{display:block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+#out th.num{text-align:right}
+#out th[aria-sort="ascending"] .c::after{content:" ▲";color:var(--green-700);font-size:9px}
+#out th[aria-sort="descending"] .c::after{content:" ▼";color:var(--green-700);font-size:9px}
+#out th:hover .c{color:var(--green-800)}
+#out td{padding:6px 12px;border-bottom:1px solid #eef1ee;white-space:nowrap;max-width:420px;overflow:hidden;text-overflow:ellipsis;color:var(--body)}
+#out td.n{font-family:var(--mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+#out tr:hover td{background:var(--green-100)}
+#out .nul{color:var(--muted-2);font-size:11px}
+#out .rn{color:var(--muted-2);font-family:var(--mono);font-size:10.5px;text-align:right;width:1%;padding-right:6px;cursor:default}
+.qempty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+
+.qfoot{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-shrink:0}
+.qfoot details{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm)}
+.qfoot summary{cursor:pointer;padding:9px 13px;font-size:12.5px;font-weight:700;color:var(--green-900)}
+.qfoot pre{margin:0 13px 13px;padding:12px;background:var(--green-900);color:#e6efe8;border-radius:8px;font-family:var(--mono);font-size:11.5px;line-height:1.6;overflow-x:auto}
+.qfoot p{padding:0 13px 12px;font-size:12px;line-height:1.6;color:var(--body)}
+.qfoot code{font-family:var(--mono);font-size:11px;color:var(--gold-700)}
+
+@media(max-width:900px){
+  html,body{height:auto}
+  .qwrap{flex-direction:column}
+  .qrail{order:2;width:auto;border-right:0;border-top:1px solid var(--line);max-height:60vh}
+  .qmain{padding:14px 16px 20px}
+  .qres{min-height:320px;max-height:70vh}
+  .qfoot{grid-template-columns:1fr}
+  #out td{max-width:200px}
+}

@@ -1,6 +1,14 @@
 /* Data Darbar — GDP & Budget: interactive structure-of-the-economy dashboard.
    D3 v7 + window.ECON.{structure,industry,budget,indicators,io}. Linked views:
-   selYear (year cursor) and selSector (macro focus) drive the top panels. */
+   selYear (year cursor) and selSector (macro focus) drive the top panels.
+
+   An ES module since Economy became one page. Nothing below was renamed to
+   make that work: module scope keeps this file's TOPICS, start, writeHash,
+   tip and the twenty-five other names it shares with money.js and trade.js
+   to itself. What changed is that it no longer assumes the page is its own -
+   it registers its topics with econ-shell.js, and when the hash names a
+   topic belonging to another module it hides its own cards and panels
+   instead of drawing over them. */
 const fmtBn=v=>v==null?'—':(Math.abs(v)>=1000?(v/1000).toFixed(v>=10000?0:1)+' tn':Math.round(v).toLocaleString()+' bn');
 const fmtRs=v=>v==null?'—':'Rs '+fmtBn(v);
 const fmtPct=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(1)+'%';
@@ -11,13 +19,13 @@ const hideTip=()=>tip.style('opacity',0);
 const fyEnd=y=>+y.slice(0,4)+1;          // '1951-52' -> 1952
 const fyLbl=n=>`${n-1}-${String(n).padStart(4,'0').slice(2)}`; // 1952 -> '1951-52'
 
-const MACRO={agri:{label:'Agriculture',c:'#5b8c5a'},ind:{label:'Industry',c:'#e07b39'},serv:{label:'Services',c:'#3d6db5'}};
-const MFG_C='#c9862b';let arcView='stack';
+const MACRO={agri:{label:'Agriculture',c:'var(--green-400)'},ind:{label:'Industry',c:'var(--gold-500)'},serv:{label:'Services',c:'var(--green-800)'}};
+const MFG_C='var(--gold-600)';let arcView='stack';
 const ERAS=[[1952,1958,'Early years'],[1958,1969,'Ayub industrialisation'],[1969,1977,'War & nationalisation'],[1977,1988,'Zia decade'],[1988,1999,'Adjustment years'],[1999,2008,'Musharraf boom'],[2008,2013,'Energy crisis'],[2013,2020,'CPEC era'],[2020,2022,'COVID'],[2022,2026,'Squeeze & stabilisation']];
 
 const LSM_SHORT={'QIM':'QIM (overall)','Manufacturing of Food':'Food','Manufacturing of Beverages':'Beverages','Manufacturing of Tobacco':'Tobacco','Manufacturing of Textile':'Textiles','Manufacture of wearing apparel':'Wearing apparel','Manufacturing of Leather Products':'Leather','Manufacturing of Wood Products':'Wood','Manufacturing of Paper & Board':'Paper & board','Manufacturing of Coke & Petroleum Products':'Petroleum products','Manufacturing of Chemicals':'Chemicals','Manufacturing of Pharmaceuticals Products':'Pharmaceuticals','Manufacturing of Rubber Products':'Rubber','Manufacturing of Non Metalic Mineral Products':'Cement & minerals','Manufacturing of Iron & Steel Products':'Iron & steel','Manufacture of Fabricated Metal':'Fabricated metal','Manufacture of Computer, electronics and Optical products':'Electronics & optics','Manufacture of Electrical Equipment':'Electrical equipment','Manufacture of Machinery and  Equipment n.e.c':'Machinery','Manufacturing of Automobiles':'Automobiles','Manufacture of other transport  Equipment':'Other transport','Manufacture of furniture':'Furniture','Other manufacturing':'Other (footballs)'};
 const OLD2NEW={'Textile':'Manufacturing of Textile','Pharmaceuticals':'Manufacturing of Pharmaceuticals Products','Chemicals':'Manufacturing of Chemicals','Automobiles':'Manufacturing of Automobiles','Iron & Steel Products':'Manufacturing of Iron & Steel Products','Coke & Petroleum Products':'Manufacturing of Coke & Petroleum Products','Leather Products':'Manufacturing of Leather Products','Rubber Products':'Manufacturing of Rubber Products','Wood Products':'Manufacturing of Wood Products','Non Metalic Mineral Products':'Manufacturing of Non Metalic Mineral Products','Paper & Board':'Manufacturing of Paper & Board','Electronics':'Manufacture of Electrical Equipment','QIM':'QIM'};
-const LSM_PALETTE=['#0c3a1e','#c0392b','#3d6db5','#d4a017','#9b59b6','#e07b39','#16a085','#2c3e8f','#a0522d','#5b8c5a','#d98880','#0e8a8a','#6d4c2b','#7f8c8d','#b8941a','#c39bd3','#34495e','#e8b92e','#8e44ad','#1e6b3e','#5d6d7e','#95a5a6','#17a2b8'];
+const LSM_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)','var(--plum)','var(--teal-500)','var(--sienna)','var(--olive)','var(--sky)','var(--negative)','var(--mauve)','var(--amber)','var(--green-500)','var(--grey-blue)','var(--teal-300)','var(--sand)','var(--green-800)','var(--plum-300)','var(--line-strong)','var(--sienna-300)','var(--olive-300)','var(--green-300)','var(--gold-700)'];
 
 /* ---- topics (sidebar navigation, one topic at a time; #hash deep links) ---- */
 const TOPICS=[
@@ -54,7 +62,7 @@ const TOPICS=[
   lede:'Where the federal government’s money comes from and where current spending goes, budget year by budget year.',
   desc:'The federal budget as a treemap: receipts and current expenditure.',
   meta:'Finance Division: Budget in Brief & Explanatory Memorandum on Federal Receipts, FY2009-10→2026-27.'}];
-const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
+const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();drawMacro();drawQtr();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
 // meaningful groupings for the sidebar (plus an "Everything" shortcut at the top)
 const TOPIC_GROUPS=[
  {label:null,keys:['all']},
@@ -64,31 +72,50 @@ const TOPIC_GROUPS=[
 const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
 let topic='structure',applyingHash=false,_lastNavHash='';
 
+/* The topics this module answers for. "all" is not among them: Everything
+   meant everything on this page, and across the merged section it would be
+   27 charts and three modules each believing they owned the view. */
+const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+/* Sidebar panels this module owns. Another module's applyTopic cannot know
+   to hide them, so they are hidden here when the topic is not ours. */
+const MY_PANELS=['sideYear','sideSector','foot-finance'];
+function standDown(){
+ /* Forget the last hash we wrote. _lastNavHash exists so this module ignores
+    a hashchange it caused itself, and on a page of its own that was safe -
+    leaving a topic and coming back to the very same one could not happen.
+    It can now: go to Trading partners and back to Structural change and the
+    hash matches what we last wrote, so the guard returned early and the
+    cards we hid on the way out never came back. */
+ _lastNavHash='';
+ MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+ d3.selectAll('[data-topic]').filter(function(){return MINE.indexOf(this.dataset.topic)>=0;})
+   .classed('topic-hidden',true);
+}
+
 let E,ST,IND;
 let selYear,selSector='all',arcYears=[],arcData=[],shareYears=[],lsmSeries={},lsmColors={},lsmSel;
 function start(){
- if(!window.ECON){return setTimeout(start,30);}
- E=window.ECON;ST=E.structure;IND=E.industry;
+ if(!window.ECON||!window.DD_GROWTH||!window.DD_STRUCTURE){return setTimeout(start,30);}
+ E=window.ECON;IND=E.industry;
+ /* Shares and growth come from the warehouse now (DD_STRUCTURE), not
+    from the econ_data.js artefact. The numbers are the same to within
+    rounding - it was faithful to PBS - but they can be refreshed and
+    checked now, which they could not be while the only copy of them
+    was a committed file no script produced. */
+ ST=window.DD_STRUCTURE;
  prepData();
  buildSectorSelect();
  initArc();initMix();initContrib();
  initLsm();drawQim();drawWeights();initCmi();
- initIO();initBudget();initCsv();
+ initIO();initBudget();initMacro();initQtr();initCsv();
  initTopics();
- let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(topic==='all')drawAll();else if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
+ let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
+  if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
+  if(TOPIC_DRAWS[topic])TOPIC_DRAWS[topic]();},150);});
 }
 function initTopics(){
- // grouped topic list (replaces the old dropdown + duplicate list)
- const list=d3.select('#topicList');list.selectAll('*').remove();
- TOPIC_GROUPS.forEach((g,gi)=>{
-  if(g.label)list.append('div').attr('class','topic-group'+(gi===0?' first':'')).text(g.label);
-  g.keys.forEach(k=>{
-   const t=TOPICS.find(x=>x.k===k);if(!t)return;
-   list.append('button').attr('class','topic-item'+(k==='all'?' all':'')).attr('data-k',k)
-    .html(`<span class="t-dot"></span>${t.label}`)
-    .on('click',()=>applyTopic(k,true));
-  });
- });
+ // The topic list is the shell's: one list, fifteen topics, three modules.
+ window.DDEcon.register({topics:TOPICS,groups:TOPIC_GROUPS});
  d3.select('#sectorSelect').on('change',function(){setSector(this.value);});
  window.addEventListener('hashchange',()=>{if(!applyingHash)applyStateFromHash();});
  window.addEventListener('popstate',()=>{if(!applyingHash)applyStateFromHash();});
@@ -109,13 +136,15 @@ function writeHash(push){
 }
 function readHash(){
  let h='';try{h=decodeURIComponent(location.hash.replace(/^#/,''));}catch(e){h=location.hash.replace(/^#/,'');}
- if(!h)return {t:'structure'};
+ if(!h)return {t:window.DDEcon.defaultTopic};
  if(!h.includes('='))return {t:h};
  const o={};new URLSearchParams(h).forEach((v,k)=>o[k]=v);if(!o.t)o.t='structure';return o;
 }
 function applyStateFromHash(){
  if('#'+new URLSearchParams(readHashRaw()).toString()===_lastNavHash&&_lastNavHash)return;
- const o=readHash();const k=TOPICS.some(t=>t.k===o.t)?o.t:'structure';
+ const o=readHash();const k=window.DDEcon.current();
+ if(MINE.indexOf(k)<0){standDown();return;}
+ (document.getElementById('foot-finance')||{style:{}}).style.display='';
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
@@ -155,7 +184,7 @@ function applyTopic(k,push){
  const t=TOPICS.find(x=>x.k===k);
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
- d3.select('#topicMeta').html('<b>Sources.</b> '+t.meta);
+ d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
  const all=k==='all';
  d3.select('#sideYear').style('display',(k==='structure'||k==='growth'||all)?null:'none');
  setupYearSlider();
@@ -218,7 +247,7 @@ function buildArcLegend(){
    .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`);
   return;
  }
- const items=[['all','Whole economy','#17301f']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
+ const items=[['all','Whole economy','var(--ink)']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
  lg.selectAll('.li').data(items).join('div').attr('class','li')
   .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`)
   .on('click',(e,d)=>setSector(d[0]));
@@ -235,7 +264,7 @@ function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k)
 /* sector focus can be 'all', a macro key, or a sub-sector key */
 function parentOf(sel){return (sel==='all'||MACRO[sel])?sel:(ST.growth_sub_parent[sel]||'all');}
 function growthSeries(sel){
- if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'#17301f'};
+ if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'var(--ink)'};
  if(MACRO[sel])return {pts:ST.growth[sel]||ST.growth.mfg,lbl:MACRO[sel].label.toLowerCase(),color:MACRO[sel].c};
  return {pts:ST.growth_sub[sel]||[],lbl:(ST.growth_sub_labels[sel]||sel).toLowerCase(),color:MACRO[parentOf(sel)].c};
 }
@@ -277,7 +306,7 @@ function drawArcStack(){
  ERAS.forEach((e,i)=>{
   const x0=x(Math.max(e[0],arcData[0].n)),x1=x(Math.min(e[1],lastPt(arcData).n));
   if(x1<=x0)return;
-  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);
+  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);
   if(x1-x0>55)svg.append('text').attr('class','era-lbl').attr('x',(x0+x1)/2).attr('y',m.t-8).attr('text-anchor','middle').text(e[2]);
  });
  const keys=['agri','ind','serv'];
@@ -298,9 +327,9 @@ function drawArcStack(){
  if(bEnd.length){
   const defs=svg.append('defs');
   defs.append('pattern').attr('id','hatch').attr('width',6).attr('height',6).attr('patternUnits','userSpaceOnUse').attr('patternTransform','rotate(45)')
-   .append('line').attr('y2',6).attr('stroke','#faf7ef').attr('stroke-width',1.1).attr('opacity',.55);
+   .append('line').attr('y2',6).attr('stroke','var(--ground)').attr('stroke-width',1.1).attr('opacity',.55);
   svg.append('rect').attr('x',x(bEnd[0].n)).attr('y',m.t).attr('width',x(lastPt(bEnd).n)-x(bEnd[0].n)).attr('height',H-m.t-m.b).attr('fill','url(#hatch)').attr('pointer-events','none');
-  svg.append('line').attr('x1',x(1999.5)).attr('x2',x(1999.5)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','#faf7ef').attr('stroke-width',1.5).attr('pointer-events','none');
+  svg.append('line').attr('x1',x(1999.5)).attr('x2',x(1999.5)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--ground)').attr('stroke-width',1.5).attr('pointer-events','none');
  }
  // axes
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(15,Math.floor(W/85))).tickFormat(n=>fyLbl(n)));
@@ -308,7 +337,7 @@ function drawArcStack(){
  // in-band labels (latest values)
  const lastRow=lastPt(arcData);let acc=0;
  keys.forEach(k=>{const mid=acc+lastRow[k]/2;acc+=lastRow[k];
-  svg.append('text').attr('x',W-m.r-6).attr('y',y(mid)).attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',800).attr('fill','#fff').attr('pointer-events','none')
+  svg.append('text').attr('x',W-m.r-6).attr('y',y(mid)).attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--surface)').attr('pointer-events','none')
    .text(`${MACRO[k].label} ${lastRow[k].toFixed(0)}%`);});
  // year cursor + drag
  const cx=x(fyEnd(selYear));
@@ -329,7 +358,7 @@ function drawArcLines(){
  ERAS.forEach((e,i)=>{
   const x0=x(Math.max(e[0],arcData[0].n)),x1=x(Math.min(e[1],lastPt(arcData).n));
   if(x1<=x0)return;
-  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);
+  if(i%2)svg.append('rect').attr('x',x0).attr('y',m.t).attr('width',x1-x0).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);
   if(x1-x0>55)svg.append('text').attr('class','era-lbl').attr('x',(x0+x1)/2).attr('y',m.t-8).attr('text-anchor','middle').text(e[2]);
  });
  const firstPub=arcData.findIndex(d=>!d.back);
@@ -350,8 +379,8 @@ function drawArcLines(){
   if(fr[k]!=null)svg.append('text').attr('x',x(fr.n)+6).attr('y',y(fr[k])+(k==='serv'?14:-7)).attr('font-size',11).attr('font-weight',800).attr('fill',c).attr('opacity',op).text(`${lbl} ${fr[k].toFixed(0)}%`);
  });
  const cn=fyEnd('1965-66');
- svg.append('line').attr('x1',x(cn)).attr('x2',x(cn)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','#7d8b96').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.7).attr('pointer-events','none');
- svg.append('text').attr('x',x(cn)+5).attr('y',H-m.b-8).attr('font-size',10).attr('font-style','italic').attr('fill','#7d8b96').attr('pointer-events','none').text('services overtake agriculture');
+ svg.append('line').attr('x1',x(cn)).attr('x2',x(cn)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--muted)').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.7).attr('pointer-events','none');
+ svg.append('text').attr('x',x(cn)+5).attr('y',H-m.b-8).attr('font-size',10).attr('font-style','italic').attr('fill','var(--muted)').attr('pointer-events','none').text('services overtake agriculture');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(15,Math.floor(W/85))).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'%'));
  const cx=x(fyEnd(selYear));
@@ -366,6 +395,238 @@ function drawArcLines(){
   const row=arcData.reduce((a,b)=>Math.abs(b.n-n)<Math.abs(a.n-n)?b:a);setYear(row.year);};
  svg.call(d3.drag().on('start drag',pick));
  svg.on('click',pick);
+}
+
+/* ================= 1b. headline macro series ================= */
+/* window.DD_MACRO, from gdp_indicators. Four series that everything else on
+   this page is implicitly divided or deflated by, and which nothing drew: the
+   econ_data.js `indicators` block has carried eleven of them since the site
+   began and uses two, invisibly, to build the budget deflator. */
+/* The three output aggregates are not interchangeable, and the first version
+   of this chart treated them as if they were: GVA at basic prices was labelled
+   GDP, and net primary income was added to it to make a "GNI" two trillion
+   rupees short of the published one. They come from PBS's Table 5 now, where
+   GVA + taxes - subsidies = GDP and GDP + NPI = GNI, both to the rupee. GVA
+   is in the levels view, because it is the basis every sector chart on this
+   page is built on. */
+const MACRO_SERIES=[
+ {k:'gdp_tn', lbl:'GDP, market prices',  c:'var(--pine)',      unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
+ {k:'gni_tn', lbl:'Gross national income',c:'var(--teal-500)', unit:'Rs tn', fmt:v=>v.toFixed(1)+' tn'},
+ {k:'pci17',  lbl:'Real income per person',c:'var(--gold-600)',unit:'Rs',    fmt:v=>'Rs '+Math.round(v).toLocaleString()},
+ {k:'usd',    lbl:'Rupees per US dollar', c:'var(--rust)',     unit:'Rs/$',  fmt:v=>v.toFixed(0)}];
+let macroView='index',macroRows=[];
+function initMacro(){
+ macroRows=rowsOf(window.DD_MACRO&&window.DD_MACRO.headline);
+ d3.select('#macroView').selectAll('button').on('click',function(){
+  d3.select('#macroView').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  macroView=this.dataset.mv;drawMacro();});
+ drawMacro();
+}
+/* Every payload block is {cols,rows}; this is the one place that shape is
+   turned into objects, so a column added upstream needs no change here. */
+function rowsOf(block){
+ if(!block)return [];
+ return block.rows.map(r=>{const o={};block.cols.forEach((c,i)=>o[c]=r[i]);return o;});
+}
+function drawMacro(){macroView==='index'?drawMacroIndex():drawMacroLevels();}
+function drawMacroIndex(){
+ const el=d3.select('#macro');el.selectAll('*').remove();
+ if(!macroRows.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(340,W*0.3)),m={t:18,r:112,b:26,l:44};
+ const base={};MACRO_SERIES.forEach(s=>{const f=macroRows.find(r=>r[s.k]!=null);base[s.k]=f?f[s.k]:null;});
+ const idx=(r,s)=>r[s.k]==null||!base[s.k]?null:100*r[s.k]/base[s.k];
+ const all=[];macroRows.forEach(r=>MACRO_SERIES.forEach(s=>{const v=idx(r,s);if(v!=null)all.push(v);}));
+ const x=d3.scaleLinear().domain(d3.extent(macroRows,r=>r.fy_end)).range([m.l,W-m.r]);
+ const y=d3.scaleLinear().domain([0,d3.max(all)*1.06]).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ MACRO_SERIES.forEach(s=>{
+  const pts=macroRows.filter(r=>idx(r,s)!=null);
+  if(!pts.length)return;
+  const line=d3.line().x(r=>x(r.fy_end)).y(r=>y(idx(r,s))).curve(d3.curveMonotoneX);
+  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',s.c).attr('stroke-width',2.6);
+  const l=pts[pts.length-1];
+  svg.append('circle').attr('cx',x(l.fy_end)).attr('cy',y(idx(l,s))).attr('r',3.4).attr('fill',s.c);
+  svg.append('text').attr('x',x(l.fy_end)+7).attr('y',y(idx(l,s))+4).attr('font-size',11).attr('font-weight',800).attr('fill',s.c).text(Math.round(idx(l,s)));
+ });
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(10,Math.floor(W/95))).tickFormat(n=>fyLbl(n)));
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5));
+ svg.on('mousemove',function(e){
+  const n=Math.round(x.invert(d3.pointer(e,svg.node())[0]));
+  const r=macroRows.reduce((a,b)=>Math.abs(b.fy_end-n)<Math.abs(a.fy_end-n)?b:a);
+  showTip(`<b>${r.fy}</b><br>`+MACRO_SERIES.map(s=>r[s.k]==null?null:
+    `${s.lbl} ${s.fmt(r[s.k])} <span style="opacity:.7">(${Math.round(idx(r,s))})</span>`).filter(Boolean).join('<br>'),e);
+ }).on('mouseleave',hideTip);
+ d3.select('#macroLegend').html(MACRO_SERIES.map(s=>
+  `<div class="li"><span class="sw" style="background:${s.c}"></span>${s.lbl}</div>`).join(''));
+}
+function drawMacroLevels(){
+ const el=d3.select('#macro');el.selectAll('*').remove();
+ if(!macroRows.length)return;
+ d3.select('#macroLegend').html('');
+ const W=el.node().clientWidth||1100,cols=W<640?1:2,cw=W/cols,ch=Math.max(150,Math.min(190,cw*0.5));
+ const PANELS=[
+  {lbl:'Output and national income', unit:'Rs trillion, 2015-16 prices — GVA, then plus taxes less subsidies, then plus income from abroad',
+   ks:[{k:'gva_tn',lbl:'GVA, basic prices',c:'var(--olive)',fmt:v=>v.toFixed(1)+' tn'},
+       MACRO_SERIES[0],MACRO_SERIES[1]]},
+  /* Two lines, not one. From 2023-24 PBS reprojects population on the 2023
+     Census, so the series are not a continuation of each other and joining
+     them would draw a fall nobody measured. */
+  {lbl:'Real income per person', unit:'rupees, 2015-16 prices — by census population basis',
+   ks:[{k:'pci17',lbl:'On 2017-Census population',c:'var(--gold-600)',fmt:v=>'Rs '+Math.round(v).toLocaleString()},
+       {k:'pci23',lbl:'On 2023-Census population',c:'var(--sienna)',fmt:v=>'Rs '+Math.round(v).toLocaleString()}]},
+  {lbl:'The rupee', unit:'rupees per US dollar, annual average', ks:[MACRO_SERIES[3]]},
+  {lbl:'Net primary income from abroad', unit:'Rs trillion — GNI less GDP',
+   ks:[{k:'npi_tn',lbl:'Net primary income',c:'var(--plum)',fmt:v=>v.toFixed(2)+' tn'}]}];
+ const svg=el.append('svg').attr('width',W).attr('height',ch*Math.ceil(PANELS.length/cols)).style('display','block');
+ PANELS.forEach((p,i)=>{
+  const gx=(i%cols)*cw,gy=Math.floor(i/cols)*ch,m={t:30,r:16,b:22,l:52};
+  const g=svg.append('g').attr('transform',`translate(${gx},${gy})`);
+  const vals=[];macroRows.forEach(r=>p.ks.forEach(s=>{if(r[s.k]!=null)vals.push(r[s.k]);}));
+  if(!vals.length)return;
+  const lo=Math.min(0,d3.min(vals)),hi=d3.max(vals);
+  const x=d3.scaleLinear().domain(d3.extent(macroRows,r=>r.fy_end)).range([m.l,cw-m.r]);
+  const y=d3.scaleLinear().domain([lo,hi*1.06]).nice().range([ch-m.b,m.t]);
+  g.append('text').attr('x',m.l).attr('y',13).attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--ink)').text(p.lbl);
+  g.append('text').attr('x',m.l).attr('y',24).attr('font-size',10).attr('fill','var(--muted)').text(p.unit);
+  if(lo<0)g.append('line').attr('x1',m.l).attr('x2',cw-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
+  p.ks.forEach(s=>{
+   const pts=macroRows.filter(r=>r[s.k]!=null);
+   if(!pts.length)return;
+   const line=d3.line().x(r=>x(r.fy_end)).y(r=>y(r[s.k])).curve(d3.curveMonotoneX);
+   g.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',s.c).attr('stroke-width',2.4);
+   const l=pts[pts.length-1];
+   g.append('circle').attr('cx',x(l.fy_end)).attr('cy',y(l[s.k])).attr('r',3).attr('fill',s.c);
+   g.append('text').attr('x',x(l.fy_end)-4).attr('y',y(l[s.k])-7).attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800).attr('fill',s.c).text(s.fmt(l[s.k]));
+  });
+  /* A "peak 2021-22" marker used to sit here. It was an artefact of an
+     extract that stopped in 2023-24: on the 2017-Census basis the series
+     reaches 198,864 in 2024-25 and 203,118 in 2025-26, both above it. The
+     chart states no turning point now; the reader can see the shape. */
+  g.append('g').attr('transform',`translate(0,${ch-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(6,Math.floor(cw/110))).tickFormat(n=>fyLbl(n)));
+  g.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')));
+ });
+}
+
+/* ================= 1c. quarterly national accounts ================= */
+/* gva_by_activity_quarterly: the only quarterly output series Pakistan
+   publishes, and the only chart on the site in which the lockdown quarter is
+   an event rather than a slightly worse year. */
+let qtrView='stack',qtrLevel='sector',qtrRows=[];
+const QTR_NAME={1:'Jul–Sep',2:'Oct–Dec',3:'Jan–Mar',4:'Apr–Jun'};
+function initQtr(){
+ qtrRows=rowsOf(window.DD_MACRO&&window.DD_MACRO.quarterly);
+ d3.select('#qtrView').selectAll('button').on('click',function(){
+  d3.select('#qtrView').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  qtrView=this.dataset.qv;drawQtr();});
+ d3.select('#qtrLevel').selectAll('button').on('click',function(){
+  d3.select('#qtrLevel').selectAll('button').classed('on',false);d3.select(this).classed('on',true);
+  qtrLevel=this.dataset.ql;drawQtr();});
+ drawQtr();
+}
+function qtrKey(r){return r.fy+' Q'+r.quarter;}
+/* One pass over the 880 rows produces the quarter list, the series names and
+   the series-by-quarter totals for whichever level is showing. */
+function qtrShape(){
+ const qs=[],seen=new Set(),by={},names=[];
+ qtrRows.forEach(r=>{
+  const k=qtrKey(r);
+  if(!seen.has(k)){seen.add(k);qs.push({k:k,fy:r.fy,n:r.fy_end,q:r.quarter});}
+  const s=r[qtrLevel];
+  if(names.indexOf(s)<0)names.push(s);
+  (by[s]=by[s]||{})[k]=(by[s][k]||0)+r.gva_mn/1e6;
+ });
+ qs.sort((a,b)=>a.n-b.n||a.q-b.q);
+ /* Largest first, so the stack reads top-down by size and the legend matches
+    the picture rather than the source's row order. */
+ const tot=s=>qs.reduce((a,q)=>a+(by[s][q.k]||0),0);
+ names.sort((a,b)=>tot(b)-tot(a));
+ const color=qtrLevel==='sector'
+  ? s=>({Agriculture:MACRO.agri.c,Industry:MACRO.ind.c,Service:MACRO.serv.c}[s]||'var(--slate)')
+  : s=>LSM_PALETTE[names.indexOf(s)%LSM_PALETTE.length];
+ return {qs:qs,names:names,by:by,color:color};
+}
+function drawQtr(){qtrView==='stack'?drawQtrStack():drawQtrLines();}
+function drawQtrStack(){
+ const el=d3.select('#qtr');el.selectAll('*').remove();
+ const S=qtrShape();if(!S.qs.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(280,Math.min(360,W*0.32)),m={t:16,r:14,b:38,l:46};
+ const x=d3.scaleBand().domain(S.qs.map(q=>q.k)).range([m.l,W-m.r]).padding(.12);
+ const stack=d3.stack().keys(S.names).value((q,s)=>S.by[s][q.k]||0)(S.qs);
+ const y=d3.scaleLinear().domain([0,d3.max(stack[stack.length-1],d=>d[1])*1.04]).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ stack.forEach(layer=>svg.append('g').attr('fill',S.color(layer.key)).selectAll('rect').data(layer).join('rect')
+  .attr('x',(d,i)=>x(S.qs[i].k)).attr('width',x.bandwidth())
+  .attr('y',d=>y(d[1])).attr('height',d=>Math.max(0,y(d[0])-y(d[1]))));
+ /* One transparent plate answers the mouse and finds the nearest quarter. A
+    handler per rect would report the layer under the pointer, which is not
+    what a reader hovering a stacked quarter is asking. */
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',H-m.b-m.t)
+  .attr('fill','transparent')
+  .on('mousemove',function(e){
+   const px=d3.pointer(e,svg.node())[0];
+   const q=S.qs.reduce((a,b)=>Math.abs(x(b.k)+x.bandwidth()/2-px)<Math.abs(x(a.k)+x.bandwidth()/2-px)?b:a);
+   const tot=S.names.reduce((a,s)=>a+(S.by[s][q.k]||0),0);
+   const parts=S.names.filter(s=>S.by[s][q.k]).slice(0,8).map(s=>
+    `<span class="sw" style="background:${S.color(s)}"></span>${s} ${(S.by[s][q.k]).toFixed(2)}tn`);
+   showTip(`<b>${q.fy} Q${q.q}</b> <span style="opacity:.7">${QTR_NAME[q.q]}</span><br>`
+    +`Total ${tot.toFixed(2)} tn<br>`+parts.join('<br>')
+    +(S.names.length>8?`<br><span style="opacity:.6">+${S.names.length-8} more</span>`:''),e);
+  }).on('mouseleave',hideTip);
+ markLockdown(svg,x,m,H);
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis')
+  .call(d3.axisBottom(x).tickValues(S.qs.filter(q=>q.q===1).map(q=>q.k)).tickFormat(k=>k.slice(0,7)))
+  .selectAll('text').attr('transform','rotate(-30)').attr('text-anchor','end').attr('dx','-4').attr('dy','6');
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'tn'));
+ qtrLegend(S);
+}
+function drawQtrLines(){
+ const el=d3.select('#qtr');el.selectAll('*').remove();
+ const S=qtrShape();if(!S.qs.length)return;
+ const W=el.node().clientWidth||1100,H=Math.max(280,Math.min(360,W*0.32)),m={t:16,r:14,b:38,l:46};
+ const x=d3.scalePoint().domain(S.qs.map(q=>q.k)).range([m.l,W-m.r]);
+ const base={};S.names.forEach(s=>{const f=S.qs.find(q=>S.by[s][q.k]);base[s]=f?S.by[s][f.k]:null;});
+ const vals=[];S.names.forEach(s=>S.qs.forEach(q=>{if(S.by[s][q.k]&&base[s])vals.push(100*S.by[s][q.k]/base[s]);}));
+ const y=d3.scaleLinear().domain(d3.extent(vals)).nice().range([H-m.b,m.t]);
+ const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ markLockdown(svg,x,m,H);
+ S.names.forEach(s=>{
+  if(!base[s])return;
+  const pts=S.qs.filter(q=>S.by[s][q.k]);
+  const line=d3.line().x(q=>x(q.k)).y(q=>y(100*S.by[s][q.k]/base[s])).curve(d3.curveMonotoneX);
+  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',S.color(s))
+   .attr('stroke-width',qtrLevel==='sector'?2.6:1.6).attr('opacity',qtrLevel==='sector'?1:.85);
+ });
+ svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.r-m.l).attr('height',H-m.b-m.t).attr('fill','transparent')
+  .on('mousemove',function(e){
+   const px=d3.pointer(e,svg.node())[0];
+   const q=S.qs.reduce((a,b)=>Math.abs(x(b.k)-px)<Math.abs(x(a.k)-px)?b:a);
+   const list=S.names.filter(s=>S.by[s][q.k]&&base[s])
+    .map(s=>({s:s,v:100*S.by[s][q.k]/base[s]})).sort((a,b)=>b.v-a.v).slice(0,8);
+   showTip(`<b>${q.fy} Q${q.q}</b> <span style="opacity:.7">${QTR_NAME[q.q]}</span><br>`
+    +`<span style="opacity:.7">indexed, first quarter = 100</span><br>`
+    +list.map(r=>`<span class="sw" style="background:${S.color(r.s)}"></span>${r.s} ${r.v.toFixed(0)}`).join('<br>'),e);
+  }).on('mouseleave',hideTip);
+ svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis')
+  .call(d3.axisBottom(x).tickValues(S.qs.filter(q=>q.q===1).map(q=>q.k)).tickFormat(k=>k.slice(0,7)))
+  .selectAll('text').attr('transform','rotate(-30)').attr('text-anchor','end').attr('dx','-4').attr('dy','6');
+ svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5));
+ qtrLegend(S);
+}
+/* April-June 2020 is Q4 of 2019-20, and it is why this table is worth
+   publishing, so it is labelled rather than left for the reader to find. */
+function markLockdown(svg,x,m,H){
+ const k='2019-20 Q4',cx=x.bandwidth?x(k)+x.bandwidth()/2:x(k);
+ if(cx==null||isNaN(cx))return;
+ svg.append('line').attr('x1',cx).attr('x2',cx).attr('y1',m.t).attr('y2',H-m.b)
+  .attr('stroke','var(--ink)').attr('stroke-width',1).attr('stroke-dasharray','2 3').attr('opacity',.55).attr('pointer-events','none');
+ svg.append('text').attr('x',cx-5).attr('y',m.t+11).attr('text-anchor','end').attr('font-size',10)
+  .attr('font-style','italic').attr('fill','var(--muted)').attr('pointer-events','none').text('lockdown');
+}
+function qtrLegend(S){
+ d3.select('#qtrLegend').html(S.names.map(s=>
+  `<div class="li"><span class="sw" style="background:${S.color(s)}"></span>${s}</div>`).join(''));
 }
 
 /* ================= 2a. mix in selected year ================= */
@@ -418,9 +679,9 @@ function drawMix(){
  const shade=d=>{const c=d3.hcl(MACRO[d.parent].c);const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
  const g=svg.selectAll('g.row').data(rows,d=>d.k);
  const gE=g.enter().append('g').attr('class','row');
- gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--slate-700)');
+ gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)');
  gE.append('rect').attr('rx',4).attr('height',rh-8).style('cursor','pointer');
- gE.append('text').attr('class','rv').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-600)');
+ gE.append('text').attr('class','rv').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--body)');
  const gm=gE.merge(g);
  gm.transition().duration(450).attr('transform',(d,i)=>`translate(0,${i*rh+4})`);
  const fp=parentOf(selSector);
@@ -449,22 +710,22 @@ function drawGrowthLine(elSel,lblSel,tall){
  const el=d3.select(elSel);if(!el.node())return;el.selectAll('*').remove();
  const gs=growthSeries(selSector);const lbl=gs.lbl,color=gs.color;
  d3.select(lblSel).text(selSector==='all'?'the whole economy':lbl);
- if(!gs.pts||!gs.pts.length){el.append('div').style('padding','20px').style('color','var(--slate-500)').text('No growth series for this sector.');return;}
+ if(!gs.pts||!gs.pts.length){el.append('div').style('padding','20px').style('color','var(--muted)').text('No growth series for this sector.');return;}
  const pts=gs.pts.map(p=>({...p,n:fyEnd(p.year)}));
  const W=el.node().clientWidth||520,H=tall?320:300,m={t:16,r:12,b:26,l:40};
  const x=d3.scaleLinear().domain([pts[0].n-0.5,lastPt(pts).n+0.5]).range([m.l,W-m.r]);
  const ext=d3.extent(pts,p=>p.value);
  const y=d3.scaleLinear().domain([Math.min(-3,ext[0]),Math.max(8,ext[1])]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- ERAS.forEach((e,i)=>{if(i%2)svg.append('rect').attr('x',x(e[0])).attr('y',m.t).attr('width',x(Math.min(e[1],lastPt(pts).n))-x(e[0])).attr('height',H-m.t-m.b).attr('fill','#17301f').attr('opacity',.045);});
+ ERAS.forEach((e,i)=>{if(i%2)svg.append('rect').attr('x',x(e[0])).attr('y',m.t).attr('width',x(Math.min(e[1],lastPt(pts).n))-x(e[0])).attr('height',H-m.t-m.b).attr('fill','var(--ink)').attr('opacity',.045);});
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor(W/80)).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(6).tickFormat(d=>d+'%')).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--slate-300)');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','var(--line-strong)');
  const bw=Math.max(2,(W-m.l-m.r)/pts.length-1.5);
  svg.selectAll('rect.b').data(pts).join('rect').attr('class','b')
   .attr('x',d=>x(d.n)-bw/2).attr('width',bw)
   .attr('y',d=>Math.min(y(0),y(d.value))).attr('height',d=>Math.abs(y(0)-y(d.value)))
-  .attr('rx',1.5).attr('fill',d=>d.value>=0?color:'#c0392b').attr('opacity',d=>d.value>=0?.75:.85)
+  .attr('rx',1.5).attr('fill',d=>d.value>=0?color:'var(--negative)').attr('opacity',d=>d.value>=0?.75:.85)
   .style('cursor','pointer')
   .on('click',(e,d)=>setYear(d.year))
   .on('mousemove',(e,d)=>showTip(`<b>${d.year}</b><br>${lbl} ${fmtPct(d.value)}`,e)).on('mouseleave',hideTip);
@@ -472,7 +733,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  const decades=d3.groups(pts,p=>Math.floor((p.n-1)/10)*10).map(([dec,arr])=>({x0:Math.max(arr[0].n-0.5,pts[0].n-0.5),x1:lastPt(arr).n+0.5,v:d3.mean(arr,p=>p.value)}));
  svg.selectAll('line.dec').data(decades).join('line').attr('class','dec')
   .attr('x1',d=>x(d.x0)).attr('x2',d=>x(d.x1)).attr('y1',d=>y(d.v)).attr('y2',d=>y(d.v))
-  .attr('stroke','#17301f').attr('stroke-width',2.2).attr('opacity',.65)
+  .attr('stroke','var(--ink)').attr('stroke-width',2.2).attr('opacity',.65)
   .on('mousemove',(e,d)=>showTip(`Decade average: <b>${d.v.toFixed(1)}%</b>`,e)).on('mouseleave',hideTip);
  // year cursor
  const cx=x(fyEnd(selYear));
@@ -481,20 +742,37 @@ function drawGrowthLine(elSel,lblSel,tall){
 
 /* ================= growth contributions ================= */
 let cGroup='broad',cYear=null,cView='contrib';
-const CONTRIB_COLORS={agri:'#5b8c5a',ind:'#e07b39',serv:'#3d6db5'};
-const DETAIL_PALETTE=['#2f6b3a','#5b8c5a','#8ab27f','#b7cf9f','#c0392b','#e07b39','#e8a05a','#f0c489','#a0522d',
- '#1f4e79','#3d6db5','#6a95d0','#9dbbe4','#2c3e8f','#7b68a6','#9b59b6','#c39bd3','#0e8a8a','#16a085','#5dbfae'];
+const CONTRIB_COLORS={agri:'var(--green-400)',ind:'var(--gold-500)',serv:'var(--green-800)'};
+/* Twenty sub-sectors, twenty distinct colours, in the shared ramp's family
+   order. The remap that merged the two CSS worlds had collapsed this to
+   thirteen - green-300 appeared three times and teal-700 three times - so
+   different sectors were drawn the same colour in a stacked bar, which is not
+   a style problem but an unreadable chart. */
+const DETAIL_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)',
+ 'var(--plum)','var(--teal-500)','var(--sienna)','var(--olive)','var(--sky)',
+ 'var(--negative)','var(--mauve)','var(--amber)','var(--green-500)',
+ 'var(--grey-blue)','var(--teal-300)','var(--sand)','var(--green-800)',
+ 'var(--plum-300)','var(--slate-300)','var(--sienna-300)'];
+/* The decomposition comes from build_growth_payload.py now, not from the
+   structure block. It is computed from constant-price LEVELS, so the parts
+   sum to headline growth by construction; the old one multiplied real growth
+   rates by current-price shares and listed Crops beside Cotton Ginning, which
+   sits inside Crops, and in 2022-23 its parts came to -0.934pp against a
+   headline of -0.210. */
+const GROWTH=()=>window.DD_GROWTH||{contrib:{},total:[]};
+const gContrib=()=>GROWTH().contrib;
+const gTotal=()=>GROWTH().total;
 function contribKeys(){
- const ks=Object.keys(ST.contrib||{});
+ const ks=Object.keys(gContrib());
  const order={agri:0,ind:1,serv:2};
- return ks.sort((a,b)=>order[ST.contrib[a].parent]-order[ST.contrib[b].parent]||a.localeCompare(b));
+ return ks.sort((a,b)=>order[gContrib()[a].parent]-order[gContrib()[b].parent]||a.localeCompare(b));
 }
 let detailColor={};
 function contribRows(year,group){
  // returns [{key,label,parent,v}] for one year at the chosen aggregation
  const out={};
  contribKeys().forEach(k=>{
-  const c=ST.contrib[k],p=c.points.find(q=>q.year===year);
+  const c=gContrib()[k],p=c.points.find(q=>q.year===year);
   if(!p)return;
   if(group==='broad'){
    out[c.parent]=out[c.parent]||{key:c.parent,label:MACRO[c.parent].label,parent:c.parent,v:0};
@@ -503,10 +781,10 @@ function contribRows(year,group){
  });
  return Object.values(out);
 }
-function contribYears(){return (ST.contrib_gdp||[]).map(p=>p.year);}
+function contribYears(){return gTotal().map(p=>p.year);}
 function initContrib(){
  contribKeys().forEach((k,i)=>detailColor[k]=DETAIL_PALETTE[i%DETAIL_PALETTE.length]);
- cYear=lastPt(ST.contrib_gdp).year;
+ cYear=lastPt(gTotal()).year;
  d3.selectAll('#cView button').on('click',function(){setCView(this.dataset.cv);});
  d3.selectAll('#cGroup button').on('click',function(){setCGroup(this.dataset.g);});
  drawComposition();drawCYear();drawCEras();
@@ -549,7 +827,7 @@ function drawContrib(){
   .call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(0,${y(0)})`).attr('class','axis')
   .call(d3.axisBottom(x).tickFormat((d,i)=>years.length>14&&i%2?'':d.slice(2)))
-  .call(g=>g.selectAll('text').attr('y',12).attr('fill','var(--slate-500)'));
+  .call(g=>g.selectAll('text').attr('y',12).attr('fill','var(--muted)'));
  // stacked bars, positive up / negative down
  years.forEach(yr=>{
   const rows=rowsBy[yr].slice().sort((a,b)=>keys.indexOf(a.key)-keys.indexOf(b.key));
@@ -567,12 +845,12 @@ function drawContrib(){
   });
  });
  // headline GDP growth line
- const gdp=ST.contrib_gdp;
+ const gdp=gTotal();
  const lx=yr=>x(yr)+x.bandwidth()/2;
- svg.append('path').datum(gdp).attr('fill','none').attr('stroke','#17301f').attr('stroke-width',2)
+ svg.append('path').datum(gdp).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-width',2)
   .attr('d',d3.line().x(p=>lx(p.year)).y(p=>y(p.value)));
  svg.selectAll('circle.gd').data(gdp).join('circle').attr('class','gd')
-  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','#17301f')
+  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','var(--ink)')
   .on('mousemove',(e,p)=>showTip(`<b>GDP growth ${p.year}</b><br>${fmtPct(p.value)}`,e)).on('mouseleave',hideTip);
  // selected-year marker
  if(cYear!=null&&x(cYear)!=null)svg.append('rect').attr('x',x(cYear)-2).attr('y',m.t).attr('width',x.bandwidth()+4).attr('height',H-m.t-m.b)
@@ -580,11 +858,11 @@ function drawContrib(){
  // legend
  const lg=d3.select('#contribLegend');
  const items=(cGroup==='broad'?['agri','ind','serv']:contribKeys())
-  .map(k=>cGroup==='broad'?{key:k,label:MACRO[k].label,parent:k}:{key:k,label:ST.contrib[k].label,parent:ST.contrib[k].parent});
+  .map(k=>cGroup==='broad'?{key:k,label:MACRO[k].label,parent:k}:{key:k,label:gContrib()[k].label,parent:gContrib()[k].parent});
  lg.selectAll('span.it').data(items,d=>d.key).join('span').attr('class','it')
   .html(d=>`<i style="width:11px;height:11px;border-radius:3px;background:${contribColor(d)}"></i>${d.label}`);
  lg.selectAll('span.gdpk').data([0]).join('span').attr('class','gdpk')
-  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:#17301f"></i>GDP growth');
+  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:var(--ink)"></i>GDP growth');
 }
 function drawCYear(){
  const el=d3.select('#cYear');el.selectAll('*').remove();
@@ -599,7 +877,7 @@ function drawCYear(){
  // negative VALUE LABELS are placed to the right of the axis (in red) so they never
  // crowd the sector names on the left.
  const rows=contribRows(cYear,cGroup).sort((a,b)=>b.v-a.v).filter(r=>Math.abs(r.v)>0.001);
- const RED='#c0392b';
+ const RED='var(--negative)';
  const W=el.node().clientWidth||520,rh=cGroup==='broad'?34:22,H=rows.length*rh+26;
  const lblW=Math.max(110,Math.min(170,W*0.34));
  const minV=Math.min(0,d3.min(rows,r=>r.v)),maxV=Math.max(0,d3.max(rows,r=>r.v));
@@ -607,12 +885,12 @@ function drawCYear(){
  const x=d3.scaleLinear().domain([minV,maxV]).range([lblW+12+negRoom,W-56]);
  const zero=x(0);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
- svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-20).attr('stroke','var(--slate-400)');
+ svg.append('line').attr('x1',zero).attr('x2',zero).attr('y1',4).attr('y2',H-20).attr('stroke','var(--muted-2)');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+4})`)
   .attr('opacity',d=>focusOK(d)?1:.32)
   .on('mousemove',(e,d)=>showTip(`<b>${d.label}</b> · ${cYear}<br>${(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2)} pp — ${d.v>=0?'added to':'subtracted from'} growth`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2-2).attr('dy','.32em').attr('text-anchor','end')
-  .attr('font-size',cGroup==='broad'?12.5:11).attr('font-weight',600).attr('fill',d=>d.v<0?RED:'var(--slate-700)')
+  .attr('font-size',cGroup==='broad'?12.5:11).attr('font-weight',600).attr('fill',d=>d.v<0?RED:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);return d.label.length>max?d.label.slice(0,max-1)+'…':d.label;});
  // bar: from zero, right for positive, left for negative
  g.append('rect').attr('y',3).attr('height',rh-9).attr('rx',3)
@@ -624,8 +902,8 @@ function drawCYear(){
   .attr('x',d=>d.v>=0?x(d.v)+5:zero+5)
   .attr('fill',d=>d.v>=0?'var(--green-600)':RED).text(d=>(d.v>=0?'+':'−')+Math.abs(d.v).toFixed(2));
  const tot=d3.sum(rows,r=>r.v);
- const gdpP=(ST.contrib_gdp.find(p=>p.year===cYear)||{}).value;
- svg.append('text').attr('x',lblW).attr('y',H-6).attr('text-anchor','end').attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-600)').text('Sum');
+ const gdpP=(gTotal().find(p=>p.year===cYear)||{}).value;
+ svg.append('text').attr('x',lblW).attr('y',H-6).attr('text-anchor','end').attr('font-size',11).attr('font-weight',800).attr('fill','var(--body)').text('Sum');
  svg.append('text').attr('x',zero+5).attr('y',H-6).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
   .text(`${tot>=0?'+':'−'}${Math.abs(tot).toFixed(2)} pp` + (gdpP!=null?`  ·  published GDP growth ${fmtPct(gdpP)}`:''));
 }
@@ -648,16 +926,16 @@ function drawCEras(){
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'pp'))
   .call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(0,${y(0)})`).attr('class','axis').call(d3.axisBottom(x).tickSize(0))
-  .call(g=>g.selectAll('text').attr('y',14).attr('font-weight',600).attr('fill','var(--slate-600)'));
+  .call(g=>g.selectAll('text').attr('y',14).attr('font-weight',600).attr('fill','var(--body)'));
  data.forEach(d=>{
   let up=0,dn=0;
   keys.forEach(k=>{
    const v=d[k];if(!v)return;
    const y0=v>=0?up:dn,y1=y0+v;if(v>=0)up=y1;else dn=y1;
-   const label=cGroup==='broad'?MACRO[k].label:ST.contrib[k].label;
+   const label=cGroup==='broad'?MACRO[k].label:gContrib()[k].label;
    svg.append('rect').attr('x',x(d.label)).attr('width',x.bandwidth())
     .attr('y',Math.min(y(y0),y(y1))).attr('height',Math.abs(y(y1)-y(y0)))
-    .attr('fill',contribColor({key:k,parent:cGroup==='broad'?k:ST.contrib[k].parent}))
+    .attr('fill',contribColor({key:k,parent:cGroup==='broad'?k:gContrib()[k].parent}))
     .on('mousemove',e=>showTip(`<b>${label}</b> · ${d.label}<br>${(v>=0?'+':'')+v.toFixed(2)} pp per year`,e)).on('mouseleave',hideTip);
   });
   svg.append('text').attr('x',x(d.label)+x.bandwidth()/2).attr('y',y(up)-6).attr('text-anchor','middle')
@@ -678,24 +956,24 @@ function initLsm(){
  styleChips();drawLsm();
 }
 function styleChips(){
- d3.selectAll('#lsmChips .chip').classed('on',c=>lsmSel.has(c)).style('background',c=>lsmSel.has(c)?lsmColors[c]:null).style('border-color',c=>lsmSel.has(c)?lsmColors[c]:null).style('color',c=>lsmSel.has(c)?'#fff':null);
+ d3.selectAll('#lsmChips .chip').classed('on',c=>lsmSel.has(c)).style('background',c=>lsmSel.has(c)?lsmColors[c]:null).style('border-color',c=>lsmSel.has(c)?lsmColors[c]:null).style('color',c=>lsmSel.has(c)?'var(--surface)':null);
 }
 function drawLsm(){
  const el=d3.select('#lsm');el.selectAll('*').remove();
  const sel=Object.keys(lsmSeries).filter(c=>lsmSel.has(c));
  const W=el.node().clientWidth||1100,H=Math.max(260,Math.min(330,W*0.28)),narrow=W<600,m={t:16,r:narrow?16:150,b:28,l:42};
  const allPts=sel.flatMap(c=>lsmSeries[c]);
- if(!allPts.length){el.append('div').style('padding','30px').style('color','var(--slate-500)').text('Pick at least one sector.');return;}
+ if(!allPts.length){el.append('div').style('padding','30px').style('color','var(--muted)').text('Pick at least one sector.');return;}
  const x=d3.scaleLinear().domain(d3.extent(allPts,p=>p.n)).range([m.l,W-m.r]);
  const y=d3.scaleLinear().domain([0,d3.max(allPts,p=>p.v)*1.05]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor((W-m.r)/70)).tickFormat(n=>fyLbl(n)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(6)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--slate-300)').attr('stroke-dasharray','3 3');
- svg.append('text').attr('x',m.l+4).attr('y',y(100)-5).attr('font-size',10).attr('fill','var(--slate-400)').text('2015-16 = 100');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',y(100)).attr('y2',y(100)).attr('stroke','var(--line-strong)').attr('stroke-dasharray','3 3');
+ svg.append('text').attr('x',m.l+4).attr('y',y(100)-5).attr('font-size',10).attr('fill','var(--muted-2)').text('2015-16 = 100');
  // base-change marker
- svg.append('line').attr('x1',x(2016)).attr('x2',x(2016)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--slate-200)');
- svg.append('text').attr('x',x(2016)).attr('y',m.t-4).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--slate-400)').text('base change');
+ svg.append('line').attr('x1',x(2016)).attr('x2',x(2016)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--line)');
+ svg.append('text').attr('x',x(2016)).attr('y',m.t-4).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted-2)').text('base change');
  const line=d3.line().x(p=>x(p.n)).y(p=>y(p.v)).curve(d3.curveMonotoneX);
  sel.forEach(c=>{
   const pts=lsmSeries[c];
@@ -704,7 +982,7 @@ function drawLsm(){
    svg.append('path').datum(oldPts.concat(newPts.filter(p=>p.n===2016)).sort((a,b)=>a.n-b.n))
     .attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2).attr('stroke-dasharray','5 4').attr('d',line);
   svg.append('path').datum(newPts).attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2.5).attr('d',line);
-  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','#fff').attr('stroke-width',1)
+  svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','var(--surface)').attr('stroke-width',1)
    .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}${p.fy==='2025-26'?' (Jul–May)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
   const lp=lastPt(pts);
   if(!narrow) svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
@@ -722,19 +1000,19 @@ function drawQim(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  // crisis shading
  [[new Date(2020,1,1),new Date(2020,7,31),'COVID'],[new Date(2022,5,1),new Date(2023,5,30),'import squeeze']].forEach(([a,b,l])=>{
-  svg.append('rect').attr('x',x(a)).attr('y',m.t).attr('width',x(b)-x(a)).attr('height',H-m.t-m.b).attr('fill','#c0392b').attr('opacity',.06);
-  svg.append('text').attr('class','era-lbl').attr('x',(x(a)+x(b))/2).attr('y',m.t+9).attr('text-anchor','middle').attr('fill','#a04338').text(l);});
+  svg.append('rect').attr('x',x(a)).attr('y',m.t).attr('width',x(b)-x(a)).attr('height',H-m.t-m.b).attr('fill','var(--negative)').attr('opacity',.06);
+  svg.append('text').attr('class','era-lbl').attr('x',(x(a)+x(b))/2).attr('y',m.t+9).attr('text-anchor','middle').attr('fill','var(--negative)').text(l);});
  svg.append('g').attr('transform',`translate(0,${split})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.floor(W/90)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(yb).ticks(3).tickFormat(d=>d+'%'));
  svg.append('path').datum(pts).attr('fill','none').attr('stroke','var(--green-600)').attr('stroke-width',1.8)
   .attr('d',d3.line().x(p=>x(p.d)).y(p=>y(p.qim)));
  const bw=Math.max(1,(W-m.l-m.r)/pts.length-0.6);
- svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',yb(0)).attr('y2',yb(0)).attr('stroke','var(--slate-200)');
+ svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',yb(0)).attr('y2',yb(0)).attr('stroke','var(--line)');
  svg.selectAll('rect.yy').data(pts.filter(p=>p.yoy!=null)).join('rect').attr('class','yy')
   .attr('x',p=>x(p.d)-bw/2).attr('width',bw)
   .attr('y',p=>Math.min(yb(0),yb(p.yoy))).attr('height',p=>Math.abs(yb(0)-yb(p.yoy)))
-  .attr('fill',p=>p.yoy>=0?'var(--green-500)':'#c0392b').attr('opacity',.8);
+  .attr('fill',p=>p.yoy>=0?'var(--green-500)':'var(--negative)').attr('opacity',.8);
  svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.l-m.r).attr('height',H-m.t-m.b).attr('fill','transparent')
   .on('mousemove',function(e){
    const d0=x.invert(d3.pointer(e,this)[0]);
@@ -768,14 +1046,14 @@ function drawWeights(){
   .on('click',(e,d)=>{lsmSel.has(d.c)?lsmSel.delete(d.c):lsmSel.add(d.c);styleChips();drawLsm();drawWeights();})
   .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>Jul–May 2025-26: ${fmtPct(d.g)}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',d=>lsmSel.has(d.c)?800:600)
-  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--slate-600)')
+  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);const t=LSM_SHORT[d.c];return t.length>max?t.slice(0,max-1)+'…':t;});
  g.append('rect').attr('x',x(0)).attr('y',3).attr('height',rh-9).attr('rx',3)
   .attr('width',d=>Math.max(1.5,x(d.w)-x(0)))
-  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--slate-300)');
- g.append('text').attr('x',d=>x(d.w)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--slate-500)').text(d=>d.w.toFixed(1)+'%');
+  .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--line-strong)');
+ g.append('text').attr('x',d=>x(d.w)+5).attr('y',rh/2).attr('dy','.32em').attr('font-size',10.5).attr('font-weight',700).attr('fill','var(--muted)').text(d=>d.w.toFixed(1)+'%');
  g.append('text').attr('x',W-4).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',800)
-  .attr('fill',d=>d.g==null?'var(--slate-400)':d.g>=0?'var(--green-600)':'#c0392b').text(d=>fmtPct(d.g));
+  .attr('fill',d=>d.g==null?'var(--muted-2)':d.g>=0?'var(--green-600)':'var(--negative)').text(d=>fmtPct(d.g));
 }
 
 /* ================= 4. CMI dumbbells ================= */
@@ -806,18 +1084,18 @@ function drawCmi(){
  const unit=cmiM==='emp'?'persons':cmiM==='est'?'establishments':'% of manufacturing GVA';
  const g=svg.selectAll('g.r').data(rows).join('g').attr('class','r').attr('transform',(d,i)=>`translate(0,${i*rh+12})`)
   .on('mousemove',(e,d)=>showTip(`<b>${d.lbl}</b><br>2005-06: ${d.p05.toFixed(1)}%${d.a05?` (${d.a05.toLocaleString()} ${unit})`:''}<br>2015-16: ${d.p15.toFixed(1)}%${d.a15?` (${d.a15.toLocaleString()} ${unit})`:''}<br><b>${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}pp</b> change in share`,e)).on('mouseleave',hideTip);
- g.append('text').attr('x',m.l-10).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',600).attr('fill','var(--slate-700)').text(d=>d.lbl);
+ g.append('text').attr('x',m.l-10).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11.5).attr('font-weight',600).attr('fill','var(--body)').text(d=>d.lbl);
  g.append('line').attr('x1',d=>x(d.p05)).attr('x2',d=>x(d.p15)).attr('y1',2).attr('y2',2)
-  .attr('stroke',d=>d.p15>=d.p05?'var(--green-500)':'#c0392b').attr('stroke-width',2.5).attr('opacity',.75);
- g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','#fff').attr('stroke','var(--slate-400)').attr('stroke-width',2);
- g.append('circle').attr('cx',d=>x(d.p15)).attr('cy',2).attr('r',5).attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'#c0392b');
+  .attr('stroke',d=>d.p15>=d.p05?'var(--green-500)':'var(--negative)').attr('stroke-width',2.5).attr('opacity',.75);
+ g.append('circle').attr('cx',d=>x(d.p05)).attr('cy',2).attr('r',4.5).attr('fill','var(--surface)').attr('stroke','var(--muted-2)').attr('stroke-width',2);
+ g.append('circle').attr('cx',d=>x(d.p15)).attr('cy',2).attr('r',5).attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)');
  g.append('text').attr('x',W-6).attr('y',2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',10.5).attr('font-weight',700)
-  .attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'#c0392b').text(d=>`${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}`);
+  .attr('fill',d=>d.p15>=d.p05?'var(--green-600)':'var(--negative)').text(d=>`${d.p15>=d.p05?'+':''}${(d.p15-d.p05).toFixed(1)}`);
  // legend lives in HTML above the chart so it can never overlap the rows
  d3.select('#cmiLegend').html(
-   '<span><i style="width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--slate-400)"></i>2005-06 census</span>'+
+   '<span><i style="width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--muted-2)"></i>2005-06 census</span>'+
    '<span><i style="width:10px;height:10px;border-radius:50%;background:var(--green-600)"></i>2015-16 census</span>'+
-   '<span style="color:var(--slate-400)">line = change in share · right-hand number = percentage-point change</span>');
+   '<span style="color:var(--muted-2)">line = change in share · right-hand number = percentage-point change</span>');
 }
 
 /* ================= IO: focus / chord / grid ================= */
@@ -865,7 +1143,7 @@ function drawIOFocus(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const cy=y0=>y0;
  const hdr=(x,txt,anchor)=>svg.append('text').attr('x',x).attr('y',18).attr('text-anchor',anchor)
-   .attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)')
+   .attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)')
    .attr('letter-spacing','.05em').text(txt);
  hdr(cx-gap/2-6,'SUPPLIES INTO IT','end');hdr(cx+gap/2+6,'IT SUPPLIES TO','start');
  // centre block
@@ -886,7 +1164,7 @@ function drawIOFocus(){
   g.append('rect').attr('y',6).attr('height',15).attr('rx',3)
    .attr('x',d=>side<0?edge-bw(d.v):edge).attr('width',d=>bw(d.v))
    .attr('fill',d=>colors[d.j]).attr('opacity',.85);
-  g.append('text').attr('y',13.5).attr('dy','.32em').attr('font-size',11).attr('font-weight',600).attr('fill','var(--slate-700)')
+  g.append('text').attr('y',13.5).attr('dy','.32em').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)')
    .attr('text-anchor',side<0?'end':'start')
    .attr('x',d=>side<0?edge-bw(d.v)-7:edge+bw(d.v)+7)
    .text(d=>{const room=side<0?(edge-bw(d.v)-14):(W-(edge+bw(d.v))-14);const max=Math.floor(room/6.2);
@@ -898,7 +1176,7 @@ function drawIOFocus(){
   `<span>buys <b>${fmtRs(inTot)}</b> of inputs from other sectors</span>`+
   `<span>sells <b>${fmtRs(outTot)}</b> of inputs to them</span>`+
   (own>0?`<span>uses <b>${fmtRs(own)}</b> of its own output</span>`:'')+
-  `<span style="color:var(--slate-400)">click any bar to re-centre</span>`);
+  `<span style="color:var(--muted-2)">click any bar to re-centre</span>`);
 }
 function wrapText(sel,text,width,size){
  const words=text.split(/\s+/);const lines=[];let cur='';
@@ -920,20 +1198,20 @@ function drawIOChord(){
  const arc=d3.arc().innerRadius(innerR).outerRadius(outerR);
  const ribbon=(d3.ribbonArrow?d3.ribbonArrow():d3.ribbon()).radius(innerR-1).padAngle(1/innerR);
  const rib=g.append('g').attr('fill-opacity',0.62).selectAll('path').data(chords).join('path')
-   .attr('d',ribbon).attr('fill',d=>colors[d.source.index]).attr('stroke','#fff').attr('stroke-width',0.3)
+   .attr('d',ribbon).attr('fill',d=>colors[d.source.index]).attr('stroke','var(--surface)').attr('stroke-width',0.3)
    .style('cursor','pointer').on('click',(e,d)=>setIOSector(d.source.index))
    .on('mousemove',function(e,d){rib.attr('fill-opacity',x=>x===d?.95:.12);
-     showTip(`<b>${sectors[d.source.index]}</b> supplies<br><b>${sectors[d.target.index]}</b><br>${fmtRs(d.source.value)}<br><span style="color:#9ca3af">click to focus</span>`,e);})
+     showTip(`<b>${sectors[d.source.index]}</b> supplies<br><b>${sectors[d.target.index]}</b><br>${fmtRs(d.source.value)}<br><span style="color:var(--muted-2)">click to focus</span>`,e);})
    .on('mouseleave',()=>{rib.attr('fill-opacity',null);hideTip();});
  const grp=g.append('g').selectAll('g').data(chords.groups).join('g').style('cursor','pointer')
    .on('click',(e,d)=>setIOSector(d.index));
- grp.append('path').attr('d',arc).attr('fill',d=>colors[d.index]).attr('stroke','#fff')
+ grp.append('path').attr('d',arc).attr('fill',d=>colors[d.index]).attr('stroke','var(--surface)')
    .on('mousemove',function(e,d){rib.attr('fill-opacity',x=>x.source.index===d.index||x.target.index===d.index?.9:.1);
-     showTip(`<b>${sectors[d.index]}</b><br>supplies ${fmtRs(d.value)} to other sectors<br><span style="color:#9ca3af">click to focus</span>`,e);})
+     showTip(`<b>${sectors[d.index]}</b><br>supplies ${fmtRs(d.value)} to other sectors<br><span style="color:var(--muted-2)">click to focus</span>`,e);})
    .on('mouseleave',()=>{rib.attr('fill-opacity',null);hideTip();});
  grp.append('text').each(function(d){d.ang=(d.startAngle+d.endAngle)/2;}).attr('dy','.35em')
    .attr('transform',d=>`rotate(${d.ang*180/Math.PI-90}) translate(${outerR+6}) ${d.ang>Math.PI?'rotate(180)':''}`)
-   .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('font-size',11).attr('font-weight',600).attr('fill','#3d424d')
+   .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)')
    .text(d=>sectors[d.index]);
 }
 /* --- grid (matrix heatmap) --- */
@@ -958,26 +1236,26 @@ function drawIOGrid(){
  // column headers (rotated)
  sectors.forEach((s,j)=>{
   svg.append('text').attr('transform',`translate(${m.l+j*cell+cell/2},${m.t-8}) rotate(-52)`)
-   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-600)').text(s);
+   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)').text(s);
  });
- svg.append('text').attr('x',m.l).attr('y',18).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('BUYER →');
- svg.append('text').attr('x',6).attr('y',m.t-8).attr('font-size',11).attr('font-weight',800).attr('fill','var(--slate-500)').attr('letter-spacing','.05em').text('SUPPLIER ↓');
+ svg.append('text').attr('x',m.l).attr('y',18).attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)').attr('letter-spacing','.05em').text('BUYER →');
+ svg.append('text').attr('x',6).attr('y',m.t-8).attr('font-size',11).attr('font-weight',800).attr('fill','var(--muted)').attr('letter-spacing','.05em').text('SUPPLIER ↓');
  sectors.forEach((s,i)=>{
   svg.append('text').attr('x',m.l-8).attr('y',m.t+i*cell+cell/2).attr('dy','.32em').attr('text-anchor','end')
-   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--slate-700)').style('cursor','pointer')
+   .attr('font-size',10.5).attr('font-weight',600).attr('fill','var(--body)').style('cursor','pointer')
    .on('click',()=>setIOSector(i)).text(s);
   svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t+i*cell+cell/2).attr('dy','.32em')
-   .attr('font-size',10).attr('font-weight',700).attr('fill','var(--slate-500)').text(fmtBn(rowTot[i]));
+   .attr('font-size',10).attr('font-weight',700).attr('fill','var(--muted)').text(fmtBn(rowTot[i]));
   sectors.forEach((s2,j)=>{
    const v=M[i][j];
    svg.append('rect').attr('x',m.l+j*cell).attr('y',m.t+i*cell).attr('width',cell-1).attr('height',cell-1).attr('rx',2)
-    .attr('fill',i===j?'var(--slate-100)':(v>0?col(Math.sqrt(v)):'#fbfbfa'))
+    .attr('fill',i===j?'var(--ground)':(v>0?col(Math.sqrt(v)):'var(--surface)'))
     .style('cursor','pointer').on('click',()=>setIOSector(i))
     .on('mousemove',e=>showTip(i===j?`<b>${s}</b> — own use excluded here`:`<b>${s}</b> supplies<br><b>${s2}</b><br>${fmtRs(v)}`,e))
     .on('mouseleave',hideTip);
   });
  });
- svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t-8).attr('font-size',10).attr('font-weight',800).attr('fill','var(--slate-500)').text('total');
+ svg.append('text').attr('x',m.l+n*cell+8).attr('y',m.t-8).attr('font-size',10).attr('font-weight',800).attr('fill','var(--muted)').text('total');
 }
 
 /* ================= budget (treemap + trend, unchanged mechanics) ================= */
@@ -1025,7 +1303,7 @@ function buildBudgetChips(){
  d3.select('#budgetChips').selectAll('button').data(keys,d=>d).join('button')
   .attr('class','chip').style('font-size','11px').style('padding','4px 9px')
   .classed('on',d=>sel.has(d))
-  .style('border-color',d=>sel.has(d)?colOf[d]:null).style('background',d=>sel.has(d)?colOf[d]:null).style('color',d=>sel.has(d)?'#fff':null)
+  .style('border-color',d=>sel.has(d)?colOf[d]:null).style('background',d=>sel.has(d)?colOf[d]:null).style('color',d=>sel.has(d)?'var(--surface)':null)
   .text(d=>d)
   .on('click',(e,d)=>{sel.has(d)?sel.delete(d):sel.add(d);if(!sel.size)sel.add(d);buildBudgetChips();drawBudgetTrend();});
 }
@@ -1047,6 +1325,29 @@ function setBView(v){bView=v;d3.selectAll('#bView button').classed('on',function
 function setBPrice(p){bPrice=p;d3.selectAll('#bPrice button').classed('on',function(){return this.dataset.p===p;});drawBudgetTrend();writeHash();}
 function setBTrendMode(m){bTrendMode=m;d3.selectAll('#bTrendMode button').classed('on',function(){return this.dataset.tm===m;});drawBudgetTrend();writeHash();}
 function setBYear(y){const i=bYears.indexOf(y);if(i>=0){bYi=i;d3.select('#bYr').property('value',i);d3.select('#bYrLbl').text(y);drawBudget();writeHash();}}
+/* BUDGET ESTIMATES, AND A DEFLATOR THAT RUNS OUT. Every figure in this block
+   is the document's own-year Budget Estimate - what was proposed, not what
+   was spent - so the meta line says so wherever the chart is drawn rather
+   than leaving it to a footnote.
+
+   deflForYears extrapolates past the last published deflator, which is how a
+   2026-27 point can appear in "Real 2015-16" prices at all. That point is an
+   estimate resting on an estimate, and it is now drawn hollow on a dashed
+   segment and named under the chart instead of sitting on the line looking
+   like the years either side of it. */
+function estDeflYears(years){
+ const known=deflator();
+ return years.filter(y=>known[y]==null);
+}
+function budgetMetaText(years,real){
+ const est=real?estDeflYears(years):[];
+ return `${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'}`
+  + ` by category, ${years[0]}\u2013${years[years.length-1]}`
+  + ` \u00b7 budget estimates, not outturn`
+  + ` \u00b7 ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'}`
+  + (est.length?` \u00b7 deflator estimated for ${est.join(', ')}`:'')
+  + ` \u00b7 ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`;
+}
 function drawBudgetTrend(){bTrendMode==='lines'?drawBudgetTrendLines():drawBudgetTrendStack();}
 function drawBudgetTrendStack(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
@@ -1064,16 +1365,30 @@ function drawBudgetTrendStack(){
  const y=d3.scaleLinear().domain([0,ymax*1.02]).range([H-M.b,M.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const yt=y.ticks(5);
- svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eceae2');
- svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','#8a8f98').text(d=>fmtBn(d));
- svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','#8a8f98').text((d,i)=>years.length>10&&i%2?'':d);
+ svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','var(--line)');
+ svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
+ svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
+ /* Years whose deflator was extrapolated. A stacked area cannot go hollow,
+    so the span is shaded instead and named under the chart. */
+ const est=new Set(real?estDeflYears(years):[]);
+ if(est.size){
+  const xs=years.filter(yy=>est.has(yy)).map(yy=>x(yy));
+  const x0=Math.min(...xs)-((W-M.r-M.l)/(years.length-1))/2;
+  svg.append('rect').attr('x',Math.max(M.l,x0)).attr('y',M.t)
+    .attr('width',Math.max(0,(W-M.r)-Math.max(M.l,x0))).attr('height',H-M.b-M.t)
+    .attr('fill','var(--muted-2)').attr('opacity',.14);
+ }
  const stack=d3.stack().keys(keys)(rows);
  const area=d3.area().x((d,i)=>x(years[i])).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
- svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','#fff').attr('stroke-width',.4)
+ svg.append('g').selectAll('path').data(stack).join('path').attr('d',area).attr('fill',s=>colOf[s.key]).attr('opacity',.82).attr('stroke','var(--surface)').attr('stroke-width',.4)
   .on('mousemove',function(e,s){const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));const yr=years[Math.max(0,Math.min(years.length-1,xi))];const v=rows.find(r=>r.year===yr)[s.key];showTip(`<b>${s.key}</b><br>${yr}: ${fmtRs(v)}`,e);}).on('mouseleave',hideTip);
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ if(est.size)el.append('div').attr('class','note').html(
+   '<b>Shaded: ' + Array.from(est).join(', ') + '.</b> The GDP deflator is '
+   + 'not published that far ahead, so the real value there rests on an '
+   + 'extrapolation of it. The nominal view needs no such assumption.');
+ d3.select('#budgetMeta').text(budgetMetaText(years,real));
 }
 function drawBudgetTrendLines(){
  const el=d3.select('#budgetTrend');el.selectAll('*').remove();
@@ -1091,19 +1406,28 @@ function drawBudgetTrendLines(){
  const y=d3.scaleLinear().domain([0,ymax*1.05]).range([H-M.b,M.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const yt=y.ticks(5);
- svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eceae2');
- svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','#8a8f98').text(d=>fmtBn(d));
- svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','#8a8f98').text((d,i)=>years.length>10&&i%2?'':d);
+ svg.append('g').selectAll('line').data(yt).join('line').attr('x1',M.l).attr('x2',W-M.r).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','var(--line)');
+ svg.append('g').selectAll('text').data(yt).join('text').attr('x',M.l-7).attr('y',d=>y(d)+3).attr('text-anchor','end').attr('font-size',10).attr('fill','var(--muted)').text(d=>fmtBn(d));
+ svg.append('g').selectAll('text.xt').data(years).join('text').attr('class','xt').attr('x',d=>x(d)).attr('y',H-M.b+16).attr('text-anchor','middle').attr('font-size',9.5).attr('fill','var(--muted)').text((d,i)=>years.length>10&&i%2?'':d);
  const line=d3.line().x((d,i)=>x(years[i])).y(d=>y(d.v)).curve(d3.curveMonotoneX);
+ /* The years whose deflator was extrapolated, drawn as what they are. In
+    nominal terms there are none, so this is empty and nothing changes. */
+ const est=new Set(real?estDeflYears(years):[]);
+ const firstEst=years.findIndex(yy=>est.has(yy));
+ const cut=firstEst<0?years.length-1:Math.max(0,firstEst-1);
  keys.forEach(k=>{
   const pts=rows.map(r=>({year:r.year,v:r[k]}));
-  svg.append('path').attr('d',line(pts)).attr('fill','none').attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('opacity',.92);
+  svg.append('path').attr('d',line(pts.slice(0,cut+1))).attr('fill','none').attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('opacity',.92);
+  if(cut<years.length-1)svg.append('path').attr('d',line(pts.slice(cut))).attr('fill','none')
+    .attr('stroke',colOf[k]).attr('stroke-width',2.4).attr('stroke-dasharray','5 4').attr('opacity',.55);
   const lp=pts[pts.length-1];
-  svg.append('circle').attr('cx',x(lp.year)).attr('cy',y(lp.v)).attr('r',3.2).attr('fill',colOf[k]);
+  svg.append('circle').attr('cx',x(lp.year)).attr('cy',y(lp.v)).attr('r',3.2)
+    .attr('fill',est.has(lp.year)?'var(--card,#fff)':colOf[k])
+    .attr('stroke',colOf[k]).attr('stroke-width',est.has(lp.year)?1.6:0);
   svg.append('text').attr('x',x(lp.year)+7).attr('y',y(lp.v)+3.5).attr('font-size',10.5).attr('font-weight',700).attr('fill',colOf[k]).text(k.length>16?k.slice(0,15)+'…':k);
  });
  // hover guideline
- const focus=svg.append('line').attr('y1',M.t).attr('y2',H-M.b).attr('stroke','#c8ccd2').attr('stroke-width',1).style('opacity',0);
+ const focus=svg.append('line').attr('y1',M.t).attr('y2',H-M.b).attr('stroke','var(--line-strong)').attr('stroke-width',1).style('opacity',0);
  svg.append('rect').attr('x',M.l).attr('y',M.t).attr('width',W-M.r-M.l).attr('height',H-M.b-M.t).attr('fill','transparent')
   .on('mousemove',function(e){
    const xi=Math.round((e.offsetX-M.l)/((W-M.r-M.l)/(years.length-1)));
@@ -1114,7 +1438,11 @@ function drawBudgetTrendLines(){
   }).on('mouseleave',function(){focus.style('opacity',0);hideTip();});
  const lg=el.append('div').attr('class','trend-legend');
  keys.forEach(k=>lg.append('span').attr('class','tl-item').html(`<i style="background:${colOf[k]}"></i>${k}`));
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'} by category, ${years[0]}–${years[years.length-1]} · ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ if(est.size)el.append('div').attr('class','note').html(
+   '<b>Dashed, hollow: ' + Array.from(est).join(', ') + '.</b> The GDP '
+   + 'deflator is not published that far ahead, so the real value rests on '
+   + 'an extrapolation of it. The nominal view needs no such assumption.');
+ d3.select('#budgetMeta').text(budgetMetaText(years,real));
 }
 function drawBudget(){
  const el=d3.select('#budget');el.selectAll('*').remove();
@@ -1127,17 +1455,17 @@ function drawBudget(){
  const grp=svg.selectAll('g.grp').data(root.children||[]).join('g').attr('class','grp');
  grp.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>d.y1-d.y0).attr('fill',d=>d.data.color).attr('opacity',.28).attr('rx',3)
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%`,e)).on('mouseleave',hideTip);
- grp.filter(d=>(d.x1-d.x0)>66).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+13).attr('font-size',11.5).attr('font-weight',800).attr('fill','#123').attr('pointer-events','none')
+ grp.filter(d=>(d.x1-d.x0)>66).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+13).attr('font-size',11.5).attr('font-weight',800).attr('fill','var(--ink)').attr('pointer-events','none')
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  const leaf=svg.selectAll('g.lf').data(root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
- leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2).attr('fill',d=>d.parent.data.color).attr('stroke','#fff').attr('stroke-width',.6)
+ leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2).attr('fill',d=>d.parent.data.color).attr('stroke','var(--surface)').attr('stroke-width',.6)
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(1)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>22).each(function(d){
    const w=d.x1-d.x0,s=d3.select(this),m=Math.floor(w/6),c=d3.hcl(d.parent.data.color);
-   s.append('text').attr('class','cl').attr('x',5).attr('y',15).style('fill',c.l>62?'#1a1a1a':'#fff').text(d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name);
-   if((d.y1-d.y0)>34)s.append('text').attr('class','cv').attr('x',5).attr('y',29).style('fill',c.l>62?'#333':'rgba(255,255,255,.85)').text(`${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(0)}%`);
+   s.append('text').attr('class','cl').attr('x',5).attr('y',15).style('fill',c.l>62?'var(--ink)':'var(--surface)').text(d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name);
+   if((d.y1-d.y0)>34)s.append('text').attr('class','cv').attr('x',5).attr('y',29).style('fill',c.l>62?'var(--body)':'rgba(255,255,255,.85)').text(`${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(0)}%`);
  });
- d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure (function-wise)':'Tax & non-tax receipts'} ${yr} · total ${fmtRs(total)} · ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
+ d3.select('#budgetMeta').text(`${bSide==='expenditure'?'Current expenditure (function-wise)':'Tax & non-tax receipts'} ${yr} \u00b7 budget estimate, not outturn \u00b7 total ${fmtRs(total)} \u00b7 ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`);
 }
 
 /* ================= CSV export ================= */
@@ -1147,13 +1475,37 @@ function toCSV(rows){
  const esc=v=>{if(v==null)v='';v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
  return [cols.join(',')].concat(rows.map(r=>cols.map(c=>esc(r[c])).join(','))).join('\n');
 }
-function downloadCSV(name,rows){
+/* Every export carries where it came from and what the reader had selected
+   when they asked for it. A CSV that has left the page is the only record of
+   its own provenance, and a filename is not one. */
+function provHead(card,view){
+ if(!card||!window.DDProv)return '';
+ const esc=v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+ const L=window.DDProv.header(card,view);
+ return L.length?L.map(r=>r.map(esc).join(',')).join('\n')+'\n#\n':'';
+}
+function downloadCSV(name,rows,card,view){
  if(!rows||!rows.length)return;
- const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8'});
+ const blob=new Blob([provHead(card,view)+toCSV(rows)],{type:'text/csv;charset=utf-8'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w.-]+/g,'_');
  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
 }
 const CSV={
+ macro:()=>['Pakistan_macro_indicators_2000-2026.csv',
+   macroRows.map(r=>({fiscal_year:r.fy,
+     gva_basic_prices_rs_tn:r.gva_tn,
+     gdp_market_prices_rs_tn:r.gdp_tn,
+     gni_constant_rs_tn:r.gni_tn,
+     net_primary_income_abroad_rs_tn:r.npi_tn,
+     income_per_person_rs_2017census_population:r.pci17,
+     income_per_person_rs_2023census_population:r.pci23,
+     rupees_per_usd:r.usd,
+     price_basis:'constant 2015-16',
+     source:'PBS National Accounts Table 5'}))],
+ qtr:()=>[`Pakistan_quarterly_gva_by_${qtrLevel}.csv`,
+   qtrRows.map(r=>({fiscal_year:r.fy,quarter:'Q'+r.quarter,months:QTR_NAME[r.quarter],
+     sector:r.sector,subsector:r.subsector,activity:r.category,
+     value_added_rs_mn_2015_16_prices:r.gva_mn}))],
  arc:()=>['Pakistan_sector_shares_1952-2026.csv',
    arcData.map(d=>({fiscal_year:d.year,agriculture_pct:round2(d.agri),industry_pct:round2(d.ind),services_pct:round2(d.serv),manufacturing_pct:round2(d.mfg),source:d.back?'backcast':'published'}))],
  mix:()=>[`Pakistan_sector_mix_${selYear}.csv`,
@@ -1162,14 +1514,14 @@ const CSV={
    if(cView==='growth'){const gs=growthSeries(selSector);
      return [`Pakistan_real_growth_${selSector}.csv`,(gs.pts||[]).map(p=>({fiscal_year:p.year,series:gs.lbl,real_growth_pct:p.value}))];}
    const out=[];contribYears().forEach(y=>contribRows(y,cGroup).forEach(r=>out.push({fiscal_year:y,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)})));
-   (ST.contrib_gdp||[]).forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (published GDP growth)',broad_sector:'',contribution_pp:round2(p.value)}));
+   gTotal().forEach(p=>out.push({fiscal_year:p.year,sector:'TOTAL (GVA growth, all parts)',broad_sector:'',contribution_pp:round2(p.value)}));
    return [`Pakistan_growth_contributions_${cGroup}.csv`,out];},
  cyear:()=>[`Pakistan_growth_breakdown_${cYear||selYear}.csv`,
    contribRows(cYear,cGroup).sort((a,b)=>b.v-a.v).map(r=>({fiscal_year:cYear,sector:r.label,broad_sector:MACRO[r.parent].label,contribution_pp:round2(r.v)}))],
  ceras:()=>{const keys=cGroup==='broad'?['agri','ind','serv']:contribKeys();const out=[];
    CERAS.forEach(([label,y0,y1])=>{const yrs=contribYears().filter(y=>y>=y0&&y<=y1);
      keys.forEach(k=>{const vals=yrs.map(y=>{const r=contribRows(y,cGroup).find(r=>r.key===k);return r?r.v:0;});
-       const lbl=cGroup==='broad'?MACRO[k].label:ST.contrib[k].label;
+       const lbl=cGroup==='broad'?MACRO[k].label:gContrib()[k].label;
        out.push({era:label,years:`${y0}–${y1}`,sector:lbl,avg_contribution_pp:round2(d3.mean(vals)||0)});});});
    return ['Pakistan_growth_by_era.csv',out];},
  lsm:()=>{const out=[];Object.keys(lsmSeries).filter(c=>lsmSel.has(c)).forEach(c=>lsmSeries[c].forEach(p=>
@@ -1188,15 +1540,67 @@ const CSV={
  io:()=>{const {sectors,matrix_nodiag:M}=E.io;const out=[];
    sectors.forEach((s,i)=>sectors.forEach((s2,j)=>{if(i!==j&&M[i][j]>0)out.push({supplier:s,buyer:s2,flow_rs_bn:round2(M[i][j])});}));
    return ['Pakistan_input_output_2015-16.csv',out.sort((a,b)=>b.flow_rs_bn-a.flow_rs_bn)];},
- budget:()=>{const yr=bYears[bYi],out=[];(E.budget[bSide][yr]||[]).forEach(g=>g.children.forEach(c=>out.push({fiscal_year:yr,side:bSide,category:g.label,line_item:c.name,rs_bn:round2(c.bn)})));
-   return [`Pakistan_budget_${bSide}_${yr}.csv`,out];}
+ /* The page promises that CSV downloads the chart's data, and this handler
+    did not: it always wrote one year of nominal line items, so a reader
+    looking at the Trend view in real 2015-16 prices with three categories
+    selected received a nominal single-year treemap export instead. What the
+    reader is looking at is bView, bPrice and the chip selection, and the
+    export now follows all three.
+
+    deflator_estimated is not decoration. The deflator is published only to
+    2024-25; beyond that deflForYears extrapolates it, so a real value for a
+    later year rests on an estimate, and a column that says which rows those
+    are is the difference between a figure and a guess. */
+ budget:()=>{
+   ensureBudgetSel(bSide);
+   /* The price control is hidden in the treemap view, so bPrice there is
+      whatever the trend view was last left on - stale, and not what the
+      reader is looking at. The treemap is nominal. */
+   const sel=budgetSel[bSide],real=bPrice==='real'&&bView==='trend',
+     basis=real?'real_2015_16':'nominal';
+   const allYears=Object.keys(E.budget[bSide]).sort();
+   const defl=deflForYears(allYears),known=deflator();
+   const adj=(v,y)=>real?v/(defl[y]/100):v;
+   const view={view:bView==='trend'?'Trend':'Treemap',side:bSide,
+     'price basis':real?'constant 2015-16 rupees, GDP-deflated':'nominal rupees',
+     categories:sel.size+' of '+budgetCats(bSide).keys.length+' selected'};
+   if(bView==='trend'){
+     const keys=budgetCats(bSide).keys.filter(k=>sel.has(k));
+     const out=[];
+     allYears.forEach(y=>{
+       const m={};(E.budget[bSide][y]||[]).forEach(g=>m[g.label]=d3.sum(g.children,c=>c.bn));
+       keys.forEach(k=>out.push({fiscal_year:y,side:bSide,category:k,
+         ['rs_bn_'+basis]:round2(adj(m[k]||0,y)),
+         price_basis:basis,gdp_deflator:round2(defl[y]),
+         deflator_estimated:real?(known[y]==null):null,
+         estimate_status:'own-year Budget Estimate'}));});
+     view.years=allYears[0]+' to '+allYears[allYears.length-1];
+     view.stacking=bTrendMode;
+     return [`Pakistan_budget_${bSide}_trend_${basis}.csv`,out,view];
+   }
+   const yr=bYears[bYi],out=[];
+   (E.budget[bSide][yr]||[]).forEach(g=>{if(!sel.has(g.label))return;
+     g.children.forEach(c=>out.push({fiscal_year:yr,side:bSide,category:g.label,
+       line_item:c.name,['rs_bn_'+basis]:round2(adj(c.bn,yr)),
+       price_basis:basis,gdp_deflator:round2(defl[yr]),
+       deflator_estimated:real?(known[yr]==null):null,
+       estimate_status:'own-year Budget Estimate'}));});
+   view.year=yr;
+   return [`Pakistan_budget_${bSide}_${yr}_${basis}.csv`,out,view];}
+
 };
 function round2(v){return v==null?null:Math.round(v*100)/100;}
 function initCsv(){
- d3.selectAll('.csvbtn').on('click',function(e){
+ /* Filtered, not guarded. d3's .on() REPLACES the handler, so binding every
+    .csvbtn and bailing inside on an unknown key would leave the other two
+    modules' buttons bound to a handler that does nothing. */
+ d3.selectAll('.csvbtn').filter(function(){return this.dataset.csv in CSV;})
+  .on('click',function(e){
   e.stopPropagation();
   const k=this.dataset.csv,fn=CSV[k];if(!fn)return;
-  try{const [name,rows]=fn();downloadCSV(name,rows);}catch(err){console.error('CSV',k,err);}
+  const card=this.closest('.card');
+  try{const [name,rows,view]=fn();downloadCSV(name,rows,card&&card.id,view);}
+  catch(err){console.error('CSV',k,err);}
  });
 }
 

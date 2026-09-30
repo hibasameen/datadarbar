@@ -1,0 +1,35 @@
+{
+  "id": "regional_police",
+  "name": "Regional and district reported crime: Balochistan, KP, ICT, GB and AJK",
+  "version": 1,
+  "frequency": "annual",
+  "reference_year_start": 2019,
+  "reference_year_end": 2024,
+  "requested_year_end": 2025,
+  "requested_regions": [
+    "Balochistan",
+    "KP",
+    "ICT",
+    "GB",
+    "AJK"
+  ],
+  "geography_levels": [
+    "region",
+    "district"
+  ],
+  "warehouse": "data_darbar_warehouse/regional_police",
+  "default_regional_table": "regional_totals.parquet",
+  "default_district_totals_table": "district_totals.parquet",
+  "default_district_offences_table": "district_crime_annual.parquet",
+  "raw_root": "raw_data/regional_police",
+  "source_manifest": "sources.json",
+  "discovery_audit": "discovery_audit.json",
+  "not_available": [
+    "district daily FIR archive",
+    "district YTD FIR archive",
+    "2025 reference-year observations"
+  ],
+  "null_policy": "Retain dash/blank as null, preserve explicit zero",
+  "geography_policy": "Source district units with normalized names; ADM2 crosswalk not yet assigned",
+  "source_selection": "Latest complete source-family/year/scope table. Do not retain superseded district units or mix source families."
+}

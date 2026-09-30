@@ -1,8 +1,40 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-25",
+ "generated": "2026-09-30",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
+ "kinds": [
+  {
+   "key": "geography",
+   "label": "Geography",
+   "about": "Boundaries, the identifiers that name places, and the crosswalks between every frame the site has used. Every other table joins on one of these keys."
+  },
+  {
+   "key": "census",
+   "label": "Census tables",
+   "about": "The 2017 and 2023 census tables as PBS published them, and the index of what can be mapped."
+  },
+  {
+   "key": "places",
+   "label": "Place indicators",
+   "about": "District and tehsil figures from surveys, satellites, the Mouza Census and administrative registers."
+  },
+  {
+   "key": "economy",
+   "label": "Economic series",
+   "about": "National accounts, industry, trade, prices, money and the external balance."
+  },
+  {
+   "key": "state",
+   "label": "State",
+   "about": "The budget, tax, courts, police, power and disasters: what institutions report about themselves."
+  },
+  {
+   "key": "reference",
+   "label": "Reference",
+   "about": "Where the source files came from."
+  }
+ ],
  "tables": [
   {
    "name": "budget_lines",
@@ -59,7 +91,14 @@
      "type": "BOOLEAN",
      "description": "TRUE = own-year Budget Estimate (the reliable column)"
     }
-   ]
+   ],
+   "kind": "state",
+   "span": {
+    "column": "doc_fy",
+    "from": "2009-10",
+    "to": "2026-27"
+   },
+   "keys": []
   },
   {
    "name": "census_enrolment_5_16_by_sex",
@@ -246,12 +285,1040 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "census",
+   "keys": [
+    "district_key",
+    "district"
    ]
+  },
+  {
+   "name": "census_entities",
+   "file": "census_entities.parquet",
+   "bytes": 61415,
+   "rows": 15387,
+   "description": "Census 2023\u2019s count of enumerated structures \u2014 24 kinds, from schools and hospitals to factories, mosques and police stations \u2014 by district and tehsil.",
+   "notes": "The only table here that covers the whole frame Data Darbar draws: 156 districts and 649 tehsils, every district of Azad Jammu & Kashmir and Gilgit-Baltistan included. Neither census panel has a row for either, so for those 58 tehsils these are the only values on the site. Two cautions. A missing row is not a zero \u2014 a district with no jail has no jail row \u2014 so coverage varies by kind: hostels, hotels and hospitals reach all 156 districts, universities 74, orphanages 66. And \u2018Home\u2019 is returned for 9 districts of 156; the portal\u2019s own documentation says to treat it as unavailable, so it is here but deliberately not offered as a map indicator. The district and tehsil aggregations agree exactly for all 24 kinds.",
+   "unit": "structures",
+   "source": "PBS Digital Census 2023 via economic.data.gov.pk, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil"
+    },
+    {
+     "name": "area_code",
+     "type": "VARCHAR",
+     "description": "PBS\u2019s own district or tehsil code"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the shape this is drawn on \u2014 district code, or dds_id below that, or PBS-<code> for a tehsil outside the census"
+    },
+    {
+     "name": "unit_id",
+     "type": "INTEGER",
+     "description": "PBS\u2019s own id for the kind of structure, 1\u201324"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "what the structure is"
+    },
+    {
+     "name": "area",
+     "type": "VARCHAR",
+     "description": "the area\u2019s name as the portal gives it"
+    },
+    {
+     "name": "count",
+     "type": "BIGINT",
+     "description": "structures enumerated"
+    }
+   ],
+   "kind": "census",
+   "keys": [
+    "map_key"
+   ]
+  },
+  {
+   "name": "census_panel_2017",
+   "file": "census_panel_2017.parquet",
+   "bytes": 8201176,
+   "rows": 4397361,
+   "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
+   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent \u2014 unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23\u201326 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
+   "unit": "persons, households or housing units; rates and percentages where the indicator says so",
+   "source": "PBS Population and Housing Census 2017, per-district Excel tables (135 districts \u00d7 40 tables)",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number WITHIN that census. Numbering is not comparable across years: 2017's table 23 is a locality table, 2023's is drinking water"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district the unit sits in; equal to unit on district rows"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the published unit's own name"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT unit_type are nested, so summing across them double-counts"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+    },
+    {
+     "name": "map_relation",
+     "type": "VARCHAR",
+     "description": "how this unit relates to the 2023 frame: exact, renamed, merged, split, boundary transfer, or restructured below the district"
+    },
+    {
+     "name": "map_comparable",
+     "type": "VARCHAR",
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+    },
+    {
+     "name": "map_note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+    },
+    {
+     "name": "map_weight",
+     "type": "DOUBLE",
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban. rural + urban = all, so pick one"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender. The three sexes sum to all, so pick one"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it, joined with / down the header hierarchy"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the value sat under, kept because the same indicator can appear under several columns"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+    },
+    {
+     "name": "missing",
+     "type": "BOOLEAN",
+     "description": "the cell was printed as a dash rather than a number"
+    },
+    {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census\u2019s own statement"
+    },
+    {
+     "name": "series_ambiguous",
+     "type": "BOOLEAN",
+     "description": "the series key is not unique within this table (31,963 rows)"
+    }
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2017"
+   },
+   "keys": [
+    "map_key",
+    "district"
+   ]
+  },
+  {
+   "name": "census_panel_2023",
+   "file": "census_panel_2023.parquet",
+   "bytes": 9229706,
+   "rows": 4599521,
+   "description": "Population and Housing Census 2023 unit tables: 27 tables at district, tehsil, sub-tehsil and sub-division level.",
+   "notes": "Do not sum across unit_type, locality or sex \u2014 each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in tables 1, 3, 21 and 25, 15,141 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Table 1 also republishes a POPULATION 2017 column beside the 2023 figure \u2014 that is PBS's own comparison and is safe to use, unlike joining this panel to census_panel_2017. is_rate = TRUE marks the 624,219 rows that are rates or percentages and must never be summed. missing = TRUE on 1,565,334 rows marks a cell PBS printed as a dash, and unlike the 2017 panel the value is left NULL rather than recovered as zero, so a count of non-missing cells is not comparable between the two years. renderings_disagree = TRUE on 27,033 rows flags a figure where PBS's two published renderings of the same table do not agree. adm3_pcode and dd_id are the geographic join keys and are incomplete by design: both are NULL on every district row, and dd_id \u2014 the key the site's own tehsil geometry uses \u2014 is present on 1,919,489 of 2,069,879 tehsil rows. Comparing to census_panel_2017 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim. PBS's own spelling is kept, including 'EDUCATOINAL ATTAINMENT'.",
+   "unit": "persons, households or housing units; rates and percentages where is_rate is TRUE",
+   "source": "PBS Population and Housing Census 2023, Excel tables (both published renderings)",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province, or FATA / Islamabad Capital Territory \u2014 the census frame has four provinces and two federal areas, not six provinces"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number WITHIN that census. Numbering is not comparable across years: 2017's table 23 is a locality table, 2023's is drinking water"
+    },
+    {
+     "name": "dds_id",
+     "type": "VARCHAR",
+     "description": "Data Darbar sub-district identifier, present on every row"
+    },
+    {
+     "name": "dd_id",
+     "type": "VARCHAR",
+     "description": "identifier used by the site's tehsil geometry; NULL on district rows"
+    },
+    {
+     "name": "adm3_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB ADM3 code; NULL on district rows and on units without a match"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district the unit sits in; equal to unit on district rows"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the published unit's own name"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT unit_type are nested, so summing across them double-counts"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS Digital Census 2023 shape this row is drawn on \u2014 the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn"
+    },
+    {
+     "name": "map_relation",
+     "type": "VARCHAR",
+     "description": "how this unit relates to the 2023 frame: exact, renamed, merged, split, boundary transfer, or restructured below the district"
+    },
+    {
+     "name": "map_comparable",
+     "type": "VARCHAR",
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+    },
+    {
+     "name": "map_note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match \u2014 written to be shown to a reader, not parsed"
+    },
+    {
+     "name": "map_weight",
+     "type": "DOUBLE",
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban. rural + urban = all, so pick one"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender. The three sexes sum to all, so pick one"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it, joined with / down the header hierarchy"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the value sat under, kept because the same indicator can appear under several columns"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the published figure \u2014 unit depends on the indicator, see notes"
+    },
+    {
+     "name": "missing",
+     "type": "BOOLEAN",
+     "description": "the cell was printed as a dash rather than a number"
+    },
+    {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": "the value is a rate or percentage and must not be summed"
+    },
+    {
+     "name": "value_corrected",
+     "type": "BOOLEAN",
+     "description": "the figure was corrected against the other rendering"
+    },
+    {
+     "name": "renderings_disagree",
+     "type": "BOOLEAN",
+     "description": "PBS's two renderings of this table disagree here"
+    },
+    {
+     "name": "unit_source",
+     "type": "VARCHAR",
+     "description": "the district workbook this row was read from"
+    }
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2023",
+    "to": "2023"
+   },
+   "keys": [
+    "dds_id",
+    "dd_id",
+    "adm3_pcode",
+    "map_key",
+    "district"
+   ]
+  },
+  {
+   "name": "census_series_index",
+   "file": "census_series_index.parquet",
+   "bytes": 161410,
+   "rows": 37971,
+   "description": "One row per census series that the district and tehsil map can colour, for both census years.",
+   "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured \u2014 a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
+   "unit": "counts of units; the values themselves live in the panels",
+   "source": "Derived from census_panel_2017 and census_panel_2023",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district or tehsil \u2014 the geography this series can be drawn on"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the values sat under"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender"
+    },
+    {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": "the series is a rate or percentage"
+    },
+    {
+     "name": "mappable_units",
+     "type": "BIGINT",
+     "description": "shapes this series colours \u2014 shapes, not units: a 2017 unit that was later split is drawn across all of its successors, so it contributes several. Shapes with both a value and a boundary \u2014 the number of shapes this series colours. Every series listed resolves to exactly one value per shape; series that do not are left out rather than drawn from an arbitrary row"
+    },
+    {
+     "name": "units_with_value",
+     "type": "BIGINT",
+     "description": "census units carrying a value, whether or not they can be drawn \u2014 larger than mappable_units where a unit was split or redrawn and so has no 2023 shape"
+    },
+    {
+     "name": "min_value",
+     "type": "DOUBLE",
+     "description": "smallest value in the series"
+    },
+    {
+     "name": "max_value",
+     "type": "DOUBLE",
+     "description": "largest value in the series"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number within that census"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water"
+    }
+   ],
+   "kind": "census",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": []
+  },
+  {
+   "name": "census_unit_map",
+   "file": "census_unit_map.parquet",
+   "bytes": 14750,
+   "rows": 1398,
+   "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and \u2014 where that is not a straight match \u2014 why.",
+   "notes": "This is the crosswalk turned into a decision. A crosswalk says what happened to a unit; this says what a figure for it means when drawn on the 2023 frame. comparable is the field to read: yes where the figure belongs on the shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on weight for a rate; parent where a unit was split and its figure is drawn across every successor at once rather than divided between them; flagged where the district persists but its territory changed; no where nothing can honestly be drawn. map_key can therefore name several shapes, space-separated. Anything that totals or ranks must count units and not shapes: a parent drawn across its successors is visited once per shape, which turns a national total of 207,684,626 into 213.4 million.",
+   "unit": "census units",
+   "source": "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "BIGINT",
+     "description": "2017 or 2023"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, or tehsil for everything below it"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "the district the unit sits in"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the unit, as the census names it"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS 2023 shape(s) it is drawn on, space-separated"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "how it relates to the 2023 frame"
+    },
+    {
+     "name": "comparable",
+     "type": "VARCHAR",
+     "description": "yes, combined, parent, flagged, or no"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "the reason, in words written for a reader"
+    },
+    {
+     "name": "weight",
+     "type": "BIGINT",
+     "description": "2017 population, for averaging a rate across combined units"
+    }
+   ],
+   "kind": "geography",
+   "span": {
+    "column": "census_year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": [
+    "map_key",
+    "district"
+   ]
+  },
+  {
+   "name": "climate_events",
+   "file": "climate_events.parquet",
+   "bytes": 7042,
+   "rows": 31,
+   "description": "Flood, drought and cyclone events affecting Pakistan, 2001 to 2025.",
+   "notes": "31 events: 23 floods, 4 droughts, 4 tropical cyclones. An event is a named episode with a start and end, and date_precision says how well the dates are known. These events do NOT join to climate_impacts: the impact records carry no event key, only their own report_id, so the two are separate universes and attributing an impact row to an event here would be an inference, not a lookup. An earlier note said climate_impacts carries what each one did, which invited a join that cannot be made.",
+   "unit": "events",
+   "source": "Reanalysis of published disaster reporting",
+   "columns": [
+    {
+     "name": "record_id",
+     "type": "VARCHAR",
+     "description": "the event"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "who recorded it"
+    },
+    {
+     "name": "source_event_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "country_iso3",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "hazard",
+     "type": "VARCHAR",
+     "description": "flood, drought or tropical cyclone"
+    },
+    {
+     "name": "subtype",
+     "type": "VARCHAR",
+     "description": "finer type"
+    },
+    {
+     "name": "title",
+     "type": "VARCHAR",
+     "description": "how the source names it"
+    },
+    {
+     "name": "start_date",
+     "type": "VARCHAR",
+     "description": "when it began"
+    },
+    {
+     "name": "end_date",
+     "type": "VARCHAR",
+     "description": "when it ended"
+    },
+    {
+     "name": "date_precision",
+     "type": "VARCHAR",
+     "description": "how precisely the dates are known"
+    },
+    {
+     "name": "start_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "glide",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "alert_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "deaths",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "affected",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "damage_usd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_modified",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "episode_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "retrieved_at",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "coverage_note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "start_date",
+    "from": "2001-07-22",
+    "to": "2025-08-14"
+   },
+   "keys": []
+  },
+  {
+   "name": "climate_impacts",
+   "file": "climate_impacts.parquet",
+   "bytes": 7050,
+   "rows": 336,
+   "description": "Impacts reported by disaster reporting: people affected, killed, displaced, and assets damaged, by place and reporting period.",
+   "notes": "336 observations, keyed by report and place, not by event. There is no event key in this table and none that joins to climate_events, so an impact cannot be attributed to a named event by lookup - only by reading the period and the place, which is an inference. The metric column says what is counted and the figures come from whichever report covered that place, so coverage is uneven between places and between periods. Do not read a missing row as a zero.",
+   "unit": "people, assets",
+   "source": "Reanalysis of published disaster reporting",
+   "columns": [
+    {
+     "name": "observation_id",
+     "type": "VARCHAR",
+     "description": "the observation"
+    },
+    {
+     "name": "report_id",
+     "type": "VARCHAR",
+     "description": "the report it came from"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "location_name",
+     "type": "VARCHAR",
+     "description": "the place as the report names it"
+    },
+    {
+     "name": "admin_level",
+     "type": "VARCHAR",
+     "description": "how fine the place is"
+    },
+    {
+     "name": "period_start",
+     "type": "VARCHAR",
+     "description": "start of the period covered"
+    },
+    {
+     "name": "period_end",
+     "type": "VARCHAR",
+     "description": "end of the period covered"
+    },
+    {
+     "name": "period_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measurement_note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "period_start",
+    "from": "2026-06-26",
+    "to": "2026-06-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "crops_district_fy",
+   "file": "crops_district_fy.parquet",
+   "bytes": 746807,
+   "rows": 78425,
+   "description": "Area, production and yield by crop, district and fiscal year, 1981\u201382 to 2024\u201325.",
+   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all \u2014 every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi\u2019s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS\u2019s portal and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage varies by crop: the majors run from 1981\u201382, most vegetables and fruit from 2008\u201309.",
+   "unit": "thousand hectares, thousand tonnes, tonnes per hectare",
+   "source": "PBS Agriculture Statistics via the national accounts portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, joining to geography_keys"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district name as PBS\u2019s 2023 layer gives it"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "crop_id",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own crop id"
+    },
+    {
+     "name": "crop",
+     "type": "VARCHAR",
+     "description": "crop name, or a placeholder where the portal gives none"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, e.g. 2024-25"
+    },
+    {
+     "name": "area_000ha",
+     "type": "DOUBLE",
+     "description": "thousand hectares sown"
+    },
+    {
+     "name": "production_000t",
+     "type": "DOUBLE",
+     "description": "thousand tonnes produced"
+    },
+    {
+     "name": "yield_t_per_ha",
+     "type": "DOUBLE",
+     "description": "tonnes per hectare; production divided by area"
+    }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "fy",
+    "from": "1981-82",
+    "to": "2024-25"
+   },
+   "keys": [
+    "district_code",
+    "district",
+    "province"
+   ]
+  },
+  {
+   "name": "diaspora_destinations",
+   "file": "diaspora_destinations.parquet",
+   "bytes": 12408,
+   "rows": 1799,
+   "description": "Registered emigrants by destination country and year, 2011 to 2024.",
+   "notes": "This one is genuinely by country, unlike the remittance and skill files from the same portal: 199 countries in 2024 with 102 distinct values. The totals match the Bureau of Emigration\u2019s published figures \u2014 859,740 in 2023 and 725,587 in 2024. Saudi Arabia takes about six in ten.",
+   "unit": "people",
+   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "year",
+     "type": "INTEGER",
+     "description": "calendar year"
+    },
+    {
+     "name": "country",
+     "type": "VARCHAR",
+     "description": "destination as the portal names it"
+    },
+    {
+     "name": "iso2",
+     "type": "VARCHAR",
+     "description": "ISO 3166 alpha-2"
+    },
+    {
+     "name": "iso3",
+     "type": "VARCHAR",
+     "description": "ISO 3166 alpha-3"
+    },
+    {
+     "name": "continent",
+     "type": "VARCHAR",
+     "description": "continent code"
+    },
+    {
+     "name": "emigrants",
+     "type": "BIGINT",
+     "description": "people"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2024"
+   },
+   "keys": []
+  },
+  {
+   "name": "diaspora_emigrants_by_skill",
+   "file": "diaspora_emigrants_by_skill.parquet",
+   "bytes": 2111,
+   "rows": 330,
+   "description": "Registered emigrants by skill level and year.",
+   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. Skill levels are the Bureau of Emigration\u2019s own bands. Total is the sum of the others, so do not add it to them.",
+   "unit": "people",
+   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "year",
+     "type": "INTEGER",
+     "description": "calendar year"
+    },
+    {
+     "name": "mode",
+     "type": "VARCHAR",
+     "description": "the portal\u2019s own breakdown mode"
+    },
+    {
+     "name": "skill_level",
+     "type": "VARCHAR",
+     "description": "highly qualified, highly skilled, skilled, semi-skilled, unskilled, or total"
+    },
+    {
+     "name": "emigrants",
+     "type": "BIGINT",
+     "description": "people"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1971",
+    "to": "2025"
+   },
+   "keys": []
+  },
+  {
+   "name": "diaspora_emigrants_district",
+   "file": "diaspora_emigrants_district.parquet",
+   "bytes": 9172,
+   "rows": 2190,
+   "description": "Registered emigrants by district of origin, 2011\u20132024, from the Bureau of Emigration & Overseas Employment.",
+   "notes": "Two things to know before using it. The year 'overall' is NOT the sum of 2011\u20132024: it is 9,858,937 against 8,663,198, because the Bureau\u2019s register goes back well before 2011. is_cumulative marks it, and it is a separate indicator in place_indicators for the same reason. And the frame is partial \u2014 the file keys on PBS district codes and all 146 join cleanly, but eleven PBS districts have no row of their own: Chaman, Duki, Surab, Kharmang, Nagar, Shigar, Upper and Lower Kohistan, Upper Chitral and Keamari. The register has followed some recent splits and not others \u2014 Kolai Palas Kohistan and Lower Chitral appear, their siblings do not \u2014 so those eleven sit inside a parent\u2019s figure rather than being absent, and the parent is flagged in place_indicators.",
+   "unit": "people",
+   "source": "Bureau of Emigration & Overseas Employment, read through PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, joining to geography_keys"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district name as PBS\u2019s 2023 layer gives it"
+    },
+    {
+     "name": "division",
+     "type": "VARCHAR",
+     "description": "division, as the register gives it"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "year",
+     "type": "VARCHAR",
+     "description": "2011\u20132024, or 'overall' for the whole register"
+    },
+    {
+     "name": "emigrants_registered",
+     "type": "BIGINT",
+     "description": "people registered as emigrating in that period"
+    },
+    {
+     "name": "is_cumulative",
+     "type": "BOOLEAN",
+     "description": "TRUE on the 'overall' row \u2014 do not add it to the years"
+    }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2024"
+   },
+   "keys": [
+    "district_code",
+    "district",
+    "province"
+   ]
+  },
+  {
+   "name": "diaspora_occupations",
+   "file": "diaspora_occupations.parquet",
+   "bytes": 999,
+   "rows": 40,
+   "description": "Registered emigrants by occupation, 2024.",
+   "notes": "Forty occupation categories for one year. Labourer is the largest at 364,574, about half of all emigration that year.",
+   "unit": "people",
+   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "year",
+     "type": "INTEGER",
+     "description": "calendar year"
+    },
+    {
+     "name": "occupation",
+     "type": "VARCHAR",
+     "description": "category as the portal names it"
+    },
+    {
+     "name": "emigrants",
+     "type": "BIGINT",
+     "description": "people"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2024",
+    "to": "2024"
+   },
+   "keys": []
+  },
+  {
+   "name": "diaspora_remittances_monthly",
+   "file": "diaspora_remittances_monthly.parquet",
+   "bytes": 1858,
+   "rows": 236,
+   "description": "Remittances to Pakistan by month, 2018 to 2025.",
+   "notes": "The portal serves this keyed by country and it is not country data: 198 country keys return 21 distinct series and not one country has a series of its own, with 141 of them returning the same one. The national series is taken instead and the country dimension dropped, because publishing one number against 141 countries would present it as variation. The value is as the portal gives it, which its magnitude puts in millions of US dollars \u2014 34,662 for 2024 against roughly 30 billion published \u2014 but the portal does not label the unit, so treat the level with care and the shape as sound.",
+   "unit": "unlabelled by the source; magnitude suggests million US dollars",
+   "source": "Bureau of Emigration & Overseas Employment via PBS\u2019s diaspora portal, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "year",
+     "type": "INTEGER",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "INTEGER",
+     "description": "calendar month"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "remittances, unit as the portal gives it"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2006",
+    "to": "2025"
+   },
+   "keys": []
+  },
+  {
+   "name": "district_crosswalk_2017_2023",
+   "file": "district_crosswalk_2017_2023.parquet",
+   "bytes": 4739,
+   "rows": 127,
+   "description": "Every district-level relationship between Census 2017 and Census 2023, as groups that cover the same ground.",
+   "notes": "A group is the smallest set of 2017 and 2023 units covering the same territory, so a merge has two 2017 units and one 2023 unit and a split has one and several. What makes this checkable rather than argued is the balances column: Census 2023 table 1 prints PBS\u2019s own restatement of the 2017 population on 2023 boundaries, and for every group the 2017 units\u2019 published population equals the 2023 units\u2019 restated figure. All 127 groups balance. A group that did not would mean the relation asserted for it is wrong.",
+   "unit": "districts and people",
+   "source": "Derived from census_panel_2017 and census_panel_2023; checked against PBS\u2019s own restatement",
+   "columns": [
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "exact, renamed, merged, split, or boundary transfer"
+    },
+    {
+     "name": "units_2017",
+     "type": "VARCHAR",
+     "description": "the 2017 district(s) in this group, joined by +"
+    },
+    {
+     "name": "units_2023",
+     "type": "VARCHAR",
+     "description": "the 2023 district(s) in this group, joined by +"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province or area, as the census names it"
+    },
+    {
+     "name": "population_2017",
+     "type": "BIGINT",
+     "description": "the 2017 units\u2019 published 2017 population"
+    },
+    {
+     "name": "restated_2017",
+     "type": "BIGINT",
+     "description": "the 2023 units\u2019 POPULATION 2017, restated by PBS"
+    },
+    {
+     "name": "population_2023",
+     "type": "BIGINT",
+     "description": "the 2023 units\u2019 2023 population"
+    },
+    {
+     "name": "balances",
+     "type": "BOOLEAN",
+     "description": "yes where the two 2017 figures agree to the person"
+    }
+   ],
+   "kind": "geography",
+   "keys": []
   },
   {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
-   "bytes": 167765,
+   "bytes": 167488,
    "rows": 45829,
    "description": "Every district-level indicator in Data Darbar, one row per district \u00d7 indicator \u00d7 year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead. Census education source corrections dated 2026-09-25 use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. Missing source counts are unavailable, not zero.",
@@ -323,7 +1390,72 @@
      "type": "VARCHAR",
      "description": "non-numeric value, if any"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2017",
+    "to": "2023"
+   },
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
+  },
+  {
+   "name": "fbr_tax_collection",
+   "file": "fbr_tax_collection.parquet",
+   "bytes": 2871,
+   "rows": 264,
+   "description": "Federal tax collection by head and sub-head, 1991\u201392 to 2023\u201324.",
+   "notes": "Direct and indirect tax by the heads FBR reports. tax_type, head and subhead nest, so filter to one level before summing.",
+   "unit": "million rupees",
+   "source": "FBR via PBS national accounts, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fy_end",
+     "type": "BIGINT",
+     "description": "calendar year it ends in"
+    },
+    {
+     "name": "tax_type",
+     "type": "VARCHAR",
+     "description": "direct or indirect"
+    },
+    {
+     "name": "head",
+     "type": "VARCHAR",
+     "description": "the tax head"
+    },
+    {
+     "name": "subhead",
+     "type": "VARCHAR",
+     "description": "within the head"
+    },
+    {
+     "name": "collection_pkr_mn",
+     "type": "DOUBLE",
+     "description": "collection, million rupees"
+    },
+    {
+     "name": "status",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own flag"
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fy",
+    "from": "1991-92",
+    "to": "2023-24"
+   },
+   "keys": []
   },
   {
    "name": "file_catalog",
@@ -385,7 +1517,284 @@
      "type": "BOOLEAN",
      "description": "TRUE if its contents are in a table here"
     }
-   ]
+   ],
+   "kind": "reference",
+   "keys": []
+  },
+  {
+   "name": "gdp_growth",
+   "file": "gdp_growth.parquet",
+   "bytes": 3900,
+   "rows": 74,
+   "description": "Real GDP growth and its sectoral components, 1951\u201352 to 2024\u201325.",
+   "notes": "Seventy-four fiscal years, the longest series on the site. government_label names the government of the day, which PBS\u2019s own dashboard carries and which is useful for reading the series but is a political attribution rather than a statistical one \u2014 a growth rate in a government\u2019s first months reflects decisions taken before it.",
+   "unit": "per cent",
+   "source": "PBS national accounts (na.data.gov.pk), pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, e.g. 2024-25"
+    },
+    {
+     "name": "fy_end",
+     "type": "BIGINT",
+     "description": "calendar year it ends in"
+    },
+    {
+     "name": "gdp_growth_pct",
+     "type": "DOUBLE",
+     "description": "real GDP growth, per cent"
+    },
+    {
+     "name": "agriculture_growth_pct",
+     "type": "DOUBLE",
+     "description": "agriculture, per cent"
+    },
+    {
+     "name": "industry_growth_pct",
+     "type": "DOUBLE",
+     "description": "industry, per cent"
+    },
+    {
+     "name": "services_growth_pct",
+     "type": "DOUBLE",
+     "description": "services, per cent"
+    },
+    {
+     "name": "commodity_producing_sector_growth_pct",
+     "type": "DOUBLE",
+     "description": "agriculture and industry together"
+    },
+    {
+     "name": "government_label",
+     "type": "VARCHAR",
+     "description": "the government in office that year, as PBS labels it"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1951-52",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "gdp_indicators",
+   "file": "gdp_indicators.parquet",
+   "bytes": 2107,
+   "rows": 27,
+   "description": "GDP, national product, per-capita income and the exchange rate, 1999\u20132000 to 2025\u201326.",
+   "notes": "Constant prices on PBS\u2019s own base. status marks a year PBS flags as provisional or revised; the latest years are usually provisional and move.",
+   "unit": "million rupees, rupees",
+   "source": "PBS national accounts, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fy_end",
+     "type": "BIGINT",
+     "description": "calendar year it ends in"
+    },
+    {
+     "name": "gdp_constant_pkr_mn",
+     "type": "DOUBLE",
+     "description": "GDP at constant prices, million rupees"
+    },
+    {
+     "name": "npi_constant_pkr_mn",
+     "type": "DOUBLE",
+     "description": "net national product, million rupees"
+    },
+    {
+     "name": "per_capita_income_constant_rs",
+     "type": "DOUBLE",
+     "description": "per-capita income, rupees"
+    },
+    {
+     "name": "exchange_rate_pkr_per_usd",
+     "type": "DOUBLE",
+     "description": "rupees per US dollar"
+    },
+    {
+     "name": "status",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own flag: provisional, revised or final"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1999-00",
+    "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "geography_keys",
+   "file": "geography_keys.parquet",
+   "bytes": 2790,
+   "rows": 6,
+   "description": "Which identifier names a Pakistani place, and which of them can safely be joined on.",
+   "notes": "Six identifiers name places in this warehouse and they are not interchangeable; unique_per_place is the column that decides whether a join is safe. dd_id is the trap: 591 census sub-districts share 471 of them, so joining on it and keeping one row per polygon returns a plausible answer with units missing. Every count here is measured from the boundary files rather than asserted.",
+   "unit": "identifiers",
+   "source": "Measured from the PBS Digital Census 2023 layers and the warehouse tables",
+   "columns": [
+    {
+     "name": "key",
+     "type": "VARCHAR",
+     "description": "the column name as it appears in the tables"
+    },
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or sub-district"
+    },
+    {
+     "name": "what",
+     "type": "VARCHAR",
+     "description": "what the identifier is"
+    },
+    {
+     "name": "distinct_values",
+     "type": "BIGINT",
+     "description": "how many distinct values exist, measured"
+    },
+    {
+     "name": "unique_per_place",
+     "type": "BOOLEAN",
+     "description": "FALSE means one value can name several places \u2014 do not join on it alone"
+    },
+    {
+     "name": "frame",
+     "type": "VARCHAR",
+     "description": "the boundary set it belongs to"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "what to do about it"
+    }
+   ],
+   "kind": "geography",
+   "keys": []
+  },
+  {
+   "name": "gva_by_activity_annual",
+   "file": "gva_by_activity_annual.parquet",
+   "bytes": 6373,
+   "rows": 594,
+   "description": "Gross value added by sector and sub-sector, annual, at constant prices.",
+   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total: it equals Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, the exception being 2023-24, where the activity file and the annual table are different vintages and differ by Rs15.9bn. An earlier note here said the rows were three nested levels and that adding them double-counts, which is not what the file contains.",
+   "unit": "million rupees",
+   "source": "PBS national accounts, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fy_end",
+     "type": "BIGINT",
+     "description": "calendar year it ends in"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "the broad sector"
+    },
+    {
+     "name": "subsector",
+     "type": "VARCHAR",
+     "description": "within the sector"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "within the sub-sector"
+    },
+    {
+     "name": "gva_constant_pkr_mn",
+     "type": "DOUBLE",
+     "description": "gross value added, million rupees, constant prices"
+    },
+    {
+     "name": "status",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own flag"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "1999-00",
+    "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "gva_by_activity_quarterly",
+   "file": "gva_by_activity_quarterly.parquet",
+   "bytes": 9588,
+   "rows": 880,
+   "description": "The same, quarterly, from 2015\u201316.",
+   "notes": "Quarterly national accounts are newer and thinner than the annual series and are revised more. The grain is the same as the annual file: one row per leaf activity, with sector and subsector as the path, so the rows of one quarter add up rather than double-count.",
+   "unit": "million rupees",
+   "source": "PBS national accounts, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fy_end",
+     "type": "BIGINT",
+     "description": "calendar year it ends in"
+    },
+    {
+     "name": "quarter",
+     "type": "BIGINT",
+     "description": "Q1 is July\u2013September"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "the broad sector"
+    },
+    {
+     "name": "subsector",
+     "type": "VARCHAR",
+     "description": "within the sector"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "within the sub-sector"
+    },
+    {
+     "name": "gva_constant_pkr_mn",
+     "type": "DOUBLE",
+     "description": "gross value added, million rupees, constant prices"
+    },
+    {
+     "name": "status",
+     "type": "BIGINT",
+     "description": "PBS\u2019s own flag"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2015-16",
+    "to": "2024-25"
+   },
+   "keys": []
   },
   {
    "name": "health_access_district",
@@ -502,6 +1911,12 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
   },
   {
@@ -604,6 +2019,788 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "dd_id",
+    "district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "health_facilities_pk",
+   "file": "health_facilities_pk.parquet",
+   "bytes": 545555,
+   "rows": 25704,
+   "description": "Public and private health facilities of Pakistan with positions: 25,704 hospitals, basic health units, rural health centres, dispensaries, clinics, laboratories, pharmacies and others (ALHASAN Systems, 2017).",
+   "notes": "A 2017 snapshot: facilities opened or closed since are not reflected, and status is recorded for only 619 rows. 7,399 are government and 18,305 private. care_group sorts the categories into care types; in_care_layer marks the 20,536 the Places map draws, leaving out medical stores (4,484), veterinary (347), opticians (334), ambulance services and the morgue. Positions are precise (4 to 6 decimal places, only 57 points share a location) and sit in the district the source names in 86 per cent of rows; nearly all the rest are spelling differences or 2017-to-2023 district splits (Karachi, Chitral, Duki, Sujawal), not misplaced points. Against Census 2023\u2019s count of hospital buildings, district totals of these hospitals correlate at 0.88 (log scale), and only eight districts have none. The public network is not complete: official counts of basic health units and dispensaries are higher than the 4,023 and 1,476 here. Phone, mobile, email, URL and street address are left out. district_code and district_key come from the point\u2019s position, not the source\u2019s district column. Published by ALHASAN Systems under CC0.",
+   "unit": "facilities",
+   "source": "ALHASAN Systems Private Limited, Pakistan Health Facilities (15 November 2017), published on the Humanitarian Data Exchange under CC0 - https://data.humdata.org/dataset/pakistan-health-facilities",
+   "columns": [
+    {
+     "name": "row_id",
+     "type": "BIGINT",
+     "description": "row number in this release"
+    },
+    {
+     "name": "source_object_id",
+     "type": "BIGINT",
+     "description": "the source\u2019s OBJECTID"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "facility name as published"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "the source\u2019s category, e.g. Basic Health Unit, General Physician, Medical Stores"
+    },
+    {
+     "name": "sub_category",
+     "type": "VARCHAR",
+     "description": "the source\u2019s sub-category: BHU, RHC, THQ, DHQ, MCH, CLINIC, MEDICAL SERVICES ..."
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "Government or Private"
+    },
+    {
+     "name": "care_group",
+     "type": "VARCHAR",
+     "description": "Hospital | Primary care | Mother and child | Clinic | Traditional medicine | Laboratory and diagnostics | TB and leprosy; empty where not a care facility"
+    },
+    {
+     "name": "in_care_layer",
+     "type": "BOOLEAN",
+     "description": "true for the care facilities the Places map draws"
+    },
+    {
+     "name": "facility_class",
+     "type": "VARCHAR",
+     "description": "the source\u2019s class, where given (619 rows)"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "Functional | Not Functional | Closed, where given (619 rows)"
+    },
+    {
+     "name": "beds",
+     "type": "INTEGER",
+     "description": "beds, where given (105 rows)"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "locality as published"
+    },
+    {
+     "name": "union_council",
+     "type": "VARCHAR",
+     "description": "union council as published"
+    },
+    {
+     "name": "town",
+     "type": "VARCHAR",
+     "description": "town as published"
+    },
+    {
+     "name": "mauza",
+     "type": "VARCHAR",
+     "description": "mauza as published"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil as the source writes it"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district as the source writes it (2017 names)"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province as the source writes it"
+    },
+    {
+     "name": "lat",
+     "type": "DOUBLE",
+     "description": "latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "lng",
+     "type": "DOUBLE",
+     "description": "longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "that district\u2019s name on the PBS 2023 layer"
+    },
+    {
+     "name": "province_2023",
+     "type": "VARCHAR",
+     "description": "its province or territory on the PBS 2023 layer"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "source and licence"
+    },
+    {
+     "name": "release",
+     "type": "DATE",
+     "description": "the source\u2019s own date"
+    }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_code",
+    "district_key",
+    "district",
+    "province"
+   ]
+  },
+  {
+   "name": "healthsites_osm_2019",
+   "file": "healthsites_osm_2019.parquet",
+   "bytes": 144560,
+   "rows": 2638,
+   "description": "Health amenities of Pakistan mapped on OpenStreetMap, as exported by healthsites.io in October 2019: 2,638 hospitals, clinics, pharmacies, doctors and dentists.",
+   "notes": "Volunteer-mapped and uneven: most points were last edited in 2016 to 2018, cities are far better covered than rural districts, and 50 of 156 districts have no clinic, hospital, doctor or dentist in it at all. District totals correlate with Census 2023\u2019s hospital buildings at 0.68, against 0.88 for health_facilities_pk, and 81 per cent of these care points have an ALHASAN facility within 250 metres, so for coverage use health_facilities_pk and treat this as a cross-check. amenity is OSM\u2019s tag. Contact numbers and the editors\u2019 usernames are left out. This table is OpenStreetMap data under the ODbL, not CC BY: a database made from it must credit OpenStreetMap contributors and stay under the ODbL.",
+   "unit": "facilities",
+   "source": "\u00a9 OpenStreetMap contributors, exported by healthsites.io (9 October 2019); Open Database Licence (ODbL) 1.0 - https://healthsites.io, https://www.openstreetmap.org/copyright",
+   "columns": [
+    {
+     "name": "row_id",
+     "type": "BIGINT",
+     "description": "row number in this release"
+    },
+    {
+     "name": "osm_id",
+     "type": "BIGINT",
+     "description": "OpenStreetMap element id"
+    },
+    {
+     "name": "osm_type",
+     "type": "VARCHAR",
+     "description": "node or way"
+    },
+    {
+     "name": "healthsites_uuid",
+     "type": "VARCHAR",
+     "description": "healthsites.io identifier"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "name as mapped (125 rows have none)"
+    },
+    {
+     "name": "amenity",
+     "type": "VARCHAR",
+     "description": "OSM amenity tag: hospital | clinic | pharmacy | doctors | dentist"
+    },
+    {
+     "name": "healthcare",
+     "type": "VARCHAR",
+     "description": "OSM healthcare tag, where set"
+    },
+    {
+     "name": "speciality",
+     "type": "VARCHAR",
+     "description": "OSM healthcare:speciality, where set"
+    },
+    {
+     "name": "operator",
+     "type": "VARCHAR",
+     "description": "operator, where set"
+    },
+    {
+     "name": "operator_type",
+     "type": "VARCHAR",
+     "description": "operator type, where set"
+    },
+    {
+     "name": "beds",
+     "type": "VARCHAR",
+     "description": "beds, where set"
+    },
+    {
+     "name": "emergency",
+     "type": "BOOLEAN",
+     "description": "emergency department, where set"
+    },
+    {
+     "name": "opening_hours",
+     "type": "VARCHAR",
+     "description": "opening hours, where set"
+    },
+    {
+     "name": "wheelchair",
+     "type": "BOOLEAN",
+     "description": "wheelchair access, where set"
+    },
+    {
+     "name": "address",
+     "type": "VARCHAR",
+     "description": "address as mapped, where set"
+    },
+    {
+     "name": "completeness_pct",
+     "type": "DOUBLE",
+     "description": "healthsites.io\u2019s own completeness score"
+    },
+    {
+     "name": "last_edited",
+     "type": "DATE",
+     "description": "date the element was last edited on OSM"
+    },
+    {
+     "name": "lat",
+     "type": "DOUBLE",
+     "description": "latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "lng",
+     "type": "DOUBLE",
+     "description": "longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "that district\u2019s name on the PBS 2023 layer"
+    },
+    {
+     "name": "province_2023",
+     "type": "VARCHAR",
+     "description": "its province or territory on the PBS 2023 layer"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "source and licence"
+    },
+    {
+     "name": "release",
+     "type": "DATE",
+     "description": "the source\u2019s own date"
+    }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_code",
+    "district_key"
+   ]
+  },
+  {
+   "name": "ljcp_case_flows",
+   "file": "ljcp_case_flows.parquet",
+   "bytes": 13724,
+   "rows": 75,
+   "description": "Cases pending, instituted and disposed by province, court tier and category, 2020 to 2024.",
+   "notes": "The stock and the flow together: pending at the start, what came in, what was decided, and what was left. clearance_rate_pct is disposals over institutions. Above 100 means more cases were decided than filed that year; it does NOT establish that the backlog fell, which depends on the opening stock and is answered by backlog_change. stock_flow_check records whether opening plus instituted minus disposed actually equals the closing figure PBS prints; where it does not, transfers between courts usually explain it, and the residual columns say by how much. Categories nest: \u2018all\u2019 contains civil and criminal, so do not add the three together.",
+   "unit": "cases",
+   "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "all, civil or criminal \u2014 these nest"
+    },
+    {
+     "name": "court_tier",
+     "type": "VARCHAR",
+     "description": "which courts are counted"
+    },
+    {
+     "name": "pending_start",
+     "type": "BIGINT",
+     "description": "cases pending at the start of the year"
+    },
+    {
+     "name": "instituted",
+     "type": "BIGINT",
+     "description": "cases filed during the year"
+    },
+    {
+     "name": "transfers_in",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "transfers_out",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "disposed",
+     "type": "BIGINT",
+     "description": "cases decided during the year"
+    },
+    {
+     "name": "pending_end",
+     "type": "BIGINT",
+     "description": "cases pending at the end"
+    },
+    {
+     "name": "source_record_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_pages",
+     "type": "BIGINT[]",
+     "description": ""
+    },
+    {
+     "name": "method",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "scope_note",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "category_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "clearance_rate_pct",
+     "type": "DOUBLE",
+     "description": "disposals as a percentage of institutions"
+    },
+    {
+     "name": "backlog_change",
+     "type": "DOUBLE",
+     "description": "pending at the end minus pending at the start"
+    },
+    {
+     "name": "backlog_growth_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "stock_flow_residual",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "stock_flow_check",
+     "type": "VARCHAR",
+     "description": "whether the stock and flow figures reconcile"
+    },
+    {
+     "name": "unadjusted_flow_residual",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "raw_values",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "raw_cells",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "table_index",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "row_index",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_record_id",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
+   "name": "ljcp_court_districts",
+   "file": "ljcp_court_districts.parquet",
+   "bytes": 20233,
+   "rows": 585,
+   "description": "Cases pending in each district's courts at year end, with the population and the working judges beside them, 2020 to 2024.",
+   "notes": "One all-cases row per year and map district. Rates use the 2023 census count for every year, not a population estimate for the year. Sessions divisions are keyed to districts by name, provisionally; two-seat Balochistan districts and Islamabad are summed first, and a district with no court seat of its own is added to its host's population (hosted_districts). Working judges are matched in 384 of 585 rows: none in 2021, none for KP in 2024, and Punjab 2022 is withheld because its staffing is dated 2021. A low rate in a district with few courts can mean cases are not filed there, not that they are decided quickly; the staffing comparison is descriptive, not causal.",
+   "unit": "district-years",
+   "source": "Law & Justice Commission of Pakistan, annual judicial statistics",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "map district (ADM2 key)"
+    },
+    {
+     "name": "sessions_included",
+     "type": "VARCHAR",
+     "description": "the sessions divisions summed into it"
+    },
+    {
+     "name": "hosted_districts",
+     "type": "VARCHAR",
+     "description": "districts without a seat, counted in its population"
+    },
+    {
+     "name": "pending_start",
+     "type": "BIGINT",
+     "description": "cases pending at the start of the year"
+    },
+    {
+     "name": "instituted",
+     "type": "BIGINT",
+     "description": "cases filed"
+    },
+    {
+     "name": "disposed",
+     "type": "BIGINT",
+     "description": "cases decided"
+    },
+    {
+     "name": "pending_end",
+     "type": "BIGINT",
+     "description": "cases pending at the end of the year"
+    },
+    {
+     "name": "clearance_rate_pct",
+     "type": "DOUBLE",
+     "description": "disposals as a percentage of institutions"
+    },
+    {
+     "name": "population_2023",
+     "type": "BIGINT",
+     "description": "Census 2023 population of the district and any hosted"
+    },
+    {
+     "name": "pending_per_100k",
+     "type": "DOUBLE",
+     "description": "pending_end per 100,000 people, 2023 census"
+    },
+    {
+     "name": "pending_per_100k_interpolated",
+     "type": "DOUBLE",
+     "description": "the same on a population grown between censuses"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "judges in post, where matched"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts sanctioned, where matched"
+    },
+    {
+     "name": "pending_per_working_judge",
+     "type": "DOUBLE",
+     "description": "pending_end / working_judges"
+    },
+    {
+     "name": "crosswalk_status",
+     "type": "VARCHAR",
+     "description": "how the sessions division was keyed"
+    },
+    {
+     "name": "judge_coverage_status",
+     "type": "VARCHAR",
+     "description": "whether staffing was matched"
+    },
+    {
+     "name": "stock_flow_check",
+     "type": "VARCHAR",
+     "description": "whether the stock and flow figures reconcile"
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "district",
+    "province"
+   ]
+  },
+  {
+   "name": "ljcp_judges_province",
+   "file": "ljcp_judges_province.parquet",
+   "bytes": 5455,
+   "rows": 466,
+   "description": "Judicial posts sanctioned, filled and vacant in the district judiciary, by province and session division, 2020 to 2024.",
+   "notes": "Consolidated strength, all ranks together, as each report prints it. Not every year is there: no 2021 edition table, KP 2024 not found, and Islamabad prints working judges only. Punjab's 2022 edition is dated 31 December 2021 (strength_date_status). Balochistan's figures sum four rank tables and, from 2022, exclude ex-cadre posts, so its 2020 total is not strictly comparable.",
+   "unit": "judicial posts",
+   "source": "Law & Justice Commission of Pakistan",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "report year"
+    },
+    {
+     "name": "as_of_date",
+     "type": "DATE",
+     "description": "date the strength refers to"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area"
+    },
+    {
+     "name": "session_division",
+     "type": "VARCHAR",
+     "description": "the session division"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts on the establishment"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "posts filled"
+    },
+    {
+     "name": "vacant_judges",
+     "type": "DOUBLE",
+     "description": "posts unfilled"
+    },
+    {
+     "name": "strength_date_status",
+     "type": "VARCHAR",
+     "description": "same_year, or the edition's date differs"
+    },
+    {
+     "name": "rank_coverage",
+     "type": "VARCHAR",
+     "description": "how the ranks were counted"
+    },
+    {
+     "name": "working_definition",
+     "type": "VARCHAR",
+     "description": "what 'working' includes"
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
+   "name": "ljcp_judicial_strength",
+   "file": "ljcp_judicial_strength.parquet",
+   "bytes": 6759,
+   "rows": 266,
+   "description": "Sanctioned, working and vacant judicial posts by rank and session division.",
+   "notes": "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength tables have not been extracted, so this is not a national picture and should not be read as one. Within Balochistan it is complete: 337 posts sanctioned in 2024 against 235 working.",
+   "unit": "judicial posts",
+   "source": "Law & Justice Commission of Pakistan",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "as_of_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "session_division",
+     "type": "VARCHAR",
+     "description": "the session division"
+    },
+    {
+     "name": "sanctioned_judges",
+     "type": "BIGINT",
+     "description": "posts on the establishment"
+    },
+    {
+     "name": "working_judges",
+     "type": "BIGINT",
+     "description": "posts filled"
+    },
+    {
+     "name": "vacant_judges",
+     "type": "BIGINT",
+     "description": "posts unfilled"
+    },
+    {
+     "name": "court_tier",
+     "type": "VARCHAR",
+     "description": "which courts"
+    },
+    {
+     "name": "strength_date_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "rank_coverage",
+     "type": "VARCHAR",
+     "description": "which ranks are counted"
+    },
+    {
+     "name": "working_definition",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "inferred_zero_fields",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_record_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "source_ids",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "pdf_pages",
+     "type": "BIGINT[]",
+     "description": ""
+    },
+    {
+     "name": "scope_note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2023",
+    "to": "2024"
+   },
+   "keys": [
+    "province"
    ]
   },
   {
@@ -646,7 +2843,14 @@
      "type": "DOUBLE",
      "description": "% change in the FYTD index"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "month",
+    "from": "2016-07",
+    "to": "2026-05"
+   },
+   "keys": []
   },
   {
    "name": "lsm_sector_indices",
@@ -693,7 +2897,14 @@
      "type": "DOUBLE",
      "description": "monthly index level"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2005-06",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "mouza_crosswalk",
@@ -760,6 +2971,14 @@
      "type": "VARCHAR",
      "description": "boundary-file names considered, where the match failed"
     }
+   ],
+   "kind": "geography",
+   "keys": [
+    "tehsil_code",
+    "dd_id",
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -1922,6 +4141,13 @@
      "type": "BIGINT",
      "description": "mouzas by industry scale, and by how much of the workforce is in each sector"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "tehsil_code",
+    "district_code",
+    "district",
+    "province"
    ]
   },
   {
@@ -2014,6 +4240,10 @@
      "type": "DOUBLE",
      "description": "censored headcount: housing (%)"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -2061,7 +4291,679 @@
      "type": "DOUBLE",
      "description": "value \u2014 unit depends on the table"
     }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1951-52",
+    "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "nepra_disco_annual",
+   "file": "nepra_disco_annual.parquet",
+   "bytes": 168943,
+   "rows": 20689,
+   "description": "Distribution company performance by year, 2006\u201307 to 2024\u201325.",
+   "notes": "Read straight off NEPRA\u2019s tables, which is why row_label and col_label are carried as printed rather than normalised: the tables change shape between editions and a single schema across nineteen years would have to invent correspondences. value_raw is the text as printed; filter on series, table_no and row_label to pull one measure.",
+   "unit": "varies by row",
+   "source": "NEPRA State of Industry reports",
+   "columns": [
+    {
+     "name": "series",
+     "type": "VARCHAR",
+     "description": "which NEPRA publication"
+    },
+    {
+     "name": "report_year",
+     "type": "BIGINT",
+     "description": "the edition"
+    },
+    {
+     "name": "table_no",
+     "type": "DOUBLE",
+     "description": "table within it"
+    },
+    {
+     "name": "title",
+     "type": "VARCHAR",
+     "description": "the table\u2019s title"
+    },
+    {
+     "name": "section",
+     "type": "INTEGER",
+     "description": ""
+    },
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year the row is about"
+    },
+    {
+     "name": "row_label",
+     "type": "VARCHAR",
+     "description": "the row as printed"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column as printed"
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": "the cell as printed"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "unit_hint",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "col",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "relabelled",
+     "type": "BOOLEAN",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fy",
+    "from": "2006-07",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "nepra_plant_years",
+   "file": "nepra_plant_years.parquet",
+   "bytes": 13143,
+   "rows": 909,
+   "description": "Every plant in NEPRA\u2019s reports, by fiscal year: what it burns and what it was rated at in that year.",
+   "notes": "One row per plant per fiscal year as reported, 2017-18 to 2024-25 \u2014 the observations behind nepra_plants, which collapses them to one row per plant at its maximum capacity. Use this table when the year matters: 22 plants have their capacity revised between reports, and the union of all eight years is 133 plants and 45,405 MW against 118 and 41,440 MW reported for 2024-25. Presence here is observed, not inferred: one plant is absent from a year inside its own first-to-last span. Rows with no installed_mw are kept rather than dropped, because a plant the report lists without a capacity is still a plant it listed: 11 of the 108 in 2017-18 are like this, falling to none from 2021-22. This is the reporting universe NEPRA published, not a register of every plant in the country.",
+   "unit": "megawatts",
+   "source": "NEPRA State of Industry and performance reports",
+   "columns": [
+    {
+     "name": "plant_id",
+     "type": "VARCHAR",
+     "description": "NEPRA\u2019s own identifier"
+    },
+    {
+     "name": "plant",
+     "type": "VARCHAR",
+     "description": "the plant as that report names it"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "the report\u2019s fiscal year"
+    },
+    {
+     "name": "technology",
+     "type": "VARCHAR",
+     "description": "how it generates"
+    },
+    {
+     "name": "fuel",
+     "type": "VARCHAR",
+     "description": "what it burns or uses"
+    },
+    {
+     "name": "installed_mw",
+     "type": "DOUBLE",
+     "description": "nameplate capacity as reported THAT year"
+    },
+    {
+     "name": "dependable_mw",
+     "type": "DOUBLE",
+     "description": "dependable capacity as reported that year"
+    },
+    {
+     "name": "generation_gwh",
+     "type": "DOUBLE",
+     "description": "generation that year, where reported"
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "fiscal_year",
+    "from": "2017-18",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "nepra_plants",
+   "file": "nepra_plants.parquet",
+   "bytes": 7934,
+   "rows": 133,
+   "description": "Power plants on the national grid, with fuel, technology and installed capacity.",
+   "notes": "133 plants. Hydel is the largest block at 11,890 MW, then coal at 7,260, furnace oil at 5,440 and nuclear at 3,635; wind has the most plants, 37, for 1,885 MW. Installed capacity is nameplate and not what a plant actually generates \u2014 see nepra_disco_annual for what was dispatched.",
+   "unit": "megawatts",
+   "source": "NEPRA State of Industry and performance reports",
+   "columns": [
+    {
+     "name": "plant_id",
+     "type": "VARCHAR",
+     "description": "NEPRA\u2019s own identifier"
+    },
+    {
+     "name": "plant_name",
+     "type": "VARCHAR",
+     "description": "the plant"
+    },
+    {
+     "name": "name_variants",
+     "type": "VARCHAR",
+     "description": "other spellings in the source documents"
+    },
+    {
+     "name": "technology",
+     "type": "VARCHAR",
+     "description": "how it generates"
+    },
+    {
+     "name": "fuel",
+     "type": "VARCHAR",
+     "description": "what it burns or uses"
+    },
+    {
+     "name": "installed_mw",
+     "type": "DOUBLE",
+     "description": "nameplate capacity, megawatts"
+    },
+    {
+     "name": "first_fy",
+     "type": "VARCHAR",
+     "description": "first year it appears"
+    },
+    {
+     "name": "last_fy",
+     "type": "VARCHAR",
+     "description": "last year it appears"
+    }
+   ],
+   "kind": "state",
+   "keys": []
+  },
+  {
+   "name": "place_indicator_index",
+   "file": "place_indicator_index.parquet",
+   "bytes": 122522,
+   "rows": 5635,
+   "description": "One row per indicator Places can draw, curated and census alike.",
+   "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are \u2014 place_indicators, or a census panel \u2014 which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
+   "unit": "indicators",
+   "source": "Built by etl/places/build_all.py",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil \u2014 the geography this indicator draws on"
+    },
+    {
+     "name": "topic",
+     "type": "VARCHAR",
+     "description": "the topic it browses under"
+    },
+    {
+     "name": "topic_label",
+     "type": "VARCHAR",
+     "description": "that topic, as a reader sees it"
+    },
+    {
+     "name": "group_key",
+     "type": "VARCHAR",
+     "description": "the group, joining to place_indicators.group_key"
+    },
+    {
+     "name": "group_label",
+     "type": "VARCHAR",
+     "description": "that group, as a reader sees it"
+    },
+    {
+     "name": "dataset",
+     "type": "VARCHAR",
+     "description": "the source dataset and release"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator id, joining to place_indicators.indicator"
+    },
+    {
+     "name": "label",
+     "type": "VARCHAR",
+     "description": "the indicator, as a reader sees it"
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "dp",
+     "type": "INTEGER",
+     "description": "decimal places to show; NULL for a count"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "where the values are: place_indicators, or a census panel"
+    },
+    {
+     "name": "families",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "years",
+     "type": "VARCHAR[]",
+     "description": "how many years the series has"
+    },
+    {
+     "name": "localities",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "sexes",
+     "type": "VARCHAR[]",
+     "description": ""
+    },
+    {
+     "name": "shapes",
+     "type": "BIGINT",
+     "description": "PBS 2023 shapes this indicator colours"
+    },
+    {
+     "name": "units",
+     "type": "BIGINT",
+     "description": "census units carrying a value \u2014 differs from shapes wherever a unit is drawn across the shapes that replaced it"
+    },
+    {
+     "name": "min_value",
+     "type": "DOUBLE",
+     "description": "smallest value"
+    },
+    {
+     "name": "max_value",
+     "type": "DOUBLE",
+     "description": "largest value"
+    },
+    {
+     "name": "label_source",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "redundant",
+     "type": "BOOLEAN",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "keys": []
+  },
+  {
+   "name": "place_indicators",
+   "file": "place_indicators.parquet",
+   "bytes": 313794,
+   "rows": 110077,
+   "description": "Every curated district and tehsil indicator, on PBS\u2019s 2023 frame.",
+   "notes": "Values only \u2014 the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators \u2014 dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags \u2014 which is why they have no index entry.",
+   "unit": "indicator values",
+   "source": "Built by etl/places/build_all.py",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "district or tehsil"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS 2023 shape(s) this row is drawn on, space-separated where a unit was later split"
+    },
+    {
+     "name": "source_key",
+     "type": "VARCHAR",
+     "description": "the identifier the source table used \u2014 a district slug, a dd_id, or a PBS tehsil code"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "how the unit relates to the 2023 frame: exact, alias, split, or shared"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match"
+    },
+    {
+     "name": "group_key",
+     "type": "VARCHAR",
+     "description": "the indicator group, joining to place_indicator_index"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator id within that group"
+    },
+    {
+     "name": "year",
+     "type": "VARCHAR",
+     "description": "the year, where the series has one; NULL where it does not"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure \u2014 unit depends on the indicator, see the index"
+    }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2011",
+    "to": "2026"
+   },
+   "keys": [
+    "map_key"
    ]
+  },
+  {
+   "name": "police_crime_annual",
+   "file": "police_crime_annual.parquet",
+   "bytes": 21231,
+   "rows": 3210,
+   "description": "Reported offences by province, range and year, 2019 to 2024.",
+   "notes": "Nine reporting regions, and the geography is not uniform between them: Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways police report one figure each. So a district map of this covers KP and AJK and nothing else. measure says what is counted \u2014 mostly reported_offence_count, which is offences reported to police and not crimes committed.",
+   "unit": "offences",
+   "source": "Provincial and regional police annual reports",
+   "columns": [
+    {
+     "name": "source_family",
+     "type": "VARCHAR",
+     "description": "which force reported it"
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "province or force"
+    },
+    {
+     "name": "geography",
+     "type": "VARCHAR",
+     "description": "the place, where the force reports one"
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": "province, range, district or national"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "frequency",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "offence",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "offence_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "reporting_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value",
+     "type": "BIGINT",
+     "description": "the count"
+    },
+    {
+     "name": "raw_value",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_locator",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "edition_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "quality_flags",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2024"
+   },
+   "keys": []
+  },
+  {
+   "name": "police_crime_district",
+   "file": "police_crime_district.parquet",
+   "bytes": 16389,
+   "rows": 2358,
+   "description": "The same, at district level where a force publishes it.",
+   "notes": "Only Khyber Pakhtunkhwa and Azad Jammu & Kashmir publish district figures; everywhere else the province is the finest grain available. Joining this to a district map leaves most of the country empty, which is a fact about police reporting rather than about crime.",
+   "unit": "offences",
+   "source": "Provincial and regional police annual reports",
+   "columns": [
+    {
+     "name": "source_family",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "region",
+     "type": "VARCHAR",
+     "description": "province or force"
+    },
+    {
+     "name": "geography",
+     "type": "VARCHAR",
+     "description": "district"
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": "the force\u2019s own identifier"
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "frequency",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "offence",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "offence_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "reporting_scope",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value",
+     "type": "BIGINT",
+     "description": "the count"
+    },
+    {
+     "name": "raw_value",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_locator",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "edition_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "quality_flags",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2024"
+   },
+   "keys": []
   },
   {
    "name": "sbp_observations",
@@ -2103,7 +5005,14 @@
      "type": "VARCHAR",
      "description": "SBP status comment, usually empty"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "obs_date",
+    "from": "1947-08-31",
+    "to": "2026-08-31"
+   },
+   "keys": []
   },
   {
    "name": "sbp_series_catalog",
@@ -2446,7 +5355,9 @@
      "since": "2000-06",
      "upto": "2026-06"
     }
-   ]
+   ],
+   "kind": "economy",
+   "keys": []
   },
   {
    "name": "school_access_district",
@@ -2683,6 +5594,11 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district"
    ]
   },
   {
@@ -2825,6 +5741,11 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "dd_id",
+    "district_key"
    ]
   },
   {
@@ -2912,6 +5833,10 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -2994,7 +5919,9 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
-   ]
+   ],
+   "kind": "places",
+   "keys": []
   },
   {
    "name": "school_validation_district",
@@ -3361,6 +6288,10 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
@@ -3418,7 +6349,9 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
-   ]
+   ],
+   "kind": "places",
+   "keys": []
   },
   {
    "name": "school_validation_tehsil",
@@ -3580,17 +6513,21 @@
      "type": "VARCHAR",
      "description": "release tag"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key"
    ]
   },
   {
    "name": "schools_pk",
    "file": "schools_pk.parquet",
-   "bytes": 2990512,
+   "bytes": 4405728,
    "rows": 125317,
-   "description": "Government schools of Pakistan with positions and provenance, one row per listed school (release 2026-09).",
-   "notes": "READ coord_method AND coord_precision BEFORE USING lat/lng. Only 82,000 of the 121,000 positioned rows are school-level fixes (GPS at source in Balochistan and KP, RSU pins or positions multilaterated from SELD checker distances in Sindh); 20,000 Punjab, GB and AJK rows sit at the named SETTLEMENT, 8,000 Punjab rows at the MARKAZ (school-cluster) centroid and 9,800 Punjab rows at the TEHSIL centroid \u2014 those last two are useless for anything finer than a district. coord_tier is the region's overall grade from the coverage ledger (A to C). in_analysis marks the 118,673 rows that entered Adaad's distance analysis; analysis_note says why the rest did not (no position, closed, sex not stated, not government). gender is the school's name DESIGNATION (GG/GB, Boys/Girls); in Sindh most designated boys' schools are officially Mixed and enrol girls \u2014 gender_official carries SEMIS's Boys/Girls/Mixed field and boys_/girls_enrolled the roster's enrolment, so the girls' network can be redefined by attendance. level is the source's own label and level_std collapses it to primary/middle/high; middle_plus and high_plus are the analysis's classes. Coverage: settled KP only (the seven ex-FATA merged districts have no public locations), two of AJK's ten districts, 78 federal schools in Islamabad; see school_layer_coverage. district_key is the source's district mapped to Data Darbar's 147-district frame (successor districts folded into their parent); district_key_boundary is the polygon the point falls in, which is what per-district counts in the piece use \u2014 they differ for 3,500 rows. Every position in this table is either published by a provincial education department (Balochistan, KP, and Sindh's pins), solved from distances the Sindh department's own public distance checker returns, or geocoded from a settlement name in a public roster. The table adds nothing a department has not put online: no staff names, no contact details. Released under CC BY 4.0 as a compilation; the underlying records remain the departments'.",
+   "description": "Government schools of Pakistan with positions and provenance, one row per current listed school (release 2026-09-30).",
+   "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. The linked positions have been verified. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Whether a school is operating is as the current roster records it. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
    "unit": null,
-   "source": "Provincial school registers: SED Balochistan open-data portal; Sindh SELD Institution Checker and Distance Checker with RSU district GIS pins; KP Education Monitoring Authority school locator and the JSiMS mirror of KP EMIS; Punjab School Information System; GB EMIS; Mirpur and Kotli exam boards; OpenStreetMap for Islamabad. Compiled for Adaad, September 2026.",
+   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026.",
    "columns": [
     {
      "name": "row_id",
@@ -3715,7 +6652,7 @@
     {
      "name": "coord_method",
      "type": "VARCHAR",
-     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL"
+     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL | historical_school_point_2017"
     },
     {
      "name": "coord_precision",
@@ -3725,7 +6662,7 @@
     {
      "name": "coord_tier",
      "type": "VARCHAR",
-     "description": "region grade from the coverage ledger: A, A-, B, B-, C"
+     "description": "Original regional coverage grade retained; not an accuracy certification for newly added historical points."
     },
     {
      "name": "coord_resid_m",
@@ -3760,7 +6697,7 @@
     {
      "name": "in_analysis",
      "type": "BOOLEAN",
-     "description": "entered Adaad's distance analysis (functional, positioned, sex designated, government)"
+     "description": "Membership of the frozen September 2026 analysis; use analysis_lat, analysis_lng and analysis_district_key_boundary to reproduce it."
     },
     {
      "name": "analysis_sex",
@@ -3770,14 +6707,482 @@
     {
      "name": "analysis_note",
      "type": "VARCHAR",
-     "description": "why in_analysis is false"
+     "description": "Why a row was excluded from the frozen September analysis; a later coordinate addition does not change this history."
     },
     {
      "name": "release",
-     "type": "VARCHAR",
+     "type": "DATE",
      "description": "release tag of this table"
+    },
+    {
+     "name": "analysis_lat",
+     "type": "DOUBLE",
+     "description": "Frozen September 2026 analysis snapshot: latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "analysis_lng",
+     "type": "DOUBLE",
+     "description": "Frozen September 2026 analysis snapshot: longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "analysis_district_key_boundary",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)"
+    },
+    {
+     "name": "analysis_coord_method",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL"
+    },
+    {
+     "name": "analysis_coord_precision",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: what the position identifies: school | settlement | cluster | markaz | tehsil | none"
+    },
+    {
+     "name": "analysis_coord_tier",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: region grade from the coverage ledger: A, A-, B, B-, C"
+    },
+    {
+     "name": "analysis_geocode_match",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: the geocoder's or checker's own match class, kept verbatim"
+    },
+    {
+     "name": "analysis_source",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: register the row comes from"
+    },
+    {
+     "name": "analysis_source_url",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: portal"
+    },
+    {
+     "name": "analysis_source_vintage",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: when the register was read"
+    },
+    {
+     "name": "coord_source_url",
+     "type": "VARCHAR",
+     "description": "Coordinate-specific public source URL for the Punjab overlay."
+    },
+    {
+     "name": "coord_source_id",
+     "type": "VARCHAR",
+     "description": "Historical Inst_ID, preserved as text; its leading 1 was removed to infer the matching EMIS."
+    },
+    {
+     "name": "historical_name",
+     "type": "VARCHAR",
+     "description": "School name in the 2017 coordinate source; current name retained separately."
+    },
+    {
+     "name": "historical_gender",
+     "type": "VARCHAR",
+     "description": "Gender label in the 2017 source; may conflict with current designation."
+    },
+    {
+     "name": "coord_review_flags",
+     "type": "VARCHAR",
+     "description": "Semicolon-separated flags: historical_2017_point_verified, name_differs, historical_gender_conflict, shared_coordinate, outside_source_district, outside_district_polygons, overlapping_district_polygons."
+    },
+    {
+     "name": "coord_validation",
+     "type": "VARCHAR",
+     "description": "Checks performed, not a claim of building-level verification."
+    },
+    {
+     "name": "coord_source_year",
+     "type": "INTEGER",
+     "description": "Year of the coordinate source; 2017 for the Punjab historical overlay, otherwise NULL."
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_key",
+    "district",
+    "province"
    ]
+  },
+  {
+   "name": "sindh_crime_annual",
+   "file": "sindh_crime_annual.parquet",
+   "bytes": 150828,
+   "rows": 2205,
+   "description": "Sindh police reported crime by category and year, 2019 to 2025.",
+   "notes": "Sindh reports in more detail than the other provinces and separately from the national compilation, so it is kept as its own table rather than folded in. Every row carries the source document and how it was extracted.",
+   "unit": "offences",
+   "source": "Sindh Police",
+   "columns": [
+    {
+     "name": "observation_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "report_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_snapshot_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_snapshot_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": "the report it came from"
+    },
+    {
+     "name": "source_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "extraction_method",
+     "type": "VARCHAR",
+     "description": "how the figure was read off the page"
+    },
+    {
+     "name": "source_priority",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "reporting_year",
+     "type": "BIGINT",
+     "description": "the year as the report labels it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "period_start",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_label_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "is_full_year",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "comparison_column",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_name",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_key",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "crime_category_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "category_group",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "crime_category_key",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "row_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "metric",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "cases_reported",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_row",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_column",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "validation_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "selection_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "selection_eligible",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "source_document_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_document_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_archive_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "evidence_path",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "evidence_sha256",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "observation_metadata_json",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "year",
+    "from": "2019",
+    "to": "2025"
+   },
+   "keys": []
+  },
+  {
+   "name": "sindh_fir_daily",
+   "file": "sindh_fir_daily.parquet",
+   "bytes": 9567,
+   "rows": 418,
+   "description": "First information reports registered in Sindh, daily and year to date, by district and range.",
+   "notes": "A daily operational series rather than an annual statistical one, so it moves for reasons that are about reporting as much as about crime. ytd_firs is the running total from the start of the year, so it is not additive across dates.",
+   "unit": "reports",
+   "source": "Sindh Police daily FIR reports",
+   "columns": [
+    {
+     "name": "report_date",
+     "type": "DATE",
+     "description": "the date reported"
+    },
+    {
+     "name": "ytd_start_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "ytd_end_date",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "geography_level",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography_name",
+     "type": "VARCHAR",
+     "description": "district or range"
+    },
+    {
+     "name": "police_range",
+     "type": "VARCHAR",
+     "description": "the police range"
+    },
+    {
+     "name": "daily_firs",
+     "type": "BIGINT",
+     "description": "FIRs that day"
+    },
+    {
+     "name": "ytd_firs",
+     "type": "BIGINT",
+     "description": "FIRs so far that year \u2014 a running total, do not add"
+    },
+    {
+     "name": "daily_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "ytd_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "daily_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "ytd_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "source_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "acquisition_method",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "sha256",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "span": {
+    "column": "report_date",
+    "from": "2025-09-15",
+    "to": "2025-11-07"
+   },
+   "keys": []
+  },
+  {
+   "name": "subdistrict_crosswalk_2017_2023",
+   "file": "subdistrict_crosswalk_2017_2023.parquet",
+   "bytes": 15774,
+   "rows": 510,
+   "description": "The same thing one tier down: 510 groups over the 537 sub-districts of 2017 and the 591 of 2023.",
+   "notes": "Pairs are matched by name within a district group, or \u2014 where the names give nothing \u2014 by a population that is identical and uniquely so within the group; matched_by records which. Dera Bugti\u2019s Phelawagh Tehsil and Qadirabad Sub-Division are one place under two names and only the 28,054 says so. Where several 2017 units became several 2023 ones, the group is marked restructured and the correspondence inside it is left open rather than guessed: the group balances, but which unit became which does not follow from that. The tier word is not a hierarchy \u2014 a unit published as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
+   "unit": "sub-districts and people",
+   "source": "Derived from census_panel_2017 and census_panel_2023",
+   "columns": [
+    {
+     "name": "district_group",
+     "type": "VARCHAR",
+     "description": "the district group this sits inside"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "exact, renamed, or restructured"
+    },
+    {
+     "name": "matched_by",
+     "type": "VARCHAR",
+     "description": "name, population, or blank for a restructured group"
+    },
+    {
+     "name": "district_2017",
+     "type": "VARCHAR",
+     "description": "the district the 2017 unit belongs to"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "the district the 2023 unit belongs to"
+    },
+    {
+     "name": "units_2017",
+     "type": "VARCHAR",
+     "description": "the 2017 unit(s), joined by +"
+    },
+    {
+     "name": "units_2023",
+     "type": "VARCHAR",
+     "description": "the 2023 unit(s), joined by +"
+    },
+    {
+     "name": "population_2017",
+     "type": "BIGINT",
+     "description": "published 2017 population"
+    },
+    {
+     "name": "restated_2017",
+     "type": "BIGINT",
+     "description": "PBS\u2019s POPULATION 2017 for the 2023 units"
+    },
+    {
+     "name": "balances",
+     "type": "BOOLEAN",
+     "description": "yes where the two agree"
+    }
+   ],
+   "kind": "geography",
+   "keys": []
   },
   {
    "name": "tehsil_nightlights",
@@ -3804,6 +7209,15 @@
      "type": "DOUBLE",
      "description": "nW/cm\u00b2/sr, population-weighted mean"
     }
+   ],
+   "kind": "places",
+   "span": {
+    "column": "year",
+    "from": "2020",
+    "to": "2026"
+   },
+   "keys": [
+    "tehsil_id"
    ]
   },
   {
@@ -3881,7 +7295,140 @@
      "type": "BIGINT",
      "description": "the year nl_latest refers to"
     }
+   ],
+   "kind": "places",
+   "keys": [
+    "tehsil_id",
+    "dk"
    ]
+  },
+  {
+   "name": "trade_by_country",
+   "file": "trade_by_country.parquet",
+   "bytes": 983530,
+   "rows": 71795,
+   "description": "Imports and exports by trading partner, fiscal year and period, 2003\u201304 onwards.",
+   "notes": "231 partners. Read the period column before using a total: FY_from_quarters is the four quarters added, and is what to use for a year \u2014 the portal\u2019s own whole-year rows are excluded because they overstate badly, 38.3 against a published 32.1 US dollars billion of exports for 2024-25. The quarterly rows still run a little over the totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; trade_reconciliation puts every period beside the totals so the gap can be seen. The dollar columns are zero before 2013-14 on every endpoint. This is aggregate trade and does not replace trade_hs8, which has the 8-digit product detail.",
+   "unit": "rupees and US dollars",
+   "source": "PBS National Trade Database (trade.data.gov.pk), pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "period",
+     "type": "VARCHAR",
+     "description": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters"
+    },
+    {
+     "name": "country",
+     "type": "VARCHAR",
+     "description": "partner as the portal names it"
+    },
+    {
+     "name": "iso2",
+     "type": "VARCHAR",
+     "description": "ISO 3166 alpha-2"
+    },
+    {
+     "name": "iso3",
+     "type": "VARCHAR",
+     "description": "ISO 3166 alpha-3"
+    },
+    {
+     "name": "continent",
+     "type": "VARCHAR",
+     "description": "continent"
+    },
+    {
+     "name": "pbs_country_code",
+     "type": "VARCHAR",
+     "description": "PBS\u2019s own code"
+    },
+    {
+     "name": "imports_pkr",
+     "type": "DOUBLE",
+     "description": "imports, rupees"
+    },
+    {
+     "name": "imports_usd",
+     "type": "DOUBLE",
+     "description": "imports, US dollars"
+    },
+    {
+     "name": "exports_pkr",
+     "type": "DOUBLE",
+     "description": "exports, rupees"
+    },
+    {
+     "name": "exports_usd",
+     "type": "DOUBLE",
+     "description": "exports, US dollars"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "trade_by_group",
+   "file": "trade_by_group.parquet",
+   "bytes": 57614,
+   "rows": 3669,
+   "description": "Imports and exports by commodity group, fiscal year and period.",
+   "notes": "Ten groups, numbered 0 to 9. The portal does not label them; by their values they are the one-digit SITC sections, but PBS does not say so and they are carried as numbers rather than given names they may not have. The period caution for trade_by_country applies here too.",
+   "unit": "rupees and US dollars",
+   "source": "PBS National Trade Database, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "period",
+     "type": "VARCHAR",
+     "description": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters"
+    },
+    {
+     "name": "group",
+     "type": "BIGINT",
+     "description": "commodity group 0\u20139, unlabelled by the portal"
+    },
+    {
+     "name": "imports_pkr",
+     "type": "BIGINT",
+     "description": "imports, rupees"
+    },
+    {
+     "name": "imports_usd",
+     "type": "BIGINT",
+     "description": "imports, US dollars"
+    },
+    {
+     "name": "exports_pkr",
+     "type": "BIGINT",
+     "description": "exports, rupees"
+    },
+    {
+     "name": "exports_usd",
+     "type": "BIGINT",
+     "description": "exports, US dollars"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
   },
   {
    "name": "trade_hs8",
@@ -3943,7 +7490,202 @@
      "type": "DOUBLE",
      "description": "fiscal-year cumulative value, thousand Rs"
     }
-   ]
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fiscal_year",
+    "from": "2015-16",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "trade_monthly_totals",
+   "file": "trade_monthly_totals.parquet",
+   "bytes": 5739,
+   "rows": 275,
+   "description": "Total imports and exports by calendar month, 2003\u201304 onwards.",
+   "notes": "The totals endpoint, which the country and group tables are reconciled against. The portal\u2019s month list has no June, so June appears only inside Q4.",
+   "unit": "rupees and US dollars",
+   "source": "PBS National Trade Database, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "BIGINT",
+     "description": "calendar month"
+    },
+    {
+     "name": "imports_pkr",
+     "type": "BIGINT",
+     "description": "imports, rupees"
+    },
+    {
+     "name": "imports_usd",
+     "type": "BIGINT",
+     "description": "imports, US dollars"
+    },
+    {
+     "name": "exports_pkr",
+     "type": "BIGINT",
+     "description": "exports, rupees"
+    },
+    {
+     "name": "exports_usd",
+     "type": "BIGINT",
+     "description": "exports, US dollars"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "2003",
+    "to": "2026"
+   },
+   "keys": []
+  },
+  {
+   "name": "trade_reconciliation",
+   "file": "trade_reconciliation.parquet",
+   "bytes": 30236,
+   "rows": 390,
+   "description": "Each period\u2019s totals beside the sum of its country rows and its group rows.",
+   "notes": "Read this before quoting a trade total. Monthly country and group rows match the totals endpoint to within 0.01 US dollars billion in every month except April 2021. Quarterly rows overshoot on exports, most often in Q4 \u2014 3.3 per cent on average \u2014 so a year built from quarters is close but not exact.",
+   "unit": "rupees and US dollars",
+   "source": "PBS National Trade Database, pull of 2026-09-27",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "period",
+     "type": "VARCHAR",
+     "description": "the period compared"
+    },
+    {
+     "name": "totals_imports_pkr",
+     "type": "BIGINT",
+     "description": "from the totals endpoint"
+    },
+    {
+     "name": "totals_exports_pkr",
+     "type": "BIGINT",
+     "description": "from the totals endpoint"
+    },
+    {
+     "name": "totals_imports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "totals_exports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_imports_pkr",
+     "type": "BIGINT",
+     "description": "the country rows added"
+    },
+    {
+     "name": "countries_exports_pkr",
+     "type": "BIGINT",
+     "description": "the country rows added"
+    },
+    {
+     "name": "countries_imports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_exports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_imports_pkr",
+     "type": "BIGINT",
+     "description": "the group rows added"
+    },
+    {
+     "name": "groups_exports_pkr",
+     "type": "BIGINT",
+     "description": "the group rows added"
+    },
+    {
+     "name": "groups_imports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_exports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_minus_totals_imports_pkr",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_minus_totals_imports_pkr",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_minus_totals_exports_pkr",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_minus_totals_exports_pkr",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_minus_totals_imports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_minus_totals_imports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "countries_minus_totals_exports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "groups_minus_totals_exports_usd",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "months_in_totals",
+     "type": "BIGINT",
+     "description": ""
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "fy",
+    "from": "2003-04",
+    "to": "2025-26"
+   },
+   "keys": []
   }
  ],
  "examples": [
@@ -3981,7 +7723,7 @@
   },
   {
    "title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-   "sql": "-- Count by the polygon the point falls in (district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
+   "sql": "-- Count by the polygon the point falls in (analysis_analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
   },
   {
    "title": "How precise are the positions, by province?",
@@ -4009,7 +7751,7 @@
   },
   {
    "title": "Travel time to care by poverty quintile",
-   "sql": "-- Districts grouped into MPI quintiles, weighted by population: the poorest\n-- fifth is nine times further from care than the least poor.\nWITH q AS (\n  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n  WHERE m.low_n = 0)\nSELECT mpi_quintile, count(*) AS districts,\n       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\nFROM q GROUP BY 1 ORDER BY 1;"
+   "sql": "-- Districts in fifths by MPI (equal numbers of districts), each fifth weighted by\n-- population. The piece's 47 v 5 minutes uses population quintiles and medians;\n-- the gradient is the same either way.\nWITH q AS (\n  SELECT h.*, ntile(5) OVER (ORDER BY m.mpi) AS mpi_quintile\n  FROM health_access_district h JOIN mpi_districts m USING (district_key)\n  WHERE m.low_n = 0)\nSELECT mpi_quintile, count(*) AS districts,\n       round(sum(mot_popw_mean * pop_2020) / sum(pop_2020), 1) AS motorised_min,\n       round(sum(wal_popw_mean * pop_2020) / sum(pop_2020), 1) AS walking_min,\n       round(sum(mot_pct_pop_gt60 * pop_2020) / sum(pop_2020), 1) AS pct_over_60_min_motorised\nFROM q GROUP BY 1 ORDER BY 1;"
   },
   {
    "title": "Tehsils where most people are over an hour from care even with a vehicle",
@@ -4026,7 +7768,27 @@
   {
    "title": "Where remittances come from, FY2024-25",
    "sql": "-- The country series are hierarchical (U.A.E. contains Dubai/Abu Dhabi/Sharjah,\n-- 'Other GCC' contains Bahrain/Kuwait/Oman/Qatar, 'ten European Countries'\n-- contains Belgium..Sweden). Summing all of them overstates the total by 42%;\n-- these fifteen add up exactly to SBP's published figure.\nSELECT replace(c.series_name, 'Workers'' remittances received from ', '') AS source,\n       round(sum(o.value)) AS mn_usd\nFROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)\nWHERE c.dataset_code = 'TS_GP_BOP_WR_M'\n  AND o.obs_date BETWEEN DATE '2024-07-01' AND DATE '2025-06-30'\n  AND replace(c.series_name, 'Workers'' remittances received from ', '') IN (\n    'Saudi Arabia', 'U.A.E.', 'U.K.', 'U.S.A.',\n    'Other GCC Countries excluding Saudi Arabia & U.A.E.', 'ten European Countries',\n    'Norway', 'Switzerland', 'Australia', 'Canada', 'Japan', 'Malaysia',\n    'South Africa', 'South Korea', 'Other Countries')\nGROUP BY 1 ORDER BY mn_usd DESC;"
+  },
+  {
+   "title": "Census 2023 population by district \u2014 the safe filter",
+   "sql": "-- The panel nests levels: district rows and the tehsil rows inside them both\n-- exist, and locality sums to its own total, so pin both.\n-- Then watch the sex column. In tables 1, 3, 21 and 25 the sex split is\n-- carried in the INDICATOR label while sex stays 'all', so sex = 'all' here\n-- would still hand back the male, female and transgender rows. Name the\n-- indicator exactly; ILIKE '%POPULATION%' also catches POPULATION 2017.\nSELECT province_area, unit AS district, value AS population\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'district'\n  AND indicator = 'POPULATION-2023 / ALL SEXES'\n  AND locality = 'all' AND NOT missing\nORDER BY population DESC;\n-- 136 rows adding to 241,499,431 \u2014 PBS's published national total."
+  },
+  {
+   "title": "Check a filter before you trust it",
+   "sql": "-- Worth doing on any table_id you have not used before: if a single unit\n-- returns more than one row, your filter is not yet a series.\nSELECT indicator, col_label, locality, sex, count(*) AS rows_, sum(value) AS total\nFROM census_panel_2023\nWHERE table_id = '1' AND unit = 'LAHORE DISTRICT'\nGROUP BY 1, 2, 3, 4\nORDER BY rows_ DESC, total DESC\nLIMIT 20;"
+  },
+  {
+   "title": "Tehsil populations joined to the map geometry",
+   "sql": "-- dd_id is the key the site's tehsil layer uses. It is NULL on district rows\n-- and missing for about 150,000 tehsil rows, so an inner join silently drops\n-- units; count what you lose before mapping.\nSELECT count(*) AS tehsil_rows,\n       count(dd_id) AS joinable_to_geometry,\n       count(*) - count(dd_id) AS would_be_dropped\nFROM census_panel_2023\nWHERE table_id = '1' AND unit_type = 'tehsil'\n  AND locality = 'all' AND sex = 'all' AND indicator ILIKE '%POPULATION%';"
+  },
+  {
+   "title": "Why 2017 and 2023 cannot simply be joined",
+   "sql": "-- Both panels use the same column names, which makes a cross-year join look\n-- easy. It is not: the indicator vocabularies barely overlap, and most of the\n-- difference is punctuation rather than meaning. Until a crosswalk exists,\n-- read this before comparing anything across the two censuses.\nWITH a AS (SELECT DISTINCT indicator FROM census_panel_2017),\n     b AS (SELECT DISTINCT indicator FROM census_panel_2023)\nSELECT (SELECT count(*) FROM a) AS labels_2017,\n       (SELECT count(*) FROM b) AS labels_2023,\n       (SELECT count(*) FROM a SEMI JOIN b USING (indicator)) AS identical_labels;"
+  },
+  {
+   "title": "A dash means different things in the two panels",
+   "sql": "-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n-- 2023 left them NULL. So a count of populated cells is not comparable across\n-- the years, and neither is an average taken over missing rows.\nSELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\nFROM census_panel_2017 GROUP BY 1, 2\nUNION ALL\nSELECT 2023, missing, count(*), count(value)\nFROM census_panel_2023 GROUP BY 1, 2\nORDER BY census_year, missing;"
   }
  ],
- "revision": "2026-09-25-census-b46b2c08db1e"
+ "revision": "2026-09-30-punjab-coordinates"
 }

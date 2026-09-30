@@ -1,0 +1,407 @@
+/* Places — the three-panel explorer. Chrome comes from shell.css; this file
+   owns the picker, the map frame and the detail panel. */
+
+/* The footer is a fixed bar, so a full-height shell has to subtract it as
+   well as the header. Without --footer-h the map ran to the bottom of the
+   viewport and the legend card, pinned 16px above its own bottom edge, was
+   cut off by 18px behind the bar. */
+.places{display:flex;min-height:0;
+  height:calc(100dvh - var(--header-h) - var(--footer-h))}
+@supports not (height:100dvh){
+  .places{height:calc(100vh - var(--header-h) - var(--footer-h))}}
+
+/* ── picker ─────────────────────────────────────────────────────────────── */
+.picker{width:320px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.picker-top{padding:16px;display:flex;flex-direction:column;gap:12px;
+  border-bottom:1px solid var(--line)}
+
+.geo-toggle{display:flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden}
+.geo-toggle button{flex:1;height:36px;border:0;background:var(--surface);
+  font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.geo-toggle button[aria-pressed="true"]{background:var(--green-900);color:#fff;font-weight:700}
+
+.search-box{display:flex;align-items:center;gap:8px;padding:9px 12px;
+  border:1.5px solid var(--green-700);border-radius:8px;background:var(--surface)}
+.search-box input{border:0;outline:0;background:transparent;font:inherit;
+  font-size:13px;color:var(--ink);flex-grow:1;min-width:0}
+.search-hint{font-size:11.5px;color:var(--muted);line-height:1.45}
+
+.picker-list{flex-grow:1;overflow-y:auto;padding:8px 10px 20px}
+.topic-items{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px 14px;
+  padding-left:10px;border-left:2px solid var(--line)}
+.ind{display:block;width:100%;padding:6px 10px;border:0;border-radius:6px;
+  background:none;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer;
+  text-align:left;line-height:1.35}
+.ind:hover{background:var(--green-100)}
+.ind[aria-current="true"]{background:var(--gold-100);color:var(--green-800);font-weight:700}
+.ind .meta{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:1px}
+/* 478 of the 5,201 series carry a source label we could not resolve to a
+   definition. The proposal's rule is that they stay selectable and stay
+   marked - neither guessed at nor dropped - so the mark is on the row. */
+.ind-flag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.03em;
+  text-transform:uppercase;color:var(--sienna,#8a5a3b);background:var(--gold-100);
+  border-radius:3px;padding:1px 4px;vertical-align:2px;white-space:nowrap}
+.empty{padding:14px 10px;font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ── map ────────────────────────────────────────────────────────────────── */
+.map-wrap{flex-grow:1;min-width:0;position:relative;background:var(--ground);
+  display:flex;flex-direction:column}
+/* The map and everything drawn over it. The measure header is above this in
+   the flow rather than floating on the map, where it hid the north. */
+.map-stage{position:relative;flex:1;min-height:0}
+/* Leaflet paints its container #ddd by default, which showed through as a
+   grey panel behind the map on a page whose ground is cream. The map has no
+   tile layer - the shapes are the whole picture - so the container simply
+   takes the page's ground. */
+#placesMap,.leaflet-container{background:var(--ground)}
+#placesMap{position:absolute;inset:0}
+.map-card{position:absolute;background:rgba(255,255,255,.96);border:1px solid var(--line);
+  border-radius:10px;z-index:500}
+:root[data-theme="dark"] .map-card{background:rgba(24,32,25,.96)}
+.legend{left:16px;bottom:16px;padding:13px 15px;min-width:250px;
+  display:flex;flex-direction:column;gap:9px}
+.legend h2{margin:0;font-size:13px;font-weight:700;color:var(--green-900);line-height:1.25}
+.legend .sub{font-size:11px;color:var(--muted);line-height:1.4}
+.ramp{height:10px;border-radius:3px}
+.ramp-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.year-ctl{display:flex;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden}
+.year-ctl button{flex:1;height:30px;border:0;background:var(--surface);font:inherit;
+  font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
+.year-ctl button[aria-pressed="true"]{background:var(--green-900);color:#fff;font-weight:700}
+.year-ctl button:disabled{color:var(--muted);cursor:not-allowed;opacity:.45}
+
+.map-tools{position:absolute;left:14px;top:12px;display:flex;gap:8px;z-index:500}
+.map-tools-right{position:absolute;right:14px;top:12px;display:flex;gap:8px;z-index:500}
+.tool{height:34px;padding:0 12px;background:rgba(255,255,255,.96);border:1px solid var(--line);
+  border-radius:8px;font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;
+  display:flex;align-items:center;gap:7px}
+.tool input{border:0;outline:0;background:transparent;font:inherit;width:140px;color:inherit}
+:root[data-theme="dark"] .tool{background:rgba(24,32,25,.96)}
+
+/* ── detail ─────────────────────────────────────────────────────────────── */
+.detail{width:300px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--line);
+  padding:18px 16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.detail .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.unit-name{font-size:18px;font-weight:800;color:var(--green-900);line-height:1.2}
+.unit-where{font-size:12px;color:var(--muted)}
+.headline{display:flex;align-items:baseline;gap:10px;padding:12px 14px;
+  background:var(--green-100);border-radius:10px}
+:root[data-theme="dark"] .headline{background:rgba(30,107,62,.16)}
+.headline .v{font-size:28px;font-weight:800;color:var(--green-800);letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums}
+.headline .w{font-size:12px;color:var(--body);line-height:1.4}
+.rank-list{display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.rank-row{display:flex;justify-content:space-between;gap:10px;padding:5px 8px;border-radius:5px}
+.rank-row b{font-variant-numeric:tabular-nums}
+.rank-row.here{background:var(--gold-100);font-weight:700;color:var(--green-800)}
+.rank-gap{text-align:center;color:var(--muted);padding:2px}
+.notice{border-left:3px solid var(--gold-500);background:var(--gold-100);
+  padding:10px 13px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.45;color:var(--body)}
+:root[data-theme="dark"] .notice{background:rgba(212,160,23,.12)}
+.placeholder{color:var(--muted);font-size:13px;line-height:1.5}
+
+@media(max-width:1100px){.detail{width:260px}.picker{width:280px}}
+@media(max-width:860px){
+  .places{flex-direction:column;height:auto}
+  .picker,.detail{width:auto;border:0;border-bottom:1px solid var(--line)}
+  .picker-list{max-height:40vh}
+  .map-wrap{height:60vh}
+}
+
+/* ── facilities overlay ─────────────────────────────────────────────────── */
+.overlays{border-top:1px solid var(--line);padding:14px 16px;
+  display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.ov{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;
+  font-size:13px;color:var(--ink);cursor:pointer}
+.ov:hover{background:var(--green-100)}
+.ov input{accent-color:var(--green-700);width:15px;height:15px;margin:0}
+.ov span{flex-grow:1}
+.ov b{font-size:11px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.ov.is-off{cursor:default;opacity:.55}
+.ov.is-off:hover{background:none}
+.ov-key{display:flex;flex-wrap:wrap;gap:6px 14px;padding:2px 8px;
+  font-size:11px;color:var(--muted)}
+.ov-key span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;box-sizing:border-box}
+:root{--pt-schools:#2b3a9b;--pt-health:#d7263d}
+.dot.solid{background:var(--pt-schools);box-shadow:0 0 0 1px #fff}
+.dot.hollow{border:1.5px solid var(--pt-schools)}
+
+
+/* A single-census indicator states its year rather than offering a control
+   that cannot be used. */
+.year-one{display:block;padding:6px 2px 0;font-size:11.5px;color:var(--muted);
+  line-height:1.4}
+.year-ctl:has(.year-one){border:0;padding:0}
+
+/* A long series gets a slider rather than a row of buttons: crops run to 39
+   fiscal years, and 39 buttons is not a control. */
+.year-slide{display:flex;align-items:center;gap:8px;width:100%;padding:2px 0}
+.year-slide-lab{font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);flex-shrink:0}
+.year-slide input[type=range]{flex:1;min-width:0;accent-color:var(--green-700)}
+.year-slide b{font-size:12px;font-weight:700;color:var(--ink);flex-shrink:0;
+  font-variant-numeric:tabular-nums}
+.year-slide-span{font-size:10.5px;color:var(--muted);flex-shrink:0}
+.year-ctl:has(.year-slide){border:0;padding:0;display:block}
+
+/* ── the legend, in the sidebar ───────────────────────────────────────────
+   It was a card floating over the map. That put it in the way of the thing it
+   described, and it collided with the fixed footer. It belongs under the
+   indicator it is the key for, which is where map.html has always had it. */
+.legend-inline{display:flex;flex-direction:column;gap:5px;padding:9px 10px;
+  background:var(--green-100);border:1px solid var(--green-200);
+  border-radius:var(--radius-sm)}
+.legend-inline[hidden]{display:none}
+.legend-inline h2{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.legend-inline .sub{font-size:10.5px;color:var(--muted);line-height:1.4}
+.legend-inline .ramp{height:9px;border-radius:3px;margin-top:2px}
+.legend-inline .ramp-labels{display:flex;justify-content:space-between;
+  font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ── top and bottom ten ───────────────────────────────────────────────────
+   The map shows the pattern; this gives the order, which a choropleth cannot -
+   two districts a shade apart are indistinguishable by eye. */
+.ranks{margin-top:auto;border-top:1px solid var(--line);padding-top:10px}
+.ranks[hidden]{display:none}
+.rank-group + .rank-group{margin-top:6px}
+.rank-group summary{cursor:pointer;font-size:10.5px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  padding:4px 2px;list-style:none;display:flex;align-items:center;gap:6px}
+.rank-group summary::-webkit-details-marker{display:none}
+.rank-group summary::before{content:'+';font-size:13px;color:var(--green-700)}
+.rank-group[open] summary::before{content:'\2212'}
+.rank-list{list-style:none;margin:0;padding:0}
+.rank-item{display:flex;align-items:baseline;gap:7px;padding:3px 4px;
+  font-size:11.5px;cursor:pointer;border-radius:4px}
+.rank-item:hover{background:var(--green-100)}
+.rank-item.is-on{background:var(--gold-100);font-weight:700}
+.rank-n{color:var(--muted);font-variant-numeric:tabular-nums;min-width:22px}
+.rank-name{color:var(--ink);flex:1;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.rank-v{color:var(--body);font-variant-numeric:tabular-nums;font-weight:600}
+
+.detail{display:flex;flex-direction:column}
+
+/* The strip over the map: how many places are showing and what they come to,
+   following the province filter. */
+.totals{display:flex;flex:none;gap:0}
+.totals[hidden]{display:none}
+.tot{min-width:0;max-width:260px;padding:2px 0 2px 14px;margin-left:14px;
+  border-left:1px solid var(--line);display:flex;flex-direction:column;gap:1px;justify-content:center}
+.tot-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.tot b{font-size:17px;font-weight:800;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+@media(max-width:700px){
+  .tot{padding:5px 9px}
+  .tot b{font-size:13px}
+}
+
+/* The source states this place's figure more than one way, so the total and
+   the ranking are withheld rather than invented. Marked, not hidden: an
+   absent total with no explanation reads as a page that failed to load. */
+.tot-warn .tot-k{color:var(--sienna,#8a5a3b)}
+.tot-warn b{color:var(--sienna,#8a5a3b);font-weight:700}
+
+/* The denominator behind a published percentage, where the source's own is
+   not the obvious one. Set apart from the coverage line above it because it
+   changes what the number means, not just how much of it there is. */
+.legend-def{margin-top:4px;padding-top:4px;border-top:1px solid var(--line);
+  color:var(--sienna,#8a5a3b)}
+
+/* Residence and sex, beside the year. Each group is named because two runs of
+   unlabelled buttons read as one control with too many options in it. */
+.facet-ctl{margin-top:4px}
+.facet-lab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.04em;margin-right:4px;align-self:center}
+.facet-ctl .year-one{margin-left:0}
+
+/* A source total is a different kind of caveat from an unresolved label: the
+   row is understood, it is just not a measure anyone browses to. */
+.ind-total{color:var(--slate,#5a6b7a);background:var(--green-100)}
+
+/* ── the measure header ─────────────────────────────────────────────────── */
+.measure-head{display:flex;align-items:center;gap:0;padding:10px 18px;
+  background:var(--surface);border-bottom:1px solid var(--line);flex:none}
+.measure-head[hidden]{display:none}
+.mh-text{flex:1;min-width:0}
+.mh-text h1{margin:0;font-size:17px;font-weight:800;color:var(--green-900);
+  line-height:1.25;letter-spacing:-.1px}
+.mh-sum{margin:3px 0 0;font-size:12px;color:var(--muted);line-height:1.4}
+
+/* ── the topic list ─────────────────────────────────────────────────────── */
+.rail{flex:1 1 auto;overflow-y:auto;padding:10px 8px 18px;min-height:0}
+.rail-cap{margin:2px 10px 6px;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.topics{list-style:none;margin:0;padding:0}
+.topic-btn{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  width:100%;padding:8px 10px;border:0;border-radius:7px;background:none;font:inherit;
+  font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left}
+.topic-btn:hover{background:var(--green-100)}
+.topic.is-open>.topic-btn{background:var(--green-100);color:var(--green-900);font-weight:700}
+.topic-n{font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap}
+.topic-body{padding:4px 0 10px 10px}
+.featured{list-style:none;margin:0;padding:0 0 0 8px;border-left:2px solid var(--line)}
+.feat{display:block;width:100%;padding:6px 10px;border:0;border-radius:6px;
+  background:none;font:inherit;text-align:left;cursor:pointer}
+.feat:hover{background:var(--green-100)}
+.feat.is-on{background:var(--gold-100)}
+.feat-name{display:block;font-size:12.8px;font-weight:600;color:var(--ink);line-height:1.3}
+.feat.is-on .feat-name{color:var(--green-800)}
+.feat-meta{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.feat-also{margin:6px 10px 0 18px;font-size:11.5px;color:var(--muted)}
+.topic-link{display:block;margin:8px 0 0 8px;padding:5px 10px;border:0;background:none;
+  font:inherit;font-size:12.5px;font-weight:700;color:var(--green-700);cursor:pointer;
+  text-align:left}
+.topic-link:hover{text-decoration:underline}
+.topic-note{margin:4px 10px;font-size:12px;color:var(--muted);line-height:1.45}
+.overlays .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+
+/* ── the key, and the controls that change what it describes ────────────── */
+.legend{max-width:330px}
+.legend[hidden]{display:none}
+.break-ctl{display:flex;flex-direction:column;gap:7px}
+.break-ctl[hidden]{display:none}
+.bk{display:flex;align-items:center;gap:8px}
+.bk select{flex:1;min-width:0;height:30px;border:1px solid var(--line-strong);
+  border-radius:6px;background:var(--surface);font:inherit;font-size:12px;color:var(--ink);
+  padding:0 6px}
+.showas{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.showas .facet-lab{margin-right:8px}
+.showas button{height:28px;padding:0 9px;border:1px solid var(--line-strong);
+  background:var(--surface);font:inherit;font-size:11.5px;font-weight:600;color:var(--ink);
+  cursor:pointer;margin-left:-1px}
+.showas button:first-of-type{border-radius:6px 0 0 6px;margin-left:0}
+.showas button:last-child{border-radius:0 6px 6px 0}
+.showas button[aria-pressed="true"]{background:var(--green-900);color:#fff;
+  border-color:var(--green-900)}
+.legend-more summary{font-size:11.5px;font-weight:700;color:var(--green-700);cursor:pointer}
+.legend-more .sub{margin-top:5px}
+
+/* ── the library ────────────────────────────────────────────────────────── */
+.library{position:absolute;top:0;left:0;bottom:0;width:min(720px,100%);z-index:1200;
+  background:var(--surface);border-right:1px solid var(--line);
+  box-shadow:10px 0 28px rgba(12,58,30,.10);display:flex;flex-direction:column}
+.library[hidden]{display:none}
+.lib-head{padding:14px 20px 10px;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:9px;flex:none}
+.lib-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lib-title h2{margin:0;font-size:17px;font-weight:800;color:var(--green-900)}
+.lib-close{border:0;background:none;font-size:24px;line-height:1;color:var(--muted);
+  cursor:pointer;padding:2px 6px;border-radius:6px}
+.lib-close:hover{background:var(--green-100);color:var(--ink)}
+.lib-search input{width:100%;height:38px;padding:0 12px;border:1.5px solid var(--green-700);
+  border-radius:8px;background:var(--surface);font:inherit;font-size:13.5px;color:var(--ink)}
+.lib-ctl{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.lib-scope,.lib-view{display:inline-flex;border:1px solid var(--line-strong);
+  border-radius:6px;overflow:hidden}
+.lib-scope button,.lib-view button{height:28px;padding:0 11px;border:0;
+  border-right:1px solid var(--line);background:var(--surface);font:inherit;
+  font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
+.lib-scope button:last-child,.lib-view button:last-child{border-right:0}
+.lib-scope button[aria-pressed="true"],.lib-view button[aria-pressed="true"]{
+  background:var(--green-900);color:#fff}
+.lib-count{margin:0;font-size:11.5px;color:var(--muted)}
+.lib-body{flex:1;overflow-y:auto;padding:4px 20px 28px}
+.lib-sec h3{margin:18px 0 4px;font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.lib-sec h4{margin:12px 0 2px;font-size:13px;font-weight:700;color:var(--green-800)}
+.lib-item{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;
+  border-bottom:1px solid var(--line)}
+.lib-pick{flex:1 1 300px;min-width:0;padding:7px 8px;border:0;border-radius:6px;
+  background:none;font:inherit;text-align:left;cursor:pointer}
+.lib-pick:hover{background:var(--green-100)}
+.lib-item.is-on .lib-pick{background:var(--gold-100)}
+.lib-name{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+.lib-meta{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.lib-item.is-else{padding:6px 8px;opacity:.8}
+.lib-bands{padding:0 8px 6px}
+.lib-bands summary{font-size:11.5px;font-weight:600;color:var(--green-700);cursor:pointer}
+.lib-band-list{display:flex;flex-wrap:wrap;gap:4px;padding:6px 0 4px}
+.lib-band-list button{padding:3px 8px;border:1px solid var(--line-strong);border-radius:5px;
+  background:var(--surface);font:inherit;font-size:11.5px;color:var(--ink);cursor:pointer}
+.lib-band-list button:hover{background:var(--green-100)}
+.lib-band-list button[aria-current="true"]{background:var(--green-900);color:#fff;
+  border-color:var(--green-900)}
+.lib-more{display:block;width:100%;margin:16px 0 4px;padding:10px 14px;
+  border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);
+  font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.lib-more:hover{background:var(--green-100)}
+:root[data-theme="dark"] .library{box-shadow:10px 0 28px rgba(0,0,0,.4)}
+
+@media(max-width:860px){
+  .rail{max-height:42vh}
+  .map-wrap{height:auto}
+  .map-stage{height:60vh;flex:none}
+  .measure-head{flex-wrap:wrap;gap:6px}
+  .totals{width:100%}
+  .tot:first-child{margin-left:0;padding-left:0;border-left:0}
+  /* A library that fits the phone rather than a strip over a 60vh map. */
+  .library{position:fixed;inset:0;width:auto;z-index:2000}
+}
+
+/* ── phone: the measure and its map first, the picker as a sheet ─────────── */
+.mh-change,.picker-sheet-head{display:none}
+@media(max-width:860px){
+  .picker{order:0;display:none}
+  .picker.open{display:flex;position:fixed;inset:0;z-index:1500;width:auto;
+    height:100dvh;border:0}
+  .picker.open .rail{max-height:none}
+  .picker-sheet-head{display:flex;align-items:center;justify-content:space-between;
+    font-size:14px;font-weight:800;color:var(--green-900)}
+  .picker-close{height:32px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;
+    background:var(--surface);font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+  .map-wrap{order:1}
+  .detail{order:2}
+  .mh-change{display:inline-flex;align-items:center;height:34px;padding:0 14px;margin-left:auto;
+    border:0;border-radius:8px;background:var(--green-900);color:#fff;font:inherit;
+    font-size:13px;font-weight:700;cursor:pointer}
+  /* The key goes under the map rather than over half of it. */
+  .map-stage{height:auto;display:flex;flex-direction:column}
+  #placesMap{position:relative;inset:auto;height:56vh}
+  .legend{position:static;max-width:none;margin:10px 12px;border-radius:10px}
+}
+
+/* Plain background: the ramp describes shading that is not on the map. */
+.plain-note{display:none;font-size:11.5px;color:var(--muted);margin:4px 0}
+.legend.is-plain .plain-note{display:block}
+.legend.is-plain > :not(.plain-note):not(.pts){display:none}
+.legend.is-plain.has-pts > .plain-note{display:none}
+
+/* The points panel in the card: one section per layer that is on. */
+.pts{display:flex;flex-direction:column;gap:12px}
+.legend:not(.is-plain) .pts{border-top:1px solid var(--line);padding-top:10px}
+.legend.has-pts{max-width:330px}
+.pts-sec{display:flex;flex-direction:column;gap:5px}
+.pts{gap:8px}
+.pts-sec+.pts-sec{border-top:1px solid var(--line);padding-top:8px}
+.legend.is-plain.has-pts{padding:10px 12px;gap:0}
+.pts-sec .dot.solid{background:var(--pt)}
+.pts-sec .dot.hollow{border-color:var(--pt)}
+.pts-sec .dot.big{width:11px;height:11px}
+.pts-head{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink);cursor:pointer;list-style:none}
+.pts-head::-webkit-details-marker{display:none}
+.pts-head::after{content:"";width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);
+  transform:rotate(45deg);margin:0 2px 3px 2px;transition:transform .15s}
+.pts-sec[open]>.pts-head::after{transform:rotate(-135deg);margin-bottom:-2px}
+.pts-head b{font-weight:700}
+.pts-n{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pts-facts{font-size:11px;color:var(--body);font-variant-numeric:tabular-nums;line-height:1.4}
+.pts-facts b{color:var(--ink);font-weight:700}
+.pts-ctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pts-seg{display:flex;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden}
+.pts-seg button{border:0;border-left:1px solid var(--line-strong);background:var(--surface);font:inherit;
+  font-size:11px;font-weight:600;padding:3px 7px;cursor:pointer;color:var(--ink)}
+.pts-seg button:first-child{border-left:0}
+.pts-seg button[aria-pressed="true"]{background:var(--green-900);color:#fff}
+.pts-ctl select{font:inherit;font-size:11px;padding:3px 6px;border:1px solid var(--line-strong);
+  border-radius:6px;background:var(--surface);color:var(--ink);max-width:124px}
+.pts-key{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--muted)}
+.pts-key span{display:inline-flex;align-items:center;gap:5px}
+.pts-src{margin-left:auto;font-size:10.5px;color:var(--muted-2)}

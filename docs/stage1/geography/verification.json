@@ -1,0 +1,31 @@
+{
+  "archive": {
+    "bytes": 24627502,
+    "files": 180,
+    "path": "data_darbar_warehouse/stage1/geography-2026-09-25-reproduction.tar.gz",
+    "sha256": "988f155498a1622ecce5e726ff4063d3bad1f6e1d7a6f65d22f435a0af565b09"
+  },
+  "census_source_release_unchanged": {
+    "release_id": "census-audit-07f818302704d872",
+    "verified_artifacts": 13
+  },
+  "isolated_rebuild": {
+    "byte_identical_files": 17,
+    "excluded": [
+      "run.json"
+    ],
+    "release_id": "geography-0fd9e9c17cdbd9f0"
+  },
+  "release_checks": {
+    "expected_hold": 4,
+    "pass": 620,
+    "source_symbol_retained": 5
+  },
+  "release_id": "geography-0fd9e9c17cdbd9f0",
+  "unit_tests": {
+    "failed": 0,
+    "passed": 14,
+    "ran_in_isolated_package": true
+  },
+  "website_files_changed": false
+}

@@ -1,0 +1,16 @@
+{
+  "catalogue_tables": 25,
+  "census_locked_files": 294,
+  "completion_scope": "All 25 catalogue tables, all app/data assets and econ_data.js; registered local extensions and their declared dependencies.",
+  "dataset_families": 35,
+  "inventoried_files": 4169,
+  "limitations": [
+    "Complete inventory coverage does not mean complete raw provenance or reproducibility.",
+    "Only the census build inputs and published assets are hashed; other files are metadata-only.",
+    "External Adaad dependencies are inventoried where explicitly referenced; no pipelines are executed.",
+    "Credentials, cache directories and database/WAL contents are excluded."
+  ],
+  "missing_dependency_paths": 5,
+  "published_assets": 40,
+  "unresolved_published_assets": 0
+}

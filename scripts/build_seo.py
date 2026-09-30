@@ -12,6 +12,14 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "app"
+
+# The header and footer belong to etl/apply_shell.py, which writes them into
+# every page under app/. These pages are generated rather than edited, so they
+# import the same definition instead of carrying a copy - a copy is how the
+# chrome came to render differently on different pages before.
+import sys
+sys.path.insert(0, str(ROOT / "etl"))
+import apply_shell as _shell
 ORIGIN = "https://darbar.adaad.org"
 ESC = html.escape
 LICENSE = "https://creativecommons.org/licenses/by/4.0/"
@@ -41,8 +49,34 @@ FIELDS = [
 ]
 DATASET_NAMES = {
     "budget_lines": "Pakistan federal budget line items",
+    "census_panel_2017": "Pakistan Census 2017 district and tehsil tables",
+    "census_series_index": "Pakistan census map series index",
+    "census_panel_2023": "Pakistan Census 2023 district and tehsil tables",
     "district_indicators": "Pakistan district census and survey indicators",
     "file_catalog": "Pakistan statistical source-file catalogue",
+    # geography: the frames, the crosswalks, and which key joins what
+    "district_crosswalk_2017_2023": "Pakistan district boundary changes, Census 2017 to 2023",
+    "subdistrict_crosswalk_2017_2023": "Pakistan tehsil boundary changes, Census 2017 to 2023",
+    "census_unit_map": "Pakistan census units mapped to 2023 boundaries",
+    "geography_keys": "Pakistan place identifiers and which ones join safely",
+    "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
+    "crops_district_fy": "Pakistan crop area, production and yield by district",
+    "census_entities": "Pakistan buildings and facilities counted by Census 2023",
+    "gdp_growth": "Pakistan GDP growth by sector since 1951",
+    "gdp_indicators": "Pakistan GDP, per-capita income and exchange rate",
+    "gva_by_activity_annual": "Pakistan value added by sector, annual",
+    "gva_by_activity_quarterly": "Pakistan value added by sector, quarterly",
+    "fbr_tax_collection": "Pakistan federal tax collection by head since 1992",
+    "trade_by_country": "Pakistan imports and exports by trading partner",
+    "trade_by_group": "Pakistan imports and exports by commodity group",
+    "trade_monthly_totals": "Pakistan monthly trade totals since 2003",
+    "trade_reconciliation": "Pakistan trade totals reconciled against their parts",
+    "diaspora_remittances_monthly": "Remittances to Pakistan by month",
+    "diaspora_emigrants_by_skill": "Pakistan emigrants by skill level",
+    "diaspora_destinations": "Pakistan emigrants by destination country",
+    "diaspora_occupations": "Pakistan emigrants by occupation",
+    "place_indicators": "Pakistan district and tehsil indicators on 2023 boundaries",
+    "place_indicator_index": "Index of every Pakistan district and tehsil indicator",
     "lsm_qim": "Pakistan large-scale manufacturing index",
     "lsm_sector_indices": "Pakistan manufacturing sector indices",
     "mouza_crosswalk": "Pakistan Mouza Census geographic crosswalk",
@@ -62,19 +96,54 @@ DATASET_NAMES = {
     "census_enrolment_5_16_by_sex": "Pakistan district enrolment aged 5–16 by sex, Census 2023",
     "health_access_tehsil": "Pakistan tehsil travel time to the nearest health facility",
     "health_access_district": "Pakistan district travel time to the nearest health facility",
+    "health_facilities_pk": "Pakistan health facilities, public and private, with positions",
+    "healthsites_osm_2019": "Pakistan health amenities mapped on OpenStreetMap",
     "tehsil_nightlights": "Pakistan tehsil night-time lights",
     "tehsil_satellite": "Pakistan tehsil wealth, population and satellite indicators",
     "trade_hs8": "Pakistan imports and exports by HS8 product and country",
+    # justice, policing, energy and disasters - published with the State
+    # explorer rather than held back in the desktop warehouse
+    "ljcp_case_flows": "Pakistan court case flows and pendency by province",
+    "ljcp_judicial_strength": "Pakistan judicial posts, filled and vacant",
+    "ljcp_court_districts": "Pakistan court backlog by district",
+    "ljcp_judges_province": "Pakistan judges in post by province",
+    "police_crime_annual": "Pakistan reported offences by police force and year",
+    "police_crime_district": "Pakistan reported offences by district",
+    "sindh_crime_annual": "Sindh reported crime by category and year",
+    "sindh_fir_daily": "Sindh first information reports, daily running totals",
+    "nepra_plants": "Pakistan power plants, fuel and installed capacity",
+    "nepra_plant_years": "Pakistan power plants by report year, with the capacity reported that year",
+    "nepra_disco_annual": "Pakistan electricity distribution companies, annual",
+    "climate_events": "Pakistan flood, drought and cyclone alerts since 2001",
+    "climate_impacts": "Pakistan monsoon deaths, injuries and damage, NDMA reports",
 }
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
-    "map.html": ("Pakistan District Data & Maps: Census, Poverty, Night-lights — Data Darbar", "Explore Pakistan's district population, literacy, poverty and survey indicators, with satellite wealth, population and night-time lights and rural facilities by tehsil."),
-    "trade.html": ("Pakistan Exports & Imports by Product and Country — Data Darbar", "Explore Pakistan's imports and exports by 8-digit HS product, trading partner and fiscal year. Read source definitions and download the underlying trade data."),
-    "finance.html": ("Pakistan GDP & Federal Budget Data — Data Darbar", "Explore Pakistan's GDP, sector shares, federal budget receipts and spending, with definitions and downloadable data."),
-    "money.html": ("Pakistan Inflation, Remittances & Monetary Data — Data Darbar", "Explore State Bank of Pakistan series on inflation, remittances, exchange rates, reserves, interest rates and banking, with source notes."),
+    "state.html": ("Pakistan Federal Tax Collection & Public Money \u2014 Data Darbar", "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish."),
+    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search {places_n} indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
+    # trade.html and money.html were their own pages and are redirects now:
+    # Economy is one page, and _retired() keeps them out of the sitemap. The
+    # title below has to cover all fifteen topics, because it is the only
+    # page any of them has.
+    "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
-    "dictionary.html": ("Pakistan Open Data Dictionary — Data Darbar", "Read field definitions, units, source coverage and limitations for Data Darbar's downloadable Pakistan research datasets."),
+    "about.html": ("About Data Darbar — Pakistan in Numbers", "What Data Darbar is, what it covers across Places, Economy and State, how it is built and who built it."),
+    "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),
 }
+
+
+def _retired(p: Path) -> bool:
+    """A page that only redirects somewhere else does not belong in a sitemap.
+
+    Naming them one by one drifts - economy.html and poverty.html were listed,
+    then map.html, about.html and methodology.html retired and were not. The
+    page says what it is: a redirect carries noindex.
+    """
+    try:
+        head = p.read_text(encoding="utf-8")[:2000]
+    except OSError:
+        return True
+    return 'name="robots" content="noindex"' in head or 'http-equiv="refresh"' in head
 
 
 def norm(value):
@@ -125,22 +194,18 @@ def patch_metadata(file, title, description, path):
     text = text.replace("&copy; 2026 Hiba Sameen. All rights reserved.", "&copy; 2026 Hiba Sameen")
     # The standalone URLs remain useful to crawlers and to readers without JS.
     text = re.sub(r'href="#"\s+data-modal="(about|methodology)"', lambda m: f'href="{m[1]}.html"', text)
+    # The footer is apply_shell.py's alone. This used to append a second row of
+    # links (district profiles, catalogue, Adaad, Aiwan) that apply_shell then
+    # stripped, so the page depended on which script ran last - and the deploy
+    # runs only this one. District Profiles moved into the shell's footer.
     text = re.sub(r'<span data-research-links>.*?</span>', "", text, flags=re.S)
-    links = f'<span data-research-links><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor</a></span>'
-    text = text.replace("</footer>", links + "</footer>", 1)
     file.write_text(text)
 
 
 # The site chrome, as index.html and dictionary.html carry it: the same header,
-# Data ▾ dropdown (nav.js), mobile menu and footer, with root-absolute paths so
-# a page two directories deep resolves them. nav.js marks the current entry.
-HEADER = f'''<header class="site-header">
-  <a class="header-brand" href="/"><img src="/assets/img/logo.svg" class="header-logo" alt="{SITE_NAME}"/><span class="header-text"><span class="header-title">{SITE_NAME}</span><span class="header-tagline">{TAGLINE}</span></span></a>
-  <nav class="header-nav"><a href="/" class="header-link">Home</a><div data-dd-nav></div><a href="/about.html" class="header-link">About</a><a href="/methodology.html" class="header-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="header-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="header-link">SBP ↗</a></nav>
-  <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menu" aria-controls="mobileNav" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-</header>
-<nav id="mobileNav" class="mobile-nav hidden"><a href="/" class="mobile-nav-link">Home</a><div class="dd-mnav-label">Data</div><div class="dd-mnav-group"></div><a href="/about.html" class="mobile-nav-link">About</a><a href="/methodology.html" class="mobile-nav-link">Methodology</a><a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener" class="mobile-nav-link">PBS ↗</a><a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener" class="mobile-nav-link">SBP ↗</a></nav>'''
-FOOTER = f'''<footer class="site-footer"><span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a> &amp; <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="{LICENSE}" target="_blank" rel="noopener">CC BY 4.0</a></span><span data-research-links><a href="/districts/">District Profiles</a> · <a href="/datasets/">Data Catalogue</a> · <a href="{ADAAD}">Adaad</a> · <a href="https://aiwan.adaad.org/">Aiwan-e-Jamhoor</a></span></footer>'''
+# The header, mobile menu and footer come from etl/apply_shell.py with
+# root-absolute paths, so a page two directories deep resolves them. The active
+# entry is baked in by that module rather than resolved at runtime.
 
 
 def page(path, title, description, body, extra=None, heading=None):
@@ -152,20 +217,19 @@ def page(path, title, description, body, extra=None, heading=None):
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/assets/css/research.css"/>
+<link rel="stylesheet" href="/assets/css/shell.css"/>\n<link rel="stylesheet" href="/assets/css/research.css"/>
 {metadata(f"{title} — {SITE_NAME}", description, path, extra, SHARE_TAGS)}
 </head><body>
 <a class="skip" href="#main">Skip to content</a>
-{HEADER}
+{_shell.header(path, root="/")}
 <main id="main" class="wrap">
 <div class="hero"><h1>{ESC(heading or title)}</h1><p>{ESC(description)}</p></div>
 {body}
 </main>
-{FOOTER}
-<script src="/assets/js/nav.js"></script>
+{_shell.footer(root="/")}
 <script src="/assets/js/modals.js"></script>
 <script src="/assets/js/analytics.js"></script>
-</body></html>''')
+<script src="/assets/js/shell.js"></script>\n</body></html>''')
 
 
 def table(headers, rows, caption):
@@ -209,37 +273,63 @@ def build():
         notes = "These figures describe the district, not necessarily the city of the same name. Literacy covers ages 10 and over; out-of-school counts cover ages 5–16. Missing values are unavailable, not zero. This profile uses 2023 figures only: boundary changes make some 2017 comparisons unsafe. School attendance and literacy are different measures."
         body = f'<p><a href="/districts/">All district profiles</a> · <a href="/map.html">Explore the interactive district map</a> · <a href="census-2023.csv" download>Download this profile (CSV)</a></p>'
         body += table(["Indicator", "2023 value", "Unit"], rows, f"{name} district — Census 2023")
-        body += f'<aside><h2>How to read this profile</h2><p>{notes}</p></aside><h2>Source and method</h2><p>Pakistan Bureau of Statistics, Population and Housing Census 2023, Tables 1 and 12; processed by Data Darbar. The table and CSV are generated from the same district record used by the explorer.</p><p><a href="https://www.pbs.gov.pk/census/">PBS census publications</a> · <a href="/datasets/district-indicators/">Data dictionary and full district dataset</a> · <a href="/methodology.html">Methodology</a></p>'
+        body += f'<aside><h2>How to read this profile</h2><p>{notes}</p></aside><h2>Source and method</h2><p>Pakistan Bureau of Statistics, Population and Housing Census 2023, Tables 1 and 12; processed by Data Darbar. The table and CSV are generated from the same district record used by the explorer.</p><p><a href="https://www.pbs.gov.pk/census/">PBS census publications</a> · <a href="/datasets/district-indicators/">Data dictionary and full district dataset</a> · <a href="/methods.html">Methodology</a></p>'
         body += f'<h2>Cite this profile</h2><p>Hiba Sameen / Data Darbar. {ESC(title)}. {ORIGIN}{path}. Derived data licensed CC BY 4.0; cite PBS as the original source.</p>'
         schema = {"@type": "Dataset", "name": title, "description": description + " " + notes, "url": ORIGIN + path, "creator": PERSON, "publisher": PUBLISHER, "license": LICENSE, "temporalCoverage": "2023", "spatialCoverage": {"@type": "Place", "name": f"{name} district, {province}, Pakistan"}, "isBasedOn": "https://www.pbs.gov.pk/census/", "distribution": [{"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": ORIGIN + path + "census-2023.csv"}]}
         page(path, title, description, body, schema)
         links.append(f'<li><a href="{path}">{ESC(name)} district</a><span>{ESC(str(province))} · Population {number(d["t1_2023_pop_total"])}</span></li>')
     page("/districts/", "Pakistan district profiles: Census 2023", "Population, literacy and schooling figures for selected districts of Pakistan, with readable tables, source definitions and CSV downloads.", '<p>These initial profiles use districts with available population and literacy data and no explicit boundary-change flag in the source record. More places and survey indicators remain available in the <a href="/map.html">district map</a>.</p><ul class="cards">' + ''.join(links) + '</ul><p><a href="/datasets/district-indicators/">Download the full district indicator dataset</a>.</p>')
-    dataset_links = []
-    for d in catalog["tables"]:
-        slug = d["name"].replace("_", "-")
-        path = f"/datasets/{slug}/"
-        title = DATASET_NAMES[d["name"]]
-        assert (APP / "data/warehouse" / d["file"]).is_file(), d["file"]
-        download = "/data/warehouse/" + d["file"]
-        body = f'<p><a href="/datasets/">All datasets</a> · <a href="{download}" download>Download Parquet</a> · <a href="/query.html">Query this table in the browser</a></p><dl><dt>Source</dt><dd>{ESC(d["source"])}</dd><dt>Rows in this release</dt><dd>{number(d["rows"])}</dd><dt>Units</dt><dd>{ESC(d["unit"] or "Vary by field or series; see definitions below.")}</dd><dt>Catalogue generated</dt><dd>{ESC(str(catalog["generated"]))}</dd></dl><aside><h2>Definitions and limitations</h2><p>{ESC(d["notes"])}</p></aside>'
-        body += table(["Field", "Type", "Definition"], [(c["name"], c["type"], c["description"]) for c in d["columns"]], title + " — data dictionary")
-        body += f'<h2>Reuse and citation</h2><p>Hiba Sameen / Data Darbar. {ESC(title)}. {ORIGIN}{path}. Cite the original source listed above and the catalogue release when reusing this table.</p><p><a href="/methodology.html">Methodology</a> · <a href="https://adaad.org/datasets/">Adaad research datasets</a></p>'
-        schema = {"@type": "Dataset", "name": title, "alternateName": d["name"], "description": d["description"] + " " + d["notes"], "url": ORIGIN + path, "license": LICENSE, "creator": PERSON, "publisher": PUBLISHER, "spatialCoverage": {"@type": "Place", "name": "Pakistan"}, "variableMeasured": [{"@type": "PropertyValue", "name": c["name"], "description": c["description"]} for c in d["columns"]], "distribution": [{"@type": "DataDownload", "encodingFormat": "application/vnd.apache.parquet", "contentUrl": ORIGIN + download}], "includedInDataCatalog": {"@type": "DataCatalog", "name": "Data Darbar", "url": ORIGIN + "/datasets/"}}
-        page(path, title, d["description"], body, schema)
-        dataset_links.append(f'<li><a href="{path}">{ESC(title)}</a><span>{ESC(d["description"])}</span></li>')
-    page("/datasets/", "Pakistan open data catalogue", "Download documented census, trade, budget, national accounts, poverty and State Bank of Pakistan datasets. Each table has field definitions, source information and limitations.", '<ul class="cards">' + ''.join(dataset_links) + '</ul><p>The <a href="/query.html">browser query tool</a> opens these same tables. Read the units and warnings before combining or summing rows.</p>', {"@type": "DataCatalog", "name": "Data Darbar Pakistan open data catalogue", "url": ORIGIN + "/datasets/", "dataset": [{"@type": "Dataset", "name": DATASET_NAMES[d["name"]], "url": ORIGIN + "/datasets/" + d["name"].replace("_", "-") + "/", "description": d["description"]} for d in catalog["tables"]]})
-    page("/about.html", "About", "Data Darbar is an open explorer of Pakistan’s official statistics, built by economist and data scientist Hiba Sameen and published with Adaad.", modal_content("ABOUT"), heading="About Data Darbar")
-    page("/methodology.html", "Methodology and sources", "Complete sources, processing methods, coverage and limitations for Pakistan census, survey, trade, budget, monetary and satellite datasets.", modal_content("METH"))
+    # The catalogue - index, a page per table, the boundaries - is its own
+    # module; it reads the same catalog.json and uses this file's chrome.
+    from build_catalogue import build_catalogue
+    n_tables = build_catalogue(sys.modules[__name__])
+    # The dictionary folded into the catalogue's field search. Its old
+    # anchors named tables, so they still land on the table's own page.
+    (APP / "dictionary.html").write_text(
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>\n'
+        '<title>Data Darbar \u2014 Dictionary</title>\n'
+        '<meta name="robots" content="noindex"/>\n'
+        f'<link rel="canonical" href="{ORIGIN}/datasets/"/>\n'
+        '<meta http-equiv="refresh" content="0; url=datasets/#fields"/>\n'
+        "<script>var h=location.hash.slice(1);location.replace(h?'datasets/'+h.replace(/_/g,'-')+'/':'datasets/#fields');</script>\n"
+        '</head><body style="font-family:system-ui;padding:40px;background:#faf7ef;color:#17301f">\n'
+        'The dictionary is now part of the <a href="datasets/#fields">data catalogue</a>, '
+        'which searches every field in every table.\n</body></html>\n')
+    # Methodology merged into Methods when the redesign collapsed the pages.
+    # It stays as a redirect rather than a page, so an old link still lands and
+    # the same text is not published at two URLs. About came back as a page of
+    # its own (30 Sep 2026) and is in BASE_PAGES.
+    for path, title, what, frag in (
+        ("/methodology.html", "Methodology", "Methodology and sources",
+         "#places-the-map"),
+    ):
+        (APP / path.strip("/")).write_text(
+            '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>\n'
+            f'<title>Data Darbar \u2014 {title}</title>\n'
+            '<meta name="robots" content="noindex"/>\n'
+            f'<link rel="canonical" href="{ORIGIN}/methods.html"/>\n'
+            f'<meta http-equiv="refresh" content="0; url=methods.html{frag}"/>\n'
+            f"<script>location.replace('methods.html{frag}' + location.hash);</script>\n"
+            '</head><body style="font-family:system-ui;padding:40px;'
+            'background:#faf7ef;color:#17301f">\n'
+            f'{what} now lives on the <a href="methods.html{frag}">Methods</a> '
+            'page. Redirecting&hellip;\n</body></html>\n')
+
+    # The count was typed into the description and went stale the first time
+    # the index changed - it said 5,801 for weeks after the index held 5,635.
+    # Read from the payload the page ships, as the homepage already does.
+    _px = (APP / "data/places_index.js").read_text()
+    places_n = f"{len(json.loads(_px[_px.index('{'):_px.rindex('}') + 1])['dp']):,}"
     for file, (title, description) in BASE_PAGES.items():
+        description = description.replace("{places_n}", places_n)
         patch_metadata(APP / file, title, description, "/" if file == "index.html" else "/" + file)
     sitemap = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
-    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if p.name not in ("economy.html", "poverty.html")]
+    paths = ["/" if p.name == "index.html" and p.parent == APP else "/" + str(p.relative_to(APP)).removesuffix("index.html") if p.name == "index.html" else "/" + str(p.relative_to(APP)) for p in APP.rglob("*.html") if not _retired(p)]
     for path in sorted(set(paths)):
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))
     (APP / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {ORIGIN}/sitemap.xml\n")
-    print(f"Built {len(PROFILES)} district profiles, {len(catalog['tables'])} dataset pages and {len(set(paths))} sitemap entries.")
+    print(f"Built {len(PROFILES)} district profiles, {n_tables} dataset pages and {len(set(paths))} sitemap entries.")
 
 
 if __name__ == "__main__":

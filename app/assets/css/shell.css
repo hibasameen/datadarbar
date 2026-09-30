@@ -1,0 +1,162 @@
+/* Data Darbar — the shell: tokens, reset, header, footer, mobile nav.
+   ------------------------------------------------------------------
+   One stylesheet for the chrome that every page shares. Before this, six pages
+   carried their own copy inline and two more had their own stylesheet; 90 rules
+   appeared on three or more pages and 31 of those had drifted to different
+   bodies, so the same header genuinely rendered differently depending on where
+   you were. Page-specific CSS still belongs to the page — this file owns only
+   what is common, and the markup it styles is written by etl/apply_shell.py so
+   the two cannot drift apart again. */
+
+/* The full ramp, not a partial one. finance, money and trade each carried
+   their own :root that renamed half of these and gave --green-700 a DIFFERENT
+   VALUE (#186636), so the same token drew a different green depending on which
+   page you were on. Every step those pages actually needed is here now, under
+   the system's own names, so there is nothing left for a page to redefine. */
+:root{
+  --green-900:#0c3a1e;  --green-800:#145228;  --green-700:#1e6b3e;
+  --green-600:#2a7d4c;  --green-500:#4d8a62;  --green-400:#7aa88c;
+  --green-300:#9dbfa9;  --green-200:#d6e8dc;  --green-100:#f0f9f4;
+  --gold-800:#6b5311;   --gold-700:#8a6a0d;   --gold-600:#b5860b;
+  --gold-500:#d4a017;   --gold-400:#e8b92e;   --gold-300:#f0cc5a;
+  --gold-100:#fef6dc;
+  --teal-700:#0f6e78;   --teal-500:#3f9aa3;   --teal-300:#8fbfc4;
+  /* Categorical hues. The ramp was green, gold and teal alone, which is fine
+     for three series and monotonous for fifteen - and worse, a mechanical
+     remap gave two sectors the same token. These are muted and earthy so they
+     still sit on cream beside the green chrome, and deliberately not the
+     default web palette: no electric blue, no violet. */
+  --pine:#1b5e4a;       --olive:#5c6b3a;      --olive-300:#a9b789;
+  --slate:#2f5d7c;      --sky:#7b9ec9;        --slate-300:#8fb0c6;
+  --grey-blue:#6e7f95;
+  --plum:#6b4c7a;       --mauve:#a3789e;      --plum-300:#a98cb5;
+  --sienna:#b5651d;     --sienna-300:#dda878;
+  --rust:#a8452f;       --amber:#c98b2e;      --sand:#d8b48a;
+  --ink:#17301f;        --body:#3d424d;       --muted:#6b7280;
+  --muted-2:#8b93a0;
+  --ground:#faf7ef;     --surface:#ffffff;    --line:#dfe4df;  --line-strong:#c5cad3;
+  /* One negative, in the family. The three Economy pages used #c0392b, a
+     generic alert red that sits badly on the cream ground. */
+  --negative:#9a2c1f;   --negative-100:#f7e4e1;
+  --radius:12px;        --radius-sm:8px;
+  --shadow:0 2px 10px rgba(12,58,30,.07);
+  --shadow-lg:0 8px 28px rgba(12,58,30,.12);
+  --header-h:56px;      --sidebar-w:250px;    --footer-h:34px;
+  /* The design system tells the three explorers apart by accent alone. Each
+     page sets --accent on :root and everything shared reads from it. */
+  --accent:var(--green-700);
+  --sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+:root[data-explorer="places"]{--accent:var(--green-700)}
+:root[data-explorer="economy"]{--accent:var(--gold-600)}
+:root[data-explorer="state"]{--accent:var(--teal-700)}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--ground);color:var(--ink);
+     line-height:1.55;-webkit-font-smoothing:antialiased;
+     padding-bottom:var(--footer-h)}
+img{max-width:100%}
+a{color:var(--green-800)}
+[hidden]{display:none!important}
+
+/* ── header ───────────────────────────────────────────────────────────────
+   Three explorers, then the analysts' shelf behind a divider. The old "Data ▾"
+   dropdown held six products as peers; these are not peers, and the structure
+   should say so. */
+/* Measured off darbar.adaad.org, value for value: 56px tall, a 3px gold rule
+   under it, 20px side padding, a 16px gap, a 32px logo 9px from a two-line
+   wordmark of 20/800/-0.2px gold over 11px/0.66px uppercase white at 55%. */
+.site-header{height:var(--header-h);background:var(--green-900);
+  border-bottom:3px solid var(--gold-500);display:flex;align-items:center;
+  justify-content:space-between;gap:16px;padding:0 20px;position:sticky;
+  top:env(safe-area-inset-top,0px);z-index:500}
+.header-brand{display:flex;align-items:center;gap:9px;text-decoration:none;
+  flex-shrink:0}
+.header-logo{height:32px;width:auto}
+.header-text{display:flex;flex-direction:column;gap:0;line-height:16px}
+/* Gold wordmark over the green, with the tagline under it in white at
+   low opacity - the treatment the live site has always had. */
+.header-title{font-size:20px;line-height:22px;font-weight:800;
+  color:var(--gold-400);letter-spacing:-.2px}
+.header-tagline{font-size:11px;line-height:11px;letter-spacing:.66px;
+  text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:400}
+
+.header-nav{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.header-link{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:700;
+  color:#fff;text-decoration:none;white-space:nowrap;transition:background .14s,color .14s}
+.header-link:hover{background:rgba(255,255,255,.1)}
+.header-link.active{color:var(--green-900);background:var(--gold-500)}
+.header-sep{width:1px;height:20px;background:rgba(255,255,255,.2);margin:0 8px;flex-shrink:0}
+.header-link.shelf{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.75);padding:7px 12px}
+.header-link.shelf:hover{color:#fff}
+.header-link.shelf.active{color:var(--green-900);background:var(--gold-500)}
+.header-link.soon{color:rgba(255,255,255,.4);cursor:default}
+.header-link.soon:hover{background:none}
+
+.mobile-menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.25);
+  border-radius:6px;color:#fff;padding:5px 7px;cursor:pointer;line-height:0}
+.mobile-nav{display:flex;flex-direction:column;gap:2px;background:var(--green-900);
+  border-bottom:3px solid var(--gold-500);padding:8px 16px 14px}
+.mobile-nav.hidden{display:none}
+.mobile-nav-link{padding:10px 12px;color:rgba(255,255,255,.78);text-decoration:none;
+  font-size:14px;font-weight:600;border-radius:6px}
+.mobile-nav-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.mobile-nav-link.active{color:var(--gold-400)}
+.mobile-nav-label{padding:12px 12px 4px;font-size:10.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.42)}
+
+@media(max-width:860px){
+  .header-nav{display:none}
+  .mobile-menu-btn{display:block}
+  .site-header{padding:0 16px}
+}
+
+/* ── footer ─────────────────────────────────────────────────────────────── */
+/* A fixed bar across the bottom of every page, as the design shows. It is
+   taken out of flow, so --footer-h pads the bottom of the page behind it -
+   without that the last line of a scrolling page sits underneath the bar and
+   cannot be reached. */
+/* The live site's bar: one centred row, 11px, 6px/16px padding, 6px gap,
+   white at 45% with links at 55% and middots at 20%. Fixed rather than
+   static, which is the design's one change to it. */
+.site-footer{position:fixed;left:0;right:0;bottom:0;z-index:400;
+  background:var(--green-900);color:rgba(255,255,255,.45);font-size:11px;
+  padding:6px 16px calc(6px + env(safe-area-inset-bottom,0px));
+  min-height:var(--footer-h);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:6px;line-height:1.2}
+.site-footer a{color:rgba(255,255,255,.55);text-decoration:none}
+.site-footer a:hover{color:var(--gold-400);text-decoration:underline}
+.footer-sep{color:rgba(255,255,255,.2)}
+.footer-right{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 10px}
+@media(max-width:860px){
+  .site-footer{padding-inline:12px;font-size:10px;gap:5px}
+  .footer-right{margin-left:0}
+}
+/* The bar cannot hold four groups on a phone. The licence line goes and the
+   links stay, rather than the bar wrapping to three rows over the content. */
+@media(max-width:640px){
+  .site-footer > span:nth-child(-n+5){display:none}
+}
+
+/* ── shared furniture ─────────────────────────────────────────────────────
+   The few things every content page needs; anything a single page needs stays
+   with that page. */
+.wrap{max-width:1180px;margin:0 auto;padding-inline:24px}
+@media(max-width:860px){.wrap{padding-inline:16px}}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--gold-500);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* A caption is not a source. .src is generated from the provenance record and
+   is replaced wholesale on load, so anything hand-written in it is lost; text
+   that tells the reader how to use the chart belongs here instead. */
+.src{font-size:11px;color:var(--muted-2);margin-top:8px;font-weight:500}
+.hint{font-size:11px;color:var(--muted-2);margin-top:8px;font-weight:500}
+.src b.src-lbl{color:var(--muted);font-weight:700}
+.src .src-line{display:block;margin-top:3px}
+.src .src-art{display:block;margin-top:3px;color:var(--rust)}
+.src a{color:inherit;text-decoration:underline;text-underline-offset:2px}

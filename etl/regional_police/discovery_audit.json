@@ -1,0 +1,44 @@
+[
+  {
+    "region": "Balochistan",
+    "url": "https://www.bospnd.balochistan.gov.pk/api/resources/download/development-statistics-of-balochistan-5",
+    "status": "403 Unauthorized access",
+    "fallback": "Archived official Development Statistics 2019-20 through 2022-23 recovered. Crime table regional; district table counts police stations and Levies thanas, not FIRs.",
+    "checked_on": "2026-09-06"
+  },
+  {
+    "region": "KP",
+    "url": "https://kpbos.gov.pk/",
+    "status": "public yearbook downloads retrieved through the site public API",
+    "fallback": "2019\u20132024 seven district offences. Some titles retain stale years: parse the table column headers.",
+    "checked_on": "2026-09-06"
+  },
+  {
+    "region": "ICT",
+    "url": "https://www.islamabadpolice.gov.pk/",
+    "status": "No public district daily/YTD aggregate archive recovered",
+    "fallback": "PBS annual Islamabad totals, entire territory. Not police-station or zone data.",
+    "checked_on": "2026-09-06"
+  },
+  {
+    "region": "GB",
+    "url": "https://src.pnd.gog.pk/GBatGlance/GBatGlance2023.pdf",
+    "status": "DNS resolution failed",
+    "fallback": "PBS annual GB totals. No district daily/YTD or district annual crime table recovered.",
+    "checked_on": "2026-09-06"
+  },
+  {
+    "region": "AJK",
+    "url": "https://pndajk.gov.pk/statyearbook.php",
+    "status": "Official original PDFs retrieved",
+    "fallback": "District table 17.3 supplies 2019\u20132024 annual reported crimes.",
+    "checked_on": "2026-09-06"
+  },
+  {
+    "region": "all five",
+    "url": "https://www.pbs.gov.pk/social-statistics-2/",
+    "status": "Original PDFs and XLSX retrieved",
+    "fallback": "Regional 2019\u20132024 crime data. The monthly spreadsheet is national only and was not assigned to regions.",
+    "checked_on": "2026-09-06"
+  }
+]
