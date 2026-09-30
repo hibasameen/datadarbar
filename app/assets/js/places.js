@@ -1128,12 +1128,15 @@
             + ' \u00b7 the only one published</span>'
           : '';
       }
-      return '<span class="facet-lab">' + esc(name) + '</span>'
+      // One row per group: residence and sex on a single line ran past the
+      // edge of a phone and squeezed the buttons on a desktop card.
+      return '<div class="facet-grp" role="group" aria-label="' + esc(name) + '">'
+        + '<span class="facet-lab">' + esc(name) + '</span>'
         + avail.map(function (v) {
             return '<button type="button" data-facet="' + esc(key) + '"'
               + ' data-val="' + esc(v) + '" aria-pressed="' + (v === held)
               + '">' + esc(lab(v)) + '</button>';
-          }).join('');
+          }).join('') + '</div>';
     };
     var fh = group('Residence', 'locality', locs, state.locality)
            + group('Sex', 'sex', sexes, state.sex);
