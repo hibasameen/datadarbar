@@ -320,11 +320,15 @@ def main():
     for qi, pi in zip(hits[0], hits[1]): res[idx[qi]] = pk[pi]
     df.insert(df.columns.get_loc('district_key') + 1, 'district_key_boundary', res)
 
+    # Coordinate revision retains the original analysis positions and membership.
+    from update_punjab import integrate, RELEASE as COORD_RELEASE
+    df, coordinate_report = integrate(df, a.geojson, key.keys)
     a.out.mkdir(parents=True, exist_ok=True)
-    df.to_csv(a.out / f'schools_pk_{RELEASE}.csv.gz', index=False, compression='gzip')
+    (a.out / "punjab_integration_report.json").write_text(json.dumps(coordinate_report, indent=2))
+    df.to_csv(a.out / f'schools_pk_{COORD_RELEASE}.csv.gz', index=False, compression='gzip')
 
     rep = {
-        'release': RELEASE, 'rows': int(len(df)),
+        'release': COORD_RELEASE, 'rows': int(len(df)),
         'with_coords': int(df['has_coords'].sum()), 'in_analysis': int(df['in_analysis'].sum()),
         'by_region': df.groupby('region').agg(listed=('row_id', 'size'), with_coords=('has_coords', 'sum'),
                                              in_analysis=('in_analysis', 'sum')).astype(int).to_dict('index'),
@@ -333,7 +337,7 @@ def main():
         'district_key_missing': df[df['district_key'].isna()].groupby('region').size().astype(int).to_dict(),
         'inside_a_boundary': int(df['district_key_boundary'].notna().sum()),
         'boundary_differs_from_source': int(((df['district_key_boundary'] != df['district_key']) & df['district_key_boundary'].notna()).sum()),
-        'fig1_middle_plus_in_boundary': df[df['in_analysis'] & df['middle_plus'] & df['district_key_boundary'].notna()].groupby('analysis_sex').size().astype(int).to_dict(),
+        'fig1_middle_plus_in_boundary': df[df['in_analysis'] & df['middle_plus'] & df['analysis_district_key_boundary'].notna()].groupby('analysis_sex').size().astype(int).to_dict(),
         'unmatched_district_names': key.miss,
         'coord_method': df['coord_method'].fillna('none').value_counts().astype(int).to_dict(),
         'coord_precision': df['coord_precision'].value_counts().astype(int).to_dict(),

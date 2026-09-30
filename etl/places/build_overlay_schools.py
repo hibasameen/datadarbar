@@ -1,7 +1,9 @@
 """The school points, packed small enough to draw over any choropleth.
 
-121,020 of the 125,317 schools in the layer carry coordinates. 82,294 of those
-are a fix on the school itself; the rest sit on the centroid of a settlement,
+122,840 of the 125,317 schools in the layer carry coordinates. 120,211 of those
+are a fix on the school itself - Punjab's from release 2026-09-30, when its 2017
+public-school points were linked by EMIS code and verified; the rest sit on the
+centroid of a settlement,
 tehsil, markaz or cluster because that is as close as the source gets. The map
 draws the two differently - a solid dot against a hollow ring - because a point
 placed at a tehsil centroid is a claim about a tehsil, not about a building,

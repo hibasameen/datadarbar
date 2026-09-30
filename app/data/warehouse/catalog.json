@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-29",
+ "generated": "2026-09-30",
  "license": "Derived data CC BY 4.0 \u00b7 code MIT",
  "kinds": [
   {
@@ -6231,12 +6231,12 @@
   {
    "name": "schools_pk",
    "file": "schools_pk.parquet",
-   "bytes": 2990512,
+   "bytes": 4405781,
    "rows": 125317,
-   "description": "Government schools of Pakistan with positions and provenance, one row per listed school (release 2026-09).",
-   "notes": "READ coord_method AND coord_precision BEFORE USING lat/lng. Only 82,000 of the 121,000 positioned rows are school-level fixes (GPS at source in Balochistan and KP, RSU pins or positions multilaterated from SELD checker distances in Sindh); 20,000 Punjab, GB and AJK rows sit at the named SETTLEMENT, 8,000 Punjab rows at the MARKAZ (school-cluster) centroid and 9,800 Punjab rows at the TEHSIL centroid \u2014 those last two are useless for anything finer than a district. coord_tier is the region's overall grade from the coverage ledger (A to C). in_analysis marks the 118,673 rows that entered Adaad's distance analysis; analysis_note says why the rest did not (no position, closed, sex not stated, not government). gender is the school's name DESIGNATION (GG/GB, Boys/Girls); in Sindh most designated boys' schools are officially Mixed and enrol girls \u2014 gender_official carries SEMIS's Boys/Girls/Mixed field and boys_/girls_enrolled the roster's enrolment, so the girls' network can be redefined by attendance. level is the source's own label and level_std collapses it to primary/middle/high; middle_plus and high_plus are the analysis's classes. Coverage: settled KP only (the seven ex-FATA merged districts have no public locations), two of AJK's ten districts, 78 federal schools in Islamabad; see school_layer_coverage. district_key is the source's district mapped to Data Darbar's 147-district frame (successor districts folded into their parent); district_key_boundary is the polygon the point falls in, which is what per-district counts in the piece use \u2014 they differ for 3,500 rows. Every position in this table is either published by a provincial education department (Balochistan, KP, and Sindh's pins), solved from distances the Sindh department's own public distance checker returns, or geocoded from a settlement name in a public roster. The table adds nothing a department has not put online: no staff names, no contact details. Released under CC BY 4.0 as a compilation; the underlying records remain the departments'.",
+   "description": "Government schools of Pakistan with positions and provenance, one row per current listed school (release 2026-09-30).",
+   "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. These are historical source points, not verified current GPS observations. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Building-level accuracy and current operation are not established. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
    "unit": null,
-   "source": "Provincial school registers: SED Balochistan open-data portal; Sindh SELD Institution Checker and Distance Checker with RSU district GIS pins; KP Education Monitoring Authority school locator and the JSiMS mirror of KP EMIS; Punjab School Information System; GB EMIS; Mirpur and Kotli exam boards; OpenStreetMap for Islamabad. Compiled for Adaad, September 2026.",
+   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026.",
    "columns": [
     {
      "name": "row_id",
@@ -6361,7 +6361,7 @@
     {
      "name": "coord_method",
      "type": "VARCHAR",
-     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL"
+     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL | historical_school_point_2017"
     },
     {
      "name": "coord_precision",
@@ -6371,7 +6371,7 @@
     {
      "name": "coord_tier",
      "type": "VARCHAR",
-     "description": "region grade from the coverage ledger: A, A-, B, B-, C"
+     "description": "Original regional coverage grade retained; not an accuracy certification for newly added historical points."
     },
     {
      "name": "coord_resid_m",
@@ -6406,7 +6406,7 @@
     {
      "name": "in_analysis",
      "type": "BOOLEAN",
-     "description": "entered Adaad's distance analysis (functional, positioned, sex designated, government)"
+     "description": "Membership of the frozen September 2026 analysis; use analysis_lat, analysis_lng and analysis_district_key_boundary to reproduce it."
     },
     {
      "name": "analysis_sex",
@@ -6416,12 +6416,97 @@
     {
      "name": "analysis_note",
      "type": "VARCHAR",
-     "description": "why in_analysis is false"
+     "description": "Why a row was excluded from the frozen September analysis; a later coordinate addition does not change this history."
     },
     {
      "name": "release",
-     "type": "VARCHAR",
+     "type": "DATE",
      "description": "release tag of this table"
+    },
+    {
+     "name": "analysis_lat",
+     "type": "DOUBLE",
+     "description": "Frozen September 2026 analysis snapshot: latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "analysis_lng",
+     "type": "DOUBLE",
+     "description": "Frozen September 2026 analysis snapshot: longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "analysis_district_key_boundary",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)"
+    },
+    {
+     "name": "analysis_coord_method",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL"
+    },
+    {
+     "name": "analysis_coord_precision",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: what the position identifies: school | settlement | cluster | markaz | tehsil | none"
+    },
+    {
+     "name": "analysis_coord_tier",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: region grade from the coverage ledger: A, A-, B, B-, C"
+    },
+    {
+     "name": "analysis_geocode_match",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: the geocoder's or checker's own match class, kept verbatim"
+    },
+    {
+     "name": "analysis_source",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: register the row comes from"
+    },
+    {
+     "name": "analysis_source_url",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: portal"
+    },
+    {
+     "name": "analysis_source_vintage",
+     "type": "VARCHAR",
+     "description": "Frozen September 2026 analysis snapshot: when the register was read"
+    },
+    {
+     "name": "coord_source_url",
+     "type": "VARCHAR",
+     "description": "Coordinate-specific public source URL for the Punjab overlay."
+    },
+    {
+     "name": "coord_source_id",
+     "type": "VARCHAR",
+     "description": "Historical Inst_ID, preserved as text; its leading 1 was removed to infer the matching EMIS."
+    },
+    {
+     "name": "historical_name",
+     "type": "VARCHAR",
+     "description": "School name in the 2017 coordinate source; current name retained separately."
+    },
+    {
+     "name": "historical_gender",
+     "type": "VARCHAR",
+     "description": "Gender label in the 2017 source; may conflict with current designation."
+    },
+    {
+     "name": "coord_review_flags",
+     "type": "VARCHAR",
+     "description": "Semicolon-separated flags: historical_2017_building_unverified, name_differs, historical_gender_conflict, shared_coordinate, outside_source_district, outside_district_polygons, overlapping_district_polygons."
+    },
+    {
+     "name": "coord_validation",
+     "type": "VARCHAR",
+     "description": "Checks performed, not a claim of building-level verification."
+    },
+    {
+     "name": "coord_source_year",
+     "type": "INTEGER",
+     "description": "Year of the coordinate source; 2017 for the Punjab historical overlay, otherwise NULL."
     }
    ],
    "kind": "places",
@@ -7347,7 +7432,7 @@
   },
   {
    "title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-   "sql": "-- Count by the polygon the point falls in (district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
+   "sql": "-- Count by the polygon the point falls in (analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
   },
   {
    "title": "How precise are the positions, by province?",
@@ -7413,5 +7498,6 @@
    "title": "A dash means different things in the two panels",
    "sql": "-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n-- 2023 left them NULL. So a count of populated cells is not comparable across\n-- the years, and neither is an average taken over missing rows.\nSELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\nFROM census_panel_2017 GROUP BY 1, 2\nUNION ALL\nSELECT 2023, missing, count(*), count(value)\nFROM census_panel_2023 GROUP BY 1, 2\nORDER BY census_year, missing;"
   }
- ]
+ ],
+ "revision": "2026-09-30-punjab-coordinates"
 }

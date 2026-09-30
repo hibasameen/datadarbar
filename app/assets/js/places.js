@@ -1529,7 +1529,7 @@
 
 
   /* ── the schools overlay ─────────────────────────────────────────────────
-     121,020 points is far too many for one marker each, so they are drawn to a
+     122,840 points is far too many for one marker each, so they are drawn to a
      canvas, and only the ones inside the current view. A school with a real fix
      is a filled dot; one placed at a settlement or tehsil centroid is a hollow
      ring, because a centroid is a claim about an area and not about a building.
@@ -1615,7 +1615,7 @@
     document.getElementById('ovKey').hidden = !on;
     if (!on) {
       if (schoolLayer) { map.removeLayer(schoolLayer); schoolLayer = null; }
-      document.getElementById('ovSchoolsN').textContent = '121k';
+      document.getElementById('ovSchoolsN').textContent = '123k';
       return;
     }
     var box = document.getElementById('ovSchools');

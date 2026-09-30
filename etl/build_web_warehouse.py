@@ -277,7 +277,11 @@ def census_table_titles(repo: Path) -> dict:
 
 
 
-def build(src: Path, district_only: bool = False) -> None:
+def build(src: Path, district_only: bool = False, schools_only: bool = False) -> None:
+    if schools_only:
+        from schools.update_punjab import update_warehouse
+        update_warehouse(OUT)
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
     tables: list[dict] = []
@@ -617,61 +621,8 @@ def build(src: Path, district_only: bool = False) -> None:
         "nothing a department has not put online: no staff names, no contact details. "
     )
     schools_csv = (sc_dir / f"schools_pk_{sc_release}.csv.gz").as_posix()
-    register(
-        "schools_pk",
-        "Government schools of Pakistan with positions and provenance, one row per listed school (release 2026-09).",
-        "READ coord_method AND coord_precision BEFORE USING lat/lng. Only 82,000 of the 121,000 positioned rows "
-        "are school-level fixes (GPS at source in Balochistan and KP, RSU pins or positions multilaterated from "
-        "SELD checker distances in Sindh); 20,000 Punjab, GB and AJK rows sit at the named SETTLEMENT, 8,000 Punjab "
-        "rows at the MARKAZ (school-cluster) centroid and 9,800 Punjab rows at the TEHSIL centroid — those last two "
-        "are useless for anything finer than a district. coord_tier is the region's overall grade from the coverage "
-        "ledger (A to C). in_analysis marks the 118,673 rows that entered Adaad's distance analysis; analysis_note "
-        "says why the rest did not (no position, closed, sex not stated, not government). gender is the school's "
-        "name DESIGNATION (GG/GB, Boys/Girls); in Sindh most designated boys' schools are officially Mixed and "
-        "enrol girls — gender_official carries SEMIS's Boys/Girls/Mixed field and boys_/girls_enrolled the roster's "
-        "enrolment, so the girls' network can be redefined by attendance. level is the source's own label and "
-        "level_std collapses it to primary/middle/high; middle_plus and high_plus are the analysis's classes. "
-        "Coverage: settled KP only (the seven ex-FATA merged districts have no public locations), two of AJK's ten "
-        "districts, 78 federal schools in Islamabad; see school_layer_coverage. district_key is the source's "
-        "district mapped to Data Darbar's 147-district frame (successor districts folded into their parent); "
-        "district_key_boundary is the polygon the point falls in, which is what per-district counts in the piece "
-        "use — they differ for 3,500 rows. " + SCHOOLS_PORTAL_NOTE +
-        "Released under CC BY 4.0 as a compilation; the underlying records remain the departments'.",
-        {
-            "row_id": "row number in this release (stable within a release only)",
-            "school_id": "the source's own code: EMIS (Balochistan, KP, Punjab), SEMIS (Sindh), GB EMIS school code; blank for AJK and Islamabad",
-            "province": "province or territory", "region": "analysis region as the piece labels it (KP (settled), AJK (Mirpur+Kotli), Islamabad (ICT))",
-            "district": "district as the source writes it", "district_key": "Data Darbar district key of the source district (successors folded into parents) — joins district_indicators, mpi_districts, school_access_district",
-            "district_key_boundary": "Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)",
-            "tehsil": "tehsil or taluka as the source writes it; blank for KP, AJK, Islamabad",
-            "name": "school name as listed", "level": "level as the source labels it",
-            "level_std": "primary | middle | high | other (Elementary → middle; Secondary, Higher Secondary, H.Sec. → high; Mosque → primary)",
-            "primary_plus": "true for every school (any level serves the primary class)", "middle_plus": "middle level or above",
-            "high_plus": "high or higher-secondary level",
-            "gender": "name designation: Boys | Girls | Unknown", "gender_official": "Sindh only: SEMIS gender field Boys | Girls | Mixed",
-            "boys_enrolled": "Sindh only: boys enrolled per the SELD roster", "girls_enrolled": "Sindh only: girls enrolled per the SELD roster",
-            "enrolment_total": "total enrolment where the source gives it (Balochistan, Sindh)",
-            "status": "source status: Functional | Viable Closed | Closed | Non-Viable (Sindh); Open | Closed | Inaccessible (KP, non-primary only)",
-            "functional": "false where the source marks the school closed or inaccessible; NULL where the source carries no status",
-            "lat": "latitude, WGS84, 6 dp", "lng": "longitude, WGS84, 6 dp", "has_coords": "lat and lng present",
-            "coord_method": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL",
-            "coord_precision": "what the position identifies: school | settlement | cluster | markaz | tehsil | none",
-            "coord_tier": "region grade from the coverage ledger: A, A-, B, B-, C",
-            "coord_resid_m": "Sindh only: RMS residual, metres, of the multilateration solve",
-            "pin_vs_solved_m": "Sindh only: distance, metres, between the RSU pin and the solved position (NULL when no pin)",
-            "geocode_match": "the geocoder's or checker's own match class, kept verbatim",
-            "source": "register the row comes from", "source_url": "portal", "source_vintage": "when the register was read",
-            "in_analysis": "entered Adaad's distance analysis (functional, positioned, sex designated, government)",
-            "analysis_sex": "network the school belongs to in the analysis: G | B", "analysis_note": "why in_analysis is false",
-            "release": "release tag of this table",
-        },
-        SCHOOLS_SOURCE,
-        f"""SELECT * FROM read_csv('{schools_csv}', header=true, auto_detect=true,
-                   types={{'school_id':'VARCHAR','row_id':'INTEGER','boys_enrolled':'INTEGER','girls_enrolled':'INTEGER',
-                          'enrolment_total':'INTEGER','functional':'BOOLEAN','coord_resid_m':'DOUBLE','pin_vs_solved_m':'DOUBLE',
-                          'lat':'DOUBLE','lng':'DOUBLE'}})
-            ORDER BY row_id""",
-    )
+    from schools.update_punjab import register_table
+    register_table(register, sc_dir)
 
     register(
         "school_access_district",
@@ -2311,13 +2262,13 @@ EXAMPLES = [
 # Sindh "boys'" school is usually mixed.
 SCHOOL_EXAMPLES = [
     {"title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-     "sql": ("-- Count by the polygon the point falls in (district_key_boundary), which is\n"
+     "sql": ("-- Count by the polygon the point falls in (analysis_district_key_boundary), which is\n"
              "-- how the piece counts; district_key is the register's own district.\n"
-             "SELECT district_key_boundary AS district,\n"
+             "SELECT analysis_district_key_boundary AS district,\n"
              "       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n"
              "       count(*) FILTER (analysis_sex = 'B') AS boys_schools\n"
              "FROM schools_pk\n"
-             "WHERE in_analysis AND middle_plus AND district_key_boundary IS NOT NULL\n"
+             "WHERE in_analysis AND middle_plus AND analysis_district_key_boundary IS NOT NULL\n"
              "GROUP BY 1 ORDER BY girls_schools DESC;")},
     {"title": "How precise are the positions, by province?",
      "sql": ("-- Never map Punjab's tehsil-centroid rows as if they were GPS fixes.\n"
@@ -2501,8 +2452,8 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
-    ap.add_argument("--only", choices=["district_indicators"], help="rebuild only the website district panel")
+    ap.add_argument("--only", choices=["district_indicators", "schools_pk"], help="rebuild only the website district panel")
     a = ap.parse_args()
     if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
-    build(a.src, district_only=bool(a.only))
+    build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk")
