@@ -1568,7 +1568,7 @@
       facts: function (t) {
         return ['<b>' + t.girls.toLocaleString() + '</b> girls\u2019',
                 '<b>' + t.boys.toLocaleString() + '</b> boys\u2019',
-                (t.n ? Math.round(100 * t.fixed / t.n) : 0) + '% located on the school'];
+                (t.n ? Math.round(100 * t.fixed / t.n) : 0) + '% on the school'];
       },
       seg: [['all', 'All'], ['girls', 'Girls\u2019'], ['boys', 'Boys\u2019']],
       pick: [['all', 'Every level'], ['0', 'Primary'], ['1', 'Middle'], ['2', 'High']],
@@ -1597,7 +1597,7 @@
                 '<b>' + t.pvt.toLocaleString() + '</b> private',
                 '<b>' + t.hosp.toLocaleString() + '</b> hospitals'];
       },
-      seg: [['all', 'All'], ['gov', 'Government'], ['pvt', 'Private']],
+      seg: [['all', 'All'], ['gov', 'Govt'], ['pvt', 'Private']],
       pick: [['all', 'Every type'], ['0', 'Hospitals'], ['1', 'Primary care'],
              ['2', 'Mother and child'], ['3', 'Clinics'], ['4', 'Traditional medicine'],
              ['5', 'Laboratories'], ['6', 'TB and leprosy']],
@@ -1735,8 +1735,8 @@
             return '<option value="' + o[0] + '"' + (f.b === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
           }).join('') + '</select></div>'
         + '<div class="pts-key">' + c.key.map(function (o) {
-            return '<span><i class="dot ' + o[0] + '"></i>' + o[1] + '</span>'; }).join('') + '</div>'
-        + '<div class="pts-src">' + c.src + ' \u00b7 <a href="' + c.table + '">the table</a></div>'
+            return '<span><i class="dot ' + o[0] + '"></i>' + o[1] + '</span>'; }).join('')
+        + '<a class="pts-src" href="' + c.table + '" title="' + c.src + '">source</a></div>'
         + '</details>';
     }).join('');
   }

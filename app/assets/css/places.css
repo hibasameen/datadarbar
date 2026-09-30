@@ -378,10 +378,10 @@
 .pts{display:flex;flex-direction:column;gap:12px}
 .legend:not(.is-plain) .pts{border-top:1px solid var(--line);padding-top:10px}
 .legend.has-pts{max-width:330px}
-.pts-sec{display:flex;flex-direction:column;gap:6px}
-.pts-sec[open]>summary{margin-bottom:6px}
-.pts-sec>:not(summary){margin-top:6px}
+.pts-sec{display:flex;flex-direction:column;gap:5px}
 .pts{gap:8px}
+.pts-sec+.pts-sec{border-top:1px solid var(--line);padding-top:8px}
+.legend.is-plain.has-pts{padding:10px 12px;gap:0}
 .pts-sec .dot.solid{background:var(--pt)}
 .pts-sec .dot.hollow{border-color:var(--pt)}
 .pts-sec .dot.big{width:11px;height:11px}
@@ -392,17 +392,16 @@
 .pts-sec[open]>.pts-head::after{transform:rotate(-135deg);margin-bottom:-2px}
 .pts-head b{font-weight:700}
 .pts-n{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
-.pts-facts{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums;line-height:1.4}
+.pts-facts{font-size:11px;color:var(--body);font-variant-numeric:tabular-nums;line-height:1.4}
 .pts-facts b{color:var(--ink);font-weight:700}
-.pts-ctl{display:flex;gap:6px;flex-wrap:wrap}
+.pts-ctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .pts-seg{display:flex;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden}
 .pts-seg button{border:0;border-left:1px solid var(--line-strong);background:var(--surface);font:inherit;
-  font-size:11px;font-weight:600;padding:4px 8px;cursor:pointer;color:var(--ink)}
+  font-size:11px;font-weight:600;padding:3px 7px;cursor:pointer;color:var(--ink)}
 .pts-seg button:first-child{border-left:0}
 .pts-seg button[aria-pressed="true"]{background:var(--green-900);color:#fff}
 .pts-ctl select{font:inherit;font-size:11px;padding:3px 6px;border:1px solid var(--line-strong);
-  border-radius:6px;background:var(--surface);color:var(--ink);max-width:150px}
+  border-radius:6px;background:var(--surface);color:var(--ink);max-width:124px}
 .pts-key{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--muted)}
 .pts-key span{display:inline-flex;align-items:center;gap:5px}
-.pts-src{font-size:10.5px;color:var(--muted-2)}
-.pts-src a{color:inherit}
+.pts-src{margin-left:auto;font-size:10.5px;color:var(--muted-2)}
