@@ -1546,18 +1546,64 @@
      encoding: government filled, private a ring, hospitals drawn larger. So the
      layer takes its source and its drawing rules from a config. */
   var OVERLAY = {
+    /* Schools pack f = located*100 + level*10 + sex (0 boys, 1 girls, 2 not
+       stated); health f = government*10 + care group (0 is hospital). */
     schools: {
+      label: 'Government schools', box: 'ovSchools',
       data: function () { return window.DD_SCHOOL_POINTS; },
       ink: '--pt-schools', note: 'ovSchoolsN', idle: '123k', cap: [12000, 60000],
-      file: 'data/places/overlay_schools.js', key: 'ovKey',
+      file: 'data/places/overlay_schools.js',
       filled: function (f) { return f >= 100; }, big: function () { return false; },
+      filter: { a: 'all', b: 'all' },
+      show: function (f, q) {
+        var sx = f % 10, lv = Math.floor(f / 10) % 10;
+        return (q.a === 'all' || (q.a === 'girls' ? sx === 1 : sx === 0))
+            && (q.b === 'all' || lv === +q.b);
+      },
+      tally: function (f, t) {
+        var sx = f % 10;
+        if (sx === 1) t.girls++; else if (sx === 0) t.boys++;
+        if (f >= 100) t.fixed++;
+      },
+      facts: function (t) {
+        return ['<b>' + t.girls.toLocaleString() + '</b> girls\u2019',
+                '<b>' + t.boys.toLocaleString() + '</b> boys\u2019',
+                (t.n ? Math.round(100 * t.fixed / t.n) : 0) + '% located on the school'];
+      },
+      seg: [['all', 'All'], ['girls', 'Girls\u2019'], ['boys', 'Boys\u2019']],
+      pick: [['all', 'Every level'], ['0', 'Primary'], ['1', 'Middle'], ['2', 'High']],
+      key: [['solid', 'located on the school'], ['hollow', 'placed at a centroid']],
+      src: 'Provincial school registers, release 2026-09-30',
+      table: 'datasets/schools-pk/',
     },
     health: {
+      label: 'Health facilities', box: 'ovHealth',
       data: function () { return window.DD_HEALTH_POINTS; },
       // 20,536 points draw quickly, so the whole set is drawn at every zoom.
       ink: '--pt-health', note: 'ovHealthN', idle: '21k', cap: [30000, 30000],
-      file: 'data/places/overlay_health.js', key: 'ovKeyHealth',
+      file: 'data/places/overlay_health.js',
       filled: function (f) { return f >= 10; }, big: function (f) { return f % 10 === 0; },
+      filter: { a: 'all', b: 'all' },
+      show: function (f, q) {
+        return (q.a === 'all' || (q.a === 'gov' ? f >= 10 : f < 10))
+            && (q.b === 'all' || f % 10 === +q.b);
+      },
+      tally: function (f, t) {
+        if (f >= 10) t.gov++; else t.pvt++;
+        if (f % 10 === 0) t.hosp++;
+      },
+      facts: function (t) {
+        return ['<b>' + t.gov.toLocaleString() + '</b> government',
+                '<b>' + t.pvt.toLocaleString() + '</b> private',
+                '<b>' + t.hosp.toLocaleString() + '</b> hospitals'];
+      },
+      seg: [['all', 'All'], ['gov', 'Government'], ['pvt', 'Private']],
+      pick: [['all', 'Every type'], ['0', 'Hospitals'], ['1', 'Primary care'],
+             ['2', 'Mother and child'], ['3', 'Clinics'], ['4', 'Traditional medicine'],
+             ['5', 'Laboratories'], ['6', 'TB and leprosy']],
+      key: [['solid', 'government'], ['hollow', 'private'], ['solid big', 'hospital']],
+      src: 'ALHASAN Systems, 2017 (CC0, via HDX)',
+      table: 'datasets/health-facilities-pk/',
     },
   };
 
@@ -1567,7 +1613,16 @@
       this._map = m;
       this._c = L.DomUtil.create('canvas', 'leaflet-zoom-animated');
       this._c.style.pointerEvents = 'none';
-      m.getPanes().overlayPane.appendChild(this._c);
+      /* The points get a pane of their own above the districts. In the shared
+         overlay pane every repaint re-added the district shapes on top, so a
+         plain or shaded fill covered the dots entirely. */
+      var pane = m.getPane('points');
+      if (!pane) {
+        pane = m.createPane('points');
+        pane.style.zIndex = 450;            // above overlays (400), below popups
+        pane.style.pointerEvents = 'none';
+      }
+      pane.appendChild(this._c);
       m.on('moveend zoomend resize', this._draw, this);
       this._draw();
     },
@@ -1605,12 +1660,16 @@
       // leave the north bare - a picture of the storage order, not of the
       // schools. Count first, then take every stride-th, which thins the whole
       // country evenly.
-      var la = 0, ln = 0, inView = 0, i, y, x;
+      var la = 0, ln = 0, inView = 0, i, y, x, q = cfg.filter;
+      var t = { n: 0, girls: 0, boys: 0, fixed: 0, gov: 0, pvt: 0, hosp: 0 };
       for (i = 0; i < n; i++) {
         la += LAT[i]; ln += LNG[i];
         y = la / 1e4; x = ln / 1e4;
-        if (y >= S && y <= N && x >= W && x <= E) inView++;
+        if (y >= S && y <= N && x >= W && x <= E && cfg.show(F[i], q)) {
+          inView++; cfg.tally(F[i], t);
+        }
       }
+      t.n = inView; cfg.inView = t;
       var stride = Math.max(1, Math.ceil(inView / cap));
 
       la = 0; ln = 0;
@@ -1618,7 +1677,7 @@
       for (i = 0; i < n; i++) {
         la += LAT[i]; ln += LNG[i];
         y = la / 1e4; x = ln / 1e4;
-        if (y < S || y > N || x < W || x > E) continue;
+        if (y < S || y > N || x < W || x > E || !cfg.show(F[i], q)) continue;
         if (seen++ % stride) continue;
         var p = m.latLngToContainerPoint([y, x]);
         var r = cfg.big(F[i]) ? s + 1.6 : s;
@@ -1635,6 +1694,8 @@
         drawn++;
       }
       g.globalAlpha = 1;
+      var inCard = document.querySelector('.pts-sec[data-l] .pts-n');
+      if (inCard) renderPts();
       var note = document.getElementById(cfg.note);
       if (note) {
         // say plainly when the map is showing a sample rather than everything
@@ -1647,19 +1708,74 @@
 
   var overlays = {};
 
+  /* The card under the map describes what is drawn on it. With point layers
+     on it says, for each, what is in view, lets the reader narrow it, and
+     names the source; on a plain background it is only that. */
+  function renderPts() {
+    var box = $('ptsCard'), on = Object.keys(OVERLAY).filter(function (k) { return overlays[k]; });
+    box.hidden = !on.length;
+    $('legend').classList.toggle('has-pts', !!on.length);
+    box.innerHTML = on.map(function (k) {
+      var c = OVERLAY[k], t = c.inView, f = c.filter;
+      var head = t ? t.n.toLocaleString() + ' in view' : 'loading\u2026';
+      // Over the shading the card already carries the indicator's key, so each
+      // layer folds to one line until opened; on a plain map it starts open.
+      var open = c.open != null ? c.open : state.plain;
+      return '<details class="pts-sec" data-l="' + k + '" style="--pt:var(' + c.ink + ')"'
+        + (open ? ' open' : '') + '>'
+        + '<summary class="pts-head"><i class="dot solid"></i><b>' + c.label + '</b>'
+        + '<span class="pts-n">' + head + '</span></summary>'
+        + (t ? '<div class="pts-facts">' + c.facts(t).join(' \u00b7 ') + '</div>' : '')
+        + '<div class="pts-ctl"><div class="pts-seg" role="group" aria-label="' + c.label + ': which">'
+        + c.seg.map(function (o) {
+            return '<button type="button" data-a="' + o[0] + '" aria-pressed="' + (f.a === o[0]) + '">'
+              + o[1] + '</button>'; }).join('')
+        + '</div><select aria-label="' + c.label + ': type">'
+        + c.pick.map(function (o) {
+            return '<option value="' + o[0] + '"' + (f.b === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+          }).join('') + '</select></div>'
+        + '<div class="pts-key">' + c.key.map(function (o) {
+            return '<span><i class="dot ' + o[0] + '"></i>' + o[1] + '</span>'; }).join('') + '</div>'
+        + '<div class="pts-src">' + c.src + ' \u00b7 <a href="' + c.table + '">the table</a></div>'
+        + '</details>';
+    }).join('');
+  }
+
+  function wirePts() {
+    var box = $('ptsCard');
+    var redraw = function (k) { if (overlays[k]) overlays[k]._draw(); renderPts(); };
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('.pts-seg button'); if (!b) return;
+      var k = b.closest('.pts-sec').dataset.l;
+      OVERLAY[k].filter.a = b.dataset.a; redraw(k);
+    });
+    box.addEventListener('toggle', function (e) {
+      var d = e.target.closest && e.target.closest('.pts-sec');
+      if (d) OVERLAY[d.dataset.l].open = d.open;
+    }, true);
+    box.addEventListener('change', function (e) {
+      if (e.target.tagName !== 'SELECT') return;
+      var k = e.target.closest('.pts-sec').dataset.l;
+      OVERLAY[k].filter.b = e.target.value; redraw(k);
+    });
+  }
+
   function setPlain(on) {
     state.plain = !!on;
+    // a change of background resets each layer to that background's default
+    Object.keys(OVERLAY).forEach(function (k) { OVERLAY[k].open = null; });
     $('ovPlain').checked = state.plain;
     $('legend').classList.toggle('is-plain', state.plain);
+    renderPts();
   }
 
   function toggleOverlay(name, on) {
     var cfg = OVERLAY[name];
-    var box = document.getElementById(name === 'schools' ? 'ovSchools' : 'ovHealth');
-    document.getElementById(cfg.key).hidden = !on;
+    var box = document.getElementById(cfg.box);
     if (!on) {
       if (overlays[name]) { map.removeLayer(overlays[name]); overlays[name] = null; }
       document.getElementById(cfg.note).textContent = cfg.idle;
+      renderPts();
       return;
     }
     box.disabled = true;
@@ -1667,6 +1783,7 @@
     script(cfg.file).then(function () {
       overlays[name] = new SchoolLayer(cfg);
       map.addLayer(overlays[name]);
+      renderPts();
     }).catch(function () {
       document.getElementById(cfg.note).textContent = 'could not load';
       box.checked = false;
@@ -1810,6 +1927,7 @@
     $('csvBtn').onclick = downloadCsv;
     $('ovSchools').onchange = function () { toggleOverlay('schools', this.checked); writeUrl(); };
     $('ovHealth').onchange = function () { toggleOverlay('health', this.checked); writeUrl(); };
+    wirePts();
     $('ovPlain').onchange = function () {
       setPlain(this.checked);
       if (state.row != null) paint().then(writeUrl); else writeUrl();
