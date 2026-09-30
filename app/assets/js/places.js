@@ -59,6 +59,7 @@
     locality: 'all',
     sex: 'all',
     norm: '',           // '', 'pct' or 'per1000' - how a count is read
+    plain: false,       // shading off: a plain map for reading the point layers
     values: null,       // map_key -> number
     meta: null,         // map_key -> {relation, note}
     place: null,        // selected map key
@@ -779,6 +780,9 @@
      brought to the front, so a selected district is not half-hidden under its
      neighbours' edges. */
   var SELECTED = '#d4a017';
+  /* The plain background: a warm pale grey a shade off the page, so districts
+     still read as shapes and every point colour sits on the same ground. */
+  var PLAIN = '#efece3';
 
   /* One place decides how a shape's edge is drawn, so the selected outline
      cannot drift from the ordinary one. */
@@ -877,6 +881,9 @@
           var p = f.properties, v = state.values[g.key(p)];
           if (prov && g.prov(p) !== prov) {
             return { fillOpacity: 0, weight: 0, opacity: 0 };
+          }
+          if (state.plain) {
+            return Object.assign({ fillColor: PLAIN, fillOpacity: 1 }, edge(g.key(p)));
           }
           if (v == null || isNaN(v) || !sc) {
             var why = (state.meta || {})[g.key(p)];
@@ -1541,13 +1548,14 @@
   var OVERLAY = {
     schools: {
       data: function () { return window.DD_SCHOOL_POINTS; },
-      ink: '--green-900', note: 'ovSchoolsN', idle: '123k',
+      ink: '--pt-schools', note: 'ovSchoolsN', idle: '123k', cap: [12000, 60000],
       file: 'data/places/overlay_schools.js', key: 'ovKey',
       filled: function (f) { return f >= 100; }, big: function () { return false; },
     },
     health: {
       data: function () { return window.DD_HEALTH_POINTS; },
-      ink: '--rust', note: 'ovHealthN', idle: '21k',
+      // 20,536 points draw quickly, so the whole set is drawn at every zoom.
+      ink: '--pt-health', note: 'ovHealthN', idle: '21k', cap: [30000, 30000],
       file: 'data/places/overlay_health.js', key: 'ovKeyHealth',
       filled: function (f) { return f >= 10; }, big: function (f) { return f % 10 === 0; },
     },
@@ -1584,11 +1592,13 @@
       var s = Math.max(1, Math.min(3, (z - 5) * 0.8));
       var ink = getComputedStyle(document.documentElement)
         .getPropertyValue(cfg.ink).trim() || '#0c3a1e';
-      g.strokeStyle = ink; g.fillStyle = ink; g.lineWidth = 1;
+      // A white halo under every mark, so the points read against every one of
+      // the choropleth ramps - dark green dots vanished into dark green districts.
+      var halo = 'rgba(255,255,255,.95)';
 
       var n = pts.n, LAT = pts.lat, LNG = pts.lng, F = pts.f;
       var S = b.getSouth(), N = b.getNorth(), W = b.getWest(), E = b.getEast();
-      var cap = z < 8 ? 12000 : 60000;      // enough to read, not enough to blot
+      var cap = z < 8 ? cfg.cap[0] : cfg.cap[1];   // enough to read, not enough to blot
 
       // Two passes. The points are stored in latitude order, so drawing the
       // first `cap` of them would paint the southern third of the country and
@@ -1611,10 +1621,17 @@
         if (y < S || y > N || x < W || x > E) continue;
         if (seen++ % stride) continue;
         var p = m.latLngToContainerPoint([y, x]);
+        var r = cfg.big(F[i]) ? s + 1.6 : s;
         g.beginPath();
-        g.arc(p.x, p.y, cfg.big(F[i]) ? s + 1.6 : s, 0, 6.283);
-        if (cfg.filled(F[i])) { g.globalAlpha = .8; g.fill(); }
-        else { g.globalAlpha = .55; g.stroke(); }
+        g.arc(p.x, p.y, r, 0, 6.283);
+        g.globalAlpha = 1;
+        if (cfg.filled(F[i])) {
+          g.lineWidth = 1; g.strokeStyle = halo; g.stroke();
+          g.fillStyle = ink; g.fill();
+        } else {
+          g.lineWidth = 2.6; g.strokeStyle = halo; g.stroke();
+          g.lineWidth = 1.3; g.strokeStyle = ink; g.stroke();
+        }
         drawn++;
       }
       g.globalAlpha = 1;
@@ -1629,6 +1646,12 @@
   });
 
   var overlays = {};
+
+  function setPlain(on) {
+    state.plain = !!on;
+    $('ovPlain').checked = state.plain;
+    $('legend').classList.toggle('is-plain', state.plain);
+  }
 
   function toggleOverlay(name, on) {
     var cfg = OVERLAY[name];
@@ -1671,6 +1694,7 @@
       return document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked;
     });
     if (ov.length) q.set('ov', ov.join(','));
+    if (state.plain) q.set('bg', 'plain');
     // Shared without it, a link to "Sindh" opened on the whole country.
     var pv = $('provFilter') && $('provFilter').value;
     if (pv) q.set('prov', pv);
@@ -1717,6 +1741,7 @@
        before the options exist selects nothing and the filter is silently
        lost on every shared link. */
     state.provWanted = q.get('prov') || '';
+    if (q.get('bg') === 'plain') setPlain(true);
     (q.get('ov') || '').split(',').forEach(function (k) {
       if (!OVERLAY[k]) return;
       document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked = true;
@@ -1785,6 +1810,10 @@
     $('csvBtn').onclick = downloadCsv;
     $('ovSchools').onchange = function () { toggleOverlay('schools', this.checked); writeUrl(); };
     $('ovHealth').onchange = function () { toggleOverlay('health', this.checked); writeUrl(); };
+    $('ovPlain').onchange = function () {
+      setPlain(this.checked);
+      if (state.row != null) paint().then(writeUrl); else writeUrl();
+    };
     $('shareBtn').onclick = share;
 
     /* Bottom right, clear of the measure header and the tools over the map's
