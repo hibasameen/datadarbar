@@ -1607,8 +1607,55 @@
     },
   };
 
+  /* Decode once. The payload is delta-encoded so it ships small, but
+     decoding 122,840 points twice on every redraw was most of the cost of a
+     zoom. Each point is kept as Web Mercator world coordinates in [0, 1], so
+     its screen position is two multiply-adds per redraw instead of a Leaflet
+     projection call. */
+  function decodePoints(pts) {
+    if (pts._wx) return pts;
+    var n = pts.n, la = 0, ln = 0, y, x, sn, R = Math.PI / 180;
+    var lat = new Float32Array(n), lng = new Float32Array(n);
+    var wx = new Float64Array(n), wy = new Float64Array(n);
+    for (var i = 0; i < n; i++) {
+      la += pts.lat[i]; ln += pts.lng[i];
+      y = la / 1e4; x = ln / 1e4;
+      lat[i] = y; lng[i] = x;
+      wx[i] = (x + 180) / 360;
+      sn = Math.sin(y * R);
+      wy[i] = 0.5 - Math.log((1 + sn) / (1 - sn)) / (4 * Math.PI);
+    }
+    pts._la = lat; pts._ln = lng; pts._wx = wx; pts._wy = wy;
+    return pts;
+  }
+
+  /* One small bitmap per mark style, drawn once per redraw and stamped for
+     every point: a copy is far cheaper than a path, a stroke and a fill. */
+  function sprite(ink, r, filled, dpr) {
+    var w = Math.ceil(2 * r + 5), c = document.createElement('canvas');
+    c.width = c.height = w * dpr;
+    var g = c.getContext('2d');
+    g.scale(dpr, dpr);
+    g.beginPath();
+    g.arc(w / 2, w / 2, r, 0, 6.283);
+    // A white halo under every mark, so the points read against every one of
+    // the choropleth ramps - dark green dots vanished into dark green districts.
+    var halo = 'rgba(255,255,255,.95)';
+    if (filled) {
+      g.lineWidth = 1; g.strokeStyle = halo; g.stroke();
+      g.fillStyle = ink; g.fill();
+    } else {
+      g.lineWidth = 2.6; g.strokeStyle = halo; g.stroke();
+      g.lineWidth = 1.3; g.strokeStyle = ink; g.stroke();
+    }
+    return { img: c, w: w };
+  }
+
   var SchoolLayer = L.Layer.extend({
-    initialize: function (cfg) { this._cfg = cfg || OVERLAY.schools; },
+    initialize: function (cfg) {
+      this._cfg = cfg || OVERLAY.schools;
+      this._key = Object.keys(OVERLAY).filter(function (k) { return OVERLAY[k] === this._cfg; }, this)[0];
+    },
     onAdd: function (m) {
       this._map = m;
       this._c = L.DomUtil.create('canvas', 'leaflet-zoom-animated');
@@ -1623,17 +1670,30 @@
         pane.style.pointerEvents = 'none';
       }
       pane.appendChild(this._c);
-      m.on('moveend zoomend resize', this._draw, this);
+      // moveend follows every zoom too, so listening to zoomend as well drew
+      // each frame twice.
+      m.on('moveend resize', this._draw, this);
+      // Scale with the map during its zoom animation, as Leaflet's own layers
+      // do, rather than sitting still and jumping when the zoom ends.
+      if (m._zoomAnimated) m.on('zoomanim', this._animateZoom, this);
       this._draw();
     },
     onRemove: function (m) {
-      m.off('moveend zoomend resize', this._draw, this);
+      m.off('moveend resize', this._draw, this);
+      m.off('zoomanim', this._animateZoom, this);
       if (this._c && this._c.parentNode) this._c.parentNode.removeChild(this._c);
       this._c = null;
+    },
+    _animateZoom: function (e) {
+      var m = this._map;
+      var scale = m.getZoomScale(e.zoom);
+      var offset = m._latLngBoundsToNewLayerBounds(m.getBounds(), e.zoom, e.center).min;
+      L.DomUtil.setTransform(this._c, offset, scale);
     },
     _draw: function () {
       var cfg = this._cfg, pts = cfg.data();
       if (!pts || !this._c) return;
+      decodePoints(pts);
       var m = this._map, size = m.getSize(), tl = m.containerPointToLayerPoint([0, 0]);
       L.DomUtil.setPosition(this._c, tl);
       var dpr = window.devicePixelRatio || 1;
@@ -1647,12 +1707,16 @@
       var s = Math.max(1, Math.min(3, (z - 5) * 0.8));
       var ink = getComputedStyle(document.documentElement)
         .getPropertyValue(cfg.ink).trim() || '#0c3a1e';
-      // A white halo under every mark, so the points read against every one of
-      // the choropleth ramps - dark green dots vanished into dark green districts.
-      var halo = 'rgba(255,255,255,.95)';
+      var marks = {
+        fs: sprite(ink, s, true, dpr), fb: sprite(ink, s + 1.6, true, dpr),
+        rs: sprite(ink, s, false, dpr), rb: sprite(ink, s + 1.6, false, dpr),
+      };
+      // screen position = world * scale - top-left world pixel
+      var W0 = m.options.crs.scale(z);
+      var tlw = m.project(m.containerPointToLatLng([0, 0]), z);
 
-      var n = pts.n, LAT = pts.lat, LNG = pts.lng, F = pts.f;
-      var S = b.getSouth(), N = b.getNorth(), W = b.getWest(), E = b.getEast();
+      var n = pts.n, LA = pts._la, LN = pts._ln, WX = pts._wx, WY = pts._wy, F = pts.f;
+      var S = b.getSouth(), N = b.getNorth(), Wb = b.getWest(), E = b.getEast();
       var cap = z < 8 ? cfg.cap[0] : cfg.cap[1];   // enough to read, not enough to blot
 
       // Two passes. The points are stored in latitude order, so drawing the
@@ -1660,42 +1724,29 @@
       // leave the north bare - a picture of the storage order, not of the
       // schools. Count first, then take every stride-th, which thins the whole
       // country evenly.
-      var la = 0, ln = 0, inView = 0, i, y, x, q = cfg.filter;
+      var inView = 0, i, y, x, q = cfg.filter;
       var t = { n: 0, girls: 0, boys: 0, fixed: 0, gov: 0, pvt: 0, hosp: 0 };
       for (i = 0; i < n; i++) {
-        la += LAT[i]; ln += LNG[i];
-        y = la / 1e4; x = ln / 1e4;
-        if (y >= S && y <= N && x >= W && x <= E && cfg.show(F[i], q)) {
+        y = LA[i]; x = LN[i];
+        if (y >= S && y <= N && x >= Wb && x <= E && cfg.show(F[i], q)) {
           inView++; cfg.tally(F[i], t);
         }
       }
       t.n = inView; cfg.inView = t;
       var stride = Math.max(1, Math.ceil(inView / cap));
 
-      la = 0; ln = 0;
-      var drawn = 0, seen = 0;
+      var drawn = 0, seen = 0, mk, f;
       for (i = 0; i < n; i++) {
-        la += LAT[i]; ln += LNG[i];
-        y = la / 1e4; x = ln / 1e4;
-        if (y < S || y > N || x < W || x > E || !cfg.show(F[i], q)) continue;
-        if (seen++ % stride) continue;
-        var p = m.latLngToContainerPoint([y, x]);
-        var r = cfg.big(F[i]) ? s + 1.6 : s;
-        g.beginPath();
-        g.arc(p.x, p.y, r, 0, 6.283);
-        g.globalAlpha = 1;
-        if (cfg.filled(F[i])) {
-          g.lineWidth = 1; g.strokeStyle = halo; g.stroke();
-          g.fillStyle = ink; g.fill();
-        } else {
-          g.lineWidth = 2.6; g.strokeStyle = halo; g.stroke();
-          g.lineWidth = 1.3; g.strokeStyle = ink; g.stroke();
-        }
+        y = LA[i]; x = LN[i];
+        if (y < S || y > N || x < Wb || x > E) continue;
+        f = F[i];
+        if (!cfg.show(f, q) || seen++ % stride) continue;
+        mk = cfg.filled(f) ? (cfg.big(f) ? marks.fb : marks.fs)
+                           : (cfg.big(f) ? marks.rb : marks.rs);
+        g.drawImage(mk.img, WX[i] * W0 - tlw.x - mk.w / 2, WY[i] * W0 - tlw.y - mk.w / 2, mk.w, mk.w);
         drawn++;
       }
-      g.globalAlpha = 1;
-      var inCard = document.querySelector('.pts-sec[data-l] .pts-n');
-      if (inCard) renderPts();
+      updatePts(this._key);
       var note = document.getElementById(cfg.note);
       if (note) {
         // say plainly when the map is showing a sample rather than everything
@@ -1739,6 +1790,18 @@
         + '<a class="pts-src" href="' + c.table + '" title="' + c.src + '">source</a></div>'
         + '</details>';
     }).join('');
+  }
+
+  /* After a redraw only the numbers change; rebuilding the card's markup on
+     every pan closed an open dropdown and cost a layout. */
+  function updatePts(k) {
+    var sec = document.querySelector('.pts-sec[data-l="' + k + '"]');
+    var c = OVERLAY[k], t = c.inView;
+    if (!sec || !t) return;
+    var facts = sec.querySelector('.pts-facts');
+    if (!facts) { renderPts(); return; }
+    sec.querySelector('.pts-n').textContent = t.n.toLocaleString() + ' in view';
+    facts.innerHTML = c.facts(t).join(' \u00b7 ');
   }
 
   function wirePts() {
