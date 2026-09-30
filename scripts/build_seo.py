@@ -188,8 +188,13 @@ def patch_metadata(file, title, description, path):
     text = re.sub(r"<title>.*?</title>\s*", "", text, flags=re.S | re.I)
     text = re.sub(r'<meta\b[^>]*(?:name|property)=["\'](?:description|og:title|og:description|og:url|twitter:title|twitter:description)["\'][^>]*>\s*', "", text, flags=re.I)
     text = re.sub(r'<link\b[^>]*rel=["\']canonical["\'][^>]*>\s*', "", text, flags=re.I)
-    tags = "" if "og:site_name" in text else f'<meta property="og:site_name" content="{SITE_NAME}">\n'
-    text = text.replace("</head>", metadata(title, description, path, tags=tags) + "\n</head>", 1)
+    # Every page shares the one social card. Pages carried their own og:image
+    # or none: Places, State, About and Methods posted with no picture, and
+    # Economy with an August card that still paired it with the budget and
+    # gave the old github.io address. Strip whatever a page had and set the
+    # same tags the generated pages use.
+    text = re.sub(r'<meta\b[^>]*(?:name|property)=["\'](?:og:image(?::width|:height)?|og:type|og:site_name|twitter:card|twitter:image)["\'][^>]*>\s*', "", text, flags=re.I)
+    text = text.replace("</head>", metadata(title, description, path, tags=SHARE_TAGS) + "\n</head>", 1)
     # One copyright line across the three sites; the data is CC BY, so nothing is "all rights reserved".
     text = text.replace("&copy; 2026 Hiba Sameen. All rights reserved.", "&copy; 2026 Hiba Sameen")
     # The standalone URLs remain useful to crawlers and to readers without JS.
