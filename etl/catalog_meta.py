@@ -63,6 +63,8 @@ KIND = {
     'school_validation_tehsil': 'places',
     'school_validation_summary': 'places',
     'mouza_tehsil': 'places',
+    'health_facilities_pk': 'places',
+    'healthsites_osm_2019': 'places',
     'crops_district_fy': 'places',
     'diaspora_emigrants_district': 'places',
 

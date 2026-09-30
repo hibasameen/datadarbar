@@ -128,6 +128,11 @@
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;box-sizing:border-box}
 .dot.solid{background:#0c3a1e}
 .dot.hollow{border:1.5px solid #0c3a1e}
+.ov-key.health .dot.solid{background:var(--rust)}
+.ov-key.health .dot.hollow{border-color:var(--rust)}
+.ov-key.health .dot.big{width:11px;height:11px}
+.ov-src{flex-basis:100%;font-size:10.5px}
+.ov-src a{color:inherit}
 :root[data-theme="dark"] .dot.solid{background:#9ed3b0}
 :root[data-theme="dark"] .dot.hollow{border-color:#9ed3b0}
 

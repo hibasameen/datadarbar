@@ -467,7 +467,7 @@ def main():
     vdir = out / 'places'
     vdir.mkdir(parents=True, exist_ok=True)
     for stale in vdir.glob('*.js'):
-        if stale.name not in ('overlay_schools.js', 'provenance.js'):
+        if stale.name not in ('overlay_schools.js', 'overlay_health.js', 'provenance.js'):
             stale.unlink()
 
     groups = [r[0] for r in con.sql(f"""

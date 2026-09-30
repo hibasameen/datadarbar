@@ -96,6 +96,8 @@ DATASET_NAMES = {
     "census_enrolment_5_16_by_sex": "Pakistan district enrolment aged 5–16 by sex, Census 2023",
     "health_access_tehsil": "Pakistan tehsil travel time to the nearest health facility",
     "health_access_district": "Pakistan district travel time to the nearest health facility",
+    "health_facilities_pk": "Pakistan health facilities, public and private, with positions",
+    "healthsites_osm_2019": "Pakistan health amenities mapped on OpenStreetMap",
     "tehsil_nightlights": "Pakistan tehsil night-time lights",
     "tehsil_satellite": "Pakistan tehsil wealth, population and satellite indicators",
     "trade_hs8": "Pakistan imports and exports by HS8 product and country",

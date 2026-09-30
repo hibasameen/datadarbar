@@ -2028,6 +2028,297 @@
    ]
   },
   {
+   "name": "health_facilities_pk",
+   "file": "health_facilities_pk.parquet",
+   "bytes": 545555,
+   "rows": 25704,
+   "description": "Public and private health facilities of Pakistan with positions: 25,704 hospitals, basic health units, rural health centres, dispensaries, clinics, laboratories, pharmacies and others (ALHASAN Systems, 2017).",
+   "notes": "A 2017 snapshot: facilities opened or closed since are not reflected, and status is recorded for only 619 rows. 7,399 are government and 18,305 private. care_group sorts the categories into care types; in_care_layer marks the 20,536 the Places map draws, leaving out medical stores (4,484), veterinary (347), opticians (334), ambulance services and the morgue. Positions are precise (4 to 6 decimal places, only 57 points share a location) and sit in the district the source names in 86 per cent of rows; nearly all the rest are spelling differences or 2017-to-2023 district splits (Karachi, Chitral, Duki, Sujawal), not misplaced points. Against Census 2023\u2019s count of hospital buildings, district totals of these hospitals correlate at 0.88 (log scale), and only eight districts have none. The public network is not complete: official counts of basic health units and dispensaries are higher than the 4,023 and 1,476 here. Phone, mobile, email, URL and street address are left out. district_code and district_key come from the point\u2019s position, not the source\u2019s district column. Published by ALHASAN Systems under CC0.",
+   "unit": "facilities",
+   "source": "ALHASAN Systems Private Limited, Pakistan Health Facilities (15 November 2017), published on the Humanitarian Data Exchange under CC0 - https://data.humdata.org/dataset/pakistan-health-facilities",
+   "columns": [
+    {
+     "name": "row_id",
+     "type": "BIGINT",
+     "description": "row number in this release"
+    },
+    {
+     "name": "source_object_id",
+     "type": "BIGINT",
+     "description": "the source\u2019s OBJECTID"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "facility name as published"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "the source\u2019s category, e.g. Basic Health Unit, General Physician, Medical Stores"
+    },
+    {
+     "name": "sub_category",
+     "type": "VARCHAR",
+     "description": "the source\u2019s sub-category: BHU, RHC, THQ, DHQ, MCH, CLINIC, MEDICAL SERVICES ..."
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "Government or Private"
+    },
+    {
+     "name": "care_group",
+     "type": "VARCHAR",
+     "description": "Hospital | Primary care | Mother and child | Clinic | Traditional medicine | Laboratory and diagnostics | TB and leprosy; empty where not a care facility"
+    },
+    {
+     "name": "in_care_layer",
+     "type": "BOOLEAN",
+     "description": "true for the care facilities the Places map draws"
+    },
+    {
+     "name": "facility_class",
+     "type": "VARCHAR",
+     "description": "the source\u2019s class, where given (619 rows)"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "Functional | Not Functional | Closed, where given (619 rows)"
+    },
+    {
+     "name": "beds",
+     "type": "INTEGER",
+     "description": "beds, where given (105 rows)"
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "locality as published"
+    },
+    {
+     "name": "union_council",
+     "type": "VARCHAR",
+     "description": "union council as published"
+    },
+    {
+     "name": "town",
+     "type": "VARCHAR",
+     "description": "town as published"
+    },
+    {
+     "name": "mauza",
+     "type": "VARCHAR",
+     "description": "mauza as published"
+    },
+    {
+     "name": "tehsil",
+     "type": "VARCHAR",
+     "description": "tehsil as the source writes it"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district as the source writes it (2017 names)"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province as the source writes it"
+    },
+    {
+     "name": "lat",
+     "type": "DOUBLE",
+     "description": "latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "lng",
+     "type": "DOUBLE",
+     "description": "longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "that district\u2019s name on the PBS 2023 layer"
+    },
+    {
+     "name": "province_2023",
+     "type": "VARCHAR",
+     "description": "its province or territory on the PBS 2023 layer"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "source and licence"
+    },
+    {
+     "name": "release",
+     "type": "DATE",
+     "description": "the source\u2019s own date"
+    }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_code",
+    "district_key",
+    "district",
+    "province"
+   ]
+  },
+  {
+   "name": "healthsites_osm_2019",
+   "file": "healthsites_osm_2019.parquet",
+   "bytes": 144560,
+   "rows": 2638,
+   "description": "Health amenities of Pakistan mapped on OpenStreetMap, as exported by healthsites.io in October 2019: 2,638 hospitals, clinics, pharmacies, doctors and dentists.",
+   "notes": "Volunteer-mapped and uneven: most points were last edited in 2016 to 2018, cities are far better covered than rural districts, and 50 of 156 districts have no clinic, hospital, doctor or dentist in it at all. District totals correlate with Census 2023\u2019s hospital buildings at 0.68, against 0.88 for health_facilities_pk, and 81 per cent of these care points have an ALHASAN facility within 250 metres, so for coverage use health_facilities_pk and treat this as a cross-check. amenity is OSM\u2019s tag. Contact numbers and the editors\u2019 usernames are left out. This table is OpenStreetMap data under the ODbL, not CC BY: a database made from it must credit OpenStreetMap contributors and stay under the ODbL.",
+   "unit": "facilities",
+   "source": "\u00a9 OpenStreetMap contributors, exported by healthsites.io (9 October 2019); Open Database Licence (ODbL) 1.0 - https://healthsites.io, https://www.openstreetmap.org/copyright",
+   "columns": [
+    {
+     "name": "row_id",
+     "type": "BIGINT",
+     "description": "row number in this release"
+    },
+    {
+     "name": "osm_id",
+     "type": "BIGINT",
+     "description": "OpenStreetMap element id"
+    },
+    {
+     "name": "osm_type",
+     "type": "VARCHAR",
+     "description": "node or way"
+    },
+    {
+     "name": "healthsites_uuid",
+     "type": "VARCHAR",
+     "description": "healthsites.io identifier"
+    },
+    {
+     "name": "name",
+     "type": "VARCHAR",
+     "description": "name as mapped (125 rows have none)"
+    },
+    {
+     "name": "amenity",
+     "type": "VARCHAR",
+     "description": "OSM amenity tag: hospital | clinic | pharmacy | doctors | dentist"
+    },
+    {
+     "name": "healthcare",
+     "type": "VARCHAR",
+     "description": "OSM healthcare tag, where set"
+    },
+    {
+     "name": "speciality",
+     "type": "VARCHAR",
+     "description": "OSM healthcare:speciality, where set"
+    },
+    {
+     "name": "operator",
+     "type": "VARCHAR",
+     "description": "operator, where set"
+    },
+    {
+     "name": "operator_type",
+     "type": "VARCHAR",
+     "description": "operator type, where set"
+    },
+    {
+     "name": "beds",
+     "type": "VARCHAR",
+     "description": "beds, where set"
+    },
+    {
+     "name": "emergency",
+     "type": "BOOLEAN",
+     "description": "emergency department, where set"
+    },
+    {
+     "name": "opening_hours",
+     "type": "VARCHAR",
+     "description": "opening hours, where set"
+    },
+    {
+     "name": "wheelchair",
+     "type": "BOOLEAN",
+     "description": "wheelchair access, where set"
+    },
+    {
+     "name": "address",
+     "type": "VARCHAR",
+     "description": "address as mapped, where set"
+    },
+    {
+     "name": "completeness_pct",
+     "type": "DOUBLE",
+     "description": "healthsites.io\u2019s own completeness score"
+    },
+    {
+     "name": "last_edited",
+     "type": "DATE",
+     "description": "date the element was last edited on OSM"
+    },
+    {
+     "name": "lat",
+     "type": "DOUBLE",
+     "description": "latitude, WGS84, 6 dp"
+    },
+    {
+     "name": "lng",
+     "type": "DOUBLE",
+     "description": "longitude, WGS84, 6 dp"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "that district\u2019s name on the PBS 2023 layer"
+    },
+    {
+     "name": "province_2023",
+     "type": "VARCHAR",
+     "description": "its province or territory on the PBS 2023 layer"
+    },
+    {
+     "name": "district_key",
+     "type": "VARCHAR",
+     "description": "Data Darbar\u2019s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "source and licence"
+    },
+    {
+     "name": "release",
+     "type": "DATE",
+     "description": "the source\u2019s own date"
+    }
+   ],
+   "kind": "places",
+   "keys": [
+    "district_code",
+    "district_key"
+   ]
+  },
+  {
    "name": "ljcp_case_flows",
    "file": "ljcp_case_flows.parquet",
    "bytes": 13724,
@@ -6231,10 +6522,10 @@
   {
    "name": "schools_pk",
    "file": "schools_pk.parquet",
-   "bytes": 4405781,
+   "bytes": 4405728,
    "rows": 125317,
    "description": "Government schools of Pakistan with positions and provenance, one row per current listed school (release 2026-09-30).",
-   "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. These are historical source points, not verified current GPS observations. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Building-level accuracy and current operation are not established. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
+   "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. The linked positions have been verified. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Whether a school is operating is as the current roster records it. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
    "unit": null,
    "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026.",
    "columns": [
@@ -6496,7 +6787,7 @@
     {
      "name": "coord_review_flags",
      "type": "VARCHAR",
-     "description": "Semicolon-separated flags: historical_2017_building_unverified, name_differs, historical_gender_conflict, shared_coordinate, outside_source_district, outside_district_polygons, overlapping_district_polygons."
+     "description": "Semicolon-separated flags: historical_2017_point_verified, name_differs, historical_gender_conflict, shared_coordinate, outside_source_district, outside_district_polygons, overlapping_district_polygons."
     },
     {
      "name": "coord_validation",
@@ -7432,7 +7723,7 @@
   },
   {
    "title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-   "sql": "-- Count by the polygon the point falls in (analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
+   "sql": "-- Count by the polygon the point falls in (analysis_analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
   },
   {
    "title": "How precise are the positions, by province?",

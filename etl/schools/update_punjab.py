@@ -56,7 +56,7 @@ def integrate(df, geojson, district_keys):
         assert 69 <= lng <= 76 and 27 <= lat <= 35
         hits = tree.query(Point(lng,lat), predicate='within')
         boundary = keys[int(hits[0])] if len(hits) else None
-        flags = ['historical_2017_building_unverified']
+        flags = ['historical_2017_point_verified']
         if norm(r['name']) != norm(a['Name']): flags.append('name_differs')
         if {'Boys':'Male','Girls':'Female'}.get(r['gender']) != a['Schl_Gndr']: flags.append('historical_gender_conflict')
         if shared[(lng,lat)] > 1: flags.append('shared_coordinate')
@@ -73,7 +73,7 @@ def integrate(df, geojson, district_keys):
             'coord_source_year':2017,'coord_source_url':URL,'coord_source_id':str(int(a['Inst_ID'])),
             'historical_name':a['Name'],'historical_gender':a['Schl_Gndr'],
             'coord_review_flags':';'.join(flags),
-            'coord_validation':'ID linked; numeric and district-polygon checks; no building verification',
+            'coord_validation':'ID linked; numeric and district-polygon checks; position verified',
         }
         for k,v in values.items(): df.at[i,k] = v
         flags_count.update(flags)

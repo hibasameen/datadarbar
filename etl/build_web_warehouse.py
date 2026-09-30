@@ -277,7 +277,12 @@ def census_table_titles(repo: Path) -> dict:
 
 
 
-def build(src: Path, district_only: bool = False, schools_only: bool = False) -> None:
+def build(src: Path, district_only: bool = False, schools_only: bool = False,
+          health_only: bool = False) -> None:
+    if health_only:
+        from health_facilities.register_health import update_warehouse as update_health
+        update_health(OUT)
+        return
     if schools_only:
         from schools.update_punjab import update_warehouse
         update_warehouse(OUT)
@@ -911,6 +916,9 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False) ->
         f"SELECT * FROM read_csv_auto('{(ha_dir / 'travel_time_districts_2026-09.csv').as_posix()}') ORDER BY province, district",
         unit="minutes; per cent",
     )
+    # Facility points: ALHASAN (CC0) and OpenStreetMap via healthsites.io (ODbL).
+    from health_facilities.register_health import register_tables as register_health
+    register_health(register)
     EXAMPLES.extend(HEALTH_EXAMPLES)
 
     # ── 3. macro tables lifted from the desktop warehouse ────────────────────
@@ -2452,8 +2460,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
-    ap.add_argument("--only", choices=["district_indicators", "schools_pk"], help="rebuild only the website district panel")
+    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health"],
+                    help="rebuild only one table family into the existing warehouse")
     a = ap.parse_args()
     if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
-    build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk")
+    build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk",
+          health_only=a.only == "health")

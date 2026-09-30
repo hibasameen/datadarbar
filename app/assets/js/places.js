@@ -1535,7 +1535,26 @@
      ring, because a centroid is a claim about an area and not about a building.
      Below the zoom where individual schools mean anything, the layer says how
      many are in view rather than drawing a solid mass of ink. */
+  /* The health facilities use the same machinery with their own data, ink and
+     encoding: government filled, private a ring, hospitals drawn larger. So the
+     layer takes its source and its drawing rules from a config. */
+  var OVERLAY = {
+    schools: {
+      data: function () { return window.DD_SCHOOL_POINTS; },
+      ink: '--green-900', note: 'ovSchoolsN', idle: '123k',
+      file: 'data/places/overlay_schools.js', key: 'ovKey',
+      filled: function (f) { return f >= 100; }, big: function () { return false; },
+    },
+    health: {
+      data: function () { return window.DD_HEALTH_POINTS; },
+      ink: '--rust', note: 'ovHealthN', idle: '21k',
+      file: 'data/places/overlay_health.js', key: 'ovKeyHealth',
+      filled: function (f) { return f >= 10; }, big: function (f) { return f % 10 === 0; },
+    },
+  };
+
   var SchoolLayer = L.Layer.extend({
+    initialize: function (cfg) { this._cfg = cfg || OVERLAY.schools; },
     onAdd: function (m) {
       this._map = m;
       this._c = L.DomUtil.create('canvas', 'leaflet-zoom-animated');
@@ -1550,7 +1569,7 @@
       this._c = null;
     },
     _draw: function () {
-      var pts = window.DD_SCHOOL_POINTS;
+      var cfg = this._cfg, pts = cfg.data();
       if (!pts || !this._c) return;
       var m = this._map, size = m.getSize(), tl = m.containerPointToLayerPoint([0, 0]);
       L.DomUtil.setPosition(this._c, tl);
@@ -1564,7 +1583,7 @@
       var b = m.getBounds(), z = m.getZoom();
       var s = Math.max(1, Math.min(3, (z - 5) * 0.8));
       var ink = getComputedStyle(document.documentElement)
-        .getPropertyValue('--green-900').trim() || '#0c3a1e';
+        .getPropertyValue(cfg.ink).trim() || '#0c3a1e';
       g.strokeStyle = ink; g.fillStyle = ink; g.lineWidth = 1;
 
       var n = pts.n, LAT = pts.lat, LNG = pts.lng, F = pts.f;
@@ -1593,13 +1612,13 @@
         if (seen++ % stride) continue;
         var p = m.latLngToContainerPoint([y, x]);
         g.beginPath();
-        g.arc(p.x, p.y, s, 0, 6.283);
-        if (F[i] >= 100) { g.globalAlpha = .8; g.fill(); }
+        g.arc(p.x, p.y, cfg.big(F[i]) ? s + 1.6 : s, 0, 6.283);
+        if (cfg.filled(F[i])) { g.globalAlpha = .8; g.fill(); }
         else { g.globalAlpha = .55; g.stroke(); }
         drawn++;
       }
       g.globalAlpha = 1;
-      var note = document.getElementById('ovSchoolsN');
+      var note = document.getElementById(cfg.note);
       if (note) {
         // say plainly when the map is showing a sample rather than everything
         note.textContent = drawn < inView
@@ -1609,23 +1628,24 @@
     },
   });
 
-  var schoolLayer = null;
+  var overlays = {};
 
-  function toggleSchools(on) {
-    document.getElementById('ovKey').hidden = !on;
+  function toggleOverlay(name, on) {
+    var cfg = OVERLAY[name];
+    var box = document.getElementById(name === 'schools' ? 'ovSchools' : 'ovHealth');
+    document.getElementById(cfg.key).hidden = !on;
     if (!on) {
-      if (schoolLayer) { map.removeLayer(schoolLayer); schoolLayer = null; }
-      document.getElementById('ovSchoolsN').textContent = '123k';
+      if (overlays[name]) { map.removeLayer(overlays[name]); overlays[name] = null; }
+      document.getElementById(cfg.note).textContent = cfg.idle;
       return;
     }
-    var box = document.getElementById('ovSchools');
     box.disabled = true;
-    document.getElementById('ovSchoolsN').textContent = 'loading\u2026';
-    script('data/places/overlay_schools.js').then(function () {
-      schoolLayer = new SchoolLayer();
-      map.addLayer(schoolLayer);
+    document.getElementById(cfg.note).textContent = 'loading\u2026';
+    script(cfg.file).then(function () {
+      overlays[name] = new SchoolLayer(cfg);
+      map.addLayer(overlays[name]);
     }).catch(function () {
-      document.getElementById('ovSchoolsN').textContent = 'could not load';
+      document.getElementById(cfg.note).textContent = 'could not load';
       box.checked = false;
     }).then(function () { box.disabled = false; });
   }
@@ -1647,7 +1667,10 @@
     if (state.locality !== 'all') q.set('loc', state.locality);
     if (state.sex !== 'all') q.set('sex', state.sex);
     if (state.place) q.set('p', state.place);
-    if (document.getElementById('ovSchools').checked) q.set('ov', 'schools');
+    var ov = ['schools', 'health'].filter(function (k) {
+      return document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked;
+    });
+    if (ov.length) q.set('ov', ov.join(','));
     // Shared without it, a link to "Sindh" opened on the whole country.
     var pv = $('provFilter') && $('provFilter').value;
     if (pv) q.set('prov', pv);
@@ -1694,11 +1717,11 @@
        before the options exist selects nothing and the filter is silently
        lost on every shared link. */
     state.provWanted = q.get('prov') || '';
-    if (q.get('ov') === 'schools') {
-      var box = document.getElementById('ovSchools');
-      box.checked = true;
-      toggleSchools(true);
-    }
+    (q.get('ov') || '').split(',').forEach(function (k) {
+      if (!OVERLAY[k]) return;
+      document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked = true;
+      toggleOverlay(k, true);
+    });
     choose(row);
     return true;
   }
@@ -1760,7 +1783,8 @@
     };
     $('placeSearch').oninput = function () { findPlace(this.value); };
     $('csvBtn').onclick = downloadCsv;
-    $('ovSchools').onchange = function () { toggleSchools(this.checked); writeUrl(); };
+    $('ovSchools').onchange = function () { toggleOverlay('schools', this.checked); writeUrl(); };
+    $('ovHealth').onchange = function () { toggleOverlay('health', this.checked); writeUrl(); };
     $('shareBtn').onclick = share;
 
     /* Bottom right, clear of the measure header and the tools over the map's

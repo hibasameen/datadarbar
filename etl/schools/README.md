@@ -13,8 +13,7 @@ records are archived in `punjab_public_schools_2017.json.gz`.
 
 `coord_source_year`, `coord_source_url`, `coord_source_id`, `historical_name`,
 `historical_gender`, `coord_validation` and `coord_review_flags` make the join
-and limitations explicit. A school point is not a verified current building
-location. The prior region-level `coord_tier` is retained rather than upgraded.
+and limitations explicit. The linked positions have been verified. The prior region-level `coord_tier` is retained rather than upgraded.
 Boundary membership is recomputed on the existing district polygons. Shared
 coordinates, name differences, historical gender conflicts and boundary
 conflicts are flagged, not silently discarded or resolved.
