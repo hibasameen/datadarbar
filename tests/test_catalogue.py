@@ -39,3 +39,13 @@ def test_nothing_links_to_retired_pages():
         if p.name in ('explore.html', 'dictionary.html') and p.parent == APP:
             continue
         assert not retired.search(p.read_text(errors='ignore')), f'{p.relative_to(APP)} links a retired page'
+
+
+def test_every_table_names_its_owner():
+    """About says each catalogue page names the owner of the data. A source
+    line that names a script or another table names nobody."""
+    for t in CAT['tables']:
+        src = (t.get('source') or '').strip()
+        assert src, f'{t["name"]} has no source'
+        assert not re.match(r'(Built by|Derived from)\b', src), \
+            f'{t["name"]} names a process, not an owner: {src[:60]}'

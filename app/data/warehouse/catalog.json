@@ -613,7 +613,7 @@
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured — a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
-   "source": "Derived from census_panel_2017 and census_panel_2023",
+   "source": "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023",
    "columns": [
     {
      "name": "census_year",
@@ -697,7 +697,7 @@
    "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and — where that is not a straight match — why.",
    "notes": "This is the crosswalk turned into a decision. A crosswalk says what happened to a unit; this says what a figure for it means when drawn on the 2023 frame. comparable is the field to read: yes where the figure belongs on the shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on weight for a rate; parent where a unit was split and its figure is drawn across every successor at once rather than divided between them; flagged where the district persists but its territory changed; no where nothing can honestly be drawn. map_key can therefore name several shapes, space-separated. Anything that totals or ranks must count units and not shapes: a parent drawn across its successors is visited once per shape, which turns a national total of 207,684,626 into 213.4 million.",
    "unit": "census units",
-   "source": "Derived from the 2017→2023 crosswalks and PBS’s Digital Census 2023 layer",
+   "source": "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023 and the Digital Census 2023 layer; derived from the 2017→2023 crosswalks",
    "columns": [
     {
      "name": "census_year",
@@ -1269,7 +1269,7 @@
    "description": "Every district-level relationship between Census 2017 and Census 2023, as groups that cover the same ground.",
    "notes": "A group is the smallest set of 2017 and 2023 units covering the same territory, so a merge has two 2017 units and one 2023 unit and a split has one and several. What makes this checkable rather than argued is the balances column: Census 2023 table 1 prints PBS’s own restatement of the 2017 population on 2023 boundaries, and for every group the 2017 units’ published population equals the 2023 units’ restated figure. All 127 groups balance. A group that did not would mean the relation asserted for it is wrong.",
    "unit": "districts and people",
-   "source": "Derived from census_panel_2017 and census_panel_2023; checked against PBS’s own restatement",
+   "source": "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023; checked against PBS’s own restatement",
    "columns": [
     {
      "name": "relation",
@@ -4515,7 +4515,7 @@
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are — place_indicators, or a census panel — which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
-   "source": "Built by etl/places/build_all.py",
+   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.",
    "columns": [
     {
      "name": "level",
@@ -4639,7 +4639,7 @@
    "description": "Every curated district and tehsil indicator, on PBS’s 2023 frame.",
    "notes": "Values only — the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators — dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags — which is why they have no index entry.",
    "unit": "indicator values",
-   "source": "Built by etl/places/build_all.py",
+   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.",
    "columns": [
     {
      "name": "level",
@@ -7128,7 +7128,7 @@
    "description": "The same thing one tier down: 510 groups over the 537 sub-districts of 2017 and the 591 of 2023.",
    "notes": "Pairs are matched by name within a district group, or — where the names give nothing — by a population that is identical and uniquely so within the group; matched_by records which. Dera Bugti’s Phelawagh Tehsil and Qadirabad Sub-Division are one place under two names and only the 28,054 says so. Where several 2017 units became several 2023 ones, the group is marked restructured and the correspondence inside it is left open rather than guessed: the group balances, but which unit became which does not follow from that. The tier word is not a hierarchy — a unit published as a tehsil in 2017 is often a sub-division in 2023 and the same place.",
    "unit": "sub-districts and people",
-   "source": "Derived from census_panel_2017 and census_panel_2023",
+   "source": "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023",
    "columns": [
     {
      "name": "district_group",
