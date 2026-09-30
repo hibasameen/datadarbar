@@ -409,10 +409,18 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
     # A table redistributed from a share-alike source keeps that source's
     # licence: ODbL data cannot be relicensed as CC BY, so the page and its
     # JSON-LD say ODbL and the cite line says so too.
-    odbl = "ODbL" in (t.get("source") or "")
+    # A table that only carries some OpenStreetMap rows among its own is not
+    # relicensed wholesale, but those rows keep their owners' terms and the
+    # cite line has to say so.
+    src = t.get("source") or ""
+    odbl = src.startswith("\u00a9 OpenStreetMap")
+    part_odbl = not odbl and "ODbL" in src
     lic_url = "https://opendatacommons.org/licenses/odbl/1-0/" if odbl else seo.LICENSE
     lic_txt = ("Redistributed under the Open Database Licence (ODbL) 1.0, share-alike; "
                "\u00a9 OpenStreetMap contributors" if odbl
+               else "Derived data CC BY 4.0, except the rows taken from OpenStreetMap, which "
+                    "stay \u00a9 OpenStreetMap contributors under the Open Database Licence "
+                    "(ODbL) 1.0; cite the original source above" if part_odbl
                else "Derived data CC BY 4.0; cite the original source above")
     cite = (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
             f'{E(title)}. {seo.ORIGIN}{path}. Release {E(str(cat["generated"]))}. '

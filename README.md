@@ -136,9 +136,21 @@ The **Trade Atlas** aggregates PBS 8-digit external-trade records (~1.1M rows, 2
 | [Federal Budget](https://www.finance.gov.pk/) (Finance Division) | 2009–2027 | Receipts and current expenditure |
 | Relative Wealth Index (Meta / Data for Good) | 2021 | Tehsil-level relative wealth |
 | WorldPop | 2020 | Gridded population, UN-adjusted |
-| VIIRS night-time lights (NASA/NOAA) | 2020–2026 | Monthly radiance composites |
-| District & tehsil boundaries | — | GeoJSON from PBS / geoBoundaries |
+| VIIRS night-time lights (Earth Observation Group, Colorado School of Mines; NOAA/NASA VIIRS) | 2020–2026 | Monthly radiance composites |
+| District & tehsil boundaries | 2023 | PBS Digital Census 2023 polygons; geoBoundaries ADM3 behind the mouza crosswalk |
+| MICS (provincial and regional bureaus of statistics with UNICEF) | 2016–2021 | District health, nutrition, WASH and child protection |
+| Mouza Census (PBS) | 2020 | Rural facilities and services by tehsil |
+| [SBP EasyData](https://easydata.sbp.org.pk/) (State Bank of Pakistan) | 1947–2026 | Money, prices, exchange rates, external balance |
+| Federal Board of Revenue, via PBS | — | Tax collection by head |
+| Bureau of Emigration & Overseas Employment, via PBS | — | Registered emigrants, remittances |
+| NEPRA State of Industry and performance reports | — | Power plants and distribution companies |
+| Law & Justice Commission of Pakistan | — | Court case flows and judicial strength |
+| PBS, KP Bureau of Statistics, AJK Planning & Development Department, Bureau of Statistics Balochistan, Sindh Police | 2019–2025 | Reported crime (police returns) |
+| NDMA situation reports; GDACS (European Commission JRC) | 2001–2026 | Monsoon impacts; disaster alerts |
+| Provincial school registers, AEPAM/PIE, OpenStreetMap (Islamabad), GeoNames | 2017–2026 | School locations |
+| ALHASAN Systems via HDX (CC0); OpenStreetMap via healthsites.io (ODbL) | 2017, 2019 | Health facility locations |
+| Malaria Atlas Project (Weiss et al. 2020) | 2019–2020 | Travel time to healthcare |
 
 ## License
 
-Source data is from the Pakistan Bureau of Statistics and other public agencies. The **code** is licensed under the [MIT License](LICENSE); **derived data** published in this repo is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Source data is from the Pakistan Bureau of Statistics and other public agencies. The **code** is licensed under the [MIT License](LICENSE); **derived data** published in this repo is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), except OpenStreetMap-derived rows (the `healthsites_osm_2019` table and the Islamabad rows of `schools_pk`), which stay under the [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Each source keeps its own terms; full credits are on the site's [About page](https://darbar.adaad.org/about.html#acknowledgements).

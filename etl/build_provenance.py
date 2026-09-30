@@ -354,11 +354,16 @@ STATE = {
     selection='cases reported by offence, across Pakistan, first year '
               'against last',
     note='Reported offences, not offences committed.'),
- 'crimeAjk': dict(publication='Reported offences by police force',
+ 'crimeAjk': dict(
+    publisher='Planning & Development Department, Azad Jammu & Kashmir',
+    publication='AJK Statistical Year Book, table 17.3 (police returns)',
     selection='Azad Jammu & Kashmir, by district',
     note='AJK\u2019s own series and the PBS series differ for 2022 by 300 cases, '
          'because one is a fiscal year and the other calendar. Both are kept.'),
- 'crimeKp': dict(publication='Reported offences by police force',
+ 'crimeKp': dict(
+    publisher='Khyber Pakhtunkhwa Bureau of Statistics',
+    publication='Development Statistics of Khyber Pakhtunkhwa, district crime '
+                'table (police returns)',
     selection='Khyber Pakhtunkhwa, seven serious offences'),
  'sindhGroup': dict(publication='Sindh Police crime returns',
     selection='cases by category group and year'),
@@ -492,7 +497,10 @@ STATE_PUBLISHER = {
     'nepra_plants': 'NEPRA',
     'nepra_plant_years': 'NEPRA',
     'nepra_disco_annual': 'NEPRA',
-    'climate_events': 'National Disaster Management Authority',
+    # GDACS, not NDMA: the alert register is the European Commission Joint
+    # Research Centre's. Only the monsoon impact returns are NDMA's.
+    'climate_events': 'Global Disaster Alert and Coordination System (GDACS), '
+                      'European Commission Joint Research Centre',
     'climate_impacts': 'National Disaster Management Authority',
 }
 
@@ -595,7 +603,9 @@ def main():
         r = {
             'card': 'state:' + chart, 'title': label,
             'topic': next(r['topic'] for r in idx if r['chart'] == chart),
-            'publisher': STATE_PUBLISHER[t],
+            # A chart drawn from one publisher's rows of a shared table names
+            # that publisher, not the table's default.
+            'publisher': rec.get('publisher') or STATE_PUBLISHER[t],
             'publication': rec['publication'],
             'table': t, 'catalogue': f'datasets/{slug(t)}/',
             'rows': meta.get('rows'), 'unit': meta.get('unit'),
