@@ -1351,7 +1351,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                 "min_value": "smallest value in the series",
                 "max_value": "largest value in the series",
             },
-            "Derived from census_panel_2017 and census_panel_2023",
+            "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023",
             "WITH ix AS (" + " UNION ALL ".join(parts) + "), tt(ty, tid, title) AS (VALUES "
             + _title_values + ") "
             + """SELECT ix.* EXCLUDE (table_id), ix.table_id, tt.title AS table_title
@@ -1387,7 +1387,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "restated_2017": "the 2023 units\u2019 POPULATION 2017, restated by PBS",
              "population_2023": "the 2023 units\u2019 2023 population",
              "balances": "yes where the two 2017 figures agree to the person"},
-            "Derived from census_panel_2017 and census_panel_2023; checked against "
+            "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023; checked against "
             "PBS\u2019s own restatement",
             f"SELECT * FROM read_csv('{(XW / 'district_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
             unit="districts and people",
@@ -1415,7 +1415,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "population_2017": "published 2017 population",
              "restated_2017": "PBS\u2019s POPULATION 2017 for the 2023 units",
              "balances": "yes where the two agree"},
-            "Derived from census_panel_2017 and census_panel_2023",
+            "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023; derived from census_panel_2017 and census_panel_2023",
             f"SELECT * FROM read_csv('{(XW / 'subdistrict_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
             unit="sub-districts and people",
         )
@@ -1445,7 +1445,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "comparable": "yes, combined, parent, flagged, or no",
              "note": "the reason, in words written for a reader",
              "weight": "2017 population, for averaging a rate across combined units"},
-            "Derived from the 2017\u21922023 crosswalks and PBS\u2019s Digital Census 2023 layer",
+            "Pakistan Bureau of Statistics, Population and Housing Censuses 2017 and 2023 and the Digital Census 2023 layer; derived from the 2017\u21922023 crosswalks",
             f"SELECT * FROM read_csv('{(XW / 'census_unit_map.csv').as_posix()}', {CSV_OPTS})",
             unit="census units",
         )
@@ -2080,6 +2080,10 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             unit="identifiers",
         )
 
+    # Who owns the data behind the Places tables. They mix sources, so each
+    # is named here and each indicator row carries its own in `dataset`.
+    PLACES_SOURCE = ("Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.")
+
     PLACE_COLS = {
         "place_indicators": {
             "level": "district or tehsil",
@@ -2140,7 +2144,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         f = OUT / f"{src}.parquet"
         if f.exists():
             register(name, desc, notes, PLACE_COLS.get(name, {}),
-                     "Built by etl/places/build_all.py",
+                     PLACES_SOURCE,
                      f"SELECT * FROM '{f.as_posix()}'",
                      unit="indicator values" if src == "place_indicators" else "indicators")
 
