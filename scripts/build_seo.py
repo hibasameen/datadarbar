@@ -25,7 +25,12 @@ ESC = html.escape
 LICENSE = "https://creativecommons.org/licenses/by/4.0/"
 SITE_NAME = "Data Darbar"
 TAGLINE = "Pakistan in Numbers"
-OG_IMAGE = ORIGIN + "/assets/img/og-preview.png"
+# The share card's address carries a fingerprint of the file. Link previews
+# (X, WhatsApp, Slack, LinkedIn) cache the image by its URL, so a new card at
+# the old address kept showing the old one; a new fingerprint is a new URL.
+import hashlib as _hashlib
+OG_IMAGE = ORIGIN + "/assets/img/og-preview.png?v=" + _hashlib.sha256(
+    (APP / "assets/img/og-preview.png").read_bytes()).hexdigest()[:10]
 ADAAD = "https://adaad.org/"
 # The same @ids adaad.org declares, so the three sites resolve to one publisher and one author.
 PUBLISHER = {"@type": "Organization", "@id": ADAAD + "#publisher", "name": "Adaad", "url": ADAAD}
