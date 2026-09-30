@@ -216,7 +216,11 @@
 
 /* Residence and sex, beside the year. Each group is named because two runs of
    unlabelled buttons read as one control with too many options in it. */
-.facet-ctl{margin-top:4px}
+.facet-ctl{margin-top:4px;display:flex;flex-direction:column;gap:6px;border:0;overflow:visible}
+.facet-grp{display:flex;align-items:stretch;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden}
+.facet-grp .facet-lab{display:flex;align-items:center;padding:0 8px;margin:0;
+  border-right:1px solid var(--line-strong);flex-shrink:0}
+.facet-grp button{flex:1 1 auto;min-width:0;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .facet-lab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
   letter-spacing:.04em;margin-right:4px;align-self:center}
 .facet-ctl .year-one{margin-left:0}
