@@ -20,7 +20,10 @@ const fyEnd=y=>+y.slice(0,4)+1;          // '1951-52' -> 1952
 const fyLbl=n=>`${n-1}-${String(n).padStart(4,'0').slice(2)}`; // 1952 -> '1951-52'
 
 const MACRO={agri:{label:'Agriculture',c:'var(--green-400)'},ind:{label:'Industry',c:'var(--gold-500)'},serv:{label:'Services',c:'var(--green-800)'}};
-const MFG_C='var(--gold-600)';let arcView='stack';
+const MFG_C='var(--gold-600)';
+// The whole economy in its own colour: it was drawn in the text ink, so the
+// growth chart's default view was the one black chart on the site.
+const WHOLE='var(--slate)';let arcView='stack';
 const ERAS=[[1952,1958,'Early years'],[1958,1969,'Ayub industrialisation'],[1969,1977,'War & nationalisation'],[1977,1988,'Zia decade'],[1988,1999,'Adjustment years'],[1999,2008,'Musharraf boom'],[2008,2013,'Energy crisis'],[2013,2020,'CPEC era'],[2020,2022,'COVID'],[2022,2026,'Squeeze & stabilisation']];
 
 const LSM_SHORT={'QIM':'QIM (overall)','Manufacturing of Food':'Food','Manufacturing of Beverages':'Beverages','Manufacturing of Tobacco':'Tobacco','Manufacturing of Textile':'Textiles','Manufacture of wearing apparel':'Wearing apparel','Manufacturing of Leather Products':'Leather','Manufacturing of Wood Products':'Wood','Manufacturing of Paper & Board':'Paper & board','Manufacturing of Coke & Petroleum Products':'Petroleum products','Manufacturing of Chemicals':'Chemicals','Manufacturing of Pharmaceuticals Products':'Pharmaceuticals','Manufacturing of Rubber Products':'Rubber','Manufacturing of Non Metalic Mineral Products':'Cement & minerals','Manufacturing of Iron & Steel Products':'Iron & steel','Manufacture of Fabricated Metal':'Fabricated metal','Manufacture of Computer, electronics and Optical products':'Electronics & optics','Manufacture of Electrical Equipment':'Electrical equipment','Manufacture of Machinery and  Equipment n.e.c':'Machinery','Manufacturing of Automobiles':'Automobiles','Manufacture of other transport  Equipment':'Other transport','Manufacture of furniture':'Furniture','Other manufacturing':'Other (footballs)'};
@@ -247,7 +250,7 @@ function buildArcLegend(){
    .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`);
   return;
  }
- const items=[['all','Whole economy','var(--ink)']].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
+ const items=[['all','Whole economy',WHOLE]].concat(Object.entries(MACRO).map(([k,v])=>[k,v.label,v.c]));
  lg.selectAll('.li').data(items).join('div').attr('class','li')
   .html(d=>`<span class="sw" style="background:${d[2]}"></span>${d[1]}`)
   .on('click',(e,d)=>setSector(d[0]));
@@ -264,7 +267,7 @@ function setSector(k){selSector=k;d3.select('#sectorSelect').property('value',k)
 /* sector focus can be 'all', a macro key, or a sub-sector key */
 function parentOf(sel){return (sel==='all'||MACRO[sel])?sel:(ST.growth_sub_parent[sel]||'all');}
 function growthSeries(sel){
- if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:'var(--ink)'};
+ if(sel==='all')return {pts:ST.growth.gdp,lbl:'whole economy',color:WHOLE};
  if(MACRO[sel])return {pts:ST.growth[sel]||ST.growth.mfg,lbl:MACRO[sel].label.toLowerCase(),color:MACRO[sel].c};
  return {pts:ST.growth_sub[sel]||[],lbl:(ST.growth_sub_labels[sel]||sel).toLowerCase(),color:MACRO[parentOf(sel)].c};
 }
@@ -733,7 +736,7 @@ function drawGrowthLine(elSel,lblSel,tall){
  const decades=d3.groups(pts,p=>Math.floor((p.n-1)/10)*10).map(([dec,arr])=>({x0:Math.max(arr[0].n-0.5,pts[0].n-0.5),x1:lastPt(arr).n+0.5,v:d3.mean(arr,p=>p.value)}));
  svg.selectAll('line.dec').data(decades).join('line').attr('class','dec')
   .attr('x1',d=>x(d.x0)).attr('x2',d=>x(d.x1)).attr('y1',d=>y(d.v)).attr('y2',d=>y(d.v))
-  .attr('stroke','var(--ink)').attr('stroke-width',2.2).attr('opacity',.65)
+  .attr('stroke','var(--gold-800)').attr('stroke-width',2.2).attr('opacity',.85)
   .on('mousemove',(e,d)=>showTip(`Decade average: <b>${d.v.toFixed(1)}%</b>`,e)).on('mouseleave',hideTip);
  // year cursor
  const cx=x(fyEnd(selYear));
@@ -847,10 +850,10 @@ function drawContrib(){
  // headline GDP growth line
  const gdp=gTotal();
  const lx=yr=>x(yr)+x.bandwidth()/2;
- svg.append('path').datum(gdp).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-width',2)
+ svg.append('path').datum(gdp).attr('fill','none').attr('stroke',WHOLE).attr('stroke-width',2)
   .attr('d',d3.line().x(p=>lx(p.year)).y(p=>y(p.value)));
  svg.selectAll('circle.gd').data(gdp).join('circle').attr('class','gd')
-  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill','var(--ink)')
+  .attr('cx',p=>lx(p.year)).attr('cy',p=>y(p.value)).attr('r',2.8).attr('fill',WHOLE)
   .on('mousemove',(e,p)=>showTip(`<b>GDP growth ${p.year}</b><br>${fmtPct(p.value)}`,e)).on('mouseleave',hideTip);
  // selected-year marker
  if(cYear!=null&&x(cYear)!=null)svg.append('rect').attr('x',x(cYear)-2).attr('y',m.t).attr('width',x.bandwidth()+4).attr('height',H-m.t-m.b)
@@ -862,7 +865,7 @@ function drawContrib(){
  lg.selectAll('span.it').data(items,d=>d.key).join('span').attr('class','it')
   .html(d=>`<i style="width:11px;height:11px;border-radius:3px;background:${contribColor(d)}"></i>${d.label}`);
  lg.selectAll('span.gdpk').data([0]).join('span').attr('class','gdpk')
-  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:var(--ink)"></i>GDP growth');
+  .html('<i style="width:14px;height:2.5px;border-radius:2px;background:var(--slate)"></i>GDP growth');
 }
 function drawCYear(){
  const el=d3.select('#cYear');el.selectAll('*').remove();

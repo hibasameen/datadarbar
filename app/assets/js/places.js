@@ -857,7 +857,10 @@
     var card = $('legend'), h = 0;
     if (card && !card.hidden) h = card.offsetHeight;
     var stage = $('placesMap'), H = stage ? stage.offsetHeight : 600;
-    return { paddingTopLeft: L.point(12, 56),
+    // Clear the tools along the top: one row on a desktop, two on a phone.
+    var tools = document.querySelector('.map-tools');
+    var top = tools ? tools.offsetTop + tools.offsetHeight + 10 : 56;
+    return { paddingTopLeft: L.point(12, Math.max(56, top)),
              paddingBottomRight: L.point(12, Math.min(h + 24, H * 0.4)) };
   }
 
