@@ -374,7 +374,7 @@
   .legend{position:static;max-width:none;margin:10px 12px;border-radius:10px}
 }
 
-/* Plain background: the ramp describes shading that is not on the map. */
+/* Street map: the ramp describes shading that is not on the map. */
 .plain-note{display:none;font-size:11.5px;color:var(--muted);margin:4px 0}
 .legend.is-plain .plain-note{display:block}
 .legend.is-plain > :not(.plain-note):not(.pts){display:none}

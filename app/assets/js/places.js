@@ -1874,8 +1874,10 @@
   function setStreet(on) {
     state.street = !!on;
     $('ovStreet').checked = state.street;
+    // The street map is the one background without shading: on, the
+    // districts become outlines over it; off, the shading comes back.
+    setPlain(state.street);
     if (state.street) {
-      if (!state.plain) setPlain(true);
       if (!streetLayer) {
         streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19, crossOrigin: true,
@@ -1897,13 +1899,13 @@
     $('placesMap').classList.toggle('is-street', state.street);
   }
 
+  /* Shading off. No longer a choice of its own - a plain map with nothing
+     under it showed nothing a reader could use - so only the street map
+     sets it. */
   function setPlain(on) {
     state.plain = !!on;
-    // The street map lies under the plain map; shading back on takes it away.
-    if (!state.plain && state.street) setStreet(false);
     // a change of background resets each layer to that background's default
     Object.keys(OVERLAY).forEach(function (k) { OVERLAY[k].open = null; });
-    $('ovPlain').checked = state.plain;
     $('legend').classList.toggle('is-plain', state.plain);
     renderPts();
   }
@@ -1950,7 +1952,7 @@
       return document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked;
     });
     if (ov.length) q.set('ov', ov.join(','));
-    if (state.plain) q.set('bg', state.street ? 'street' : 'plain');
+    if (state.street) q.set('bg', 'street');
     // Shared without it, a link to "Sindh" opened on the whole country.
     var pv = $('provFilter') && $('provFilter').value;
     if (pv) q.set('prov', pv);
@@ -1997,8 +1999,9 @@
        before the options exist selects nothing and the filter is silently
        lost on every shared link. */
     state.provWanted = q.get('prov') || '';
-    if (q.get('bg') === 'plain') setPlain(true);
-    if (q.get('bg') === 'street') { setPlain(true); setStreet(true); }
+    // A link from when the plain background was its own option opens on the
+    // street map, the nearest thing to it now.
+    if (q.get('bg') === 'street' || q.get('bg') === 'plain') setStreet(true);
     (q.get('ov') || '').split(',').forEach(function (k) {
       if (!OVERLAY[k]) return;
       document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked = true;
@@ -2093,10 +2096,6 @@
     $('ovSchools').onchange = function () { toggleOverlay('schools', this.checked); writeUrl(); };
     $('ovHealth').onchange = function () { toggleOverlay('health', this.checked); writeUrl(); };
     wirePts();
-    $('ovPlain').onchange = function () {
-      setPlain(this.checked);
-      if (state.row != null) paint().then(writeUrl); else writeUrl();
-    };
     $('ovStreet').onchange = function () {
       setStreet(this.checked);
       if (state.row != null) paint().then(writeUrl); else writeUrl();
