@@ -416,10 +416,31 @@
    row, and side by side the province menu ran under Share and CSV and pushed
    the page wider than the screen. Search takes the first row; the province
    menu shares the second with Share and CSV. */
-@media(max-width:700px){
+/* Keyed on the map area's own width, not the screen's: between the two side
+   panels on a narrow desktop window the map is phone-narrow too, and the
+   province menu ran under Share there as well. */
+.map-stage{container-type:inline-size;container-name:mapstage}
+@container mapstage (max-width:620px){
   .map-tools{left:12px;right:12px;top:10px;flex-wrap:wrap;gap:8px}
   .map-tools .tool:first-child{flex:1 1 100%}
   .map-tools .tool input{width:100%;min-width:0}
   .map-tools #provFilter{flex:0 1 auto;width:calc(100% - 133px);min-width:0}
   .map-tools-right{right:12px;top:52px}
 }
+/* Browsers without container queries keep the phone rule. */
+@supports not (container-type:inline-size){
+  @media(max-width:700px){
+    .map-tools{left:12px;right:12px;top:10px;flex-wrap:wrap;gap:8px}
+    .map-tools .tool:first-child{flex:1 1 100%}
+    .map-tools .tool input{width:100%;min-width:0}
+    .map-tools #provFilter{flex:0 1 auto;width:calc(100% - 133px);min-width:0}
+    .map-tools-right{right:12px;top:52px}
+  }
+}
+
+/* The street map: OpenStreetMap's credit, which its tiles require, kept small
+   and clear of the zoom buttons. */
+#placesMap .leaflet-control-attribution{font-size:10px;background:rgba(255,255,255,.85);
+  margin:0 4px 4px 0;border-radius:4px;padding:1px 5px}
+#placesMap .leaflet-control-attribution a{color:var(--green-800)}
+#placesMap.is-street .leaflet-tile-pane{filter:saturate(.75)}

@@ -60,6 +60,7 @@
     sex: 'all',
     norm: '',           // '', 'pct' or 'per1000' - how a count is read
     plain: false,       // shading off: a plain map for reading the point layers
+    street: false,      // OpenStreetMap under the plain map, districts as outlines
     values: null,       // map_key -> number
     meta: null,         // map_key -> {relation, note}
     place: null,        // selected map key
@@ -912,7 +913,10 @@
             return { fillOpacity: 0, weight: 0, opacity: 0 };
           }
           if (state.plain) {
-            return Object.assign({ fillColor: PLAIN, fillOpacity: 1 }, edge(g.key(p)));
+            // Over the street map a district is its outline only, so the
+            // streets and towns read through it.
+            return Object.assign({ fillColor: PLAIN, fillOpacity: state.street ? 0 : 1 },
+                                 edge(g.key(p)));
           }
           if (v == null || isNaN(v) || !sc) {
             var why = (state.meta || {})[g.key(p)];
@@ -1861,8 +1865,42 @@
     });
   }
 
+  /* OpenStreetMap under the plain map, for reading schools and facilities
+     against roads and towns. Their tiles need their credit on the map, and
+     street detail needs zooms the district map never offered, so both come
+     and go with the layer. */
+  var streetLayer = null, streetCredit = null;
+  var MAX_ZOOM = 11, STREET_MAX_ZOOM = 17;
+  function setStreet(on) {
+    state.street = !!on;
+    $('ovStreet').checked = state.street;
+    if (state.street) {
+      if (!state.plain) setPlain(true);
+      if (!streetLayer) {
+        streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19, crossOrigin: true,
+          attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright" '
+            + 'target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+        });
+        streetCredit = L.control.attribution({ position: 'bottomright', prefix: false });
+      }
+      streetLayer.addTo(map);
+      streetCredit.addTo(map);
+      streetCredit.addAttribution(streetLayer.getAttribution());
+      map.setMaxZoom(STREET_MAX_ZOOM);
+    } else {
+      if (streetLayer && map.hasLayer(streetLayer)) map.removeLayer(streetLayer);
+      if (streetCredit) streetCredit.remove();
+      if (map.getZoom() > MAX_ZOOM) map.setZoom(MAX_ZOOM);
+      map.setMaxZoom(MAX_ZOOM);
+    }
+    $('placesMap').classList.toggle('is-street', state.street);
+  }
+
   function setPlain(on) {
     state.plain = !!on;
+    // The street map lies under the plain map; shading back on takes it away.
+    if (!state.plain && state.street) setStreet(false);
     // a change of background resets each layer to that background's default
     Object.keys(OVERLAY).forEach(function (k) { OVERLAY[k].open = null; });
     $('ovPlain').checked = state.plain;
@@ -1912,7 +1950,7 @@
       return document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked;
     });
     if (ov.length) q.set('ov', ov.join(','));
-    if (state.plain) q.set('bg', 'plain');
+    if (state.plain) q.set('bg', state.street ? 'street' : 'plain');
     // Shared without it, a link to "Sindh" opened on the whole country.
     var pv = $('provFilter') && $('provFilter').value;
     if (pv) q.set('prov', pv);
@@ -1960,6 +1998,7 @@
        lost on every shared link. */
     state.provWanted = q.get('prov') || '';
     if (q.get('bg') === 'plain') setPlain(true);
+    if (q.get('bg') === 'street') { setPlain(true); setStreet(true); }
     (q.get('ov') || '').split(',').forEach(function (k) {
       if (!OVERLAY[k]) return;
       document.getElementById(k === 'schools' ? 'ovSchools' : 'ovHealth').checked = true;
@@ -2014,7 +2053,7 @@
       // Quarter steps, so a fit lands on the size that fits rather than
       // rounding down to half of it.
       zoomSnap: 0.25, zoomDelta: 0.5,
-      scrollWheelZoom: true, minZoom: 4, maxZoom: 11,
+      scrollWheelZoom: true, minZoom: 4, maxZoom: MAX_ZOOM,
     }).setView([30.2, 69.4], 5);
 
     /* The picker as a sheet on a phone: opened by "Change indicator", closed
@@ -2056,6 +2095,10 @@
     wirePts();
     $('ovPlain').onchange = function () {
       setPlain(this.checked);
+      if (state.row != null) paint().then(writeUrl); else writeUrl();
+    };
+    $('ovStreet').onchange = function () {
+      setStreet(this.checked);
       if (state.row != null) paint().then(writeUrl); else writeUrl();
     };
     $('shareBtn').onclick = share;
