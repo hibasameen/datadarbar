@@ -373,7 +373,11 @@
         lib.hidden = false;
         drawLibrary();
         var box = lib.querySelector('.lib-q');
-        if (box && !st.keepFocus) {
+        // Not on a touch screen: focusing a field there raises the keyboard,
+        // and iOS zooms the page in on it, so the list opened looking wider
+        // than the phone. A tap on the field still focuses it.
+        var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        if (box && !st.keepFocus && !touch) {
           box.focus();
           box.setSelectionRange(box.value.length, box.value.length);
         }

@@ -204,8 +204,8 @@ def page_shell(path, title, description, body, extra, seo):
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/assets/css/shell.css"/>
-<link rel="stylesheet" href="/assets/css/catalogue.css"/>
+<link rel="stylesheet" href="{seo.asset("/assets/css/shell.css")}"/>
+<link rel="stylesheet" href="{seo.asset("/assets/css/catalogue.css")}"/>
 {seo.metadata(f"{title} — {seo.SITE_NAME}", description, path, extra, seo.SHARE_TAGS)}
 </head><body class="cpage">
 <a class="skip" href="#main">Skip to content</a>
@@ -214,11 +214,11 @@ def page_shell(path, title, description, body, extra, seo):
 {body}
 </main>
 {seo._shell.footer(root="/")}
-<script src="/assets/js/export.js"></script>
-<script src="/assets/js/catalogue.js"></script>
-<script src="/assets/js/modals.js"></script>
-<script src="/assets/js/analytics.js"></script>
-<script src="/assets/js/shell.js"></script>
+<script src="{seo.asset("/assets/js/export.js")}"></script>
+<script src="{seo.asset("/assets/js/catalogue.js")}"></script>
+<script src="{seo.asset("/assets/js/modals.js")}"></script>
+<script src="{seo.asset("/assets/js/analytics.js")}"></script>
+<script src="{seo.asset("/assets/js/shell.js")}"></script>
 </body></html>''')
 
 

@@ -1991,7 +1991,10 @@
     var sheet = function (open) {
       $('picker').classList.toggle('open', open);
       $('mhChange').setAttribute('aria-expanded', String(open));
-      if (open) { var f = $('indSearch'); if (f) f.focus(); }
+      // Focus the search on a computer; on a touch screen it raises the
+      // keyboard over the list and iOS zooms the page in on the field.
+      var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      if (open && !touch) { var f = $('indSearch'); if (f) f.focus(); }
       else if (document.activeElement && $('picker').contains(document.activeElement)) {
         $('mhChange').focus();
       }

@@ -151,6 +151,13 @@ def _retired(p: Path) -> bool:
     return 'name="robots" content="noindex"' in head or 'http-equiv="refresh"' in head
 
 
+def asset(rel):
+    """A site asset's address with a fingerprint of its contents. Generated
+    pages linked their CSS and JS bare, so a phone kept a stale stylesheet
+    after a deploy; a changed file is now a new URL."""
+    return rel + "?v=" + _hashlib.sha256((APP / rel.lstrip("/")).read_bytes()).hexdigest()[:8]
+
+
 def norm(value):
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
 
@@ -227,7 +234,7 @@ def page(path, title, description, body, extra=None, heading=None):
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/assets/css/shell.css"/>\n<link rel="stylesheet" href="/assets/css/research.css"/>
+<link rel="stylesheet" href="{asset("/assets/css/shell.css")}"/>\n<link rel="stylesheet" href="{asset("/assets/css/research.css")}"/>
 {metadata(f"{title} — {SITE_NAME}", description, path, extra, SHARE_TAGS)}
 </head><body>
 <a class="skip" href="#main">Skip to content</a>
@@ -237,9 +244,9 @@ def page(path, title, description, body, extra=None, heading=None):
 {body}
 </main>
 {_shell.footer(root="/")}
-<script src="/assets/js/modals.js"></script>
-<script src="/assets/js/analytics.js"></script>
-<script src="/assets/js/shell.js"></script>\n</body></html>''')
+<script src="{asset("/assets/js/modals.js")}"></script>
+<script src="{asset("/assets/js/analytics.js")}"></script>
+<script src="{asset("/assets/js/shell.js")}"></script>\n</body></html>''')
 
 
 def table(headers, rows, caption):

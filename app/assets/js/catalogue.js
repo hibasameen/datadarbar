@@ -133,6 +133,7 @@
 
   if (location.hash === '#fields') {
     q.placeholder = 'Search every field in every table…';
-    q.focus();
+    // not on a touch screen, where it would raise the keyboard on arrival
+    if (!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches)) q.focus();
   }
 })();
