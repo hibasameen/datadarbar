@@ -1323,7 +1323,7 @@
    "description": "Every district-level indicator in Data Darbar, one row per district × indicator × year.",
    "notes": "Long format so heterogeneous sources share one table. Filter `kind = 'indicator'` for the measures themselves; kind='quality' rows carry the sample size and small-n flag for the same prefix, and kind='provenance' rows record borrowed estimates. Survey groups suppress cells with n<30 upstream, so an absent row can mean 'suppressed' as well as 'not collected'. DOUBLE-COUNTING TRAP: where a district was split after Census 2017 (see the *_boundary_change provenance rows) both halves carry the SAME 2017 figure for the combined pre-split area, so summing a 2017 count across all districts overstates the total. Filter those rows out, or sum the 2023 year instead. Census education source corrections dated 2026-09-25 use original PBS Table 15 (2017) and Table 13 (2023); see the website methodology. Missing source counts are unavailable, not zero.",
    "unit": null,
-   "source": "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
+   "source": "PBS Census 2017 & 2023, Economic Census 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25; PDHS 2017-18 (NIPS and ICF); MICS district rounds (Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019, Balochistan 2019-20, Gilgit-Baltistan 2016-17, Azad Jammu & Kashmir 2020-21; the provincial and regional bureaus of statistics and planning departments, with UNICEF)",
    "columns": [
     {
      "name": "district_key",
@@ -2914,7 +2914,7 @@
    "description": "Maps each PBS tehsil to the ADM3 polygon Data Darbar maps it on.",
    "notes": "MANY-TO-ONE by design: PBS enumerates 595 tehsils against the boundary file's 553, because it carries sub-tehsils created after the polygons were drawn. Since every Mouza Census figure is a count of mouzas, summing several PBS tehsils into one polygon is the correct operation — group by tehsil_id and sum before taking any share. match records how each row was resolved: exact_name, variant (same place spelled differently), contained, fuzzy, only_tehsil_in_district, parent (a sub-tehsil folded into the unit it was carved from), and approx (no polygon exists for the area, so it was placed in a neighbour — treat those tehsils' placement as a judgement call). All 48,738 mouzas are assigned. The 10 unresolved rows all have zero mouzas.",
    "unit": null,
-   "source": "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3",
+   "source": "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3 (Runfola et al. 2020, PLoS ONE 15(4); CC BY 4.0)",
    "columns": [
     {
      "name": "tehsil_code",
@@ -4515,7 +4515,7 @@
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are — place_indicators, or a census panel — which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
    "unit": "indicators",
-   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.",
+   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS district rounds (Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019, Balochistan 2019-20, Gilgit-Baltistan 2016-17, Azad Jammu & Kashmir 2020-21; the provincial and regional bureaus of statistics and planning departments, with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; the Earth Observation Group, Colorado School of Mines (VIIRS night-lights); Adaad school layer. The dataset column names each indicator's own source.",
    "columns": [
     {
      "name": "level",
@@ -4639,7 +4639,7 @@
    "description": "Every curated district and tehsil indicator, on PBS’s 2023 frame.",
    "notes": "Values only — the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators — dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags — which is why they have no index entry.",
    "unit": "indicator values",
-   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.",
+   "source": "Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS district rounds (Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019, Balochistan 2019-20, Gilgit-Baltistan 2016-17, Azad Jammu & Kashmir 2020-21; the provincial and regional bureaus of statistics and planning departments, with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; the Earth Observation Group, Colorado School of Mines (VIIRS night-lights); Adaad school layer. The dataset column names each indicator's own source.",
    "columns": [
     {
      "name": "level",
@@ -4705,7 +4705,7 @@
    "description": "Reported offences by province, range and year, 2019 to 2024.",
    "notes": "Nine reporting regions, and the geography is not uniform between them: Khyber Pakhtunkhwa reports 38 places and Azad Jammu & Kashmir 11, while Punjab, Sindh, Balochistan, ICT, Gilgit-Baltistan and the Railways police report one figure each. So a district map of this covers KP and AJK and nothing else. measure says what is counted — mostly reported_offence_count, which is offences reported to police and not crimes committed.",
    "unit": "offences",
-   "source": "Provincial and regional police annual reports",
+   "source": "Police returns as published by the Khyber Pakhtunkhwa Bureau of Statistics (Development Statistics of Khyber Pakhtunkhwa), the Planning & Development Department of Azad Jammu & Kashmir (AJK Statistical Year Book), the Bureau of Statistics, Balochistan (Development Statistics of Balochistan) and the Pakistan Bureau of Statistics (crime by type; Pakistan Statistical Year Book). The source_url column names each row's publication.",
    "columns": [
     {
      "name": "source_family",
@@ -4839,7 +4839,7 @@
    "description": "The same, at district level where a force publishes it.",
    "notes": "Only Khyber Pakhtunkhwa and Azad Jammu & Kashmir publish district figures; everywhere else the province is the finest grain available. Joining this to a district map leaves most of the country empty, which is a fact about police reporting rather than about crime.",
    "unit": "offences",
-   "source": "Provincial and regional police annual reports",
+   "source": "Police returns as published by the Khyber Pakhtunkhwa Bureau of Statistics (Development Statistics of Khyber Pakhtunkhwa) and the Planning & Development Department of Azad Jammu & Kashmir (AJK Statistical Year Book). The source_url column names each row's publication.",
    "columns": [
     {
      "name": "source_family",
@@ -6527,7 +6527,7 @@
    "description": "Government schools of Pakistan with positions and provenance, one row per current listed school (release 2026-09-30).",
    "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. The linked positions have been verified. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Whether a school is operating is as the current roster records it. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
    "unit": null,
-   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026.",
+   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026. The 130 Islamabad rows are © OpenStreetMap contributors (ODbL 1.0); 232 Punjab positions were geocoded against GeoNames (CC BY 4.0) and OpenStreetMap.",
    "columns": [
     {
      "name": "row_id",
@@ -6810,7 +6810,7 @@
   {
    "name": "sindh_crime_annual",
    "file": "sindh_crime_annual.parquet",
-   "bytes": 150828,
+   "bytes": 149650,
    "rows": 2205,
    "description": "Sindh police reported crime by category and year, 2019 to 2025.",
    "notes": "Sindh reports in more detail than the other provinces and separately from the national compilation, so it is kept as its own table rather than folded in. Every row carries the source document and how it was extracted.",
@@ -7192,7 +7192,7 @@
    "description": "Night-time light radiance by tehsil and year (June VIIRS composites).",
    "notes": "One row per tehsil × year. Population-weighted mean radiance. Tehsils flagged nl_lowc in tehsil_satellite sit near the sensor's noise floor — their year-on-year movements are mostly noise.",
    "unit": null,
-   "source": "NOAA VIIRS DNB monthly composites",
+   "source": "VIIRS day/night band monthly composites, Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (Elvidge et al. 2013, 2017), from NOAA/NASA VIIRS",
    "columns": [
     {
      "name": "tehsil_id",
@@ -7228,7 +7228,7 @@
    "description": "Tehsil-level (ADM3) satellite measures: relative wealth, population, night-lights.",
    "notes": "RWI is Meta's Relative Wealth Index — note it USES night-time lights as one of its own inputs, so rwi and the light columns are NOT independent measurements; a correlation between them is partly mechanical. Lights are June VIIRS radiance, population-weighted. The full year-by-year series is in tehsil_nightlights.",
    "unit": null,
-   "source": "Meta/Data for Good RWI, WorldPop 2020, NOAA VIIRS DNB monthly composites",
+   "source": "Meta Data for Good Relative Wealth Index (Chi et al. 2022, PNAS 119(3)), via the Humanitarian Data Exchange; WorldPop 2020 UN-adjusted 1 km population (WorldPop, University of Southampton; CC BY 4.0); VIIRS day/night band monthly composites, Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (Elvidge et al. 2013, 2017), from NOAA/NASA VIIRS",
    "columns": [
     {
      "name": "tehsil_id",

@@ -50,6 +50,8 @@ DEFAULT_SRC = Path(
 # per-group statistics selective enough that a filtered query over trade only has to
 # fetch a few MB when the browser can do HTTP range requests.
 PQ = "(FORMAT PARQUET, COMPRESSION ZSTD, COMPRESSION_LEVEL 12, ROW_GROUP_SIZE 122880)"
+# An absolute path into a local checkout, up to and including the project folder.
+LOCAL_PATH = r'/Users/[^"]*?/Data Darbar/'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -395,7 +397,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "value": "numeric value (units implied by the label)",
             "value_text": "non-numeric value, if any",
         },
-        "PBS Census 2017 & 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25, PDHS 2017-18",
+        "PBS Census 2017 & 2023, Economic Census 2023, PSLM 2019-20, LFS 2020-21/2024-25, HIES 2024-25; PDHS 2017-18 (NIPS and ICF); MICS district rounds (Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019, Balochistan 2019-20, Gilgit-Baltistan 2016-17, Azad Jammu & Kashmir 2020-21; the provincial and regional bureaus of statistics and planning departments, with UNICEF)",
         "SELECT * FROM df_district ORDER BY district_key, dataset, group_key, indicator, year",
     )
     if unknown:
@@ -490,7 +492,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "nl_growth": "% change in radiance, first to last available year",
             "nl_lowc": "1 if radiance is near the noise floor (treat growth as unreliable)",
         },
-        "Meta/Data for Good RWI, WorldPop 2020, NOAA VIIRS DNB monthly composites",
+        "Meta Data for Good Relative Wealth Index (Chi et al. 2022, PNAS 119(3)), via the Humanitarian Data Exchange; WorldPop 2020 UN-adjusted 1 km population (WorldPop, University of Southampton; CC BY 4.0); VIIRS day/night band monthly composites, Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (Elvidge et al. 2013, 2017), from NOAA/NASA VIIRS",
         "SELECT * FROM df_teh ORDER BY prov, dk, name",
     )
 
@@ -502,7 +504,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "movements are mostly noise.",
         {"tehsil_id": "joins to tehsil_satellite.tehsil_id", "year": "calendar year (June composite)",
          "radiance": "nW/cm²/sr, population-weighted mean"},
-        "NOAA VIIRS DNB monthly composites",
+        "VIIRS day/night band monthly composites, Earth Observation Group, Payne Institute for Public Policy, Colorado School of Mines (Elvidge et al. 2013, 2017), from NOAA/NASA VIIRS",
         "SELECT * FROM df_lights ORDER BY tehsil_id, year",
     )
 
@@ -600,7 +602,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "match": "how the row was matched (see notes)",
             "dd_candidates": "boundary-file names considered, where the match failed",
         },
-        "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3",
+        "PBS Mouza Census 2020 frame × geoBoundaries PAK ADM3 (Runfola et al. 2020, PLoS ONE 15(4); CC BY 4.0)",
         f"SELECT * FROM read_csv_auto('{xw_csv}', all_varchar=true) "
         f"ORDER BY province, district, tehsil",
     )
@@ -618,6 +620,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "and Distance Checker with RSU district GIS pins; KP Education Monitoring Authority school locator "
         "and the JSiMS mirror of KP EMIS; Punjab School Information System; GB EMIS; Mirpur and Kotli "
         "exam boards; OpenStreetMap for Islamabad. Compiled for Adaad, September 2026."
+        " The 130 Islamabad rows are \u00a9 OpenStreetMap contributors (ODbL 1.0); 232 Punjab positions were geocoded against GeoNames (CC BY 4.0) and OpenStreetMap."
     )
     SCHOOLS_PORTAL_NOTE = (
         "Every position in this table is either published by a provincial education department "
@@ -1462,8 +1465,18 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         if not f.exists():
             print(f"  {name:<28} skipped (no {rel})")
             return
+        # Provenance columns record where a file sat when it was parsed. That
+        # is an absolute path on the machine that ran the parse, which says
+        # nothing to a reader and publishes a home directory. Keep the part
+        # below the project folder.
+        text = [c[0] for c in con.sql(f"DESCRIBE SELECT * FROM '{f.as_posix()}'").fetchall()
+                if c[1] == "VARCHAR"]
+        leaky = [c for c in text if con.sql(
+            f"SELECT count(*) FROM '{f.as_posix()}' WHERE \"{c}\" LIKE '%/Users/%'").fetchone()[0]]
+        scrub = ("" if not leaky else " REPLACE (" + ", ".join(
+            f"regexp_replace(\"{c}\", '{LOCAL_PATH}', '', 'g') AS \"{c}\"" for c in leaky) + ")")
         register(name, desc, notes, cols, source,
-                 f"SELECT * FROM '{f.as_posix()}'", unit=unit)
+                 f"SELECT *{scrub} FROM '{f.as_posix()}'", unit=unit)
 
     src_table(
         "ljcp_case_flows", "ljcp/annual_provinces.parquet",
@@ -1600,7 +1613,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "geography_level": "province, range, district or national",
          "year": "calendar year", "measure": "what is counted",
          "value": "the count"},
-        "Provincial and regional police annual reports", "offences")
+        "Police returns as published by the Khyber Pakhtunkhwa Bureau of Statistics (Development Statistics of Khyber Pakhtunkhwa), the Planning & Development Department of Azad Jammu & Kashmir (AJK Statistical Year Book), the Bureau of Statistics, Balochistan (Development Statistics of Balochistan) and the Pakistan Bureau of Statistics (crime by type; Pakistan Statistical Year Book). The source_url column names each row's publication.", "offences")
 
     src_table(
         "police_crime_district", "regional_police/district_crime_annual.parquet",
@@ -1613,7 +1626,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "geography_id": "the force\u2019s own identifier",
          "year": "calendar year", "measure": "what is counted",
          "value": "the count"},
-        "Provincial and regional police annual reports", "offences")
+        "Police returns as published by the Khyber Pakhtunkhwa Bureau of Statistics (Development Statistics of Khyber Pakhtunkhwa) and the Planning & Development Department of Azad Jammu & Kashmir (AJK Statistical Year Book). The source_url column names each row's publication.", "offences")
 
     src_table(
         "sindh_crime_annual", "sindh_police/sindh_crime_annual.parquet",
@@ -2082,7 +2095,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
 
     # Who owns the data behind the Places tables. They mix sources, so each
     # is named here and each indicator row carries its own in `dataset`.
-    PLACES_SOURCE = ("Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS (provincial bureaus of statistics with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; NOAA VIIRS; Adaad school layer. The dataset column names each indicator's own source.")
+    PLACES_SOURCE = ("Pakistan Bureau of Statistics (Population Censuses 2017 and 2023, Mouza Census 2020, Economic Census 2023, PSLM, HIES, LFS, agriculture statistics); MICS district rounds (Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019, Balochistan 2019-20, Gilgit-Baltistan 2016-17, Azad Jammu & Kashmir 2020-21; the provincial and regional bureaus of statistics and planning departments, with UNICEF); PDHS 2017-18 (NIPS and ICF); Bureau of Emigration & Overseas Employment; Malaria Atlas Project; WorldPop; Meta Data for Good; the Earth Observation Group, Colorado School of Mines (VIIRS night-lights); Adaad school layer. The dataset column names each indicator's own source.")
 
     PLACE_COLS = {
         "place_indicators": {

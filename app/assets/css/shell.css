@@ -160,3 +160,12 @@ a{color:var(--green-800)}
 .src .src-line{display:block;margin-top:3px}
 .src .src-art{display:block;margin-top:3px;color:var(--rust)}
 .src a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* iOS zooms the whole page in when a field under 16px takes focus, and the
+   zoom stays after the keyboard goes: the page then looks wider than the
+   phone. Every field is 16px on a small screen. !important because pages set
+   their fields' sizes with more specific selectors than this. */
+@media(max-width:860px){
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,textarea{font-size:16px!important}
+}

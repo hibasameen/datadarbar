@@ -204,8 +204,8 @@ def page_shell(path, title, description, body, extra, seo):
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/assets/css/shell.css"/>
-<link rel="stylesheet" href="/assets/css/catalogue.css"/>
+<link rel="stylesheet" href="{seo.asset("/assets/css/shell.css")}"/>
+<link rel="stylesheet" href="{seo.asset("/assets/css/catalogue.css")}"/>
 {seo.metadata(f"{title} — {seo.SITE_NAME}", description, path, extra, seo.SHARE_TAGS)}
 </head><body class="cpage">
 <a class="skip" href="#main">Skip to content</a>
@@ -214,11 +214,11 @@ def page_shell(path, title, description, body, extra, seo):
 {body}
 </main>
 {seo._shell.footer(root="/")}
-<script src="/assets/js/export.js"></script>
-<script src="/assets/js/catalogue.js"></script>
-<script src="/assets/js/modals.js"></script>
-<script src="/assets/js/analytics.js"></script>
-<script src="/assets/js/shell.js"></script>
+<script src="{seo.asset("/assets/js/export.js")}"></script>
+<script src="{seo.asset("/assets/js/catalogue.js")}"></script>
+<script src="{seo.asset("/assets/js/modals.js")}"></script>
+<script src="{seo.asset("/assets/js/analytics.js")}"></script>
+<script src="{seo.asset("/assets/js/shell.js")}"></script>
 </body></html>''')
 
 
@@ -409,10 +409,18 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
     # A table redistributed from a share-alike source keeps that source's
     # licence: ODbL data cannot be relicensed as CC BY, so the page and its
     # JSON-LD say ODbL and the cite line says so too.
-    odbl = "ODbL" in (t.get("source") or "")
+    # A table that only carries some OpenStreetMap rows among its own is not
+    # relicensed wholesale, but those rows keep their owners' terms and the
+    # cite line has to say so.
+    src = t.get("source") or ""
+    odbl = src.startswith("\u00a9 OpenStreetMap")
+    part_odbl = not odbl and "ODbL" in src
     lic_url = "https://opendatacommons.org/licenses/odbl/1-0/" if odbl else seo.LICENSE
     lic_txt = ("Redistributed under the Open Database Licence (ODbL) 1.0, share-alike; "
                "\u00a9 OpenStreetMap contributors" if odbl
+               else "Derived data CC BY 4.0, except the rows taken from OpenStreetMap, which "
+                    "stay \u00a9 OpenStreetMap contributors under the Open Database Licence "
+                    "(ODbL) 1.0; cite the original source above" if part_odbl
                else "Derived data CC BY 4.0; cite the original source above")
     cite = (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
             f'{E(title)}. {seo.ORIGIN}{path}. Release {E(str(cat["generated"]))}. '

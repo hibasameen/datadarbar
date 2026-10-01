@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=e5f97715"/>
-<link rel="stylesheet" href="assets/css/research.css?v=e5f97715"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=0d848a2c"/>
+<link rel="stylesheet" href="assets/css/research.css?v=0d848a2c"/>
 <!-- SEO:START -->
 <title>Methods and Sources — Data Darbar</title>
 <meta name="description" content="What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support.">
@@ -48,10 +48,17 @@
       <li><strong>PSLM district FIES</strong> — district-level food insecurity (moderate or severe) as
         published by PBS on the <a href="https://pslm-sdgs.data.gov.pk/districtlevel" target="_blank"
         rel="noopener">PSLM district dashboard</a>, computed on FAO's FIES methodology.</li>
-      <li><strong>PDHS 2017-18</strong> — Pakistan Demographic and Health Survey microdata, published by the
+      <li><strong>PDHS 2017-18</strong> — Pakistan Demographic and Health Survey microdata, carried out by the
         <a href="https://www.nips.org.pk/" target="_blank" rel="noopener">National Institute of Population
-        Studies (NIPS)</a>: family planning, fertility, maternal &amp; child health, and child nutrition, at
+        Studies (NIPS)</a> with ICF under the DHS Program: family planning, fertility, maternal &amp; child health, and child nutrition, at
         district level. Also fills the AJK &amp; Gilgit-Baltistan districts the census tables omit.</li>
+      <li><strong>MICS</strong> — Multiple Indicator Cluster Surveys, the latest round with district
+        estimates in each province or region: Punjab 2017-18, Sindh 2018-19, Khyber Pakhtunkhwa 2019,
+        Balochistan 2019-20, Gilgit-Baltistan 2016-17 and Azad Jammu &amp; Kashmir 2020-21. Each was
+        carried out by the provincial or regional bureau of statistics or planning department with
+        UNICEF.</li>
+      <li><strong>Economic Census 2023 and Mouza Census 2020</strong> — PBS's establishment counts and
+        rural-facility inventory.</li>
       <li><strong>External Trade Statistics</strong> — 8-digit HS imports and exports by commodity and
         partner country, 2015–2024.</li>
       <li><strong>National Accounts (2015-16 base)</strong> — GDP by sector, real growth and the
@@ -68,9 +75,22 @@
         aggregates and non-performing loans.</li>
       <li><strong>Poverty &amp; satellite</strong> — Alkire–Foster Multidimensional Poverty Index from PSLM
         microdata, plus Meta's Relative Wealth Index, WorldPop population, VIIRS night-lights and the PBS Mouza Census 2020 facility inventory at tehsil level.</li>
+      <li><strong>State institutions</strong> — Federal Board of Revenue collection, Bureau of Emigration
+        &amp; Overseas Employment registrations, NEPRA State of Industry and performance reports, Law and
+        Justice Commission judicial statistics, NDMA monsoon situation reports, Sindh Police crime returns,
+        and police returns as published by PBS, the Khyber Pakhtunkhwa Bureau of Statistics, the AJK
+        Planning &amp; Development Department and the Bureau of Statistics, Balochistan.</li>
+      <li><strong>Schools, health facilities and travel time</strong> — provincial school registers,
+        ALHASAN Systems' 2017 health-facility positions, OpenStreetMap health amenities exported by
+        healthsites.io, and the Malaria Atlas Project's travel-time surfaces.</li>
     </ul>
-    <p>All sources are public publications of the Government of Pakistan and the <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a>, except the
-       Relative Wealth Index (Meta / Data for Good) and VIIRS night-lights (NASA/NOAA).</p>
+    <p>Most sources are public publications of the Government of Pakistan, its provinces and the <a href="https://easydata.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a>. The
+       exceptions are third-party products: the Relative Wealth Index (Meta Data for Good), WorldPop
+       population, VIIRS night-lights (Earth Observation Group, Colorado School of Mines, from NOAA/NASA
+       VIIRS), the Malaria Atlas Project surfaces, OpenStreetMap, the ALHASAN Systems health-facility
+       layer, geoBoundaries, GeoNames and the GDACS disaster alerts. MICS and PDHS are joint products of
+       Pakistani statistical bodies with UNICEF and ICF. Every owner, with its terms, is credited in the
+       <a href="about.html#acknowledgements">acknowledgements</a>.</p>
   
 
 
@@ -195,8 +215,8 @@
     <h3>Health &amp; demographic indicators (PDHS 2017-18)</h3>
     <p>The five health layers — Family Planning, Fertility &amp; Child Survival, Maternal Health, Child
       Immunisation and Child Nutrition — are computed from the <strong>Pakistan Demographic and Health Survey
-      (PDHS) 2017-18</strong> microdata, published by the <a href="https://www.nips.org.pk/" target="_blank"
-      rel="noopener">National Institute of Population Studies (NIPS)</a>, using the survey's sampling weights.
+      (PDHS) 2017-18</strong> microdata (<a href="https://www.nips.org.pk/" target="_blank"
+      rel="noopener">National Institute of Population Studies (NIPS)</a> and ICF), using the survey's sampling weights.
       District estimates are validated against the published national PDHS figures — e.g. contraceptive
       prevalence 33.7% (published 34.2%), modern method 24.7% (25.0%), unmet need 18.4% (17.3%), stunting
       37.2% (37.6%), full immunisation 66.0% (66%).</p>
@@ -228,7 +248,8 @@
     <p><strong>Relative Wealth Index</strong> is Meta's machine-learning estimate on a ~2.4 km grid,
       aggregated to tehsils as a population-weighted mean. <strong>Population</strong> is WorldPop 2020
       (UN-adjusted, 1 km), zonal-summed; it totals 220.7 million, matching the UN estimate.
-      <strong>Night-time lights</strong> are VIIRS DNB June composites for 2020–2026. Two corrections
+      <strong>Night-time lights</strong> are VIIRS DNB June composites for 2020–2026, produced by the
+      Earth Observation Group at the Colorado School of Mines. Two corrections
       matter and are applied: a <strong>1 nW background floor</strong> (over half the raw radiance total
       is diffuse haze from airglow and moonlit snow or sand), and a persistent-<strong>gas-flare</strong>
       mask. Tehsils below one person per km² are flagged and withheld, because over empty terrain the
@@ -384,6 +405,6 @@
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
 </footer>
 <!-- /dd:footer -->
-<script src="assets/js/shell.js?v=e5f97715"></script>
-<script src="assets/js/modals.js?v=e5f97715"></script>
+<script src="assets/js/shell.js?v=0d848a2c"></script>
+<script src="assets/js/modals.js?v=0d848a2c"></script>
 </body></html>

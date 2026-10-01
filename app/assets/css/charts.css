@@ -304,5 +304,5 @@ html[data-page="trade"] .step{min-height:70vh}
 @media(max-width:1000px){
   .eco-side>.eco-nav{display:none}
   .eco-side.open>.eco-nav{display:flex}
-  .topic-bar{top:0;position:relative;margin:-18px -16px 14px;padding:12px 16px}
+  .topic-bar{top:0;position:relative;margin:-18px -12px 14px;padding:12px 12px}
 }

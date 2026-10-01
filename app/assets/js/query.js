@@ -72,7 +72,9 @@
     $('gutter').textContent = out;
     $('gutter').scrollTop = sql.scrollTop;
   }
-  function setSql(s) { sql.value = s; gutter(); sql.focus(); }
+  // On a touch screen, loading a query must not raise the keyboard over it.
+  var TOUCH = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  function setSql(s) { sql.value = s; gutter(); if (!TOUCH) sql.focus(); }
   /* Insert where the cursor is, padding with a space or a comma only where
      the text on either side needs one. */
   function insert(text, list) {

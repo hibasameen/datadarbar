@@ -1014,7 +1014,7 @@
     // not in the way of choosing: they are how a researcher checks the
     // number, not how a reader finds it.
     $('legendSrc').textContent = 'Source: '
-      + String(col('dataset', i) || '').replace(/,? pull of [0-9-]+$/, '')
+      + credited(String(col('dataset', i) || '').replace(/,? pull of [0-9-]+$/, ''))
       + (col('group_label', i) ? ' \u00b7 ' + col('group_label', i) : '')
       + '. Series key: ' + col('group_key', i) + ' / '
       + ((mergedParts(col('indicator', i)) || [{ cell: col('indicator', i) }])[0].cell)
@@ -1953,6 +1953,28 @@
     }
   }
 
+  /* Who owns a series. The dataset label names the survey or the product -
+     "DHS 2017-18", "VIIRS DNB" - which is what a reader looks for but not
+     who to credit, so the owner is said beside it wherever the source is
+     stated: under the legend and in the CSV. */
+  var OWNERS = [
+    [/^DHS /, 'National Institute of Population Studies and ICF'],
+    [/^MICS/, 'provincial and regional bureaus of statistics, with UNICEF'],
+    [/^VIIRS/, 'Earth Observation Group, Colorado School of Mines'],
+    [/^Meta Relative Wealth/, 'Chi et al. 2022'],
+    [/^WorldPop/, 'University of Southampton'],
+    [/^Malaria Atlas/, 'Weiss et al. 2020'],
+    [/Alkire/, 'Data Darbar estimate from Pakistan Bureau of Statistics microdata'],
+    [/^(Population Census|Census 2023|Economic Census|Mouza Census|PSLM|HIES|LFS)/,
+     'Pakistan Bureau of Statistics'],
+  ];
+  function credited(ds) {
+    for (var n = 0; n < OWNERS.length; n++) {
+      if (OWNERS[n][0].test(ds)) return ds + ' (' + OWNERS[n][1] + ')';
+    }
+    return ds;
+  }
+
   /* ── boot ───────────────────────────────────────────────────────────────- */
   function boot() {
     map = L.map('placesMap', {
@@ -1969,7 +1991,10 @@
     var sheet = function (open) {
       $('picker').classList.toggle('open', open);
       $('mhChange').setAttribute('aria-expanded', String(open));
-      if (open) { var f = $('indSearch'); if (f) f.focus(); }
+      // Focus the search on a computer; on a touch screen it raises the
+      // keyboard over the list and iOS zooms the page in on the field.
+      var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      if (open && !touch) { var f = $('indSearch'); if (f) f.focus(); }
       else if (document.activeElement && $('picker').contains(document.activeElement)) {
         $('mhChange').focus();
       }
@@ -2099,7 +2124,7 @@
                  yearLabel() || '', state.locality, state.sex, mode,
                  u.num == null ? '' : u.num, u.den == null ? '' : u.den,
                  unitName, shares,
-                 col('dataset', state.row) || src,
+                 credited(col('dataset', state.row) || src),
                  col('indicator', state.row), quality]);
     });
     var csv = rows.map(function (r) {
