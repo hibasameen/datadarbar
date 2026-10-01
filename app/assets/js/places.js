@@ -259,7 +259,7 @@
              two different faults look identical without it. One unit twice is
              an ambiguous source cell; two units once each is a district that
              merged. The first must not be added up, the second must be. */
-          'SELECT map_key AS k, value AS v, unit AS u,'
+          'SELECT map_key AS k, value AS v, unit AS u, map_weight AS w,'
           + ' map_relation AS rel, map_note AS note FROM census_panel_' + y
           + ' WHERE table_id = ' + q(c[0])
           + '   AND indicator = ' + q(c[1])
@@ -290,7 +290,7 @@
         }
         var f = byFootprint(r, summable());
         return { values: f.values, meta: r.meta, units: r.units,
-                 ambiguous: r.ambiguous, shared: f.uncombinable,
+                 ambiguous: r.ambiguous, shared: f.uncombinable, weighted: f.weighted,
                  invalid: invalid, fpOf: f };
       });
     }
@@ -323,6 +323,11 @@
               if (u.v == null) return;
               var g = fp.of(u.keys[0]);
               into[g] = into[g] === undefined ? u.v : into[g] + u.v;
+              // the rate route needs each unit's weight, and to know if any lacks one
+              if (u.w > 0) {
+                into[g + '\u0000w'] = (into[g + '\u0000w'] || 0) + u.w;
+                into[g + '\u0000vw'] = (into[g + '\u0000vw'] || 0) + u.v * u.w;
+              } else into[g + '\u0000x'] = 1;
               (keysOf[g] = keysOf[g] || {});
               u.keys.forEach(function (k) { keysOf[g][k] = 1; });
               into[g + '\u0000n'] = (into[g + '\u0000n'] || 0) + 1;
@@ -332,13 +337,23 @@
             });
           };
           gather(both[0], g17); gather(both[1], g23);
-          var out = {}, units = [], shared = 0;
+          var out = {}, units = [], shared = 0, weighted = 0;
+          var mean = function (side, g) {
+            return (side[g + '\u0000n'] || 0) > 1
+              ? (side[g + '\u0000x'] ? null : side[g + '\u0000vw'] / side[g + '\u0000w'])
+              : side[g];
+          };
           Object.keys(keysOf).forEach(function (g) {
             var v17 = g17[g], v23 = g23[g];
             if (v17 == null || v23 == null) return;
             var many = (g17[g + '\u0000n'] || 0) > 1 || (g23[g + '\u0000n'] || 0) > 1;
             var keys = Object.keys(keysOf[g]);
-            if (many && !can) { shared += keys.length; return; }
+            if (many && !can) {
+              // a rate on a combined footprint: weighted on both sides, or not at all
+              v17 = mean(g17, g); v23 = mean(g23, g);
+              if (v17 == null || v23 == null) { shared += keys.length; return; }
+              weighted += keys.length;
+            }
             var d = v23 - v17;
             keys.forEach(function (k) { out[k] = d; });
             units.push({ keys: keys, v: d,
@@ -348,7 +363,7 @@
           // undefined .values and the legend silently kept the old scale.
           // A change inherits either year's ambiguity: subtracting a figure
           // we cannot pin down does not pin it down.
-          return { values: out, meta: {}, units: units, shared: shared,
+          return { values: out, meta: {}, units: units, shared: shared, weighted: weighted,
                    invalid: (both[0].invalid || 0) + (both[1].invalid || 0),
                    ambiguous: (both[0].ambiguous || 0) + (both[1].ambiguous || 0) };
         });
@@ -560,7 +575,8 @@
          a key and a value and nothing else, so a district that merged, split
          or was matched only approximately looked exactly like one that did
          not - and the note the warehouse wrote about it reached no one. */
-      byUnit[id] = { keys: keys, v: r.v, u: id, rel: r.rel, note: r.note };
+      byUnit[id] = { keys: keys, v: r.v, u: id, rel: r.rel, note: r.note,
+                     w: r.w == null ? null : Number(r.w) };
       keys.forEach(function (k) {
         out[k] = r.v;
         if ((r.rel && r.rel !== 'exact') || r.note) {
@@ -615,9 +631,12 @@
 
   /* One value per footprint. A count is the sum of the units in it, which is
      the footprint's own figure. A rate is not: two districts' literacy rates
-     do not average into the rate of the pair without their populations, so
-     where a footprint holds more than one unit a rate is withheld rather than
-     guessed, and the strip says how many shapes that covered. */
+     do not average into the rate of the pair without their populations. Every
+     2017 unit now carries its 2017 population (map_weight), so a rate is the
+     units' population-weighted mean - exact for a per-head rate, close for one
+     whose base is a part of the population (literacy is per person aged 10+),
+     and said so in the strip. Without a weight for every unit it is still
+     withheld rather than guessed. */
   function byFootprint(res, summable) {
     var fp = footprints();
     (res.units || []).forEach(function (u) { fp.join(u.keys); });
@@ -628,7 +647,7 @@
       u.keys.forEach(function (k) { groups[g].keys[k] = 1; });
       groups[g].units.push(u);
     });
-    var out = {};
+    var out = {}, weighted = 0;
     Object.keys(groups).forEach(function (g) {
       var grp = groups[g], keys = Object.keys(grp.keys);
       var v;
@@ -636,15 +655,21 @@
         v = grp.units[0].v;                       // one unit: unchanged
       } else if (summable) {
         v = grp.units.reduce(function (a, u) { return a + u.v; }, 0);
+      } else if (grp.units.every(function (u) { return u.w > 0; })) {
+        var sw = 0, svw = 0;
+        grp.units.forEach(function (u) { sw += u.w; svw += u.v * u.w; });
+        v = svw / sw;                             // population-weighted mean
+        weighted += keys.length;
       } else {
-        v = null;                                 // rates cannot be combined
+        v = null;                                 // no weights: not derivable
         shared += keys.length;
       }
       if (v != null) keys.forEach(function (k) { out[k] = v; });
       grp.v = v;
       grp.keyList = keys;
     });
-    return { values: out, groups: groups, fp: fp, uncombinable: shared };
+    return { values: out, groups: groups, fp: fp, uncombinable: shared,
+             weighted: weighted };
   }
 
   /* ── choosing ───────────────────────────────────────────────────────────
@@ -749,6 +774,7 @@
       state.units = r.units || null;
       state.ambiguous = r.ambiguous || 0;
       state.shared = r.shared || 0;
+      state.weighted = r.weighted || 0;
       state.invalid = r.invalid || 0;
       return paint().then(function () {
         renderLegend();
@@ -1295,11 +1321,17 @@
          : '<div class="tot"' + (rangeTitle ? ' title="' + esc(rangeTitle) + '"' : '')
            + '><span class="tot-k">' + esc(caption) + '</span>'
            + '<b>' + esc(figure) + '</b></div>')
+      /* A rate combined across 2017 units is the units' population-weighted
+         mean, not a published figure, and the strip says so. */
+      + (state.weighted
+         ? '<div class="tot tot-note"><span class="tot-k">Combined</span><b>'
+           + state.weighted + ' ' + esc(g.noun) + (state.weighted === 1 ? '' : 's')
+           + ' show a 2017 rate for units that merged or were redrawn, weighted by'
+           + ' each unit\u2019s 2017 population</b></div>'
+         : '')
       /* A hole in the map with nothing said about it reads as missing data.
-         These are shapes whose 2017 footprint held more than one census unit -
-         Bannu and its frontier region, and five like it - and this indicator
-         is a rate, which two units' worth of cannot be combined without their
-         denominators. The figure is not missing; it is not derivable. */
+         Where a footprint's units cannot all be weighted, the figure is not
+         missing; it is not derivable. */
       + (state.shared
          ? '<div class="tot tot-warn"><span class="tot-k">Not shown</span><b>'
            + state.shared + ' ' + esc(g.noun) + (state.shared === 1 ? '' : 's')

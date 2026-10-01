@@ -1062,7 +1062,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                    count(DISTINCT o.series_key) AS series,
                    strftime(min(o.obs_date), '%Y-%m') AS since, strftime(max(o.obs_date), '%Y-%m') AS upto
             FROM '{sbp_obs.as_posix()}' o JOIN '{sbp_cat.as_posix()}' c USING (series_key)
-            WHERE o.value IS NOT NULL GROUP BY 1 ORDER BY subject, series DESC""").fetchall()
+            WHERE o.value IS NOT NULL GROUP BY 1 ORDER BY subject, series DESC, 1""").fetchall()
         for t in tables:
             if t["name"] == "sbp_series_catalog":
                 t["datasets"] = [{"code": r[0], "name": r[1], "subject": r[2], "series": r[3],
@@ -2200,7 +2200,9 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "tables": sorted(tables, key=lambda t: t["name"]),
         "examples": EXAMPLES,
     }
-    (OUT / "catalog.json").write_text(json.dumps(catalog, indent=1))
+    # Written as the committed file is: characters as themselves, not escaped,
+    # so a rebuild's diff shows what changed rather than every dash and arrow.
+    (OUT / "catalog.json").write_text(json.dumps(catalog, indent=1, ensure_ascii=False))
     total = sum(t["bytes"] for t in tables)
     eager = sum(t["bytes"] for t in tables if t["bytes"] < 2_000_000)
     print(f"\ncatalog.json written · {len(tables)} tables · {total/1e6:.1f} MB total "

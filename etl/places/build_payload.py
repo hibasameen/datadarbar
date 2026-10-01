@@ -221,6 +221,21 @@ def main():
     rows = [_fix(r) for r in rows]
     print(f'  {fixed} display labels corrected for PBS spelling slips')
 
+    # ── reviewed exclusions ────────────────────────────────────────────────
+    # Misread cells, not series. In the 2017 extraction Pattan Sub-Division
+    # (Kohistan) carries a column headed only "value" in its age tables 4 and
+    # 5, three numbers with no age band against them. Nothing else in either
+    # table has it. They were invisible while Pattan had no 2023 shape; drawn
+    # as part of its redrawn group they would be a series called "Value". Left
+    # in the warehouse for the source to be re-read, kept off the map. Named
+    # one by one so a new stray still fails the hierarchy check below.
+    STRAYS = {('tehsil', 'census_t4', '4|value|'), ('tehsil', 'census_t5', '5|value|')}
+    _lvl, _gk, _ind = (names.index(n) for n in ('level', 'group_key', 'indicator'))
+    dropped = [r for r in rows if (r[_lvl], r[_gk], r[_ind]) in STRAYS]
+    assert len(dropped) == len(STRAYS), 'a reviewed stray no longer exists; remove it from STRAYS'
+    rows = [r for r in rows if (r[_lvl], r[_gk], r[_ind]) not in STRAYS]
+    print(f'  {len(dropped)} misread cells kept off the map (Pattan, tables 4 and 5)')
+
     # ── the navigation hierarchy ───────────────────────────────────────────
     # Topic / subtopic / family / metric form, joined on the compound source
     # key. The original topic column stays exactly as it was: it keys the map
@@ -312,19 +327,32 @@ def main():
             demoted.append(k)
         return out, seen_at
 
-    resolved, consumed, missing, demoted = {}, set(), [], []
+    resolved, consumed, missing, demoted, inherited = {}, set(), [], [], []
     for i in browsable:
         got, used = resolve(keys[i])
+        if got is None and keys[i].startswith('tehsil\u001f'):
+            # A tehsil series the crosswalk has not seen, because it had no
+            # mappable tehsil until the 2017 redrawn tehsils were drawn as
+            # groups. Where to file a measure does not depend on the level it
+            # is drawn at, so it takes its district twin's place - and only
+            # that: a row with no twin still fails below.
+            twin = 'district' + keys[i][len('tehsil'):]
+            if twin in hier['map']:
+                got, used = list(hier['map'][twin]), []
+                inherited.append(keys[i])
         if got is None:
             missing.append(keys[i])
         else:
             resolved[keys[i]] = got
             consumed.update(used)
+    if inherited:
+        print(f'  {len(inherited)} tehsil rows filed under their district twin, e.g. '
+              f'{inherited[0].split(chr(31))[2][:60]!r}')
     hmap = resolved
     stale = set(hier['map']) - consumed
     assert not missing, (
-        f'{len(missing)} index rows have no place in the hierarchy, e.g. '
-        f'{missing[0]!r}')
+        f'{len(missing)} index rows have no place in the hierarchy: '
+        + '; '.join(repr(m) for m in missing[:10]))
     assert not stale, (
         f'{len(stale)} hierarchy entries match no index row, e.g. '
         f'{sorted(stale)[0]!r}')

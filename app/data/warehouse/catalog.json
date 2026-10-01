@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-09-30",
+ "generated": "2026-10-01",
  "license": "Derived data CC BY 4.0 · code MIT",
  "kinds": [
   {
@@ -346,7 +346,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8201176,
+   "bytes": 8275319,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -608,8 +608,8 @@
   {
    "name": "census_series_index",
    "file": "census_series_index.parquet",
-   "bytes": 161410,
-   "rows": 37971,
+   "bytes": 161521,
+   "rows": 37985,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured — a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
@@ -692,7 +692,7 @@
   {
    "name": "census_unit_map",
    "file": "census_unit_map.parquet",
-   "bytes": 14750,
+   "bytes": 17557,
    "rows": 1398,
    "description": "One row per census unit saying which PBS 2023 shape it is drawn on, and — where that is not a straight match — why.",
    "notes": "This is the crosswalk turned into a decision. A crosswalk says what happened to a unit; this says what a figure for it means when drawn on the 2023 frame. comparable is the field to read: yes where the figure belongs on the shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on weight for a rate; parent where a unit was split and its figure is drawn across every successor at once rather than divided between them; flagged where the district persists but its territory changed; no where nothing can honestly be drawn. map_key can therefore name several shapes, space-separated. Anything that totals or ranks must count units and not shapes: a parent drawn across its successors is visited once per shape, which turns a national total of 207,684,626 into 213.4 million.",
@@ -774,7 +774,7 @@
     {
      "name": "source",
      "type": "VARCHAR",
-     "description": "who recorded it"
+     "description": "who recorded it (gdacs)"
     },
     {
      "name": "source_event_id",
@@ -5332,20 +5332,20 @@
      "upto": "2026-06"
     },
     {
-     "code": "TS_GP_RS_QGDP1516_Q",
-     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
-     "subject": "Real Sector",
-     "series": 8,
-     "since": "2015-09",
-     "upto": "2026-03"
-    },
-    {
      "code": "TS_GP_RLS_POLSALE_M",
      "name": "POL (Energy Products) Sales by Sector",
      "subject": "Real Sector",
      "series": 8,
      "since": "2013-07",
      "upto": "2026-05"
+    },
+    {
+     "code": "TS_GP_RS_QGDP1516_Q",
+     "name": "Quarterly GDP at Constant Basic Prices of 2015-16",
+     "subject": "Real Sector",
+     "series": 8,
+     "since": "2015-09",
+     "upto": "2026-03"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",
@@ -6527,7 +6527,7 @@
    "description": "Government schools of Pakistan with positions and provenance, one row per current listed school (release 2026-09-30).",
    "notes": "Punjab coordinates updated on 30 September 2026: 37,917 of 38,149 current roster schools link by inferred EMIS convention to the 2017 public-school point layer linked by Pakistan Institute of Education. The linked positions have been verified. Current school names, gender, level and roster membership are retained. Read coord_source_year, coord_validation and coord_review_flags. Shared points, name differences, gender conflicts and district-boundary conflicts are flagged. The 232 unmatched current schools retain their previous positions or missing coordinates. Historical schools absent from the current roster are not added. READ coord_method AND coord_precision before using lat/lng: other regions and unmatched Punjab rows still include settlement, cluster, markaz and tehsil approximations. coord_tier retains the original regional grade. in_analysis, analysis_sex and analysis_note describe the frozen September 2026 analysis; analysis_lat, analysis_lng, analysis_district_key_boundary and the other analysis_* provenance fields preserve its positions. The companion distance, coverage and validation tables remain September snapshots and have not been recomputed from this coordinate update. gender is the name designation; in Sindh use gender_official and sex-specific enrolment for mixed-school definitions. district_key is the source district on the 147-district frame; district_key_boundary is recomputed for updated points. Whether a school is operating is as the current roster records it. Compilation CC BY 4.0; underlying source rights remain with their publishers. The ArcGIS item supplies no explicit licence.",
    "unit": null,
-   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026. The 130 Islamabad rows are © OpenStreetMap contributors (ODbL 1.0); 232 Punjab positions were geocoded against GeoNames (CC BY 4.0) and OpenStreetMap.",
+   "source": "Provincial school registers (Balochistan SED, Sindh SELD/RSU, KP KPEMA/JSiMS, Punjab SIS, GB EMIS), AJK exam boards and Islamabad OSM. Punjab coordinates: 2017 AEPAM public-school layer linked by PIE, hosted in public ArcGIS service pak_punjab_edu_inst_aepam; retrieved 28 September 2026.",
    "columns": [
     {
      "name": "row_id",
@@ -7723,7 +7723,7 @@
   },
   {
    "title": "Girls' middle-plus schools by district (Figure 1 of the girls' school piece)",
-   "sql": "-- Count by the polygon the point falls in (analysis_analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
+   "sql": "-- Count by the polygon the point falls in (analysis_district_key_boundary), which is\n-- how the piece counts; district_key is the register's own district.\nSELECT analysis_district_key_boundary AS district,\n       count(*) FILTER (analysis_sex = 'G') AS girls_schools,\n       count(*) FILTER (analysis_sex = 'B') AS boys_schools\nFROM schools_pk\nWHERE in_analysis AND middle_plus AND analysis_district_key_boundary IS NOT NULL\nGROUP BY 1 ORDER BY girls_schools DESC;"
   },
   {
    "title": "How precise are the positions, by province?",
@@ -7789,6 +7789,5 @@
    "title": "A dash means different things in the two panels",
    "sql": "-- 2017 recovered its dashes from the printed PDFs and stored them as a real 0;\n-- 2023 left them NULL. So a count of populated cells is not comparable across\n-- the years, and neither is an average taken over missing rows.\nSELECT 2017 AS census_year, missing, count(*) AS rows_, count(value) AS with_a_value\nFROM census_panel_2017 GROUP BY 1, 2\nUNION ALL\nSELECT 2023, missing, count(*), count(value)\nFROM census_panel_2023 GROUP BY 1, 2\nORDER BY census_year, missing;"
   }
- ],
- "revision": "2026-09-30-punjab-coordinates"
+ ]
 }

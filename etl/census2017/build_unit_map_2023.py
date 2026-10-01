@@ -22,8 +22,15 @@ restatement of the 2017 population on 2023 boundaries:
                     colour across the group states the published figure and
                     claims nothing more. map_key then holds every successor's
                     key, space-separated, and the unit is labelled by its 2017
-                    name. What stays undrawn is the many-to-many case below the
-                    district, where the correspondence itself is unknown.
+                    name.
+  restructured      below the district, several 2017 units were redrawn into
+                    several 2023 ones and no single pair corresponds. The group
+                    does: its 2017 units cover exactly the ground of its 2023
+                    units (the restated 2017 population balances), so each 2017
+                    unit is keyed to the whole group's 2023 shapes. The map joins
+                    them into one footprint - a count is the group's total, a
+                    rate the group's population-weighted mean - drawn across the
+                    group and divided between none of it.
   boundary transfer territory moved between two districts that both still exist.
                     The 2017 figure is drawn, because the district is the same
                     district, and flagged, because its area is not.
@@ -150,7 +157,8 @@ def main():
             continue
         if rel in ('exact', 'renamed'):
             emit(2017, 'district', u17[0], u17[0], dkey.get(u23[0].upper().strip()),
-                 rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23[0])}')
+                 rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23[0])}',
+                 w17.get((u17[0].upper().strip(), u17[0].upper().strip())))
         elif rel == 'merged':
             host = u23[0]
             note = ('2017 figure combines ' +
@@ -167,14 +175,15 @@ def main():
             keys = [dkey.get(x.upper().strip()) for x in sorted(u23)]
             emit(2017, 'district', u17[0], u17[0],
                  ' '.join(k for k in keys if k) if all(keys) else None,
-                 rel, 'parent' if all(keys) else 'no', note)
+                 rel, 'parent' if all(keys) else 'no', note,
+                 w17.get((u17[0].upper().strip(), u17[0].upper().strip())))
         else:                                          # boundary transfer
             note = ('territory moved between ' +
                     ' and '.join(nice(x) for x in sorted(u23)) +
                     ' after 2017, so the two years cover slightly different ground')
             for u in u17:
                 emit(2017, 'district', u, u, dkey.get(u.upper().strip()), rel,
-                     'flagged', note)
+                     'flagged', note, w17.get((u.upper().strip(), u.upper().strip())))
 
     # ── sub-districts ───────────────────────────────────────────────────────
     for r in csv.DictReader(open(xw / 'subdistrict_crosswalk_2017_2023.csv')):
@@ -200,9 +209,27 @@ def main():
                         'shown across all of them, not divided between them')
                 emit(2017, 'tehsil', d[0] if len(d) == 1 else '', a17[0],
                      ' '.join(k for k in ks if k) if all(ks) else None,
-                     rel, 'parent' if all(ks) else 'no', note)
+                     rel, 'parent' if all(ks) else 'no', note,
+                     w17.get((d[0].upper().strip(), a17[0].upper().strip())) if len(d) == 1 else None)
                 continue
-            note = ('the units in ' + nice(r['district_group']) + ' were redrawn after '
+            # Many to many. No 2017 unit has a 2023 counterpart, but the group
+            # has: key every 2017 unit to all of the group's 2023 shapes, and
+            # the map joins them into one footprint.
+            ks = []
+            for x in a23:
+                cand = [d for d in home23.get(x.upper().strip(), [])
+                        if d in r['district_group'].split(' + ')
+                        or len(home23.get(x.upper().strip(), [])) == 1]
+                ks.append(skey.get((cand[0].upper().strip(), x.upper().strip()))
+                          if len(cand) == 1 else None)
+            grouped = all(ks)
+            note = ('the tehsils in ' + nice(r['district_group']) + ' were redrawn after '
+                    '2017. Together, 2017\u2019s ' + ', '.join(nice(x) for x in sorted(a17))
+                    + ' cover the same ground as 2023\u2019s '
+                    + ', '.join(nice(x) for x in sorted(a23))
+                    + ', so the 2017 figure is for the group and is shown across all of '
+                    'it, not divided between its tehsils' if grouped else
+                    'the units in ' + nice(r['district_group']) + ' were redrawn after '
                     '2017; which 2023 tehsil corresponds to which 2017 one is not '
                     'established, so no 2017 value is drawn')
             for u in a17:
@@ -210,13 +237,17 @@ def main():
                 # this unit in, and only when that is unambiguous.
                 cand = [d for d in home.get(u.upper().strip(), [])
                         if d in r['district_group'].split(' + ')]
-                emit(2017, 'tehsil', cand[0] if len(cand) == 1 else '', u,
-                     None, rel, 'no', note)
+                dd = cand[0] if len(cand) == 1 else ''
+                emit(2017, 'tehsil', dd, u,
+                     ' '.join(ks) if grouped else None, rel,
+                     'group' if grouped else 'no', note,
+                     w17.get((dd.upper().strip(), u.upper().strip())) if dd else None)
             continue
         d17, u17 = r['district_2017'], r['units_2017']
         d23, u23 = r['district_2023'], r['units_2023']
         emit(2017, 'tehsil', d17, u17, skey.get((d23.upper().strip(), u23.upper().strip())),
-             rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23)}')
+             rel, 'yes', '' if rel == 'exact' else f'known in 2023 as {nice(u23)}',
+             w17.get((d17.upper().strip(), u17.upper().strip())))
 
     for (d, u), k in sorted(skey.items()):
         emit(2023, 'tehsil', d, u, k, 'exact', 'yes', '')

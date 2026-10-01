@@ -138,8 +138,11 @@ different things.
 
 **Sub-districts: 537 → 591**, in 510 groups — 393 exact, 78 renamed,
 39 restructured. Of the 39, **18 are clean one-to-many splits** whose parent
-can be drawn across its successors; the other 21 are many-to-many, where the
-correspondence inside the group does not exist to be drawn.
+can be drawn across its successors; the other 21 are many-to-many, where no
+single pair corresponds but the group does (it balances against the restated
+2017 population), so the group's figure is drawn across all its 2023 tehsils
+and a rate is weighted on 2017 population. Every 2017 unit now reaches the 2023
+map: 591 of 591 tehsils.
 
 **Outside the census frame**, going from a 2015 boundary set to PBS 2023 adds
 more: Hunza Nagar became Hunza and Nagar, Skardu became Skardu, Kharmang and

@@ -154,7 +154,7 @@ warehouse joins it so the app never has to infer them.
 | merged | the units added, or averaged on 2017 population for a rate | 12 districts on 6 shapes |
 | split | the parent's figure across every successor at once | 6 districts on 13 shapes · 18 sub-districts on 47 |
 | boundary transfer | the figure, flagged: same district, changed territory | 4 districts |
-| restructured | nothing | 47 sub-districts |
+| restructured | the group's figure across all of its 2023 tehsils; a rate weighted on 2017 population | 47 sub-districts on 73 shapes |
 
 Two of these deserve their reasoning written down.
 
@@ -171,9 +171,20 @@ the map has to count units, not shapes. The app carries a `_unit` key for this.
 Getting it wrong is not subtle: the 2017 district layer totalled 213.4M people
 against a published 207,684,626 until it did.
 
-**Many-to-many restructuring is left undrawn.** Where several 2017 units became
-several 2023 ones, the group balances but the correspondence inside it does not
-exist to be drawn. 47 sub-district units, and the note says so by name.
+**Many-to-many restructuring is drawn as a group** (since 1 October 2026; it
+was left blank before). Where several 2017 units became several 2023 ones, no
+single pair corresponds, but the group does: its 2017 units cover exactly the
+ground of its 2023 units, which the restated 2017 population proves. Each 2017
+unit is keyed to all of the group's 2023 shapes, and the app joins them into one
+footprint - a count is the group's total, a rate the group's
+population-weighted mean - drawn across the group and divided between none of
+it. 47 sub-district units on 73 shapes, and the note names both sides.
+
+**Rates across combined units are weighted.** Every 2017 unit carries its 2017
+population as `map_weight` (both tiers sum to 207,684,626), and a rate on a
+footprint of several units is their population-weighted mean. That is exact for
+a per-head rate and close for one whose base is part of the population; the map
+says which shapes show a combined rate.
 
 Every 2017 district figure placed this way sums to **207,684,626** — the
 published 2017 total to the person — so the frame loses nobody.
@@ -182,7 +193,7 @@ published 2017 total to the person — so the frame loses nobody.
 
 | | before | after |
 |---|---|---|
-| 2017 sub-district units drawable | 0 | 489 on 518 shapes |
+| 2017 sub-district units drawable | 0 | 489 on 518 shapes; all 537 on all 591 since the groups were drawn |
 | 2017 district shapes | 123 | 136 |
 | 2023 district shapes | 128 | 136 |
 | mappable series in the index | 34,008 | 37,971 |
