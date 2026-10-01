@@ -207,6 +207,8 @@
    absent total with no explanation reads as a page that failed to load. */
 .tot-warn .tot-k{color:var(--sienna,#8a5a3b)}
 .tot-warn b{color:var(--sienna,#8a5a3b);font-weight:700}
+.tot-note .tot-k{color:var(--muted)}
+.tot-note b{color:var(--body);font-weight:600}
 
 /* The denominator behind a published percentage, where the source's own is
    not the obvious one. Set apart from the coverage line above it because it
