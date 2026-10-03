@@ -42,3 +42,29 @@ def test_weights_sum_to_the_published_2017_total():
         total = sum(float(r['weight']) for r in rows(2017, tier) if r['weight'])
         assert round(total) == PUBLISHED_2017, f'{tier} weights sum to {total:,.0f}'
         assert all(r['weight'] for r in rows(2017, tier)), f'a 2017 {tier} has no weight'
+
+
+# A district whose workbook spelled a heading differently from the other 134
+# lands in a series of its own and is blank on every map of the real one. The
+# 3 October 2026 sweep folded 47 such district tables back; these are the ones
+# a reader is most likely to open, each checked on the published panel.
+REFOLDED = [
+    ('11', 'HARIPUR DISTRICT', 'POPULATION BY MOTHER TONGUE / HINDKO', 'HINDKO'),
+    ('22', 'LAHORE DISTRICT', '15 -- 24', 'LITERATE ( 10 YEARS & ABOVE )'),
+    ('22', 'KOHISTAN DISTRICT', '15 -- 24', 'WORKED'),
+    ('28', 'ZHOB DISTRICT', 'HOUSEHOLD BY NUMBER OF PERSONS / 5 PERSONS', '5 PERSONS'),
+    ('6', 'KOHISTAN DISTRICT', '15 - 19', 'MARRIED'),
+    ('1', 'KOHISTAN DISTRICT', 'POPULATION - 2017 / SEX RATIO', 'SEX RATIO'),
+    ('38', 'TORGHAR DISTRICT', 'KITCHEN / NONE', 'TOTAL'),
+    ('34', 'UMER KOT DISTRICT', 'OUTER WALLS / UNBAKED BRICKS / MUD', 'TOTAL'),
+]
+
+
+def test_misspelt_2017_headings_rejoin_their_series():
+    import duckdb
+    panel = (ROOT / 'app' / 'data' / 'warehouse' / 'census_panel_2017.parquet').as_posix()
+    lost = [r for r in REFOLDED if not duckdb.execute(
+        f"SELECT count(*) FROM '{panel}' WHERE table_id=? AND unit=? AND indicator=?"
+        " AND col_label=? AND locality='all' AND sex='all' AND value IS NOT NULL",
+        list(r)).fetchone()[0]]
+    assert not lost, f'{len(lost)} district tables split off again, e.g. {lost[0]}'

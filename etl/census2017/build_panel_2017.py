@@ -171,7 +171,8 @@ def main():
              coalesce(m.loc, r.locality)                   AS locality,
              r.sex,
              coalesce(im.canon, r.indicator)                AS indicator,
-             coalesce(lm.canon, r.col_label)               AS col_label,
+             -- '' is an alias's way of saying the column has no label
+             nullif(coalesce(lm.canon, r.col_label), '')    AS col_label,
              TRY_CAST(r.value AS DOUBLE)                   AS value,
              r.missing = 'True'                            AS missing,
              r.layout, r.src_file, r.src_row, r.src_col

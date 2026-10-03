@@ -96,6 +96,41 @@ LABEL_ALIAS = {
     ('7', 'TOTAL POPULATION'): 'TOTAL POPULATION',                  # unchanged; listed
                                                                     # so the table is
                                                                     # complete
+
+    # Found on 3 October 2026 by matching each minority label to the label the
+    # other workbooks print at the SAME source column for the SAME row - the
+    # position, not the wording, is the evidence. None of these ever shares a
+    # workbook with its target, so no two columns are merged. Each was leaving
+    # the districts that used it blank on the 2017 map.
+    #
+    # The literacy column of table 22 inherits the NON-MUSLIM of the merged
+    # religion header beside it in 25 workbooks (Lahore, Gujranwala, Korangi
+    # ...): column 9 in every file, LITERATE ( 10 YEARS & ABOVE ) in the rest.
+    ('22', 'LITERATE ( 10 YEARS & ABOVE ) / NON-MUSLIM'): 'LITERATE ( 10 YEARS & ABOVE )',
+    ('22', 'WORKED (INCLUDING UNPAID FAMILY HELPER)'): 'WORKED',     # Kohistan, Sanghar
+    ('16', 'WORKED'): 'WORKED (INCLUDED UN PAID FAMILY WORKER)',    # 1 file; PBS's own
+                                                                    # majority wording
+    ('3', 'POPULATION'): 'POPULATION - 2017',                       # 4 files
+    ('27', 'POPULATION'): 'POPULATION - 2017',                      # 1 file
+    ('28', 'TOTAL NUMBER OF HOUSEHOLDS'): 'TOTAL',                  # Kohistan
+    ('9', 'TOTAL POPULATION'): 'TOTAL',                             # Kohistan
+    ('30', '9 AND MORE'): '9',                                      # 1 file
+    # Kohistan's table 6 has no header text at all, only column numbers.
+    ('6', '2'): 'TOTAL POPULATION',
+    ('6', '3'): 'NEVER MARRIED',
+    ('6', '4'): 'MARRIED',
+    ('6', '5'): 'WIDOWED',
+    ('6', '6'): 'DIVORCED',
+    # A figure read as a header: one workbook's first count landed in the
+    # header row of the 11-50 years column.
+    ('34', '18568'): '11-50',
+    ('36', '18568'): '11-50',
+    ('38', '18568'): '11-50',
+    # Zhob and Ziarat write PERSON for PERSONS throughout table 28.
+    **{('28', f'{n} PERSON'): f'{n} PERSONS' for n in range(2, 10)},
+    # Table 31's all-sexes column has no label in 135 workbooks; in 38 its
+    # header ALL SEXS was read in as the label. '' means no label, as in the rest.
+    ('31', 'ALL SEXS'): '',
 }
 
 
@@ -132,6 +167,37 @@ INDICATOR_ALIAS = {
     ('35', 'HOUSING UNITS BY TENURE / OWNED'): 'HOUSING UNITS BY OWNERSHIP / OWNED',
     ('35', 'HOUSING UNITS BY TENURE / RENTED'): 'HOUSING UNITS BY OWNERSHIP / RENTED',
     ('35', 'HOUSING UNITS BY TENURE / RENT-FREE'): 'HOUSING UNITS BY OWNERSHIP / RENT-FREE',
+
+    # Found on 3 October 2026: rows whose parent heading was lost, in one or two
+    # workbooks each, so the district dropped out of every series in the table.
+    # Each target is absent from the workbook concerned and the two never
+    # appear together, and the rows sit in the same order as everyone else's.
+    #
+    # Kohistan's table 1 qualifies two of its headings.
+    ('1', 'POPULATION - 2017 / SEX RATIO ALL AGES'): 'POPULATION - 2017 / SEX RATIO',
+    ('1', 'POPULATION - 2017 / AVERAGE H. HOLD SIZE (REGULAR HOUSEHOLDS)'):
+        'POPULATION - 2017 / AVERAGE HOUSEHOLD SIZE',
+    # Haripur's table 11 drops POPULATION BY MOTHER TONGUE from every language.
+    **{('11', lang): f'POPULATION BY MOTHER TONGUE / {lang}'
+       for lang in ('BALOCHI', 'BRAHVI', 'HINDKO', 'KASHMIRI', 'OTHERS', 'PUNJABI',
+                    'PUSHTO', 'SARAIKI', 'SINDHI', 'URDU')},
+    ('13', 'LITERACY RATIO'): 'LITERATE / LITERACY RATIO',          # Kohistan, Sanghar
+    ('3', 'POPULATION'): 'POPULATION - 2017',                       # the total row, in
+                                                                    # 5 workbooks
+    ('9', 'TOTAL POPULATION'): 'TOTAL',                             # Kohistan
+    ('34', 'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / 18568'):
+        'HOUSING UNITS BY PERIOD OF CONSTRUCTION (IN YEAR ) / 11-50',  # see LABEL_ALIAS
+    **{('28', f'HOUSEHOLD BY NUMBER OF PERSONS / {n} PERSON'):
+       f'HOUSEHOLD BY NUMBER OF PERSONS / {n} PERSONS' for n in range(2, 10)},
+    # Umer Kot repeats the first wall material where OUTER WALLS should be.
+    **{('34', f'BAKED BRICKS / BLOCKS / STONES / {m}'): f'OUTER WALLS / {m}'
+       for m in ('BAKED BRICKS / BLOCKS / STONES', 'UNBAKED BRICKS / MUD',
+                 'WOOD / BAMBOO', 'OTHERS')},
+    # Torghar's table 38 drops KITCHEN from its first three rows.
+    ('38', 'SEPARATE'): 'KITCHEN / SEPARATE',
+    ('38', 'SHARED'): 'KITCHEN / SHARED',
+    ('38', 'NONE'): 'KITCHEN / NONE',
+    ('31', 'ALL SEXS'): 'value',                                    # see LABEL_ALIAS
 }
 
 
