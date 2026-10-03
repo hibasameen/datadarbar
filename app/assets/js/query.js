@@ -121,11 +121,12 @@
         var isOpen = open[t.name] || fieldHit;
         part += '<div class="qt' + (isOpen ? ' open' : '') + '" data-t="' + esc(t.name) + '">'
           + '<div class="qt-head"><button class="qt-tog" type="button" aria-label="Show the fields of ' + esc(t.name) + '" aria-expanded="' + (isOpen ? 'true' : 'false') + '">' + ICON_T + '</button>'
-          + '<button class="qt-name" type="button" title="Insert ' + esc(t.name) + ' at the cursor">' + mark(t.name, term) + '</button>'
+          + '<button class="qt-name" type="button" title="Show the fields of ' + esc(t.name) + '">' + mark(t.name, term) + '</button>'
           + '<span class="qt-n">' + num(t.rows) + '</span>'
           + '<span class="qt-dot' + (wh.registered[t.name] ? ' on' : '') + '" title="' + (wh.registered[t.name] ? 'loaded' : (t.bytes < 2e6 ? 'loads at start' : 'loads when a query names it · ' + mb(t.bytes))) + '"></span></div>'
           + '<div class="qt-body"><p class="qt-desc">' + esc(t.description) + '</p>'
           + '<div class="qt-acts"><button class="qmini" type="button" data-act="starter">SELECT *</button>'
+          + '<button class="qmini" type="button" data-act="insert" title="Insert ' + esc(t.name) + ' at the cursor">Insert name</button>'
           + '<button class="qmini" type="button" data-act="extract" title="Download every row as CSV">Whole table · ' + mb(t.bytes) + '</button>'
           + '<a class="qmini" href="datasets/' + esc(t.name.replace(/_/g, '-')) + '/" target="_blank" rel="noopener">Catalogue ↗</a></div>'
           + '<ul class="qcols">' + cols.map(function (c) {
@@ -143,11 +144,16 @@
     $('pane-tables').addEventListener('click', function (e) {
       var box = e.target.closest('.qt'); if (!box) return;
       var t = CAT.tables.filter(function (x) { return x.name === box.dataset.t; })[0];
-      if (e.target.closest('.qt-tog')) {
+      /* The name opens the table, like the arrow beside it. It used to
+         insert the name at the cursor, so a reader browsing the list -
+         tapping geography_keys, then mouza_crosswalk - was silently writing
+         "LIMIT 10; geography_keys mouza_crosswalk" into the query and got a
+         parser error on the next run. Inserting is now its own button. */
+      if (e.target.closest('.qt-tog') || e.target.closest('.qt-name')) {
         open[t.name] = !box.classList.contains('open');
         box.classList.toggle('open', open[t.name]);
-        e.target.closest('.qt-tog').setAttribute('aria-expanded', open[t.name] ? 'true' : 'false');
-      } else if (e.target.closest('.qt-name')) {
+        box.querySelector('.qt-tog').setAttribute('aria-expanded', open[t.name] ? 'true' : 'false');
+      } else if (e.target.closest('[data-act="insert"]')) {
         insert(t.name, false);
       } else if (e.target.closest('.qcol')) {
         insert(e.target.closest('.qcol').dataset.col, true);
