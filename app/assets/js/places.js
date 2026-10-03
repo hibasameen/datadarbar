@@ -323,6 +323,7 @@
             (yr.units || []).forEach(function (u) {
               if (u.v == null) return;
               var g = fp.of(u.keys[0]);
+              if (u.conflict) { into[g + '\u0000c'] = 1; return; }
               into[g] = into[g] === undefined ? u.v : into[g] + u.v;
               // the rate route needs each unit's weight, and to know if any lacks one
               if (u.w > 0) {
@@ -347,6 +348,7 @@
           Object.keys(keysOf).forEach(function (g) {
             var v17 = g17[g], v23 = g23[g];
             if (v17 == null || v23 == null) return;
+            if (g17[g + '\u0000c'] || g23[g + '\u0000c']) return;
             var many = (g17[g + '\u0000n'] || 0) > 1 || (g23[g + '\u0000n'] || 0) > 1;
             var keys = Object.keys(keysOf[g]);
             if (many && !can) {
@@ -568,6 +570,9 @@
         if (byUnit[id].v !== r.v && !conflict[id]) {
           conflict[id] = 1;
           ambiguous += 1;
+          // Neither figure is drawn: the first to arrive is not the
+          // published one any more than the second.
+          byUnit[id].conflict = true;
         }
         return;
       }
@@ -652,7 +657,9 @@
     Object.keys(groups).forEach(function (g) {
       var grp = groups[g], keys = Object.keys(grp.keys);
       var v;
-      if (grp.units.length === 1) {
+      if (grp.units.some(function (u) { return u.conflict; })) {
+        v = null;                                 // two figures for one place
+      } else if (grp.units.length === 1) {
         v = grp.units[0].v;                       // one unit: unchanged
       } else if (summable) {
         v = grp.units.reduce(function (a, u) { return a + u.v; }, 0);
@@ -1238,10 +1245,10 @@
     if (state.ambiguous) {
       box.hidden = false;
       box.innerHTML =
-        '<div class="tot tot-warn"><span class="tot-k">Not totalled or ranked'
+        '<div class="tot tot-warn"><span class="tot-k">Not totalled'
         + '</span><b>' + state.ambiguous + ' ' + esc(g.noun)
-        + (state.ambiguous === 1 ? '' : 's') + ' with conflicting source rows</b>'
-        + '</div>';
+        + (state.ambiguous === 1 ? '' : 's') + ' left blank: the source prints '
+        + 'two different figures</b></div>';
       renderHead();
       return;
     }
@@ -1409,11 +1416,30 @@
   function renderRanks() {
     var box = $('ranks');
     if (state.row == null || !state.values) { box.hidden = true; return; }
-    // Ranking places by a figure the source states more than one way orders
-    // them by which row arrived last. Withheld with the total.
-    if (state.ambiguous) { box.hidden = true; return; }
+    // A place the source states two ways is blank rather than ranked by
+    // whichever row arrived last; the rest of the map still ranks.
     var dp = dpFor(state.row);
     var g = GEO[state.level], prov = $('provFilter').value;
+    /* A figure drawn across a footprint is ONE figure. Peshawar's 2017
+       population belongs to the seven 2023 tehsils it was redrawn into
+       together, and ranked shape by shape it filled six of the top ten
+       with the same 4,267,198. So a footprint is ranked once, under the
+       names of its shapes. */
+    var fp = footprints(), srcNames = {};
+    (state.units || []).forEach(function (u) { if (u.keys && u.keys.length) fp.join(u.keys); });
+    // the census units the footprint was published as, to name it by
+    (state.units || []).forEach(function (u) {
+      var nm = u.u ? String(u.u).split('\u001f')[1] : '';
+      if (!nm || !u.keys || !u.keys.length) return;
+      nm.split(' + ').forEach(function (one) {
+        (srcNames[fp.of(u.keys[0])] = srcNames[fp.of(u.keys[0])] || {})[title(one)] = 1;
+      });
+    });
+    var members = {};
+    Object.keys(state.values).forEach(function (k) {
+      if (state.values[k] == null) return;
+      (members[fp.of(k)] = members[fp.of(k)] || []).push(k);
+    });
     var seen = {}, rows = [];
     Object.keys(state.values).forEach(function (k) {
       var v = state.values[k];
@@ -1425,7 +1451,18 @@
         var pp = placeProps(k);
         if (!pp || g.prov(pp) !== prov) return;
       }
+      var grp = members[fp.of(k)] || [k];
+      if (grp.length > 1 && grp[0] !== k) return;
       var name = nameFor(k);
+      if (grp.length > 1) {
+        // Named by the unit(s) the census published, with the count of
+        // today's shapes it covers: "Peshawar Tehsil (6 tehsils)".
+        var src = Object.keys(srcNames[fp.of(k)] || {}).sort();
+        var names = src.length ? src : grp.map(nameFor).sort();
+        name = (names.length <= 2 ? names.join(' + ')
+                : names[0] + ' + ' + (names.length - 1) + ' more')
+             + ' (' + grp.length + ' ' + g.noun + 's)';
+      }
       if (seen[name]) return;
       seen[name] = 1;
       rows.push({ k: k, name: name, v: v });

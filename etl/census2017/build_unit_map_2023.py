@@ -121,6 +121,19 @@ def pop17(con, panel17):
     return {(d.upper().strip(), u.upper().strip()): (p or 0) for d, u, p in rows}
 
 
+def pop23(con, panel23):
+    """{(district, unit) -> 2023 population}. A 2017 unit later split into
+    several 2023 tehsils is compared with all of them together, and for a rate
+    that means averaging the 2023 side too - which needs the 2023 weights. Left
+    out, every such footprint dropped off the change map: 2017-23 literacy
+    reached 470 tehsils where 2017 alone reached 582."""
+    rows = con.sql(f"""SELECT district, unit, sum(value) FROM '{panel23}'
+        WHERE table_id='1' AND locality='all' AND sex='all' AND value IS NOT NULL
+          AND indicator = 'POPULATION-2023 / ALL SEXES'
+        GROUP BY 1,2""").fetchall()
+    return {(d.upper().strip(), u.upper().strip()): (p or 0) for d, u, p in rows}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--crosswalk', required=True)
@@ -135,6 +148,7 @@ def main():
     dkey = district_keys(a.districts_geo)
     skey = sub_keys(con, a.panel23)
     w17 = pop17(con, a.panel17)
+    w23 = pop23(con, a.panel23)
     home = sub_home(con, a.panel17)
     home23 = sub_home_23(con, a.panel23)
 
@@ -152,7 +166,8 @@ def main():
         u23 = [u for u in r['units_2023'].split(' + ') if u]
         rel = r['relation']
         for u in u23:                                  # the 2023 side is always itself
-            emit(2023, 'district', u, u, dkey.get(u.upper().strip()), rel, 'yes', '')
+            emit(2023, 'district', u, u, dkey.get(u.upper().strip()), rel, 'yes', '',
+                 w23.get((u.upper().strip(), u.upper().strip())))
         if not u17 or not u23:
             continue
         if rel in ('exact', 'renamed'):
@@ -250,7 +265,8 @@ def main():
              w17.get((d17.upper().strip(), u17.upper().strip())))
 
     for (d, u), k in sorted(skey.items()):
-        emit(2023, 'tehsil', d, u, k, 'exact', 'yes', '')
+        emit(2023, 'tehsil', d, u, k, 'exact', 'yes', '',
+             w23.get((d.upper().strip(), u.upper().strip())))
 
     out = pathlib.Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     rows.sort(key=lambda r: (r['census_year'], r['unit_type'], r['district'], r['unit']))

@@ -404,6 +404,71 @@ def main():
     print(f'  {n_both} census cells published in both censuses, merged into '
           f'one row each with a year to pick')
 
+    # ── the same measure, worded differently in each census ─────────────
+    # The merge above joins cells that are spelled alike once the year and
+    # sex are taken out. These are not: 2017 calls literacy LITERACY RATIO in
+    # table 13 and 2023 calls it Literate % in table 12. At district level
+    # the curated series already join them, so the gap was invisible there;
+    # at tehsil level, where there is no curated series, every one of these
+    # was a 2017-only row beside a 2023-only row, and the year control offered
+    # neither the other census nor the change.
+    #
+    # Each pair is declared, not matched, and checked: the two must be the
+    # same quantity on the same base. Literacy is the population aged 10 and
+    # above in both rounds - Bannu district reads 46.55 (2017, FR Bannu
+    # included) and 41.75 (2023) in the curated series and in these cells.
+    # The growth rates cover different periods by construction (1998-2017,
+    # 2017-2023): each is the rate since the census before, which is the
+    # measure PBS publishes, and the label says so.
+    CROSS_CENSUS = [
+        ('13|LITERATE / LITERACY RATIO|LITERACY RATIO', '12|Literate %|',
+         'Literacy rate (%, aged 10+)'),
+        ('1|POPULATION - 2017 / AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE',
+         '1|POPULATION-2023 / AVERAGE H.HOLD SIZE|POPULATION-2023 / AVERAGE H.HOLD SIZE',
+         'Average household size'),
+        ('1|POPULATION - 2017 / POPULATION DENSITY PER SQ. KM.|POPULATION DENSITY PER SQ. KM.',
+         '1|POPULATION-2023 / POPULATION DENSITY PER SQ.K.M|POPULATION-2023 / POPULATION DENSITY PER SQ.K.M',
+         'Population density (per km²)'),
+        ('1|1998-2017 AVERAGE ANNUAL GROWTH RATE|1998-2017 AVERAGE ANNUAL GROWTH RATE',
+         '1|2017-2023 AVERAGE ANNUAL G.RATE|2017-2023 AVERAGE ANNUAL G.RATE',
+         'Annual growth rate since the previous census (%)'),
+    ]
+    paired = 0
+    for k17, k23, label in CROSS_CENSUS:
+        got = con.execute("""
+            SELECT level FROM place_indicator_index
+            WHERE source = 'census' AND NOT redundant
+              AND ((indicator = ? AND years = ['2017']) OR (indicator = ? AND years = ['2023']))
+            GROUP BY level HAVING count(*) = 2""", [k17, k23]).fetchall()
+        assert got, f'a declared cross-census pair matches nothing: {label}'
+        con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+            WITH a AS (SELECT * FROM place_indicator_index
+                       WHERE source = 'census' AND NOT redundant
+                         AND indicator = $k17 AND years = ['2017']),
+                 b AS (SELECT * FROM place_indicator_index
+                       WHERE source = 'census' AND NOT redundant
+                         AND indicator = $k23 AND years = ['2023']),
+                 m AS (SELECT a.* REPLACE (
+                          '2017=' || $k17 || '\x1f2023=' || $k23 AS indicator,
+                          $label AS label, $label AS measure,
+                          ['2017', '2023'] AS years,
+                          list_sort(list_distinct(a.localities || b.localities)) AS localities,
+                          list_sort(list_distinct(a.sexes || b.sexes)) AS sexes,
+                          greatest(a.shapes, b.shapes) AS shapes,
+                          greatest(a.units, b.units) AS units,
+                          least(a.min_value, b.min_value) AS min_value,
+                          greatest(a.max_value, b.max_value) AS max_value)
+                       FROM a JOIN b USING (level))
+            SELECT * FROM place_indicator_index
+            WHERE NOT (source = 'census' AND NOT redundant
+                       AND level IN (SELECT level FROM m)
+                       AND ((indicator = $k17 AND years = ['2017'])
+                         OR (indicator = $k23 AND years = ['2023'])))
+            UNION ALL BY NAME SELECT * FROM m""",
+            {'k17': k17, 'k23': k23, 'label': label})
+        paired += len(got)
+    print(f'  {paired} rows joined across censuses where PBS worded one measure two ways')
+
     # Folding five census entries into one dataset puts six identical
     # "Total Population, 50-54" rows in the Demographics list - one per table
     # that happens to publish that cell. The table is what distinguishes them,
