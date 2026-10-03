@@ -18,6 +18,7 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 UNIT_MAP = ROOT / 'etl' / 'census2017' / 'census_unit_map.csv'
 PUBLISHED_2017 = 207_684_626
+PUBLISHED_2023 = 241_499_431
 
 
 def rows(year, tier):
@@ -37,11 +38,14 @@ def test_every_2023_tehsil_has_a_2017_figure():
     assert shapes23 <= reached, f'{len(shapes23 - reached)} 2023 tehsils get no 2017 figure'
 
 
-def test_weights_sum_to_the_published_2017_total():
-    for tier in ('district', 'tehsil'):
-        total = sum(float(r['weight']) for r in rows(2017, tier) if r['weight'])
-        assert round(total) == PUBLISHED_2017, f'{tier} weights sum to {total:,.0f}'
-        assert all(r['weight'] for r in rows(2017, tier)), f'a 2017 {tier} has no weight'
+def test_weights_sum_to_the_published_totals():
+    # 2023 weights average the 2023 side of a footprint for a rate's change;
+    # without them every split unit dropped off the change map.
+    for year, published in ((2017, PUBLISHED_2017), (2023, PUBLISHED_2023)):
+        for tier in ('district', 'tehsil'):
+            total = sum(float(r['weight']) for r in rows(year, tier) if r['weight'])
+            assert round(total) == published, f'{year} {tier} weights sum to {total:,.0f}'
+            assert all(r['weight'] for r in rows(year, tier)), f'a {year} {tier} has no weight'
 
 
 # A district whose workbook spelled a heading differently from the other 134

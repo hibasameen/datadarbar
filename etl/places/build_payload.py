@@ -156,6 +156,27 @@ FEATURED = {
     'Environment': ['nightlights|density', 'nightlights|growth'],
 }
 
+# The list above was written for districts, where most of its series live.
+# Below that the census is nearly all there is, and the fallback - built to
+# prefer a survey's rate over a census count - opened the tehsil view on
+# 2023-only migration and WorldPop. So the tehsil openers are the census
+# measures published in both rounds, which is what a tehsil map can compare.
+# Topics not listed here use the list above, then the fallback.
+FEATURED_TEHSIL = {
+    'Population & households': [
+        'census_t1|1|POPULATION - 2017 / ALL SEXES|ALL SEXES',
+        'census_t1|1|POPULATION - 2017 / POPULATION DENSITY PER SQ. KM.|POPULATION DENSITY PER SQ. KM.',
+        'census_t1|1|1998-2017 AVERAGE ANNUAL GROWTH RATE|1998-2017 AVERAGE ANNUAL GROWTH RATE',
+        'census_t1|1|POPULATION - 2017 / AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE',
+        'census_t1|1|POPULATION - 2017 / URBAN PROPORTION|URBAN PROPORTION',
+        'census_t1|1|POPULATION - 2017 / SEX RATIO|SEX RATIO',
+        'census_t18|18|Migration from Abroad|', 'satPop|pop'],
+    'Education & schools': [
+        'census_t13|13|LITERATE / LITERACY RATIO|LITERACY RATIO',
+        'census_t12|12|Ever Attended|', 'census_t12|12|Drop Out (5 - 16)|',
+        'schoolAccess|girls_middle_km', 'schoolAccess|boys_middle_km'],
+}
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -333,6 +354,12 @@ def main():
         for cell in cells(ind) or []:
             parts_of.setdefault((lvl, cell), []).append((ck, cv))
 
+    by_cell = {}
+    for ck in hmap:
+        lvl_, gk_, ind_ = ck.split('\u001f', 2)
+        if not cells(ind_):
+            by_cell.setdefault((lvl_, ind_), []).append(ck)
+
     def resolve(k):
         if k in hmap:
             return hmap[k], [k]
@@ -351,6 +378,14 @@ def main():
             if ck in hmap:
                 seen_at.append(ck)
                 places.append(hmap[ck])
+            else:
+                # A row joined across the censuses takes one table's group
+                # key, and PBS numbered the tables differently in each round
+                # - 2017 literacy is table 13, 2023 table 12 - so the other
+                # census's cell is filed under its own table.
+                for other in by_cell.get((lvl, cell), []):
+                    seen_at.append(other)
+                    places.append(hmap[other])
         if not places:
             return None, []
         # h_norm - whether the value can be read per head - is the one field
@@ -479,7 +514,7 @@ def main():
         ind = str(r[at['indicator']])
         for part in cells(ind) or [ind]:
             lookup.setdefault((r[at['level']], r[at['group_key']] + '|' + part), ri)
-    nowhere = [k for ks in FEATURED.values() for k in ks
+    nowhere = [k for ks in (*FEATURED.values(), *FEATURED_TEHSIL.values()) for k in ks
                if not any((lv, k) in lookup for lv in ('district', 'tehsil'))]
     assert not nowhere, (
         f'{len(nowhere)} featured keys match no row at either level - the index '
@@ -491,8 +526,9 @@ def main():
     for lv in ('district', 'tehsil'):
         by = {}
         for topic in hv['topic']:
-            got = [lookup[(lv, k)] for k in FEATURED.get(topic, [])
-                   if (lv, k) in lookup]
+            keys_ = (FEATURED_TEHSIL.get(topic) if lv == 'tehsil' else None) \
+                or FEATURED.get(topic, [])
+            got = [lookup[(lv, k)] for k in keys_ if (lv, k) in lookup]
             # A level the list was not written for - most curated series are
             # district tables - still gets a start, taken from that level's own
             # rows by coverage, so a topic never opens on nothing.

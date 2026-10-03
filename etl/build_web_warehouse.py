@@ -1174,6 +1174,24 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                       "combine into one 2023 shape",
     }
 
+    # A WHOLLY RURAL UNIT HAS AN URBAN PROPORTION OF NIL, AND PBS PRINTS A DASH.
+    # The dash arrived as NULL, so 203 of the 591 tehsils in 2023 (16 of 536 in
+    # 2017) were blank on the urban-proportion map rather than at zero - a
+    # fifth of the country missing from a featured measure. Only where the
+    # unit has no urban population anywhere in table 1 is the dash read as 0;
+    # missing stays TRUE, as it does for 2017's recovered dashes, so the
+    # printed dash is still on record.
+    def _rural_join(src):
+        return (f"LEFT JOIN (SELECT DISTINCT coalesce(district, '') AS d, unit AS u, unit_type AS ut\n"
+                f"           FROM '{src}' WHERE table_id = '1' AND locality = 'urban'\n"
+                f"             AND value > 0) AS urb\n"
+                "  ON urb.d = coalesce(p.district, '') AND urb.u = p.unit AND urb.ut = p.unit_type")
+
+    RURAL_ZERO = """CASE WHEN p.value IS NULL AND p.missing AND p.table_id = '1'
+                             AND p.locality = 'all' AND urb.u IS NULL
+                             AND upper(p.indicator) LIKE '%URBAN PROPORTION%'
+                        THEN 0 ELSE p.value END AS value"""
+
     p17 = _latest("census2017/*/panel/panel_2017.parquet")
     if p17:
         print("census 2017…")
@@ -1202,12 +1220,13 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "PBS Population and Housing Census 2017, per-district Excel tables (135 districts × 40 tables)",
             f"""SELECT p.census_year, p.province_area, p.table_id, p.district, p.unit,
                        p.unit_type, {MAP_COLS},
-                       p.locality, p.sex, p.indicator, p.col_label, p.value, p.missing,
+                       p.locality, p.sex, p.indicator, p.col_label, {RURAL_ZERO}, p.missing,
                        regexp_matches(upper(p.indicator || ' ' || p.col_label),
                                       '{RATE_WORDS}') AS is_rate,
                        p.series_ambiguous
                 FROM '{p17.as_posix()}' AS p
                 {_map_join(2017)}
+                {_rural_join(p17.as_posix())}
                 ORDER BY p.table_id, p.unit_type, p.province_area, p.district, p.unit,
                          p.locality, p.sex, p.indicator, p.col_label""",
             unit="persons, households or housing units; rates and percentages where the indicator says so",
@@ -1255,10 +1274,11 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                 SELECT 2023 AS census_year, p.province_area, p.table_id, p.dds_id, p.dd_id,
                        p.adm3_pcode, p.district, p.unit, p.unit_type, {MAP_COLS},
                        p.locality, p.sex, p.indicator, p.col_label,
-                       p.value, p.missing, p.is_rate, p.value_corrected,
+                       {RURAL_ZERO}, p.missing, p.is_rate, p.value_corrected,
                        p.renderings_disagree, p.unit_source
                 FROM '{p23.as_posix()}' AS p
                 {_map_join(2023)}
+                {_rural_join(p23.as_posix())}
                 ORDER BY p.table_id, p.unit_type, p.province_area, p.district, p.unit,
                          p.locality, p.sex, p.indicator, p.col_label""",
             unit="persons, households or housing units; rates and percentages where is_rate is TRUE",
