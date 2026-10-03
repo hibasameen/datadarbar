@@ -1103,6 +1103,106 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     else:
         print("sbp…  skipped (run build_sbp.py catalog / observations / load first)")
 
+    # ── 4b. long-run macro history: the gaps the Global Macro Database exposed ──
+    # The GMD's terms forbid republishing it, so these come from the sources it
+    # compiles: SBP's own Handbook, the IMF and the World Bank. Nothing is
+    # spliced; where two sources cover a year both are kept, labelled.
+    mh = (sorted(src.glob("macro_history/*/sbp_handbook_series.parquet")) or [None])[-1]
+    if mh:
+        print("macro history…")
+        d = mh.parent
+        register(
+            "sbp_handbook_series",
+            "Pakistan’s long macro series from SBP’s Handbook of Statistics 2020: money "
+            "since 1950, real GDP and prices since FY50, consolidated public finance since FY76.",
+            "Four Handbook tables, every figure as SBP printed it: 4.1 monetary statistics "
+            "(currency, reserve money M0, narrow money M1, broad money M2, from 1950), 1.5 GDP "
+            "at constant factor cost (FY50 on, SBP’s own splice to the 2005-06 base), 2.8 "
+            "price indices and GDP deflator (FY50 on) and 3.7 the consolidated federal and "
+            "provincial budget (FY76 to FY20). BLOCKS ARE NOT ONE SERIES: table 4.1 prints three "
+            "blocks under different definitions - 1950-85 annual, 1986-2007 with foreign-currency "
+            "deposits in M2, 2003-20 on the current definition - and they overlap, so filter on "
+            "block. Up to 1971 the money figures are for Pakistan with its east wing - currency in circulation falls from 8,157 to 5,173 million rupees between 1971 and 1972 - and from 1971 the net foreign assets are former West Pakistan\u2019s (footnote 5); "
+            "annual rows before 1991 do not state their month. Index bases change down the "
+            "column in 2.8 and are carried in base. A dash is NULL with the dash kept in "
+            "value_text; a figure printed with a footnote star or a damaged bracket keeps its "
+            "mark. Fiscal years are named by the year they end (FY50 = 1949-50 = 1950).",
+            {"chapter": "Handbook chapter (1 national income, 2 prices, 3 public finance, 4 money)",
+             "table_id": "Handbook table number, e.g. 4.1",
+             "table_title": "what the table holds",
+             "unit": "unit as printed (Million Rupees, index, percent of GDP)",
+             "block": "the printed block within the table; definitions differ between blocks",
+             "series_no": "column number SBP prints under the heading, where it prints one",
+             "series": "column or row heading as printed, footnote digits included",
+             "period": "period as printed: 1950, 1991 Jun, FY76",
+             "year": "calendar year, or for a fiscal year the year it ends",
+             "year_basis": "calendar, or fiscal (July-June, year it ends)",
+             "month": "6 or 12 for the half-yearly rows; NULL where SBP gives a year only",
+             "value": "the figure as printed",
+             "value_text": "the cell as printed where it is not a plain number (a dash, a star)",
+             "mark": "footnote marker printed with the period or the figure",
+             "base": "index base year in force for this figure (table 2.8)",
+             "source_line": "the table’s own Source line",
+             "notes": "the table’s footnotes, verbatim"},
+            "State Bank of Pakistan, Handbook of Statistics on Pakistan Economy 2020 "
+            "(archive.sbp.org.pk); SBP terms: reuse with reference to the source, non-commercial, "
+            "unchanged",
+            f"SELECT * FROM '{(d / 'sbp_handbook_series.parquet').as_posix()}' "
+            "ORDER BY chapter, table_id, block, series_no, series, year, month",
+            unit="as printed per table: million rupees, index points or percent of GDP",
+        )
+        register(
+            "imf_pakistan_fiscal",
+            "Pakistan’s public finances since 1950 from the IMF: revenue, spending, "
+            "interest, primary balance and debt as a share of GDP.",
+            "Four IMF datasets, kept apart: Public Finances in Modern History (FPP, Mauro et al. "
+            "2015; 1950-2024), the Global Debt Database (GDD, central government debt from 1951), "
+            "the Fiscal Monitor (FM, general government from the 1990s) and four World Economic "
+            "Outlook series (WEO: unemployment, population, inflation, current account, from "
+            "1980). The coverage differs - FPP and GDD are central or general government by "
+            "period, FM is general government - so the same year can carry two different debt "
+            "ratios; that is the sources disagreeing about scope, not an error. From 2026 the WEO "
+            "and FM figures are projections (is_projection). For Pakistan’s own consolidated "
+            "budget in rupees see sbp_handbook_series table 3.7.",
+            {"dataset": "FPP, GDD, FM or WEO",
+             "dataset_name": "the IMF database and edition",
+             "indicator": "IMF indicator code",
+             "label": "IMF’s label",
+             "unit": "unit as the IMF gives it",
+             "year": "year as the IMF reports it",
+             "value": "the IMF’s figure",
+             "is_projection": "TRUE where the figure is an IMF projection, not an outturn"},
+            "International Monetary Fund: Public Finances in Modern History, Global Debt Database, "
+            "Fiscal Monitor and World Economic Outlook (DataMapper)",
+            f"SELECT * FROM '{(d / 'imf_pakistan_fiscal.parquet').as_posix()}' "
+            "ORDER BY dataset, indicator, year",
+            unit="percent of GDP, percent, millions of people",
+        )
+        register(
+            "wdi_comparators",
+            "Pakistan beside its neighbours and peers: 27 World Bank indicators since 1960.",
+            "World Development Indicators for Pakistan, India, Bangladesh, Sri Lanka, Nepal, "
+            "Afghanistan, Iran, Egypt, Indonesia, Nigeria and Türkiye, with South Asia, "
+            "lower-middle income and the world as context: population, growth, income per head, "
+            "inflation, unemployment, trade, investment, remittances, tax, literacy, life "
+            "expectancy, fertility, child mortality, poverty and electricity. Several are "
+            "modelled estimates rather than national figures - unemployment is the ILO’s "
+            "model (SL.UEM.TOTL.ZS); SL.UEM.TOTL.NE.ZS is the national estimate - and "
+            "original_source names who produced each. For Pakistan’s own series prefer the "
+            "PBS and SBP tables; this is for comparison.",
+            {"country_code": "ISO3, or the World Bank’s code for an aggregate",
+             "country": "country or aggregate name",
+             "indicator": "WDI indicator code",
+             "label": "WDI indicator name, unit included",
+             "year": "calendar year",
+             "value": "the figure",
+             "original_source": "the organisation WDI credits for the series"},
+            "World Bank, World Development Indicators (CC BY 4.0)",
+            f"SELECT * FROM '{(d / 'wdi_comparators.parquet').as_posix()}' "
+            "ORDER BY indicator, country_code, year",
+            unit="as given in each indicator’s label",
+        )
+
     # ── 5. census panels: the 2017 and 2023 unit tables ──────────────────────
     # Two tables, deliberately not one. The years cannot be stacked yet: only 50
     # of 2017's 377 indicator labels appear verbatim among 2023's 201, and most of

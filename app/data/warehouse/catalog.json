@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-10-03",
+ "generated": "2026-10-04",
  "license": "Derived data CC BY 4.0 · code MIT",
  "kinds": [
   {
@@ -346,7 +346,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8273047,
+   "bytes": 8273085,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -2317,6 +2317,65 @@
     "district_code",
     "district_key"
    ]
+  },
+  {
+   "name": "imf_pakistan_fiscal",
+   "file": "imf_pakistan_fiscal.parquet",
+   "bytes": 8099,
+   "rows": 916,
+   "description": "Pakistan’s public finances since 1950 from the IMF: revenue, spending, interest, primary balance and debt as a share of GDP.",
+   "notes": "Four IMF datasets, kept apart: Public Finances in Modern History (FPP, Mauro et al. 2015; 1950-2024), the Global Debt Database (GDD, central government debt from 1951), the Fiscal Monitor (FM, general government from the 1990s) and four World Economic Outlook series (WEO: unemployment, population, inflation, current account, from 1980). The coverage differs - FPP and GDD are central or general government by period, FM is general government - so the same year can carry two different debt ratios; that is the sources disagreeing about scope, not an error. From 2026 the WEO and FM figures are projections (is_projection). For Pakistan’s own consolidated budget in rupees see sbp_handbook_series table 3.7.",
+   "unit": "percent of GDP, percent, millions of people",
+   "source": "International Monetary Fund: Public Finances in Modern History, Global Debt Database, Fiscal Monitor and World Economic Outlook (DataMapper)",
+   "columns": [
+    {
+     "name": "dataset",
+     "type": "VARCHAR",
+     "description": "FPP, GDD, FM or WEO"
+    },
+    {
+     "name": "dataset_name",
+     "type": "VARCHAR",
+     "description": "the IMF database and edition"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "IMF indicator code"
+    },
+    {
+     "name": "label",
+     "type": "VARCHAR",
+     "description": "IMF’s label"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "unit as the IMF gives it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "year as the IMF reports it"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the IMF’s figure"
+    },
+    {
+     "name": "is_projection",
+     "type": "BOOLEAN",
+     "description": "TRUE where the figure is an IMF projection, not an outturn"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1950",
+    "to": "2031"
+   },
+   "keys": []
   },
   {
    "name": "ljcp_case_flows",
@@ -4962,6 +5021,110 @@
     "column": "year",
     "from": "2019",
     "to": "2024"
+   },
+   "keys": []
+  },
+  {
+   "name": "sbp_handbook_series",
+   "file": "sbp_handbook_series.parquet",
+   "bytes": 19927,
+   "rows": 2633,
+   "description": "Pakistan’s long macro series from SBP’s Handbook of Statistics 2020: money since 1950, real GDP and prices since FY50, consolidated public finance since FY76.",
+   "notes": "Four Handbook tables, every figure as SBP printed it: 4.1 monetary statistics (currency, reserve money M0, narrow money M1, broad money M2, from 1950), 1.5 GDP at constant factor cost (FY50 on, SBP’s own splice to the 2005-06 base), 2.8 price indices and GDP deflator (FY50 on) and 3.7 the consolidated federal and provincial budget (FY76 to FY20). BLOCKS ARE NOT ONE SERIES: table 4.1 prints three blocks under different definitions - 1950-85 annual, 1986-2007 with foreign-currency deposits in M2, 2003-20 on the current definition - and they overlap, so filter on block. Up to 1971 the money figures are for Pakistan with its east wing - currency in circulation falls from 8,157 to 5,173 million rupees between 1971 and 1972 - and from 1971 the net foreign assets are former West Pakistan’s (footnote 5); annual rows before 1991 do not state their month. Index bases change down the column in 2.8 and are carried in base. A dash is NULL with the dash kept in value_text; a figure printed with a footnote star or a damaged bracket keeps its mark. Fiscal years are named by the year they end (FY50 = 1949-50 = 1950).",
+   "unit": "as printed per table: million rupees, index points or percent of GDP",
+   "source": "State Bank of Pakistan, Handbook of Statistics on Pakistan Economy 2020 (archive.sbp.org.pk); SBP terms: reuse with reference to the source, non-commercial, unchanged",
+   "columns": [
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "Handbook table number, e.g. 4.1"
+    },
+    {
+     "name": "block",
+     "type": "BIGINT",
+     "description": "the printed block within the table; definitions differ between blocks"
+    },
+    {
+     "name": "series_no",
+     "type": "VARCHAR",
+     "description": "column number SBP prints under the heading, where it prints one"
+    },
+    {
+     "name": "series",
+     "type": "VARCHAR",
+     "description": "column or row heading as printed, footnote digits included"
+    },
+    {
+     "name": "period",
+     "type": "VARCHAR",
+     "description": "period as printed: 1950, 1991 Jun, FY76"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year, or for a fiscal year the year it ends"
+    },
+    {
+     "name": "year_basis",
+     "type": "VARCHAR",
+     "description": "calendar, or fiscal (July-June, year it ends)"
+    },
+    {
+     "name": "month",
+     "type": "BIGINT",
+     "description": "6 or 12 for the half-yearly rows; NULL where SBP gives a year only"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure as printed"
+    },
+    {
+     "name": "value_text",
+     "type": "VARCHAR",
+     "description": "the cell as printed where it is not a plain number (a dash, a star)"
+    },
+    {
+     "name": "mark",
+     "type": "VARCHAR",
+     "description": "footnote marker printed with the period or the figure"
+    },
+    {
+     "name": "base",
+     "type": "VARCHAR",
+     "description": "index base year in force for this figure (table 2.8)"
+    },
+    {
+     "name": "source_line",
+     "type": "VARCHAR",
+     "description": "the table’s own Source line"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "the table’s footnotes, verbatim"
+    },
+    {
+     "name": "chapter",
+     "type": "BIGINT",
+     "description": "Handbook chapter (1 national income, 2 prices, 3 public finance, 4 money)"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "what the table holds"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "unit as printed (Million Rupees, index, percent of GDP)"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1950",
+    "to": "2021"
    },
    "keys": []
   },
@@ -7684,6 +7847,60 @@
     "column": "fy",
     "from": "2003-04",
     "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "wdi_comparators",
+   "file": "wdi_comparators.parquet",
+   "bytes": 123316,
+   "rows": 17885,
+   "description": "Pakistan beside its neighbours and peers: 27 World Bank indicators since 1960.",
+   "notes": "World Development Indicators for Pakistan, India, Bangladesh, Sri Lanka, Nepal, Afghanistan, Iran, Egypt, Indonesia, Nigeria and Türkiye, with South Asia, lower-middle income and the world as context: population, growth, income per head, inflation, unemployment, trade, investment, remittances, tax, literacy, life expectancy, fertility, child mortality, poverty and electricity. Several are modelled estimates rather than national figures - unemployment is the ILO’s model (SL.UEM.TOTL.ZS); SL.UEM.TOTL.NE.ZS is the national estimate - and original_source names who produced each. For Pakistan’s own series prefer the PBS and SBP tables; this is for comparison.",
+   "unit": "as given in each indicator’s label",
+   "source": "World Bank, World Development Indicators (CC BY 4.0)",
+   "columns": [
+    {
+     "name": "country_code",
+     "type": "VARCHAR",
+     "description": "ISO3, or the World Bank’s code for an aggregate"
+    },
+    {
+     "name": "country",
+     "type": "VARCHAR",
+     "description": "country or aggregate name"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "WDI indicator code"
+    },
+    {
+     "name": "label",
+     "type": "VARCHAR",
+     "description": "WDI indicator name, unit included"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure"
+    },
+    {
+     "name": "original_source",
+     "type": "VARCHAR",
+     "description": "the organisation WDI credits for the series"
+    }
+   ],
+   "kind": "economy",
+   "span": {
+    "column": "year",
+    "from": "1960",
+    "to": "2025"
    },
    "keys": []
   }
