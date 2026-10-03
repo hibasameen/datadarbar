@@ -61,8 +61,11 @@ def test_every_row_is_in_exactly_one_library_entry():
         assert not g['unreached'], f'{lv}: {len(g["unreached"])} rows no route reaches'
         assert not g['twice'], f'{lv}: {len(g["twice"])} rows listed under two measures'
         assert not g['topicless'], f'{lv}: {g["topicless"]} measures with no topic'
-    # The source totals are there, in their own section, not dropped.
-    assert got['district']['totals'] + got['tehsil']['totals'] == 463
+    # The source totals are there, in their own section, not dropped. 463 until
+    # 3 October 2026, when 32 of them turned out to be one workbook's misspelt
+    # copy of a total every other district prints - Kohistan's ALL rows, five
+    # districts' POPULATION for POPULATION - 2017 - and folded back into it.
+    assert got['district']['totals'] + got['tehsil']['totals'] == 431
 
 
 def test_featured_measures_point_at_real_rows():

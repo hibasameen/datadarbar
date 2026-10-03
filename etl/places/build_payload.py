@@ -248,12 +248,58 @@ def main():
     hmap, hv = hier['map'], hier['vocab']
     at = {n: names.index(n) for n in HK}
     keys = ['\u001f'.join(str(r[at[n]]) for n in HK) for r in rows]
-    # The 463 source totals and column headings are in the catalogue but not
+    # The 431 source totals and column headings are in the catalogue but not
     # in the subject tree: the hierarchy proposal describes the 5,201 series a
     # reader browses, and a table's own total is not one of them. They are
     # reachable by search and carry no topic.
     red = names.index('redundant')
     browsable = [i for i, r in enumerate(rows) if not r[red]]
+
+    # A 2017 LABEL THE NORMALISER HAS SINCE FOLDED INTO ANOTHER. When a
+    # workbook's misread heading is aliased back to the one every other
+    # workbook prints (normalise_2017.py), its one-district fragment stops
+    # existing: the crosswalk entry describes a row that is gone, and the row it
+    # joined may be new to the crosswalk. The entry is retired and, where the
+    # row it joined has no place of its own, lends it its place - the variable
+    # did not change, only its spelling. Only for an entry whose own row is
+    # gone, so a live row is never refiled.
+    import sys
+    sys.path.insert(0, str(HERE_PLACES.parent / 'census2017'))
+    from normalise_2017 import INDICATOR_ALIAS, LABEL_ALIAS, _key
+
+    def spelled(ck):
+        """The key as the normaliser now spells it, compared loosely: the
+        explicit aliases first, then the case-and-punctuation folding that
+        decides an indicator's majority spelling."""
+        lvl, gk, ind = ck.split('\u001f', 2)
+        t, i, c = ind.split('|')
+        i = INDICATOR_ALIAS.get((t, i.upper()), i)
+        c = LABEL_ALIAS.get((t, c), c)
+        return (lvl, gk, t, _key(i), _key(c))
+
+    simple = lambda ck: not cells(ck.split('\u001f', 2)[2]) and ck.count('|') == 2
+    browse = {keys[i] for i in browsable}
+    now = {}
+    for k in keys:
+        if simple(k):
+            now.setdefault(spelled(k), []).append(k)
+    relabelled = 0
+    for ck in list(hmap):
+        if ck in browse or ck in set(keys) or not simple(ck):
+            continue
+        heirs = now.get(spelled(ck), [])
+        lvl, gk, ind = ck.split('\u001f', 2)
+        t, i, c = ind.split('|')
+        aliased = (INDICATOR_ALIAS.get((t, i.upper()), i), LABEL_ALIAS.get((t, c), c)) != (i, c)
+        if not heirs and not aliased:
+            continue            # still fails below, as it should
+        for new in heirs:
+            if new in browse and new not in hmap:
+                hmap[new] = hmap[ck]
+        del hmap[ck]
+        relabelled += 1
+    if relabelled:
+        print(f'  {relabelled} crosswalk entries retired for 2017 labels now spelled as elsewhere')
 
     # Both directions, loudly. A row with no destination would otherwise fall
     # into whichever bucket sorted first and be findable only by knowing its
@@ -355,7 +401,7 @@ def main():
         + '; '.join(repr(m) for m in missing[:10]))
     assert not stale, (
         f'{len(stale)} hierarchy entries match no index row, e.g. '
-        f'{sorted(stale)[0]!r}')
+        f'{sorted(stale)[0]!r}' + ''.join(chr(10) + repr(s) for s in sorted(stale)))
     if demoted:
         print(f'  {len(demoted)} merged rows lose the per-head reading: one '
               f'of their facets cannot carry it (total population per 1,000 '

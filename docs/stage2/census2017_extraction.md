@@ -247,6 +247,48 @@ this panel** — reclassified from zero to missing, with the zero left in `value
 so nothing is destroyed. Missingness is now 26.8% of rows, from 1,413 before. A `0` in this panel can now be read as a reported zero in the columns
 that were checked.
 
+## One district, one series: the 3 October 2026 sweep
+
+Closure and the provincial totals compare a district with its own tehsils and
+its province with its own table, so neither notices a district whose workbook
+spells a heading differently from everyone else's. That district simply forms a
+series of its own - one unit wide - and is blank on every map of the real one.
+On the published panel 120 district tables had at least one such hole, and 463
+of the 2,482 district-level 2017 series on Places reached fewer than ten
+districts. Readers saw it as "many gaps in 2017".
+
+The sweep compared every workbook's series with the set at least 80% of
+workbooks carry, then proposed a mapping only from position: a minority label
+was matched to the label the other workbooks print at the same source column
+for the same row (or, for a row label, to a common one it is the unprefixed
+form of), and accepted only if the two never appear in the same workbook.
+That gave 40-odd aliases in `normalise_2017.py`, all commented with the
+districts concerned. The largest:
+
+| Table | What the workbook did | Districts |
+|---|---|---|
+| 22 | literacy column inherits NON-MUSLIM from the religion header beside it | 25, incl. Lahore, Gujranwala, Korangi |
+| 31 | the all-sexes header ALL SEXS read in as the label | 6 districts, 32 tehsils |
+| 3 | POPULATION for POPULATION - 2017 | 5 |
+| 6 | Kohistan prints column numbers, no headings | 1 + 4 sub-divisions |
+| 11 | Haripur drops POPULATION BY MOTHER TONGUE from every language | 1 + 3 tehsils |
+| 28 | Zhob and Ziarat write PERSON for PERSONS | 2 + 7 tehsils |
+
+Nothing moved in the checks: the six provincial totals are still exact,
+closure is still 348,015 of 348,101, and the ambiguous-series count is
+unchanged at 31,963 - no alias created a collision. District tables with a hole
+went from 120 to 73, and the average 2017 series on Places now reaches 88.6% of
+districts (80.5% before) and 97.8% of tehsils (89.2%).
+
+What is left is not spelling. Tables 33-39 (housing) in about ten workbooks -
+Gujranwala 39, Chitral and Multan 38, Korangi 33, Bahawalnagar, Faisalabad,
+Chakwal, Kachhi, Sibi - have their row headings read out of step, so a value
+sits under the wrong parent; Okara's and Upper Dir's district rows in tables 3
+and 4 carry only the total. Those need the workbooks re-read, not renamed. The
+rest are real: a size class with no localities, a wholly rural tehsil's urban
+proportion printed as a dash, a growth rate PBS did not compute for a district
+created since 1998.
+
 ## Also outstanding
 
 - **Islamabad is not in the panel.** Its 39 anchor-listed workbooks, and the 36
