@@ -370,7 +370,7 @@
   function renderTaxGdpFallback() { renderTax('gdp'); }
 
   /* ── what the state collects ─────────────────────────────────────────── */
-  function taxTable() {
+  function taxTable(real) {
     var years = Array.from(new Set(tax.map(function (d) { return d.fyEnd; }))).sort(d3.ascending);
     var heads = Array.from(new Set(tax.map(function (d) { return d.head; })));
     var byYear = d3.rollup(tax, function (v) {
@@ -388,8 +388,9 @@
        is kept separately from the value read out. */
     var data = years.map(function (y) {
       var o = { year: y }, got = byYear.get(y) || {};
+      var f = real ? priceFactor(fyOf(y)) : 1;
       heads.forEach(function (h) {
-        o[h] = got[h] == null ? null : got[h];
+        o[h] = got[h] == null ? null : got[h] * f;
         o['_' + h] = o[h] == null ? 0 : o[h];
       });
       o.total = d3.sum(heads, function (h) { return o['_' + h]; });
@@ -404,7 +405,8 @@
 
   function renderTax(mode) {
     state.mode = mode;
-    var T = taxTable(), years = T.years, heads = T.heads, data = T.data;
+    var T = taxTable(mode === 'stack'), years = T.years, heads = T.heads, data = T.data;
+    if (mode === 'stack') priceControl(ctlRow());
     var first = data[0], last = data[data.length - 1];
     var bits = [tax[0].fy + ' to ' + tax[tax.length - 1].fy
                 + ' (latest in this dataset)',
@@ -418,7 +420,7 @@
                   ? '; ' + fyOf(spliced[0]) + ' to ' + fyOf(spliced[spliced.length - 1])
                     + ' spliced onto the 2015-16 base' : '') + '</span>');
     } else {
-      bits.push('Nominal rupees, not inflation-adjusted');
+      bits.push(realOn() ? priceNote(years.map(fyOf)) : 'Nominal rupees, not inflation-adjusted');
     }
     cover(bits);
     if (T.absent.length) {
@@ -439,13 +441,15 @@
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 14, right: 175, bottom: 26, left: 52 }, W);
+    var below = legendBelow(host, m, heads.length);
     host.say(mode === 'share'
       ? 'Each head as a share of the year’s total collection.'
       : mode === 'gdp'
         ? 'Each head as a share of GDP at current market prices, stacked to '
           + 'FBR’s total. Dashed years divide by a GDP spliced onto the '
           + '2015-16 base.'
-        : 'Trillions of rupees collected, as FBR reports them.', '');
+        : realOn() ? 'Trillions of rupees collected, in ' + DDDeflate.base + ' prices.'
+                   : 'Trillions of rupees collected, as FBR reports them.', '');
 
     var x = d3.scaleLinear().domain(d3.extent(years)).range([m.left, W - m.right]);
     var colour = d3.scaleOrdinal().domain(heads)
@@ -513,7 +517,7 @@
 
     var ink_ = muted();
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
-      .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')))
+      .call(d3.axisBottom(x).ticks(below ? 4 : 8).tickFormat(d3.format('d')))
       .attr('color', ink_).attr('font-size', 11);
     svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
       .call(d3.axisLeft(y).ticks(6).tickFormat(
@@ -523,13 +527,16 @@
     svg.append('text').attr('x', m.left).attr('y', m.top - 3)
       .attr('font-size', 10.5).attr('fill', ink_)
       .text(mode === 'share' ? 'share of collection' : mode === 'gdp'
-            ? 'per cent of GDP' : 'trillion rupees');
+            ? 'per cent of GDP' : realOn() ? 'trillion rupees, ' + DDDeflate.base + ' prices'
+            : 'trillion rupees');
 
     var last = rows[rows.length - 1];
     var order = heads.slice().sort(function (a, b) {
       return (last['raw' + b] == null ? -1 : last[b]) - (last['raw' + a] == null ? -1 : last[a]);
     });
-    var lg = svg.append('g').attr('transform', 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
+    var lg = svg.append('g').attr('transform', below
+      ? 'translate(' + m.legendX + ',' + m.legendY + ')'
+      : 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
     order.forEach(function (h, i) {
       var absentNow = last['raw' + h] == null;
       var g = lg.append('g').attr('transform', 'translate(0,' + i * 17 + ')');
@@ -575,6 +582,25 @@
   /* ── the federal budget ──────────────────────────────────────────────── */
   var bSide = 'expenditure', bYear = null;
 
+  /* Nominal or real rupees, for every chart here that plots a rupee amount
+     over time. Real is the site's GDP deflator (assets/js/deflate.js) into
+     the rupees of the latest complete fiscal year; shares and per cent of GDP
+     are left alone, being ratios already. */
+  var priceMode = 'nom';
+  function realOn() { return priceMode === 'real' && window.DDDeflate && DDDeflate.available; }
+  function priceFactor(fy) { return realOn() ? (DDDeflate.factor(fy) || 1) : 1; }
+  function priceControl(bar) {
+    if (!window.DDDeflate || !DDDeflate.available) return;
+    seg(bar, 'Prices', [['nom', 'Nominal'], ['real', DDDeflate.label]], priceMode,
+        function (v) { priceMode = v; render(); writeUrl(); });
+  }
+  function priceNote(years) {
+    var est = (years || []).filter(function (y) { return DDDeflate.isEstimate(y); });
+    return '<span class="cov-derived">derived: in ' + DDDeflate.base + ' rupees, deflated by '
+         + 'the GDP deflator (PBS national accounts)'
+         + (est.length ? '; ' + est.join(', ') + ' on an extrapolated deflator' : '') + '</span>';
+  }
+
   function budgetGroups(side, year) {
     return (BUDGET && BUDGET[side] && BUDGET[side][year]) || [];
   }
@@ -593,22 +619,31 @@
     if (!bYear) bYear = years[years.length - 1];
     var b = D.budget;
     var groups = budgetGroups(bSide, bYear);
+    if (mode === 'tree' && realOn()) groups = scaleGroups(groups, priceFactor(bYear));
     var total = d3.sum(groups, function (g) { return d3.sum(g.children, function (c) { return c.bn; }); });
     var bits = [b.first + ' to ' + b.last, b.docs + ' budget documents',
                 bSide === 'expenditure' ? 'current expenditure by function' : 'receipts by source'];
     if (mode === 'tree') bits.push(bYear + ': Rs ' + fmtBn(total) + ' budgeted');
     if (mode === 'gdp') bits.push('<span class="cov-derived">derived: divided by GDP at '
                                   + 'current market prices for the budget year</span>');
+    else if (realOn()) bits.push(priceNote(mode === 'tree' ? [bYear] : years));
     cover(bits);
     sideControl(mode);
     if (mode === 'tree') return drawBudgetTree(groups, total);
     drawBudgetTrend(mode === 'gdp');
   }
 
+  function scaleGroups(groups, f) {
+    return groups.map(function (g) {
+      return Object.assign({}, g, { children: g.children.map(function (c) {
+        return Object.assign({}, c, { bn: c.bn * f }); }) });
+    });
+  }
   function sideControl(mode) {
     var bar = ctlRow();
     seg(bar, 'Side', [['expenditure', 'Current expenditure'], ['receipts', 'Receipts']],
         bSide, function (v) { bSide = v; render(); });
+    if (mode !== 'gdp') priceControl(bar);
     if (mode === 'tree') {
       var yrs = budgetYears();
       var lab = document.createElement('span');
@@ -700,8 +735,9 @@
     });
     var rows = years.map(function (y) {
       var o = { year: y, end: fyEndOf(y), total: 0 };
+      var f = asGdp ? 1 : priceFactor(y);
       budgetGroups(bSide, y).forEach(function (g) {
-        o[g.label] = d3.sum(g.children, function (c) { return c.bn; });
+        o[g.label] = d3.sum(g.children, function (c) { return c.bn; }) * f;
       });
       labels.forEach(function (l) { o[l] = o[l] || 0; o.total += o[l]; });
       o.gdp = GDP[o.end] ? GDP[o.end] / 1000 : null;   // bn
@@ -717,6 +753,7 @@
     var host = chartHost();
     var W = host.w, H = host.h, svg = host.svg;
     var m = fit({ top: 14, right: 210, bottom: 30, left: 52 }, W);
+    var below = legendBelow(host, m, labels.length);
     var x = d3.scaleBand().domain(usable.map(function (r) { return r.year; }))
       .range([m.left, W - m.right]).padding(.18);
     var y = d3.scaleLinear().domain([0, d3.max(usable, tot)]).nice().range([H - m.bottom, m.top]);
@@ -742,14 +779,15 @@
     });
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
       .call(d3.axisBottom(x).tickValues(x.domain().filter(function (v, i) {
-        return i % Math.ceil(x.domain().length / 9) === 0; })))
+        return i % Math.ceil(x.domain().length / (below ? 4 : 9)) === 0; })))
       .attr('color', muted()).attr('font-size', 10.5);
     svg.append('g').attr('transform', 'translate(' + m.left + ',0)')
       .call(d3.axisLeft(y).ticks(6).tickFormat(asGdp ? function (v) { return v + '%'; }
                                               : function (v) { return v >= 1000 ? (v / 1000) + ' tn' : v + ' bn'; }))
       .attr('color', muted()).attr('font-size', 11);
     svg.append('text').attr('x', m.left).attr('y', m.top - 3).attr('font-size', 10.5)
-      .attr('fill', muted()).text(asGdp ? 'per cent of GDP' : 'billion rupees, nominal');
+      .attr('fill', muted()).text(asGdp ? 'per cent of GDP'
+        : realOn() ? 'billion rupees, ' + DDDeflate.base + ' prices' : 'billion rupees, nominal');
     var lastRow = usable[usable.length - 1];
     legend(svg, labels, colour, W, m, function (l) {
       var v = asGdp ? pct(100 * lastRow[l] / lastRow.gdp) : fmtBn(lastRow[l]);
@@ -757,10 +795,11 @@
       return (t.length > 22 ? t.slice(0, 21) + '…' : t) + '  ' + v;
     });
     host.say((bSide === 'expenditure' ? 'Current expenditure by function' : 'Receipts by source')
-             + (asGdp ? ' as a share of GDP' : ' in nominal rupees')
+             + (asGdp ? ' as a share of GDP' : realOn() ? ' in ' + DDDeflate.base + ' rupees' : ' in nominal rupees')
              + ', budget year by budget year. Legend figures are ' + lastRow.year + '.',
              (asGdp ? 'GDP at current market prices for the budget year, from PBS. '
                 + (left.length ? left.join(', ') + ' has no GDP figure yet and is left off. ' : '')
+              : realOn() ? 'Deflated by the GDP deflator, so the rise is real growth, not prices. '
               : 'Nominal rupees: most of the rise since 2021 is prices. ')
              + 'Budget estimates as presented, not outturn.');
   }
@@ -2254,6 +2293,20 @@
     return m;
   }
 
+  /* On a phone a legend in the right gutter leaves the plot a sliver. Below
+     560px it goes under the plot instead: the chart grows by the legend's
+     height, and m.legendX/legendY say where to draw it. */
+  function legendBelow(host, m, n) {
+    if (host.w >= 560) return false;
+    var extra = n * 17 + 16;
+    m.right = 14;
+    m.legendX = m.left;
+    m.legendY = host.h + 8;
+    host.h += extra;
+    host.svg.attr('viewBox', '0 0 ' + host.w + ' ' + host.h);
+    return true;
+  }
+
   function cover(bits) {
     $('coverage').innerHTML = '<b>Coverage</b>'
       + bits.map(function (b, i) {
@@ -2274,7 +2327,9 @@
       .attr('font-size', 10.5).attr('fill', muted()).text(label);
   }
   function legend(svg, keys, colour, W, m, labelFn) {
-    var g = svg.append('g').attr('transform', 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
+    var g = svg.append('g').attr('transform', m.legendY != null
+      ? 'translate(' + m.legendX + ',' + m.legendY + ')'
+      : 'translate(' + (W - m.right + 10) + ',' + (m.top + 4) + ')');
     keys.forEach(function (k, i) {
       var row = g.append('g').attr('transform', 'translate(0,' + i * 17 + ')');
       row.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
@@ -2780,12 +2835,14 @@
      three so a chart can be linked to. */
   function writeUrl() {
     var q = new URLSearchParams({ t: state.topic, i: state.ind });
+    if (priceMode === 'real') q.set('p', 'real');
     history.replaceState(null, '', location.pathname + '?' + q);
   }
 
   function readUrl() {
     var q = new URLSearchParams(location.search);
     var t = q.get('t'), i = q.get('i');
+    if (q.get('p') === 'real') priceMode = 'real';
     var row = D.index.filter(function (r) {
       return (!t || r.topic === t) && (!i || r.ind === i);
     })[0];

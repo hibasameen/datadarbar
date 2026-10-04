@@ -97,6 +97,23 @@ const isDefault = c => { const d = CH[c].def; return SEL[c].size === d.length &&
 
 let D, S, M, H, scale = 'log', fy = null, fys = [], bopView = 'tree';
 let gdpView = 'level', peerInd = 'NY.GDP.PCAP.PP.KD';
+/* Nominal or real rupees for the money supply. The nominal series are kept
+   and the real ones derived from them on demand with the site's GDP
+   deflator (assets/js/deflate.js), interpolated to each month-end so the
+   line does not step every July. */
+let moneyPrice = 'nom';
+const NOM = {};
+function setMoneyPrice(v) {
+  moneyPrice = v === 'real' && window.DDDeflate && DDDeflate.available ? 'real' : 'nom';
+  CH.money.avail.forEach(k => {
+    if (!NOM[k]) NOM[k] = S[k];
+    S[k] = moneyPrice === 'real'
+      ? NOM[k].map(([d, v]) => { const f = DDDeflate.factorDate(d); return [d, v == null || f == null ? null : v * f]; })
+      : NOM[k];
+  });
+  d3.selectAll('#mPrice button').classed('on', function () { return this.dataset.mp === moneyPrice; });
+  drawMoney(); writeHash(false);
+}
 let topic = 'rupee', applyingHash = false, _lastNavHash = '';
 
 /* ---------------- topics ---------------- */
@@ -874,7 +891,8 @@ function drawMoney() {
   multiLine('money', '#chMoney', { yFmt: d => d3.format('~s')(d / 1000), fmt: v => 'Rs ' + bn(v / 1000),
     m: { t: 16, r: 130, b: 28, l: 58 },
     before: f => f.svg.append('text').attr('x', f.m.l).attr('y', f.m.t - 4).attr('font-size', 10)
-      .attr('fill', 'var(--muted-2)').text('Rs trillion') });
+      .attr('fill', 'var(--muted-2)')
+      .text(moneyPrice === 'real' ? 'Rs trillion, ' + DDDeflate.base + ' prices' : 'Rs trillion') });
 }
 function drawNpl() {
   if (!S.npl_ratio) return nodata('#chNpl', 'No non-performing loan data.');
@@ -1067,6 +1085,7 @@ function writeHash(push) {
   if ((topic === 'external' || all) && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
   if (topic === 'peers' && peerInd !== 'NY.GDP.PCAP.PP.KD') p.set('pi', peerInd);
   if (topic === 'longrun' && gdpView !== 'level') p.set('gv', gdpView);
+  if ((topic === 'money' || all) && moneyPrice === 'real') p.set('mp', 'real');
   const charts = all ? Object.values(TOPIC_CHARTS).flat() : (TOPIC_CHARTS[topic] || []);
   charts.forEach(c => { if (!isDefault(c)) p.set('c_' + c, [...SEL[c]].join('.')); });
   const hv = '#' + p.toString(); _lastNavHash = hv;
@@ -1097,6 +1116,7 @@ function applyStateFromHash() {
   if (o.bv === 'trend' || o.bv === 'tree') bopView = o.bv;
   if (o.pi) peerInd = o.pi;
   gdpView = o.gv === 'growth' ? 'growth' : 'level';
+  if ((o.mp === 'real') !== (moneyPrice === 'real')) setMoneyPrice(o.mp === 'real' ? 'real' : 'nom');
   bopOpen = new Set();
   if (o.bz) o.bz.split('|').forEach(s => { const p = s.split('.').map((x, i) => i ? +x : x);
     if (drillRoot(p[0]) && p.slice(1).every(Number.isInteger) && drillNode(p)) {
@@ -1117,6 +1137,8 @@ function initTopics() {
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
   d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
   d3.selectAll('#gdpLongSeg button').on('click', function () { setGdpView(this.dataset.gv); });
+  d3.selectAll('#mPrice button').on('click', function () { setMoneyPrice(this.dataset.mp); });
+  if (window.DDDeflate) d3.select('#mPrice button[data-mp="real"]').text(DDDeflate.label);
   d3.select('#fySelect').on('change', function () { setFy(this.value); });
   d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopOpen.size) { bopOpen.clear(); drawBop(); writeHash(true); } });
   window.addEventListener('hashchange', () => { if (!applyingHash) applyStateFromHash(); });

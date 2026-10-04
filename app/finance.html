@@ -3,12 +3,12 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=50a480e7"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=50a480e7"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=50a480e7"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=ea1abe1b"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=ea1abe1b"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=ea1abe1b"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=50a480e7"></script>
-<script src="assets/js/palette.js?v=50a480e7"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=ea1abe1b"></script>
+<script src="assets/js/palette.js?v=ea1abe1b"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -207,14 +207,14 @@
    <div class="seg" id="bSide"><button data-s="expenditure" class="on">Expenditure</button><button data-s="receipts">Receipts</button></div>
    <div class="seg" id="bView"><button data-v="tree" class="on">Treemap</button><button data-v="trend">Trend</button></div>
    <div class="seg" id="bTrendMode" style="display:none"><button data-tm="stack" class="on">Stacked</button><button data-tm="lines">Lines</button></div>
-   <div class="seg" id="bPrice" style="display:none"><button data-p="nom" class="on">Nominal</button><button data-p="real">Real 2015-16</button></div>
+   <div class="seg" id="bPrice" style="display:none"><button data-p="nom" class="on">Nominal</button><button data-p="real">Real 2024-25</button></div>
    <span class="yr-wrap" id="bYrWrap"><input type="range" id="bYr"/><span class="yr-lbl" id="bYrLbl">—</span></span>
   </div>
   <div id="budgetChipsWrap" style="display:none"><div style="font-size:11px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.05em;margin:4px 0 2px">Show categories</div><div class="chips" id="budgetChips" style="margin:2px 0 4px"></div></div>
   <div id="budget"></div>
   <div id="budgetTrend" style="display:none"></div>
   <div class="src" id="budgetMeta"></div>
-  <div class="note"><b>Treemap</b> shows one budget year (use the slider); <b>Trend</b> stacks the top-level categories over every available year. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award), from the <b>Explanatory Memorandum on Federal Receipts</b>, 2009-10 to 2026-27. Expenditure shown is <b>current</b> spending — debt servicing, defence, pensions, running the government — from the "Budget in Brief"; development (PSDP) is budgeted separately and not included here. In <b>Trend</b> view the <b>Real 2015-16</b> toggle deflates by the GDP deflator.</div>
+  <div class="note"><b>Treemap</b> shows one budget year (use the slider); <b>Trend</b> stacks the top-level categories over every available year. Receipts are FBR tax + non-tax revenue (before the provincial share under the NFC Award), from the <b>Explanatory Memorandum on Federal Receipts</b>, 2009-10 to 2026-27. Expenditure shown is <b>current</b> spending — debt servicing, defence, pensions, running the government — from the "Budget in Brief"; development (PSDP) is budgeted separately and not included here. In <b>Trend</b> view the <b>Real</b> toggle deflates by the GDP deflator, into the rupees of the latest complete fiscal year.</div>
  </div>
 
 <div class="kpis" id="kpis" data-topic="all"></div>
@@ -331,9 +331,10 @@
   <button class="csvbtn" data-csv="money">CSV</button>
   <h2>The money supply <span class="unit">— rupees billion</span></h2>
   <div class="desc">M1 is cash and current accounts; M2 adds time and savings deposits; M3 adds deposits held outside the banking system proper.</div>
+  <div class="controls"><div class="seg" id="mPrice"><button data-mp="nom" class="on">Nominal</button><button data-mp="real">Real</button></div></div>
   <div class="chips" id="chips-money"></div>
   <div id="chMoney"></div>
-  <div class="src">SBP, monetary aggregates (M3 monthly profile), June 2006 onward.</div>
+  <div class="src">SBP, monetary aggregates (M3 monthly profile), June 2006 onward. <b>Real</b> deflates each month-end by the GDP deflator (PBS national accounts), interpolated between fiscal years, into the rupees of the latest complete fiscal year.</div>
  </div>
 
  <div class="card" data-topic="money" id="sec-npl">
@@ -428,7 +429,7 @@
  <!-- overtime -->
  <div class="card" data-topic="overtime" id="sec-totals">
   <button class="csvbtn" data-csv="totals" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-  <h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2003–04 to 2025–26, as PBS publishes them.</div><div id="ttChart"></div></div>
+  <h2>Trade over time <span class="unit">— Rs billion</span></h2><div class="desc">Exports, imports and the balance, 2003–04 to 2025–26, as PBS publishes them.</div><div class="controls"><div class="seg tPrice"><button data-tp="nom" class="on">Nominal</button><button data-tp="real">Real</button></div></div><div id="ttChart"></div></div>
 
  <div class="card" data-topic="overtime" id="sec-recon">
   <button class="csvbtn" data-csv="recon" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
@@ -453,6 +454,7 @@
   <button class="csvbtn" data-csv="country" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <h2>Trade with <span id="cName" class="sel-year">—</span> <span class="unit">— Rs billion</span></h2>
   <div class="desc">Pakistan's exports to and imports from this country over time, and the top items traded — at the <b>detail level</b> chosen in the sidebar.</div>
+  <div class="controls"><div class="seg tPrice"><button data-tp="nom" class="on">Nominal</button><button data-tp="real">Real</button></div></div>
   <div id="cSeries"></div>
   <div class="grid2" style="margin-top:6px">
    <div><h3>Pakistan's top exports to it</h3><div id="cExp"></div></div>
@@ -468,27 +470,29 @@
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=50a480e7"></script>
-<script src="data/growth_data.js?v=50a480e7"></script>
-<script src="data/structure_data.js?v=50a480e7"></script>
-<script src="data/money_data.js?v=50a480e7"></script>
-<script src="data/history_data.js?v=50a480e7"></script>
-<script src="data/migration_data.js?v=50a480e7"></script>
-<script src="data/recon_data.js?v=50a480e7"></script>
-<script src="data/provenance.js?v=50a480e7"></script>
-<script src="data/trade_data.js?v=50a480e7"></script>
-<script src="assets/js/provenance.js?v=50a480e7"></script>
-<script src="assets/js/econ_data.js?v=50a480e7"></script>
-<script src="assets/js/econ-shell.js?v=50a480e7"></script>
-<script type="module" src="assets/js/finance.js?v=50a480e7"></script>
-<script type="module" src="assets/js/money.js?v=50a480e7"></script>
-<script type="module" src="assets/js/trade.js?v=50a480e7"></script>
-<script src="assets/js/explorer.js?v=50a480e7"></script>
-<script src="assets/js/economy-rail.js?v=50a480e7"></script>
-<script src="assets/js/sidebar-mobile.js?v=50a480e7"></script>
-<script src="assets/js/shell.js?v=50a480e7"></script>
-<script src="assets/js/modals.js?v=50a480e7"></script>
-<script src="assets/js/analytics.js?v=50a480e7"></script>
+<script src="data/macro_data.js?v=ea1abe1b"></script>
+<script src="data/growth_data.js?v=ea1abe1b"></script>
+<script src="data/structure_data.js?v=ea1abe1b"></script>
+<script src="data/money_data.js?v=ea1abe1b"></script>
+<script src="data/history_data.js?v=ea1abe1b"></script>
+<script src="data/migration_data.js?v=ea1abe1b"></script>
+<script src="data/recon_data.js?v=ea1abe1b"></script>
+<script src="data/deflator_data.js?v=ea1abe1b"></script>
+<script src="assets/js/deflate.js?v=ea1abe1b"></script>
+<script src="data/provenance.js?v=ea1abe1b"></script>
+<script src="data/trade_data.js?v=ea1abe1b"></script>
+<script src="assets/js/provenance.js?v=ea1abe1b"></script>
+<script src="assets/js/econ_data.js?v=ea1abe1b"></script>
+<script src="assets/js/econ-shell.js?v=ea1abe1b"></script>
+<script type="module" src="assets/js/finance.js?v=ea1abe1b"></script>
+<script type="module" src="assets/js/money.js?v=ea1abe1b"></script>
+<script type="module" src="assets/js/trade.js?v=ea1abe1b"></script>
+<script src="assets/js/explorer.js?v=ea1abe1b"></script>
+<script src="assets/js/economy-rail.js?v=ea1abe1b"></script>
+<script src="assets/js/sidebar-mobile.js?v=ea1abe1b"></script>
+<script src="assets/js/shell.js?v=ea1abe1b"></script>
+<script src="assets/js/modals.js?v=ea1abe1b"></script>
+<script src="assets/js/analytics.js?v=ea1abe1b"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> unless <a href="datasets/#licences">stated otherwise</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

@@ -380,7 +380,7 @@ def main():
         ('fbr_tax_collection', 'tax', 'share',
          'Each head as a share of the total', 'taxShare', 'tax', 'fy_end'),
         ('fbr_tax_collection', 'tax', 'stack',
-         'Collection by head, nominal rupees', 'taxStack', 'tax', 'fy_end'),
+         'Collection by head, nominal or real rupees', 'taxStack', 'tax', 'fy_end'),
         ('fbr_tax_collection', 'tax', 'shift',
          'Then and now: each head in the first and last year', 'taxShift',
          'tax', 'fy_end'),
@@ -389,7 +389,7 @@ def main():
         ('budget_lines', 'budget', 'gdp',
          'Eighteen budgets as a share of GDP', 'budgetGdp', None, None),
         ('budget_lines', 'budget', 'trend',
-         'Eighteen budgets in nominal rupees', 'budgetTrend', None, None),
+         'Eighteen budgets in nominal or real rupees', 'budgetTrend', None, None),
         # Justice. One panel per court with its own scale, because Punjab is
         # thirty times Balochistan and one axis flattened the other four.
         ('ljcp_case_flows', 'courts', 'pending',
