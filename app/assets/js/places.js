@@ -184,33 +184,89 @@
     return rawValues(i);
   }
 
+  /* One year of a curated indicator: a value per shape, and per row the
+     shapes it is drawn across. */
+  function placeRows(d, ind, year) {
+    var out = {}, meta = {}, seenUnit = {};
+    var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
+    for (var r = 0; r < d.value.length; r++) {
+      if (get(d.level, r) !== state.level) continue;
+      if (get(d.indicator, r) !== ind) continue;
+      if (year && get(d.year, r) !== year) continue;
+      var keys = String(get(d.map_key, r)).split(' ');
+      var note = get(d.note, r), rel = get(d.relation, r);
+      seenUnit[String(get(d.map_key, r))] = { keys: keys, v: d.value[r] };
+      for (var k = 0; k < keys.length; k++) {
+        out[keys[k]] = d.value[r];
+        if (note) meta[keys[k]] = { relation: rel, note: note };
+      }
+    }
+    var units = [];
+    Object.keys(seenUnit).forEach(function (u) {
+      units.push({ keys: seenUnit[u].keys, v: seenUnit[u].v });
+    });
+    return { values: out, meta: meta, units: units };
+  }
+
+  /* The change between two years of a curated indicator, on ground that is
+     the same in both. Rows are joined into footprints across the two years -
+     1998's Jhang is today's Jhang and Chiniot - and a count is the footprint's
+     total in the later year less its total in the earlier one. A rate is
+     taken only where the footprint is one row in each year: two districts'
+     rates cannot be combined without their populations, and a guessed
+     average would be a figure nobody published. Places with a figure in
+     only one of the years are left out, never read as zero. */
+  function placeChange(A, B, summable) {
+    var fp = footprints();
+    A.units.concat(B.units).forEach(function (u) { fp.join(u.keys); });
+    var side = function (res) {
+      var g = {};
+      res.units.forEach(function (u) {
+        if (u.v == null) return;
+        var id = fp.of(u.keys[0]);
+        var e = g[id] = g[id] || { v: 0, n: 0, keys: {} };
+        e.v += u.v; e.n += 1;
+        u.keys.forEach(function (k) { e.keys[k] = 1; });
+      });
+      return g;
+    };
+    var a = side(A), b = side(B), out = {}, units = [], meta = {}, shared = 0;
+    Object.keys(b).forEach(function (id) {
+      if (!a[id]) return;
+      var keys = Object.keys(Object.assign({}, a[id].keys, b[id].keys));
+      if (!summable && (a[id].n > 1 || b[id].n > 1)) { shared += keys.length; return; }
+      var d = b[id].v - a[id].v;
+      keys.forEach(function (k) {
+        out[k] = d;
+        if (keys.length > 1) {
+          meta[k] = { relation: 'combined', note: 'The boundaries differ between the two '
+            + 'years, so the change is for all ' + keys.length + ' of these districts together.' };
+        }
+      });
+      units.push({ keys: keys, v: d });
+    });
+    return { values: out, meta: meta, units: units, shared: shared };
+  }
+
   function rawValues(i) {
     var src = col('source', i), ind = col('indicator', i), gk = col('group_key', i);
 
     if (src === 'place') {
       var fams = (col('families', i) || '').split(' ').filter(Boolean);
+      var Y = state.year;
       return Promise.all([loadGroup(gk), fams.length ? loadProvenance() : null])
         .then(function (both) {
-          var blob = both[0], d = blob.d, out = {}, meta = {}, seenUnit = {};
-          var get = function (c, r) { return c.v ? c.v[c.i[r]] : c[r]; };
-          for (var r = 0; r < d.value.length; r++) {
-            if (get(d.level, r) !== state.level) continue;
-            if (get(d.indicator, r) !== ind) continue;
-            if (state.year && get(d.year, r) !== state.year) continue;
-            var keys = String(get(d.map_key, r)).split(' ');
-            var note = get(d.note, r), rel = get(d.relation, r);
-            seenUnit[String(get(d.map_key, r))] = { keys: keys, v: d.value[r] };
-            for (var k = 0; k < keys.length; k++) {
-              out[keys[k]] = d.value[r];
-              if (note) meta[keys[k]] = { relation: rel, note: note };
-            }
+          var res = placeRows(both[0].d, ind, Y);
+          /* A change the source does not store - 1998 to 2023, say - is
+             worked out from the two years here, on ground that is the same in
+             both (placeChange). A stored change is always used as published. */
+          if (/^\u0394/.test(Y || '') && !res.units.length && changeYears(Y)) {
+            var pr = changeYears(Y);
+            res = placeChange(placeRows(both[0].d, ind, pr[0]),
+                              placeRows(both[0].d, ind, pr[1]), col('h_sum', i) === 1);
           }
-          applyFlags(gk, fams, out, meta);
-          var units = [];
-          Object.keys(seenUnit).forEach(function (u) {
-            units.push({ keys: seenUnit[u].keys, v: seenUnit[u].v });
-          });
-          return { values: out, meta: meta, units: units };
+          applyFlags(gk, fams, res.values, res.meta);
+          return res;
         });
     }
 
@@ -746,6 +802,26 @@
     if (!m) return null;
     return [m[1], m[2].length === 2 ? m[1].slice(0, 2) + m[2] : m[2]];
   }
+  /* 1998 and 2023 -> "Δ1998-2023"; 2017 and 2023 -> "Δ2017-23", the form
+     the stored changes use. */
+  function changeKey(a, b) {
+    a = String(a); b = String(b);
+    return '\u0394' + a + '-' + (a.slice(0, 2) === b.slice(0, 2) ? b.slice(2) : b);
+  }
+  /* The census years a reader can take a change between: any two of the
+     series' own years, for census tables (computed from the panels) and for
+     curated indicators (stored, or computed on matching ground). */
+  function changeYearsOf(i) {
+    var src = col('source', i);
+    if (src !== 'census' && src !== 'place') return [];
+    var plain = list('years', i).filter(function (y) { return /^\d{4}$/.test(y); });
+    return plain.length >= 2 ? plain : [];
+  }
+  function yearOK(i, y) {
+    if (yearsFor(i).indexOf(y) >= 0) return true;
+    var c = changeYears(y), ok = changeYearsOf(i);
+    return !!c && ok.indexOf(c[0]) >= 0 && ok.indexOf(c[1]) >= 0 && +c[0] < +c[1];
+  }
   function changeLabel(y, short) {
     var c = changeYears(y);
     if (!c) return y;
@@ -790,7 +866,7 @@
     // pairs carry a third entry - the difference between the censuses - and it
     // sorts last, so taking the last would open every indicator on a change of
     // -21 to 13 rather than on a level.
-    state.year = yrs.length ? (yrs.indexOf(state.year) >= 0 ? state.year : latestYear(yrs))
+    state.year = yrs.length ? (yearOK(i, state.year) ? state.year : latestYear(yrs))
                             : null;
     /* A breakdown the reader chose is kept when the next measure has it. When
        it does not, the map changes whose figure it shows - from women to
@@ -1168,38 +1244,57 @@
        pairs have two years and a change; crops run to 39 fiscal years, and 39
        buttons in a 616px card is not a control. Past five, it becomes a slider
        with the year named beside it - the design's YEAR control. */
-    /* A census series with a long run - population, 1951 to 2023 - slides
-       over its census years, and its changes stay buttons beside the slider:
-       a change is not a point on the same line. */
-    var changes = yrs.filter(function (y) { return /^\u0394/.test(y); });
+    /* The years are buttons, or a slider past five; a change is chosen
+       separately, between any two of the series' years - 1998 to 2023 as
+       readily as one census to the next. A series with two years keeps a
+       single Change button. */
+    var pick = changeYearsOf(i);
+    var stored = yrs.filter(function (y) { return /^\u0394/.test(y); });
     var plain = yrs.filter(function (y) { return !/^\u0394/.test(y); });
-    if (changes.length && plain.length > 3) yrs = plain;
-    else changes = [];
-    if (yrs.length > 5 || changes.length) {
+    var inChange = /^\u0394/.test(state.year || '');
+    var cur = inChange ? changeYears(state.year) : null;
+    var changeCtl = '';
+    if (pick.length > 2) {
+      var from = cur ? cur[0] : pick[pick.length - 2], to = cur ? cur[1] : pick[pick.length - 1];
+      var opts = function (sel, skip) {
+        return pick.map(function (y) {
+          return '<option value="' + y + '"' + (y === sel ? ' selected' : '')
+               + (skip(y) ? ' disabled' : '') + '>' + y + '</option>';
+        }).join('');
+      };
+      changeCtl = '<div class="chg-pick">'
+        + '<button type="button" id="chgGo" aria-pressed="' + inChange + '">Change</button>'
+        + '<select id="chgFrom" aria-label="Change from">'
+        + opts(from, function (y) { return +y >= +to; }) + '</select>'
+        + '<span class="chg-arrow" aria-hidden="true">\u2192</span>'
+        + '<select id="chgTo" aria-label="Change to">'
+        + opts(to, function (y) { return +y <= +from; }) + '</select></div>';
+    } else if (pick.length === 2) {
+      var k2 = changeKey(pick[0], pick[1]);
+      changeCtl = '<button type="button" data-year="' + esc(k2) + '" aria-pressed="'
+                + (state.year === k2) + '">Change</button>';
+    } else {
+      changeCtl = stored.map(function (y) {
+        return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
+             + (y === state.year) + '">' + esc(changeLabel(y, stored.length > 1)) + '</button>';
+      }).join('');
+    }
+    if (plain.length > 5) {
+      yrs = plain;
       var at = Math.max(0, yrs.indexOf(state.year));
-      var off = yrs.indexOf(state.year) < 0 && changes.indexOf(state.year) >= 0;
-      h += '<div class="year-slide' + (off ? ' is-off' : '') + '">'
+      h += '<div class="year-slide' + (inChange ? ' is-off' : '') + '">'
          + '<span class="year-slide-lab">Year</span>'
          + '<input type="range" id="yearRange" min="0" max="' + (yrs.length - 1)
          + '" value="' + at + '" step="1" aria-label="Year"/>'
-         + '<b id="yearNow">' + esc(off ? '' : yrs[at]) + '</b>'
+         + '<b id="yearNow">' + esc(inChange ? '' : yrs[at]) + '</b>'
          + '<span class="year-slide-span">' + esc(yrs[0]) + ' to '
-         + esc(yrs[yrs.length - 1]) + '</span></div>';
-      h += changes.map(function (y) {
+         + esc(yrs[yrs.length - 1]) + '</span></div>' + changeCtl;
+    } else if (plain.length > 1) {
+      yrs = plain;
+      h += plain.map(function (y) {
         return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
-             + (y === state.year) + '">' + esc(changeLabel(y, changes.length > 1)) + '</button>';
-      }).join('');
-    } else if (yrs.length > 1) {
-      /* The two census panels both sit on the 2023 frame, so where a cell
-         exists in each the difference is meaningful and is offered. The
-         curated pairs already ship a stored change; these 34 get a computed
-         one, marked the same way. */
-      var nChange = yrs.filter(function (y) { return /^\u0394/.test(y); }).length;
-      h += yrs.map(function (y) {
-        var lab = /^\u0394/.test(y) ? (nChange > 1 ? changeLabel(y, true) : 'Change') : y;
-        return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
-             + (y === state.year) + '">' + esc(lab) + '</button>';
-      }).join('');
+             + (y === state.year) + '">' + esc(y) + '</button>';
+      }).join('') + changeCtl;
     } else if (yrs.length === 1) {
       /* Two greyed-out buttons read as a broken control. Most indicators
          genuinely exist in one census only - 4,187 of the 4,601 district
@@ -1214,6 +1309,18 @@
     $('yearCtl').querySelectorAll('button[data-year]').forEach(function (b) {
       b.onclick = function () { state.year = b.dataset.year; choose(state.row); };
     });
+    var go = document.getElementById('chgGo');
+    if (go) {
+      var fromSel = document.getElementById('chgFrom'), toSel = document.getElementById('chgTo');
+      var apply = function () {
+        state.year = changeKey(fromSel.value, toSel.value);
+        choose(state.row);
+      };
+      go.onclick = apply;
+      // picking either end draws that change at once
+      fromSel.onchange = apply;
+      toSel.onchange = apply;
+    }
     var slider = document.getElementById('yearRange');
     if (slider) {
       /* Name the year as the handle moves, but only redraw on release: each

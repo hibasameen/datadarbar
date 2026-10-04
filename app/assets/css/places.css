@@ -209,6 +209,11 @@
 .tot-warn b{color:var(--sienna,#8a5a3b);font-weight:700}
 .tot-note .tot-k{color:var(--muted)}
 .tot-note b{color:var(--body);font-weight:600}
+/* A note or a warning is a sentence, not a figure: it reads at body size
+   beside the headline number rather than competing with it. */
+.tot-note b,.tot-warn b{font-size:11.5px;line-height:1.35;font-weight:500;
+  font-variant-numeric:normal}
+@media(max-width:700px){.tot-note b,.tot-warn b{font-size:11px}}
 
 /* The denominator behind a published percentage, where the source's own is
    not the obvious one. Set apart from the coverage line above it because it
@@ -469,3 +474,34 @@
 .pop-hist svg text{font-size:9.5px;fill:var(--muted)}
 .pop-hist svg text.lab{font-size:10.5px;font-weight:700;fill:var(--ink)}
 .pop-hist .sub{font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px}
+
+/* A change between any two years: a row of its own under the years. */
+.year-ctl:has(.chg-pick){flex-wrap:wrap}
+.chg-pick{flex-basis:100%;display:flex;align-items:center;gap:6px;padding:6px;
+  border-top:1px solid var(--line-strong);background:var(--surface)}
+.year-ctl:has(.year-slide) .chg-pick{border-top:0;padding:6px 0 0;background:none}
+.year-ctl .chg-pick button,.year-ctl:has(.year-slide) .chg-pick button{flex:0 0 auto;height:28px;
+  margin:0;padding:0 10px;border:1px solid var(--line-strong);border-radius:5px;
+  font-size:12px;background:var(--surface);color:var(--ink);cursor:pointer}
+.year-ctl .chg-pick button[aria-pressed="true"]{background:var(--green-900);
+  border-color:var(--green-900);color:#fff;font-weight:700}
+.chg-pick select{flex:1;min-width:0;height:28px;font:inherit;font-size:12px;
+  border:1px solid var(--line-strong);border-radius:5px;background:var(--surface);
+  color:var(--ink);padding:0 4px}
+.chg-arrow{color:var(--muted);font-size:12px}
+
+/* The measure's name keeps at least 260px; when the strip beside it has a
+   note to say and the window is narrow, the strip moves under the name
+   rather than squeezing it to a word per line. */
+.measure-head{flex-wrap:wrap;row-gap:6px}
+.mh-text{flex:1 1 260px}
+.totals{flex:0 1 auto;min-width:0}
+.tot-note,.tot-warn{max-width:230px}
+
+/* Leaflet stacks its controls at z-index 1000, above the sticky site header
+   (500) and footer (400), so on a phone the zoom buttons rode over the
+   header as the page scrolled. The map keeps its layers to itself. */
+#placesMap{isolation:isolate}
+/* On a phone the strip's label wraps rather than cutting "weighted by 2023
+   population" to "AVERAGE · PAKIS…". */
+@media(max-width:700px){.tot-k{white-space:normal;overflow:visible;line-height:1.3}}
