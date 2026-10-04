@@ -146,9 +146,10 @@ CHARTS = {
  'sec-budget': dict(
     table='budget_lines', publication='Budget in Brief',
     selection='own-year Budget Estimates only (is_own_year_be), FY2009-10 onwards',
-    calc='line items summed to their printed category. Real values use the GDP '
-         'deflator; where the deflator is not yet published it is extrapolated '
-         'and the point is flagged.',
+    calc='line items summed to their printed category. Real values use the '
+         'site\u2019s GDP deflator, in the rupees of the latest complete fiscal '
+         'year; where the deflator is not yet published it is extrapolated and '
+         'the point is flagged.',
     note='These are budget estimates, not outturn. Receipts are gross, before '
          'the provincial share; expenditure excludes development spending. The '
          'two sides cannot be subtracted to infer a federal deficit.'),
@@ -186,7 +187,11 @@ CHARTS = {
     selection='monthly components, summed to fiscal years (July-June)',
     calc='inflows minus outflows equal SBP’s published current account balance'),
  'sec-m': dict(table='sbp_observations', publication='Monetary aggregates, M3 monthly profile',
-    selection='June 2006 onwards'),
+    selection='June 2006 onwards',
+    note='Nominal unless Real is chosen. The Real toggle is derived: each '
+         'month-end deflated by the GDP deflator, interpolated between '
+         'fiscal-year midpoints, into the rupees of the latest complete fiscal '
+         'year.'),
  'sec-npl': dict(table='sbp_observations', publication='Segment-wise advances and non-performing loans',
     selection='NPLs as a share of gross advances',
     note='The series ends June 2025.'),
@@ -234,14 +239,15 @@ CHARTS = {
     calc='this is the published grand total, not the sum of the product detail '
          'shown elsewhere on this page',
     note='Years whose quarterly shape breaks against the three before them, or '
-         'which are incomplete, are drawn dashed and named under the chart.'),
+         'which are incomplete, are drawn dashed and named under the chart. The Real toggle is derived: the GDP deflator (PBS national accounts) into the rupees of the latest complete fiscal year.'),
  'sec-partners': dict(table='trade_by_country', publication='National Trade Database, trade by partner country',
     selection='fiscal years assembled from quarters, because the monthly rows '
               'have no June in any year',
     note='The partner tables do not always account for the whole published '
          'total. Before 2011-12 they name 85 to 91 per cent of imports.'),
  'sec-country': dict(table='trade_by_country', publication='National Trade Database, trade by partner country',
-    selection='one country’s exports and imports, by fiscal year'),
+    selection='one country’s exports and imports, by fiscal year',
+    note='The Real toggle is derived: the GDP deflator (PBS national accounts) into the rupees of the latest complete fiscal year; the top-items bars stay nominal.'),
  'sec-recon': dict(table='trade_reconciliation', publication='Totals reconciled against their parts',
     selection='each period’s published total beside the sum of its country and group rows'),
  # ---- trade: the 8-digit artefact ----
@@ -279,7 +285,7 @@ STATE = {
     selection='all heads, every fiscal year',
     calc='stacked to the annual total, which is the total of the heads '
          'present that year',
-    note='Nominal rupees, not inflation-adjusted. FY2023-24 is the latest '
+    note='Nominal rupees unless Real is chosen. The Real view is derived: each fiscal year deflated by the GDP deflator (PBS national accounts, 1980-81 series linked at 1999-00) into the rupees of the latest complete fiscal year; years past the last published deflator rest on its extrapolation. FY2023-24 is the latest '
          'year in this extract, not the latest FBR publishes - its own '
          'revenue-collection page lists FY2024-25. Wealth tax has no row '
          'from 2016 and is drawn as absent rather than as zero; no row in '
@@ -301,7 +307,7 @@ STATE = {
  'budgetTree': dict(publication='Budget in Brief; Explanatory Memorandum on '
                                 'Federal Receipts',
     selection='one budget year, receipts or current expenditure, grouped',
-    note='Own-year budget estimates, not outturn. Groups rest on a crosswalk '
+    note='Own-year budget estimates, not outturn. The Real view is derived: each fiscal year deflated by the GDP deflator (PBS national accounts, 1980-81 series linked at 1999-00) into the rupees of the latest complete fiscal year; years past the last published deflator rest on its extrapolation. Groups rest on a crosswalk '
          'between documents whose item labels drift; development spending is '
          'budgeted separately and is not in it.'),
  'budgetGdp': dict(publication='Budget in Brief; Explanatory Memorandum on '
@@ -313,8 +319,8 @@ STATE = {
          'view. Estimates as presented, not outturn.'),
  'budgetTrend': dict(publication='Budget in Brief; Explanatory Memorandum on '
                                  'Federal Receipts',
-    selection='every budget year, grouped, in nominal rupees',
-    note='Nominal rupees, not inflation-adjusted. Estimates as presented.'),
+    selection='every budget year, grouped, in nominal or real rupees',
+    note='Nominal rupees unless Real is chosen. The Real view is derived: each fiscal year deflated by the GDP deflator (PBS national accounts, 1980-81 series linked at 1999-00) into the rupees of the latest complete fiscal year; years past the last published deflator rest on its extrapolation. Estimates as presented.'),
  'courtsPending': dict(publication='Judicial Statistics of Pakistan',
     selection='cases pending at year end, by court, one panel per court',
     note='Each panel has its own scale from zero.'),

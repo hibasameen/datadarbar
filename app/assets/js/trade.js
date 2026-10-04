@@ -59,6 +59,8 @@ function start(){
     2015-16. DD_TRADE carries the published total from 2003-04. */
  if(window.DD_TRADE){const W=window.DD_TRADE;E.totals=W.totals;E.partners=W.partners;
   TR_FLAGS=W.flags||{};TR_CLEAN=W.last_clean||null;}
+ d3.selectAll('.tPrice button').on('click',function(){setTPrice(this.dataset.tp);});
+ if(window.DDDeflate)d3.selectAll('.tPrice button[data-tp="real"]').text(DDDeflate.label);
  initDrill();initPartners();initProducts();drawTotals();initMovers();initCountry();initRecon();initCsv();initTopics();
  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
   if(MINE.indexOf(window.DDEcon.current())<0)return;   // another module's view
@@ -76,6 +78,7 @@ function writeHash(push){
  if(applyingHash)return;
  const p=new URLSearchParams();p.set('t',topic);
  if(tCountry!=='all')p.set('c',tCountry);
+ if(tPrice==='real')p.set('tp','real');
  if(topic==='movers'||topic==='partners'||topic==='all'){if(tLevel!=='section')p.set('lvl',tLevel);}
  if(topic==='movers'||topic==='all'){if(mDir!=='export')p.set('md',mDir);if(mMeasure!=='abs')p.set('mm',mMeasure);if(mMode!=='span')p.set('mw',(moverWindows()[mWinIdx]||{}).key||'');}
  const hv='#'+p.toString();
@@ -95,6 +98,8 @@ function applyStateFromHash(){
  if(o.mm){mMeasure=o.mm;d3.selectAll('#mMeasure button').classed('on',function(){return this.dataset.m===o.mm;});}
  if(o.mw){mMode='yoy';d3.selectAll('#mMode button').classed('on',function(){return this.dataset.w==='yoy';});d3.select('#mWinWrap').style('display',null);setMWin();const i=moverWindows().findIndex(w=>w.key===o.mw);if(i>=0){mWinIdx=i;d3.select('#mWin').property('value',i);d3.select('#mWinLbl').text((moverWindows()[i]||{}).label||'—');}}
  if(o.c){tCountry=o.c;d3.select('#tCountry').property('value',o.c);}
+ tPrice=o.tp==='real'&&window.DDDeflate&&DDDeflate.available?'real':'nom';
+ d3.selectAll('.tPrice button').classed('on',function(){return this.dataset.tp===tPrice;});
  applyingHash=false;
  if(TOPIC_DRAWS[k]&&k!=='all')TOPIC_DRAWS[k]();else if(k==='all')drawAll();
  drawCountry();
@@ -215,8 +220,20 @@ function tickYears(years,W){
  for(let i=years.length-1;i>=0;i-=step)out.unshift(years[i]);
  return out;
 }
+/* Nominal or real rupees for the series over time (totals, a country's
+   trade), with the site's GDP deflator (assets/js/deflate.js) into the
+   rupees of the latest complete fiscal year. The single-year charts stay
+   nominal: within one year, real and nominal differ only by a constant. */
+let tPrice='nom';
+const rv=(v,fy)=>{if(v==null||tPrice!=='real'||!window.DDDeflate)return v;const f=DDDeflate.factor(fy);return f==null?null:v*f;};
+function priceNote(){return tPrice==='real'?' · '+DDDeflate.base+' prices (GDP deflator)':'';}
+function setTPrice(v){tPrice=v==='real'&&window.DDDeflate&&DDDeflate.available?'real':'nom';
+ d3.selectAll('.tPrice button').classed('on',function(){return this.dataset.tp===tPrice;});
+ drawTotals();drawCountry();writeHash();}
+function realTotals(){const T=E.totals;if(tPrice!=='real')return T;
+ const o={years:T.years};['export','import','balance'].forEach(k=>{o[k]={};T.years.forEach(y=>{o[k][y]=rv(T[k][y],y);});});return o;}
 function drawTotalsInto(el,W,H,hi){
- const T=E.totals,years=T.years,m={t:16,r:64,b:28,l:54};
+ const T=realTotals(),years=T.years,m={t:16,r:64,b:28,l:54};
  const x=d3.scalePoint().domain(years).range([m.l,W-m.r]).padding(.5);
  const av=[];years.forEach(y=>['export','import','balance'].forEach(k=>{if(T[k][y]!=null)av.push(T[k][y]);}));
  const y=d3.scaleLinear().domain([Math.min(0,d3.min(av)),d3.max(av)]).nice().range([H-m.b,m.t]);
@@ -240,6 +257,8 @@ function drawTotalsInto(el,W,H,hi){
 }
 function drawTotals(){const el=d3.select('#ttChart');el.selectAll('*').remove();
  drawTotalsInto(el,el.node().clientWidth||900,300,null);
+ if(tPrice==='real')el.append('div').attr('class','note').html('In <b>'+DDDeflate.base+' rupees</b>, deflated by the GDP deflator (PBS national accounts)'
+  +(E.totals.years.some(y=>DDDeflate.isEstimate(y))?'; '+E.totals.years.filter(y=>DDDeflate.isEstimate(y)).join(', ')+' rests on an extrapolated deflator.':'.'));
  const fy=Object.keys(TR_FLAGS).sort();
  if(fy.length)el.append('div').attr('class','note').html(
   'Drawn dashed and not to be quoted: '+fy.map(y=>'<b>'+y+'</b> \u2014 '+
@@ -393,13 +412,13 @@ function drawCountry(){
  const el=d3.select('#cSeries');el.selectAll('*').remove();
  const W=el.node().clientWidth||900,H=230,m={t:14,r:52,b:26,l:52};
  const x=d3.scalePoint().domain(years).range([m.l,W-m.r]).padding(.5);
- const vals=[];years.forEach(y=>['exp','imp'].forEach(k=>{if(c.series[y][k]!=null)vals.push(c.series[y][k]);}));
+ const vals=[];years.forEach(y=>['exp','imp'].forEach(k=>{const v=rv(c.series[y][k],y);if(v!=null)vals.push(v);}));
  const y=d3.scaleLinear().domain([0,d3.max(vals)||1]).nice().range([H-m.b,m.t]);
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  svg.append('g').attr('transform',`translate(0,${H-m.b})`).attr('class','axis').call(d3.axisBottom(x).tickValues(years.filter((d,i)=>i%2===0)));
  svg.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(fmtBn)).call(g=>g.selectAll('.tick line').clone().attr('x2',W-m.r-m.l).attr('class','gl'));
  [['exp','Pakistan’s exports',scolor('XI')],['imp','Pakistan’s imports','var(--negative)']].forEach(s=>{
-  const pts=years.map(yr=>({y:yr,v:c.series[yr][s[0]]})).filter(p=>p.v!=null);
+  const pts=years.map(yr=>({y:yr,v:rv(c.series[yr][s[0]],yr)})).filter(p=>p.v!=null);
   const line=d3.line().x(p=>x(p.y)).y(p=>y(p.v));
   svg.append('path').datum(pts).attr('fill','none').attr('stroke',s[2]).attr('stroke-width',2.5).attr('d',line);
   svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.y)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',s[2]).attr('stroke','var(--surface)').attr('stroke-width',1)
@@ -411,7 +430,7 @@ function drawCountry(){
  chbar('#cExp',lvl.exp||[],scolor('XI'));
  chbar('#cImp',lvl.imp||[],'var(--negative)');
  const lat=TX.meta.latest||{};
- d3.select('#cMeta').text(`${LEVEL_LABEL[tLevel]} breakdown · exports ${lat.export||''}, imports ${lat.import||''} · PBS 8-digit trade`);
+ d3.select('#cMeta').text(`${LEVEL_LABEL[tLevel]} breakdown · exports ${lat.export||''}, imports ${lat.import||''} · PBS 8-digit trade${priceNote()}${tPrice==='real'?' (the line; the top items are nominal)':''}`);
 }
 function chbar(elSel,rows,color){
  const el=d3.select(elSel);el.selectAll('*').remove();rows=rows.slice(0,10);

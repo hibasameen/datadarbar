@@ -1275,11 +1275,14 @@ function applyView(){
  redraw();
 }
 let _defl=null;
+/* The site's one deflator (assets/js/deflate.js): the GDP deflator from
+   1960-61, rebased so the real view is in the rupees of the latest complete
+   fiscal year rather than 2015-16's. Published years only; deflForYears
+   extends it past the end, as before. */
 function deflator(){
  if(_defl)return _defl;
- const cur=E.indicators.series.find(s=>s.key==='gdp_mp_curr'),con=E.indicators.series.find(s=>s.key==='gdp_mp_const');
- const cm={},km={};(cur?cur.points:[]).forEach(p=>cm[p.year]=p.value);(con?con.points:[]).forEach(p=>km[p.year]=p.value);
- const d={};Object.keys(cm).forEach(y=>{if(km[y])d[y]=cm[y]/km[y]*100;});
+ const D=window.DDDeflate,d={};
+ if(D&&D.available){const b=D.index(D.base);Object.keys(window.DD_DEFLATOR.fy).forEach(y=>{d[y]=D.index(y)/b*100;});}
  _defl=d;return d;
 }
 function deflForYears(years){
@@ -1314,6 +1317,7 @@ function initBudget(){
  d3.selectAll('#bSide button').on('click',function(){setBSide(this.dataset.s);});
  d3.selectAll('#bView button').on('click',function(){setBView(this.dataset.v);});
  d3.selectAll('#bPrice button').on('click',function(){setBPrice(this.dataset.p);});
+ if(window.DDDeflate)d3.select('#bPrice button[data-p="real"]').text(DDDeflate.label);
  d3.selectAll('#bTrendMode button').on('click',function(){setBTrendMode(this.dataset.tm);});
  buildBudgetChips();setBYears();drawBudget();
 }
@@ -1347,7 +1351,7 @@ function budgetMetaText(years,real){
  return `${bSide==='expenditure'?'Current expenditure':'Tax & non-tax receipts'}`
   + ` by category, ${years[0]}\u2013${years[years.length-1]}`
   + ` \u00b7 budget estimates, not outturn`
-  + ` \u00b7 ${real?'constant 2015-16 Rs (GDP-deflated)':'nominal Rs'}`
+  + ` \u00b7 ${real?'constant '+(window.DDDeflate?DDDeflate.base:'')+' Rs (GDP-deflated)':'nominal Rs'}`
   + (est.length?` \u00b7 deflator estimated for ${est.join(', ')}`:'')
   + ` \u00b7 ${bSide==='expenditure'?'Federal Budget in Brief':'Explanatory Memorandum on Federal Receipts'}`;
 }
