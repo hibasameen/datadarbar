@@ -2365,7 +2365,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
 
     # ── catalogue metadata: shelf, period covered, place keys, sample rows ──
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from catalog_meta import KIND, KINDS, TIME_COLS, KEY_COLS, LICENCE, licence_of
+    from catalog_meta import (KIND, KINDS, TIME_COLS, KEY_COLS, LICENCE, licence_of,
+                              PROVENANCE, provenance_of)
     unfiled = [t["name"] for t in tables if t["name"] not in KIND]
     if unfiled:
         raise SystemExit(f"catalog_meta.KIND does not file: {', '.join(unfiled)}")
@@ -2374,12 +2375,20 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     unlicensed = [t["name"] for t in tables if t["name"] not in LICENCE]
     if unlicensed:
         raise SystemExit(f"catalog_meta.LICENCE does not cover: {', '.join(unlicensed)}")
+    # Nor without saying whether its figures are the publisher's or ours.
+    unsourced = [t["name"] for t in tables if t["name"] not in PROVENANCE]
+    if unsourced:
+        raise SystemExit(f"catalog_meta.PROVENANCE does not cover: {', '.join(unsourced)}")
     samples = {}
     for t in tables:
         path = (OUT / t["file"]).as_posix()
         cols = [c["name"] for c in t["columns"]]
         t["kind"] = KIND[t["name"]]
         t["licence"] = licence_of(t["name"])
+        t["provenance"] = provenance_of(t["name"], cols)
+        for c in t["columns"]:
+            if c["name"] in t["provenance"]["derived_columns"]:
+                c["derived"] = True
         tc = next((c for c in TIME_COLS if c in cols), None)
         if tc:
             lo, hi = con.sql(f'SELECT min("{tc}")::VARCHAR, max("{tc}")::VARCHAR '

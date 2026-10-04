@@ -444,3 +444,8 @@
   margin:0 4px 4px 0;border-radius:4px;padding:1px 5px}
 #placesMap .leaflet-control-attribution a{color:var(--green-800)}
 #placesMap.is-street .leaflet-tile-pane{filter:saturate(.75)}
+
+/* a figure Data Darbar constructed, not the publisher's */
+.mh-derived{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;line-height:1;
+  padding:2px 6px;border-radius:999px;background:#f3edf6;color:var(--plum,#6b4c7a);
+  border:1px solid var(--plum-300,#a98cb5);vertical-align:1px;cursor:help}

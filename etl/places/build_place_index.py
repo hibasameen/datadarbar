@@ -507,6 +507,20 @@ def main():
     print(f'  ambiguous labels qualified by table, then census; '
           f'{left} still duplicated')
 
+    # Whose figure is it? Census-panel series are PBS's as published; a
+    # curated group is Data Darbar's where we computed, estimated or
+    # aggregated it (etl/catalog_meta.PLACES_DERIVED, audited per group).
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+    from catalog_meta import place_value_derived
+    con.create_function('_derived', lambda g, i: bool(place_value_derived(g, i)),
+                        ['VARCHAR', 'VARCHAR'], 'BOOLEAN')
+    con.execute("""CREATE OR REPLACE TABLE place_indicator_index AS
+        SELECT *, CASE WHEN source = 'census' THEN FALSE
+                       ELSE _derived(group_key, indicator) END AS derived
+        FROM place_indicator_index""")
+    nd = con.sql("SELECT count(*) FILTER (WHERE derived), count(*) FROM place_indicator_index").fetchone()
+    print(f'  {nd[0]:,} of {nd[1]:,} indicators are Data Darbar\u2019s constructions, the rest as published')
+
     ovals = ', '.join("('" + k + "', " + str(i) + ")" for i, k in enumerate(ORDER))
     con.execute(f"""COPY (SELECT i.* FROM place_indicator_index i
                           LEFT JOIN (VALUES {ovals}) AS o(topic, ord) ON o.topic = i.topic

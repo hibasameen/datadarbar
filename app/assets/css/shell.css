@@ -169,3 +169,7 @@ a{color:var(--green-800)}
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   select,textarea{font-size:16px!important}
 }
+/* a chart whose figures Data Darbar computed, not the publisher's as printed */
+.src .src-derived{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;line-height:1;
+  padding:2px 6px;border-radius:999px;background:#f3edf6;color:var(--plum);border:1px solid var(--plum-300);
+  vertical-align:1px;cursor:help}

@@ -619,6 +619,14 @@ def main():
         out['state:' + chart] = {k: v for k, v in r.items()
                                  if v not in (None, [], '', False)}
 
+    # A chart whose figures Data Darbar computed - a share, a rate, a change,
+    # a backcast, months summed to fiscal years - says so in its source panel.
+    # The calculation line already describes what was done; this marks that
+    # what is drawn is not the publisher's figure as printed.
+    for r in out.values():
+        if r.get('calc') or re.search(r'\bsummed\b|\baveraged\b', r.get('selection') or ''):
+            r['derived'] = True
+
     dest = pathlib.Path(a.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(

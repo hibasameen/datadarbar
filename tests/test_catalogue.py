@@ -64,3 +64,27 @@ def test_every_table_states_its_licence():
     assert sbp and all(t['licence']['reuse'] == 'non-commercial' for t in sbp)
     osm = next(t for t in CAT['tables'] if t['name'] == 'healthsites_osm_2019')
     assert osm['licence']['reuse'] == 'share-alike'
+
+
+def test_every_table_says_whose_figures_it_holds():
+    """PBS's licence asks that derived figures not pass as official ones. Every
+    table is As published, Derived, or Includes derived, and every derived
+    column it names exists and is tagged in the field list."""
+    for t in CAT['tables']:
+        pv = t.get('provenance')
+        assert pv and pv['type'] in ('published', 'mixed', 'derived'), f'{t["name"]}: no provenance'
+        tagged = {c['name'] for c in t['columns'] if c.get('derived')}
+        assert tagged == set(pv['derived_columns']), f'{t["name"]}: derived tags out of step'
+    kinds = {t['name']: t['provenance']['type'] for t in CAT['tables']}
+    assert kinds['mpi_districts'] == 'derived' and kinds['national_accounts'] == 'published'
+
+
+def test_places_marks_constructed_indicators():
+    import duckdb
+    ix = (APP / 'data' / 'warehouse' / 'place_indicator_index.parquet').as_posix()
+    got = dict(duckdb.execute(f"""SELECT group_key || '|' || indicator, derived FROM '{ix}'
+        WHERE level = 'district' AND indicator IN ('H', 'sex_ratio', 'pop_total')""").fetchall())
+    assert got.get('mpi|H') is True and got.get('demographics|sex_ratio') is True
+    assert got.get('demographics|pop_total') is False
+    census = duckdb.execute(f"SELECT bool_or(derived) FROM '{ix}' WHERE source = 'census'").fetchone()[0]
+    assert census is False
