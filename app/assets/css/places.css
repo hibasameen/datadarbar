@@ -497,3 +497,11 @@
 .mh-text{flex:1 1 260px}
 .totals{flex:0 1 auto;min-width:0}
 .tot-note,.tot-warn{max-width:230px}
+
+/* Leaflet stacks its controls at z-index 1000, above the sticky site header
+   (500) and footer (400), so on a phone the zoom buttons rode over the
+   header as the page scrolled. The map keeps its layers to itself. */
+#placesMap{isolation:isolate}
+/* On a phone the strip's label wraps rather than cutting "weighted by 2023
+   population" to "AVERAGE · PAKIS…". */
+@media(max-width:700px){.tot-k{white-space:normal;overflow:visible;line-height:1.3}}
