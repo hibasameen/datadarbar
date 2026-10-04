@@ -1305,6 +1305,7 @@
      as the whole count over the whole population, which is the only honest
      aggregate of it; a published rate gets its range instead. */
   function renderTotals() {
+    fillWeighted.token = null;      // a weighting still loading is for an old view
     var box = $('totals');
     if (!box) return;
     if (state.row == null || !state.units) { box.hidden = true; return; }
@@ -1340,7 +1341,7 @@
        whether the label happens to contain the word "mean". */
     var rate = !state.norm && col('h_sum', state.row) !== 1;
 
-    var figure, caption, rangeTitle = '';
+    var figure, caption, rangeTitle = '', weighted = null;
     if (state.norm) {
       var f = normFactor(), suffix = state.norm === 'pct' ? '%' : '';
       if (keep.length && keep[0].d2 !== undefined) {
@@ -1368,21 +1369,20 @@
         caption = normLabel().replace(/^%/, 'Share') + ' \u00b7 ' + where;
       }
     } else if (rate) {
-      /* A rate or a proportion cannot be totalled, but a RANGE is not the
-         summary a reader wants at the top of the map: two extremes say
-         nothing about the middle, and the top bar is where the eye goes for
-         "so what is it, roughly".
+      /* A rate or a proportion cannot be totalled, so the strip gives its
+         average - weighted by each place's census population, because an
+         average that counts Harnai the same as Lahore describes no one.
 
-         This is the plain average of the places on the map, not a national
-         rate, and the caption says so. It is unweighted on purpose: the
-         numerator and denominator behind a stored rate are not in the
-         payload, and weighting every rate by total population would be wrong
-         for any whose denominator is not population - a literacy rate is out
-         of those aged ten and over, an unemployment rate out of the labour
-         force. Where the page computes a share itself it has both parts and
-         does weight it, which is the branch above.
-
-         The range is kept on hover, so nothing that was there is lost. */
+         The weights are the census population of the place in the figure's
+         year (the nearest census for a survey), of the sex and the urban or
+         rural part shown. Three rates are aggregated exactly rather than
+         averaged, because their denominators follow from population:
+         density (people over area), household size (people over households)
+         and the sex ratio (men over women). For the rest - a literacy rate
+         is out of those aged ten and over, an unemployment rate out of the
+         labour force - weighting by population is close to the national rate
+         but not identical, and the hover says so. Crop yields are per
+         hectare, not per person, and stay a plain average. */
       var vals = keep.map(function (u) { return u.v; })
         .filter(function (v) { return v != null && isFinite(v); })
         .sort(function (a, b) { return a - b; });
@@ -1390,13 +1390,18 @@
       if (!vals.length) { figure = '\u2014'; caption = 'No values'; }
       else {
         var mean = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
-        figure = fmt(mean, dp);
-        caption = 'Average ' + g.noun + ' \u00b7 unweighted';
         rangeTitle = 'Range across the ' + vals.length + ' ' + g.noun
-          + 's shown: ' + fmt(vals[0], dp) + ' to '
-          + fmt(vals[vals.length - 1], dp)
-          + '. This average gives every ' + g.noun
-          + ' equal weight, so it is not a national rate.';
+          + 's shown: ' + fmt(vals[0], dp) + ' to ' + fmt(vals[vals.length - 1], dp)
+          + '. Unweighted average ' + fmt(mean, dp) + '.';
+        if (col('group_key', state.row) === 'crops') {
+          figure = fmt(mean, dp);
+          caption = 'Average ' + g.noun + ' \u00b7 unweighted';
+        } else {
+          figure = '\u2026';
+          caption = 'Average \u00b7 ' + where;
+          // an average carries one more decimal than the figures it is made of
+          weighted = { keep: keep, dp: Math.max(dp, 1), mean: mean, where: where };
+        }
       }
     } else {
       figure = big(keep.reduce(function (a, u) { return a + u.v; }, 0));
@@ -1437,6 +1442,114 @@
            + state.invalid + ' ' + esc(g.noun) + (state.invalid === 1 ? '' : 's')
            + ' reporting a negative count, which the source cannot mean</b></div>'
          : '');
+    if (weighted) fillWeighted(weighted, rangeTitle);
+  }
+
+  /* ── the weighted average of a rate ─────────────────────────────────── */
+  var POPW = {};
+  /* table 1's all-sexes population indicator, as each census spells it */
+  function popIndicator(y) {
+    y = String(y);
+    return EARLY.indexOf(y) >= 0 ? 'POPULATION'
+         : y === '1998' ? 'POPULATION - 1998'
+         : y === '2017' ? 'POPULATION - 2017 / ALL SEXES'
+                        : 'POPULATION-2023 / ALL SEXES';
+  }
+  /* The census whose population weights a figure: its own, or for a survey
+     the nearest one - 1998 to 2007, 2017 to 2020, 2023 after. A change is
+     weighted by the later census. */
+  function weightYear() {
+    var y = String(state.year || ''), c = changeYears(y);
+    if (c) y = c[1];
+    if (EARLY.indexOf(y) >= 0 || y === '1998' || y === '2017' || y === '2023') return y;
+    // most curated sources carry no structured year; their name does
+    // ("PSLM 2019-20"), and the nearest census is read from that
+    var m = /(19|20)\d\d/.exec(y) || /(19|20)\d\d/.exec(String(col('dataset', state.row) || ''));
+    var n = m ? +m[0] : 2023;
+    return n <= 2007 ? '1998' : n <= 2020 ? '2017' : '2023';
+  }
+  /* Population per shape. A census unit drawn across several shapes - a
+     district split after 2017 - shares its population equally among them,
+     so the weights still add up to the census and no one is counted twice. */
+  function popWeights() {
+    var y = weightYear(), sx = state.sex, ind = popIndicator(y);
+    if ((sx === 'female' || sx === 'male') && (y === '2017' || y === '2023')) {
+      ind = (y === '2017' ? 'POPULATION - 2017 / ' : 'POPULATION-2023 / ') + sx.toUpperCase();
+    }
+    var loc = ['all', 'rural', 'urban'].indexOf(state.locality) >= 0 ? state.locality : 'all';
+    var id = [y, ind, loc, state.level].join('|');
+    if (!POPW[id]) {
+      POPW[id] = engine().then(function (w) {
+        return w.query('SELECT map_key AS k, sum(value) AS v FROM ' + panelOf(y)
+          + " WHERE table_id = '1' AND indicator = " + q(ind)
+          + ' AND locality = ' + q(loc)
+          + (state.level === 'district' ? " AND unit_type = 'district'"
+                                        : " AND unit_type <> 'district'")
+          + ' AND map_key IS NOT NULL AND value IS NOT NULL GROUP BY 1');
+      }).then(function (res) {
+        var per = {};
+        res.rows.forEach(function (r) {
+          var ks = String(r.k).split(' ');
+          ks.forEach(function (k) { per[k] = (per[k] || 0) + Number(r.v) / ks.length; });
+        });
+        return { per: per, year: y, sex: ind !== popIndicator(y) ? sx : null };
+      });
+      POPW[id].catch(function () { delete POPW[id]; });
+    }
+    return POPW[id];
+  }
+  function fillWeighted(wt, rangeTitle) {
+    var token = {};
+    fillWeighted.token = token;
+    var label = String(col('label', state.row) || '');
+    var change = /^\u0394/.test(state.year || '');
+    var how = change ? 'mean'
+      : /sex ratio/i.test(label) ? 'sexratio'
+      : /density|per\s*(sq\.?\s*)?km/i.test(label) ? 'harmonic'
+      : /household size|persons per household/i.test(label) ? 'harmonic' : 'mean';
+    popWeights().then(function (P) {
+      if (fillWeighted.token !== token) return;
+      var sw = 0, swv = 0, swi = 0, sm = 0, sf = 0, used = 0;
+      wt.keep.forEach(function (u) {
+        if (u.v == null || !isFinite(u.v)) return;
+        var w = 0;
+        u.keys.forEach(function (k) { w += P.per[k] || 0; });
+        if (!w) return;
+        used += 1; sw += w; swv += w * u.v;
+        if (u.v) swi += w / u.v;
+        sm += w * u.v / (100 + u.v); sf += w * 100 / (100 + u.v);
+      });
+      var box = document.querySelector('#totals .tot');
+      if (!box) return;
+      var v = !sw ? null
+        : how === 'harmonic' ? (swi ? sw / swi : null)
+        : how === 'sexratio' ? (sf ? sm / sf * 100 : null)
+        : swv / sw;
+      var who = (P.sex === 'female' ? 'women and girls' : P.sex === 'male' ? 'men and boys'
+                 : 'people') + (state.locality === 'rural' ? ' in rural areas'
+                 : state.locality === 'urban' ? ' in urban areas' : '');
+      var exact = how !== 'mean';
+      box.querySelector('.tot-k').textContent = v == null
+        ? 'Average \u00b7 ' + wt.where + ' \u00b7 unweighted'
+        : (exact ? '' : 'Average \u00b7 ') + wt.where
+          + ' \u00b7 weighted by ' + P.year + ' population';
+      box.querySelector('b').textContent = fmt(v == null ? wt.mean : v, wt.dp);
+      box.title = (v == null ? '' : (exact
+          ? 'Computed for the whole area from each place\u2019s ' + P.year + ' census population, '
+            + 'which gives this measure exactly. '
+          : 'Each place counts in proportion to its ' + P.year + ' census population ('
+            + who + '). Where the rate is out of a narrower group - those aged ten and over, '
+            + 'the labour force - this is close to the national rate but not the same. ')
+          + (used < wt.keep.length ? (wt.keep.length - used) + ' places with no census '
+            + 'population are left out. ' : ''))
+        + rangeTitle;
+    }, function () {
+      if (fillWeighted.token !== token) return;
+      var box = document.querySelector('#totals .tot');
+      if (!box) return;
+      box.querySelector('.tot-k').textContent = 'Average ' + GEO[state.level].noun + ' \u00b7 unweighted';
+      box.querySelector('b').textContent = fmt(wt.mean, wt.dp);
+    });
   }
 
   /* Fit the map to the chosen province, and back to the country when the
