@@ -26,6 +26,12 @@ BOUNDS = APP / "data" / "boundaries"
 # Conventions that apply across tables. They were the dictionary page's
 # preamble; the dictionary folded into the catalogue and they came with it.
 CONVENTIONS = [
+    ("Published or derived",
+     "Every table says whose figures it holds. <b>As published</b>: the source\u2019s own. "
+     "<b>Derived</b>: Data Darbar constructed them \u2014 computed, estimated from survey "
+     "microdata, aggregated from satellite grids or points, or modelled \u2014 and they are not "
+     "official statistics. <b>Includes derived</b>: the source\u2019s figures plus columns we "
+     "built, each tagged <span class=\"dtag dtag-derived\">derived</span> in its field list."),
     ("Join on a code, not a name",
      "Districts join on <code>district_code</code> (PBS 2023) or "
      "<code>district_key</code> (the older 147-district slug); census units on "
@@ -231,6 +237,8 @@ def table_row(t, name_of, safety):
     return (f'<li class="crow" data-kind="{t["kind"]}" data-table="{E(t["name"])}">'
             f'<div class="crow-main"><a class="crow-title" href="{href}">{E(title)}</a>'
             f'<code class="ctbl">{E(t["name"])}</code>'
+            + (f' <span class="cprov cprov-{pv["type"]}" title="{E(pv["note"])}">{E(pv["label"])}</span>'
+               if (pv := t.get("provenance")) and pv["type"] != "published" else '')
             + (f' <span class="clic clic-{lic["reuse"]}" title="{E("; ".join(x["name"] for x in lic["terms"]))}">'
                f'{E(lic["label"])}</span>' if (lic := t.get("licence")) and lic["reuse"] != "open" else '')
             + f'<p class="crow-desc">{E(t["description"])}</p>'
@@ -359,7 +367,7 @@ def index_page(cat, name_of, safety, bounds, seo):
 <p class="cstat" id="cstat" aria-live="polite"></p></div>
 <p class="cempty" id="cempty" hidden>Nothing matches. Try a column name such as <code>district_code</code>, or a subject such as <code>literacy</code>.</p>
 {"".join(sections)}
-<section class="csec" id="conventions"><div class="csec-head"><h2>Before you combine tables</h2><p>Six habits the tables need.</p></div>
+<section class="csec" id="conventions"><div class="csec-head"><h2>Before you combine tables</h2><p>Seven habits the tables need.</p></div>
 <div class="cconvs">{conv}</div></section>
 {licence_section(tables, name_of)}
 <section class="csec cmach" id="machines"><div class="csec-head"><h2>For code</h2><p>The files are static Parquet: query them over HTTP without downloading.</p></div>
@@ -419,6 +427,8 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
            + "".join(f'<tr><td><code class="cfield">{E(c["name"])}</code>'
                      + (' <span class="dtag">key</span>' if c["name"] in keyset else '')
                      + (' <span class="dtag">period</span>' if sp and c["name"] == sp["column"] else '')
+                     + (' <span class="dtag dtag-derived" title="Constructed by Data Darbar, not '
+                        'published by the source">derived</span>' if c.get("derived") else '')
                      + f'</td><td class="dty">{E(c["type"].lower())}</td>'
                      f'<td>{E(c["description"]) or "<span class=cnil>—</span>"}</td></tr>'
                      for c in t["columns"])
@@ -484,9 +494,25 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
                         + f'</b> {E(x["summary"])}</p>' for x in lic["terms"])
               + (f'<p class="cmuted">{E(lic["note"])}</p>' if lic["note"] else '')
               + '<p class="cmuted"><a href="/datasets/#licences">How licences work here</a></p></div>')
-    cite = licbox + (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
+    pv = t.get("provenance") or {"type": "published", "label": "As published", "note": "",
+                                 "derived_columns": []}
+    pvtext = {"published": "The publisher\u2019s figures, as published.",
+              "mixed": "The publisher\u2019s figures, with columns Data Darbar constructed.",
+              "derived": "Data Darbar\u2019s figures, constructed from the sources named above. "
+                         "They are not official statistics."}[pv["type"]]
+    provbox = ('<div class="dside-box dprov"><h2>Provenance</h2>'
+               f'<p><span class="cprov cprov-{pv["type"]}">{E(pv["label"])}</span></p>'
+               f'<p>{pvtext}</p>'
+               + (f'<p class="cmuted">{E(pv["note"])}</p>' if pv["note"] else '')
+               + (('<p class="cmuted">Derived columns: '
+                   + ", ".join(f'<code>{E(c)}</code>' for c in pv["derived_columns"]) + '</p>')
+                  if pv["derived_columns"] else '')
+               + '</div>')
+    cite = provbox + licbox + (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
             f'{E(title)}. {seo.ORIGIN}{path}. Release {E(str(cat["generated"]))}. '
-            f'{lic_txt}.</p></div>')
+            + ('Derived by Data Darbar; not official statistics. ' if pv["type"] == "derived"
+               else 'Includes columns derived by Data Darbar. ' if pv["type"] == "mixed" else '')
+            + f'{lic_txt}.</p></div>')
 
     body = (head + fx + notes
             + '<div class="dgrid"><div class="dmain">' + dic + sample + sbp + '</div>'

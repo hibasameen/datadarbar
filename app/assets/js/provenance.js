@@ -29,7 +29,9 @@
   /* Sentences, not fields. A reader should be able to read the panel; the
      machine-readable version is the record itself, which the CSV carries. */
   function panel(r) {
-    var h = '<b class="src-lbl">Source.</b> ' + esc(r.publisher) + ', '
+    var h = (r.derived ? '<span class="src-derived" title="Figures computed by Data Darbar '
+            + 'from the source, not published as shown">Derived</span> ' : '')
+          + '<b class="src-lbl">Source.</b> ' + esc(r.publisher) + ', '
           + esc(r.publication);
     if (r.vintage) h += ' (warehouse release ' + esc(r.vintage) + ')';
     h += '.';
@@ -84,6 +86,7 @@
     L.push(['# publisher', r.publisher], ['# publication', r.publication]);
     if (r.series_refresh) L.push(['# series refreshed', r.series_refresh]);
     if (r.selection) L.push(['# selection', r.selection]);
+    if (r.derived) L.push(['# derived', 'figures computed by Data Darbar from the source, not published as shown']);
     if (r.calc) L.push(['# calculation', r.calc]);
     if (r.note) L.push(['# note', r.note]);
     if (r.artefact) L.push(['# artefact', r.origin]);

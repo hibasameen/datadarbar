@@ -1007,7 +1007,26 @@
         : shown.toLocaleString() + (whole && shown < whole ? ' of ' + whole : '')
           + ' ' + g.noun + 's with data');
     }
-    $('legendSub').textContent = bits.filter(Boolean).join(' \u00b7 ');
+    var sub = $('legendSub');
+    sub.textContent = bits.filter(Boolean).join(' \u00b7 ');
+    /* Whose figure is on the map. PBS asks that derived figures not pass as
+       official ones, and the same is owed to every source: a figure Data
+       Darbar computed - from survey microdata, satellite grids, published
+       counts, or here on the page as a change, a rate or a combined area - is
+       labelled as ours, with the reason on hover. */
+    var why = [];
+    if (IX.derived && col('derived', i) === 1) why.push('constructed by Data Darbar from the source (computed, estimated from survey microdata or aggregated from grids), not published by it');
+    if (/^\u0394/.test(state.year || '')) why.push('the change is computed here from the two censuses');
+    if (state.norm) why.push('the rate is computed here against the population');
+    if (state.weighted) why.push('combined areas are averaged here on 2017 population');
+    if (why.length) {
+      var tag = document.createElement('span');
+      tag.className = 'mh-derived';
+      tag.textContent = 'Derived';
+      tag.title = 'Derived: ' + why.join('; ') + '.';
+      sub.appendChild(document.createTextNode(' \u00b7 '));
+      sub.appendChild(tag);
+    }
   }
 
   /* The measure's own breakdowns - age bands, a table's columns - and, for a
@@ -2218,7 +2237,12 @@
                  'year', 'locality', 'sex', 'metric_mode',
                  'numerator', 'denominator', 'source_unit',
                  'shapes_sharing_this_figure', 'dataset', 'indicator_key',
-                 'quality']];
+                 'quality', 'provenance']];
+    // Whose figure each row is, as the legend says it: the publisher's, or
+    // one Data Darbar constructed (in the source data, or here as a change
+    // or a rate).
+    var derivedHere = (IX.derived && col('derived', state.row) === 1)
+      || /^\u0394/.test(state.year || '') || !!state.norm;
     var geo = geoCache[state.level];
     if (geo) geo.features.forEach(function (f) {
       var k = g.key(f.properties), v = state.values[k];
@@ -2236,7 +2260,8 @@
                  u.num == null ? '' : u.num, u.den == null ? '' : u.den,
                  unitName, shares,
                  credited(col('dataset', state.row) || src),
-                 col('indicator', state.row), quality]);
+                 col('indicator', state.row), quality,
+                 derivedHere ? 'derived by Data Darbar' : 'as published']);
     });
     var csv = rows.map(function (r) {
       return r.map(function (c) {

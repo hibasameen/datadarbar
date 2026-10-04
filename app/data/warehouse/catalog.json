@@ -79,7 +79,8 @@
     {
      "name": "col_label",
      "type": "VARCHAR",
-     "description": "inferred column meaning"
+     "description": "inferred column meaning",
+     "derived": true
     },
     {
      "name": "value_rs_mn",
@@ -89,7 +90,8 @@
     {
      "name": "is_own_year_be",
      "type": "BOOLEAN",
-     "description": "TRUE = own-year Budget Estimate (the reliable column)"
+     "description": "TRUE = own-year Budget Estimate (the reliable column)",
+     "derived": true
     }
    ],
    "kind": "state",
@@ -104,6 +106,15 @@
       "url": "",
       "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "What each printed column means is inferred from its position.",
+    "derived_columns": [
+     "col_label",
+     "is_own_year_be"
     ]
    },
    "span": {
@@ -188,6 +199,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "keys": [
     "district"
    ]
@@ -230,7 +247,8 @@
     {
      "name": "unit_type",
      "type": "VARCHAR",
-     "description": "country, province, district, district_part, sub_division, tehsil or urban_locality"
+     "description": "country, province, district, district_part, sub_division, tehsil or urban_locality",
+     "derived": true
     },
     {
      "name": "unit",
@@ -275,6 +293,14 @@
       "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Populations as printed; each unit’s level is read from the layout.",
+    "derived_columns": [
+     "unit_type"
     ]
    },
    "span": {
@@ -430,37 +456,44 @@
     {
      "name": "girls_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls enrolled ÷ population 5–16, %"
+     "description": "girls enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "boys_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys enrolled ÷ population 5–16, %"
+     "description": "boys enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "girls_rural_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls rural enrolled ÷ population 5–16, %"
+     "description": "girls rural enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "boys_rural_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys rural enrolled ÷ population 5–16, %"
+     "description": "boys rural enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "girls_urban_in_school_pct",
      "type": "DOUBLE",
-     "description": "girls urban enrolled ÷ population 5–16, %"
+     "description": "girls urban enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "boys_urban_in_school_pct",
      "type": "DOUBLE",
-     "description": "boys urban enrolled ÷ population 5–16, %"
+     "description": "boys urban enrolled ÷ population 5–16, %",
+     "derived": true
     },
     {
      "name": "enrol_gap_pp",
      "type": "DOUBLE",
-     "description": "boys_in_school_pct − girls_in_school_pct"
+     "description": "boys_in_school_pct − girls_in_school_pct",
+     "derived": true
     },
     {
      "name": "district_key",
@@ -485,6 +518,20 @@
       "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Counts are PBS’s, but successor districts are summed into their 2017 parents; the shares and the gap are computed.",
+    "derived_columns": [
+     "girls_in_school_pct",
+     "boys_in_school_pct",
+     "girls_rural_in_school_pct",
+     "boys_rural_in_school_pct",
+     "girls_urban_in_school_pct",
+     "boys_urban_in_school_pct",
+     "enrol_gap_pp"
     ]
    },
    "keys": [
@@ -552,6 +599,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "keys": [
     "map_key"
    ]
@@ -559,7 +612,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8272883,
+   "bytes": 8272618,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -609,7 +662,8 @@
     {
      "name": "map_comparable",
      "type": "VARCHAR",
-     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn",
+     "derived": true
     },
     {
      "name": "map_note",
@@ -619,7 +673,8 @@
     {
      "name": "map_weight",
      "type": "DOUBLE",
-     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape",
+     "derived": true
     },
     {
      "name": "locality",
@@ -654,12 +709,14 @@
     {
      "name": "is_rate",
      "type": "BOOLEAN",
-     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census’s own statement"
+     "description": "the indicator reads as a rate, ratio, average, density or proportion and must not be summed. PBS publishes no such flag for 2017, unlike 2023, so this is read off the label here: a guide, not the census’s own statement",
+     "derived": true
     },
     {
      "name": "series_ambiguous",
      "type": "BOOLEAN",
-     "description": "the series key is not unique within this table (31,963 rows)"
+     "description": "the series key is not unique within this table (31,963 rows)",
+     "derived": true
     }
    ],
    "kind": "census",
@@ -674,6 +731,17 @@
       "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Figures as published, with labels harmonised across workbooks. Two exceptions are constructed: a wholly rural unit’s urban proportion, printed as a dash, is set to 0; and the map columns link each unit to the 2023 frame.",
+    "derived_columns": [
+     "map_comparable",
+     "map_weight",
+     "is_rate",
+     "series_ambiguous"
     ]
    },
    "span": {
@@ -754,7 +822,8 @@
     {
      "name": "map_comparable",
      "type": "VARCHAR",
-     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn"
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn",
+     "derived": true
     },
     {
      "name": "map_note",
@@ -764,7 +833,8 @@
     {
      "name": "map_weight",
      "type": "DOUBLE",
-     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape"
+     "description": "2017 population, the weight for averaging a rate across units that combine into one 2023 shape",
+     "derived": true
     },
     {
      "name": "locality",
@@ -804,12 +874,14 @@
     {
      "name": "value_corrected",
      "type": "BOOLEAN",
-     "description": "the figure was corrected against the other rendering"
+     "description": "the figure was corrected against the other rendering",
+     "derived": true
     },
     {
      "name": "renderings_disagree",
      "type": "BOOLEAN",
-     "description": "PBS's two renderings of this table disagree here"
+     "description": "PBS's two renderings of this table disagree here",
+     "derived": true
     },
     {
      "name": "unit_source",
@@ -829,6 +901,17 @@
       "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Figures as published or as corrected against PBS’s other rendering; a wholly rural unit’s urban proportion, printed as a dash, is set to 0.",
+    "derived_columns": [
+     "map_comparable",
+     "map_weight",
+     "value_corrected",
+     "renderings_disagree"
     ]
    },
    "span": {
@@ -934,6 +1017,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "A coverage index computed from the census panels.",
+    "derived_columns": []
+   },
    "span": {
     "column": "census_year",
     "from": "2017",
@@ -1016,6 +1105,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Data Darbar’s mapping of census units onto the 2023 frame.",
+    "derived_columns": []
    },
    "span": {
     "column": "census_year",
@@ -1162,6 +1257,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "start_date",
     "from": "2001-07-22",
@@ -1269,6 +1370,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "period_start",
     "from": "2026-06-26",
@@ -1346,6 +1453,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "fy",
     "from": "1981-82",
@@ -1412,6 +1525,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2011",
@@ -1463,6 +1582,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -1531,6 +1656,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2011",
@@ -1582,6 +1713,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2024",
@@ -1628,6 +1765,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -1706,6 +1849,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Constructed crosswalk; the populations in it are PBS’s.",
+    "derived_columns": []
    },
    "keys": []
   },
@@ -1805,6 +1954,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Some figures are read as published; most are Data Darbar’s: ratios computed from census counts, and estimates from PSLM, HIES, LFS, DHS and MICS microdata. place_indicator_index.derived says which.",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2017",
@@ -1875,6 +2030,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -1964,6 +2125,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "keys": []
   },
   {
@@ -2030,6 +2197,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -2098,6 +2271,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "fy",
     "from": "1999-00",
@@ -2165,6 +2344,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Measured from the boundary layers and the tables.",
+    "derived_columns": []
+   },
    "keys": []
   },
   {
@@ -2226,6 +2411,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -2298,6 +2489,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -2436,6 +2633,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Population-weighted statistics of modelled travel-time surfaces.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key",
     "district",
@@ -2557,6 +2760,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Population-weighted statistics of modelled travel-time surfaces.",
+    "derived_columns": []
+   },
    "keys": [
     "dd_id",
     "district_key",
@@ -2606,12 +2815,14 @@
     {
      "name": "care_group",
      "type": "VARCHAR",
-     "description": "Hospital | Primary care | Mother and child | Clinic | Traditional medicine | Laboratory and diagnostics | TB and leprosy; empty where not a care facility"
+     "description": "Hospital | Primary care | Mother and child | Clinic | Traditional medicine | Laboratory and diagnostics | TB and leprosy; empty where not a care facility",
+     "derived": true
     },
     {
      "name": "in_care_layer",
      "type": "BOOLEAN",
-     "description": "true for the care facilities the Places map draws"
+     "description": "true for the care facilities the Places map draws",
+     "derived": true
     },
     {
      "name": "facility_class",
@@ -2676,22 +2887,26 @@
     {
      "name": "district_code",
      "type": "VARCHAR",
-     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels",
+     "derived": true
     },
     {
      "name": "district_2023",
      "type": "VARCHAR",
-     "description": "that district’s name on the PBS 2023 layer"
+     "description": "that district’s name on the PBS 2023 layer",
+     "derived": true
     },
     {
      "name": "province_2023",
      "type": "VARCHAR",
-     "description": "its province or territory on the PBS 2023 layer"
+     "description": "its province or territory on the PBS 2023 layer",
+     "derived": true
     },
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district",
+     "derived": true
     },
     {
      "name": "source",
@@ -2716,6 +2931,19 @@
       "url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "summary": "Public domain dedication: no conditions, though credit is courteous."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Facilities as published; the care grouping and the 2023 district (point in polygon) are assigned by Data Darbar.",
+    "derived_columns": [
+     "care_group",
+     "in_care_layer",
+     "district_code",
+     "district_2023",
+     "province_2023",
+     "district_key"
     ]
    },
    "keys": [
@@ -2833,22 +3061,26 @@
     {
      "name": "district_code",
      "type": "VARCHAR",
-     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels"
+     "description": "PBS Census 2023 district code of the polygon the point falls in; joins place_indicators and the census panels",
+     "derived": true
     },
     {
      "name": "district_2023",
      "type": "VARCHAR",
-     "description": "that district’s name on the PBS 2023 layer"
+     "description": "that district’s name on the PBS 2023 layer",
+     "derived": true
     },
     {
      "name": "province_2023",
      "type": "VARCHAR",
-     "description": "its province or territory on the PBS 2023 layer"
+     "description": "its province or territory on the PBS 2023 layer",
+     "derived": true
     },
     {
      "name": "district_key",
      "type": "VARCHAR",
-     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district"
+     "description": "Data Darbar’s 147-district key of the polygon the point falls in; joins district_indicators, mpi_districts, health_access_district",
+     "derived": true
     },
     {
      "name": "source",
@@ -2873,6 +3105,17 @@
       "url": "https://opendatacommons.org/licenses/odbl/1-0/",
       "summary": "© OpenStreetMap contributors. Reuse with attribution; a database made from it must be shared under the ODbL too."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Amenities as mapped; the 2023 district is assigned by point in polygon.",
+    "derived_columns": [
+     "district_code",
+     "district_2023",
+     "province_2023",
+     "district_key"
     ]
    },
    "keys": [
@@ -2928,7 +3171,8 @@
     {
      "name": "is_projection",
      "type": "BOOLEAN",
-     "description": "TRUE where the figure is an IMF projection, not an outturn"
+     "description": "TRUE where the figure is an IMF projection, not an outturn",
+     "derived": true
     }
    ],
    "kind": "economy",
@@ -2943,6 +3187,14 @@
       "url": "https://www.imf.org/en/About/copyright-and-terms",
       "summary": "Reuse, derived works and redistribution allowed with attribution to the IMF; a materially transformed figure must say so."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "The IMF’s figures; which are projections is set by Data Darbar from the edition date.",
+    "derived_columns": [
+     "is_projection"
     ]
    },
    "span": {
@@ -3060,32 +3312,38 @@
     {
      "name": "clearance_rate_pct",
      "type": "DOUBLE",
-     "description": "disposals as a percentage of institutions"
+     "description": "disposals as a percentage of institutions",
+     "derived": true
     },
     {
      "name": "backlog_change",
      "type": "DOUBLE",
-     "description": "pending at the end minus pending at the start"
+     "description": "pending at the end minus pending at the start",
+     "derived": true
     },
     {
      "name": "backlog_growth_pct",
      "type": "DOUBLE",
-     "description": ""
+     "description": "",
+     "derived": true
     },
     {
      "name": "stock_flow_residual",
      "type": "BIGINT",
-     "description": ""
+     "description": "",
+     "derived": true
     },
     {
      "name": "stock_flow_check",
      "type": "VARCHAR",
-     "description": "whether the stock and flow figures reconcile"
+     "description": "whether the stock and flow figures reconcile",
+     "derived": true
     },
     {
      "name": "unadjusted_flow_residual",
      "type": "DOUBLE",
-     "description": ""
+     "description": "",
+     "derived": true
     },
     {
      "name": "geography_level",
@@ -3150,6 +3408,19 @@
       "url": "",
       "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Case counts as printed; the rates and reconciliation checks are computed.",
+    "derived_columns": [
+     "clearance_rate_pct",
+     "backlog_change",
+     "backlog_growth_pct",
+     "stock_flow_residual",
+     "stock_flow_check",
+     "unadjusted_flow_residual"
     ]
    },
    "span": {
@@ -3219,22 +3490,26 @@
     {
      "name": "clearance_rate_pct",
      "type": "DOUBLE",
-     "description": "disposals as a percentage of institutions"
+     "description": "disposals as a percentage of institutions",
+     "derived": true
     },
     {
      "name": "population_2023",
      "type": "BIGINT",
-     "description": "Census 2023 population of the district and any hosted"
+     "description": "Census 2023 population of the district and any hosted",
+     "derived": true
     },
     {
      "name": "pending_per_100k",
      "type": "DOUBLE",
-     "description": "pending_end per 100,000 people, 2023 census"
+     "description": "pending_end per 100,000 people, 2023 census",
+     "derived": true
     },
     {
      "name": "pending_per_100k_interpolated",
      "type": "DOUBLE",
-     "description": "the same on a population grown between censuses"
+     "description": "the same on a population grown between censuses",
+     "derived": true
     },
     {
      "name": "working_judges",
@@ -3249,7 +3524,8 @@
     {
      "name": "pending_per_working_judge",
      "type": "DOUBLE",
-     "description": "pending_end / working_judges"
+     "description": "pending_end / working_judges",
+     "derived": true
     },
     {
      "name": "crosswalk_status",
@@ -3264,7 +3540,8 @@
     {
      "name": "stock_flow_check",
      "type": "VARCHAR",
-     "description": "whether the stock and flow figures reconcile"
+     "description": "whether the stock and flow figures reconcile",
+     "derived": true
     }
    ],
    "kind": "state",
@@ -3279,6 +3556,19 @@
       "url": "",
       "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Sessions divisions are summed into map districts; the population, rates and per-judge figures are computed.",
+    "derived_columns": [
+     "clearance_rate_pct",
+     "population_2023",
+     "pending_per_100k",
+     "pending_per_100k_interpolated",
+     "pending_per_working_judge",
+     "stock_flow_check"
     ]
    },
    "span": {
@@ -3366,6 +3656,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2020",
@@ -3443,7 +3739,8 @@
     {
      "name": "inferred_zero_fields",
      "type": "VARCHAR[]",
-     "description": ""
+     "description": "",
+     "derived": true
     },
     {
      "name": "source_record_ids",
@@ -3478,6 +3775,14 @@
       "url": "",
       "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Posts as printed; where a report leaves a cell blank that the table implies is zero, it is set to 0 and listed in inferred_zero_fields.",
+    "derived_columns": [
+     "inferred_zero_fields"
     ]
    },
    "span": {
@@ -3543,6 +3848,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "month",
@@ -3610,6 +3921,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -3703,6 +4020,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Data Darbar’s match of PBS tehsils to boundary polygons.",
+    "derived_columns": []
    },
    "keys": [
     "tehsil_code",
@@ -4887,6 +5210,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "keys": [
     "tehsil_code",
     "district_code",
@@ -5005,6 +5334,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Alkire-Foster index computed from PSLM 2019-20 microdata.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key"
    ]
@@ -5068,6 +5403,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -5176,6 +5517,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "fy",
     "from": "2006-07",
@@ -5248,6 +5595,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "fiscal_year",
     "from": "2017-18",
@@ -5278,7 +5631,8 @@
     {
      "name": "name_variants",
      "type": "VARCHAR",
-     "description": "other spellings in the source documents"
+     "description": "other spellings in the source documents",
+     "derived": true
     },
     {
      "name": "technology",
@@ -5298,12 +5652,14 @@
     {
      "name": "first_fy",
      "type": "VARCHAR",
-     "description": "first year it appears"
+     "description": "first year it appears",
+     "derived": true
     },
     {
      "name": "last_fy",
      "type": "VARCHAR",
-     "description": "last year it appears"
+     "description": "last year it appears",
+     "derived": true
     }
    ],
    "kind": "state",
@@ -5318,6 +5674,16 @@
       "url": "",
       "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "A register compiled from every report: spellings, first and last years are Data Darbar’s.",
+    "derived_columns": [
+     "name_variants",
+     "first_fy",
+     "last_fy"
     ]
    },
    "keys": []
@@ -5475,6 +5841,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Metadata about the indicators, built by Data Darbar.",
+    "derived_columns": []
+   },
    "keys": []
   },
   {
@@ -5564,6 +5936,12 @@
       "summary": "Attribution, non-commercial use only. Applies to Meta’s Relative Wealth Index."
      }
     ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Values are the source’s or Data Darbar’s by indicator — place_indicator_index.derived says which. A value drawn on a later-split unit is repeated on each successor shape.",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -5714,6 +6092,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -5861,6 +6245,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -5978,6 +6368,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "1950",
@@ -6039,6 +6435,12 @@
       "summary": "SBP information may be copied and used with reference to the source, for non-commercial use, without being changed."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "obs_date",
@@ -6403,6 +6805,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "keys": []
   },
   {
@@ -6661,6 +7069,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Distances and counts computed from the school layer and WorldPop.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key",
     "district"
@@ -6821,6 +7235,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Distances and counts computed from the school layer and WorldPop.",
+    "derived_columns": []
+   },
    "keys": [
     "dd_id",
     "district_key"
@@ -6926,6 +7346,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Distance distributions computed from the school layer and WorldPop.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key"
    ]
@@ -7024,6 +7450,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Data Darbar’s coverage ledger.",
+    "derived_columns": []
    },
    "keys": []
   },
@@ -7413,6 +7845,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "A validation test computed against the Mouza Census.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key"
    ]
@@ -7492,6 +7930,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Rank correlations computed by Data Darbar.",
+    "derived_columns": []
    },
    "keys": []
   },
@@ -7676,6 +8120,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "A validation test computed against the Mouza Census.",
+    "derived_columns": []
+   },
    "keys": [
     "district_key"
    ]
@@ -7723,7 +8173,8 @@
     {
      "name": "district_key_boundary",
      "type": "VARCHAR",
-     "description": "Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)"
+     "description": "Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)",
+     "derived": true
     },
     {
      "name": "tehsil",
@@ -7743,27 +8194,32 @@
     {
      "name": "level_std",
      "type": "VARCHAR",
-     "description": "primary | middle | high | other (Elementary → middle; Secondary, Higher Secondary, H.Sec. → high; Mosque → primary)"
+     "description": "primary | middle | high | other (Elementary → middle; Secondary, Higher Secondary, H.Sec. → high; Mosque → primary)",
+     "derived": true
     },
     {
      "name": "primary_plus",
      "type": "BOOLEAN",
-     "description": "true for every school (any level serves the primary class)"
+     "description": "true for every school (any level serves the primary class)",
+     "derived": true
     },
     {
      "name": "middle_plus",
      "type": "BOOLEAN",
-     "description": "middle level or above"
+     "description": "middle level or above",
+     "derived": true
     },
     {
      "name": "high_plus",
      "type": "BOOLEAN",
-     "description": "high or higher-secondary level"
+     "description": "high or higher-secondary level",
+     "derived": true
     },
     {
      "name": "gender",
      "type": "VARCHAR",
-     "description": "name designation: Boys | Girls | Unknown"
+     "description": "name designation: Boys | Girls | Unknown",
+     "derived": true
     },
     {
      "name": "gender_official",
@@ -7793,7 +8249,8 @@
     {
      "name": "functional",
      "type": "BOOLEAN",
-     "description": "false where the source marks the school closed or inaccessible; NULL where the source carries no status"
+     "description": "false where the source marks the school closed or inaccessible; NULL where the source carries no status",
+     "derived": true
     },
     {
      "name": "lat",
@@ -7813,27 +8270,32 @@
     {
      "name": "coord_method",
      "type": "VARCHAR",
-     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL | historical_school_point_2017"
+     "description": "gps_at_source | kpema_detail | jsims_mirror | rsu_pin_confirmed | multilaterated | geocoded_school_point | geocoded_settlement | geocoded_cluster | geocoded_markaz | geocoded_tehsil | osm_feature | NULL | historical_school_point_2017",
+     "derived": true
     },
     {
      "name": "coord_precision",
      "type": "VARCHAR",
-     "description": "what the position identifies: school | settlement | cluster | markaz | tehsil | none"
+     "description": "what the position identifies: school | settlement | cluster | markaz | tehsil | none",
+     "derived": true
     },
     {
      "name": "coord_tier",
      "type": "VARCHAR",
-     "description": "Original regional coverage grade retained; not an accuracy certification for newly added historical points."
+     "description": "Original regional coverage grade retained; not an accuracy certification for newly added historical points.",
+     "derived": true
     },
     {
      "name": "coord_resid_m",
      "type": "DOUBLE",
-     "description": "Sindh only: RMS residual, metres, of the multilateration solve"
+     "description": "Sindh only: RMS residual, metres, of the multilateration solve",
+     "derived": true
     },
     {
      "name": "pin_vs_solved_m",
      "type": "DOUBLE",
-     "description": "Sindh only: distance, metres, between the RSU pin and the solved position (NULL when no pin)"
+     "description": "Sindh only: distance, metres, between the RSU pin and the solved position (NULL when no pin)",
+     "derived": true
     },
     {
      "name": "geocode_match",
@@ -7858,17 +8320,20 @@
     {
      "name": "in_analysis",
      "type": "BOOLEAN",
-     "description": "Membership of the frozen September 2026 analysis; use analysis_lat, analysis_lng and analysis_district_key_boundary to reproduce it."
+     "description": "Membership of the frozen September 2026 analysis; use analysis_lat, analysis_lng and analysis_district_key_boundary to reproduce it.",
+     "derived": true
     },
     {
      "name": "analysis_sex",
      "type": "VARCHAR",
-     "description": "network the school belongs to in the analysis: G | B"
+     "description": "network the school belongs to in the analysis: G | B",
+     "derived": true
     },
     {
      "name": "analysis_note",
      "type": "VARCHAR",
-     "description": "Why a row was excluded from the frozen September analysis; a later coordinate addition does not change this history."
+     "description": "Why a row was excluded from the frozen September analysis; a later coordinate addition does not change this history.",
+     "derived": true
     },
     {
      "name": "release",
@@ -7888,7 +8353,8 @@
     {
      "name": "analysis_district_key_boundary",
      "type": "VARCHAR",
-     "description": "Frozen September 2026 analysis snapshot: Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)"
+     "description": "Frozen September 2026 analysis snapshot: Data Darbar district whose polygon contains the point; NULL when no position or outside every polygon (coast, border)",
+     "derived": true
     },
     {
      "name": "analysis_coord_method",
@@ -7979,6 +8445,29 @@
       "url": "https://opendatacommons.org/licenses/odbl/1-0/",
       "summary": "© OpenStreetMap contributors. Reuse with attribution; a database made from it must be shared under the ODbL too."
      }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Schools as the registers list them. Standardised levels, the gender read from the name, the district by polygon and the analysis fields are Data Darbar’s; so are the positions themselves where coord_method is not gps_at_source (multilaterated or geocoded).",
+    "derived_columns": [
+     "level_std",
+     "primary_plus",
+     "middle_plus",
+     "high_plus",
+     "gender",
+     "functional",
+     "district_key_boundary",
+     "coord_method",
+     "coord_precision",
+     "coord_tier",
+     "coord_resid_m",
+     "pin_vs_solved_m",
+     "in_analysis",
+     "analysis_sex",
+     "analysis_note",
+     "analysis_district_key_boundary"
     ]
    },
    "keys": [
@@ -8197,6 +8686,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -8319,6 +8814,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "report_date",
     "from": "2025-09-15",
@@ -8407,6 +8908,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Constructed crosswalk; the populations in it are PBS’s.",
+    "derived_columns": []
+   },
    "keys": []
   },
   {
@@ -8448,6 +8955,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Population-weighted radiance computed from VIIRS composites.",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -8554,6 +9067,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Zonal statistics of Meta’s wealth grid, WorldPop and VIIRS.",
+    "derived_columns": []
+   },
    "keys": [
     "tehsil_id",
     "dk"
@@ -8639,6 +9158,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Rows with period FY_from_quarters are the quarters summed by Data Darbar; every other row is as published.",
+    "derived_columns": []
+   },
    "span": {
     "column": "fy",
     "from": "2003-04",
@@ -8705,6 +9230,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "fy",
@@ -8788,6 +9319,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
+   },
    "span": {
     "column": "fiscal_year",
     "from": "2015-16",
@@ -8854,6 +9391,12 @@
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "year",
@@ -9002,6 +9545,12 @@
      }
     ]
    },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "A comparison of PBS’s totals computed by Data Darbar.",
+    "derived_columns": []
+   },
    "span": {
     "column": "fy",
     "from": "2003-04",
@@ -9068,6 +9617,12 @@
       "summary": "Any use, commercial included, with attribution."
      }
     ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "",
+    "derived_columns": []
    },
    "span": {
     "column": "year",

@@ -204,7 +204,8 @@ def main():
                coalesce(localities, ['all']) AS localities,
                coalesce(sexes, ['all']) AS sexes,
                shapes, units, min_value, max_value,
-               CASE WHEN redundant THEN 1 ELSE 0 END AS redundant
+               CASE WHEN redundant THEN 1 ELSE 0 END AS redundant,
+               CASE WHEN derived THEN 1 ELSE 0 END AS derived
         FROM '{(W / 'place_indicator_index.parquet').as_posix()}' ix
         LEFT JOIN (VALUES {order_vals}) AS o(t, ord) ON o.t = ix.topic
         -- the picker lists topics in the order the design gives, not
@@ -212,7 +213,7 @@ def main():
         ORDER BY o.ord, group_key, label, level""").fetchall()
     names = ('level topic topic_label group_key group_label dataset indicator label '
              'measure metric dp source families years localities sexes shapes units '
-             'min_value max_value redundant').split()
+             'min_value max_value redundant derived').split()
     # the list columns intern as a whole: a locality set repeats across thousands
     # of indicators, so the distinct combinations are a handful
     rows = [tuple('\u001f'.join(x) if isinstance(x, list) else x for x in r) for r in ix]
