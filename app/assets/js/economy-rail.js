@@ -65,6 +65,8 @@
     movers: ['What’s growing', 'Trade'],
     overtime: ['Trade over time', 'Trade'],
     partners: ['Trading partners', 'Trade'],
+    longrun: ['The long run', 'The long view'],
+    peers: ['Pakistan and its peers', 'The long view'],
   };
 
   /* A card's <h2> reads as a headline with its units after a dash. The rail
@@ -136,6 +138,10 @@
       { t: 'rupee', label: 'The rupee' },
       { t: 'external', label: 'Reserves and the balance of payments' },
       { t: 'external', label: 'Remittances', card: 'sec-remit' } ] },
+    { group: 'The long view', items: [
+      { t: 'longrun', label: 'Since 1950: GDP, money and the state' },
+      { t: 'longrun', label: 'Public debt since 1951', card: 'sec-debt' },
+      { t: 'peers', label: 'Pakistan and its peers' } ] },
     { group: 'Elsewhere', items: [
       { href: 'state.html#t=budget', label: 'Government budget & tax', note: 'on State' },
       { href: 'query.html', label: 'Query the tables with SQL', note: 'Query' } ] },
