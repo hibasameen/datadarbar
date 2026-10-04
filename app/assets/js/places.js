@@ -2053,9 +2053,11 @@
       + esc(note) + ' PBS restates 1951\u20131998 on the districts of 1998.</div></div>';
   }
 
+  // short words that are words, not acronyms: "Mastuj Sub-Division", not "SUB-Division"
+  var NOT_ACRONYM = { SUB: 1, AND: 1, THE: 1, OF: 1, CUM: 1, NEW: 1, OLD: 1, BIN: 1, BAR: 1, SAR: 1 };
   function title(s) {
     return String(s || '').replace(/\b[\w&]+/g, function (w) {
-      return w.length <= 3 && w === w.toUpperCase() ? w
+      return w.length <= 3 && w === w.toUpperCase() && !NOT_ACRONYM[w] ? w
         : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
     });
   }

@@ -26,6 +26,8 @@ import duckdb
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import glance_crosswalk as gx
+import tehsil_crosswalk as tx
+import demobase_rows as dbr
 
 PUBLISHED_1998 = 132_352_279
 
@@ -63,6 +65,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--warehouse', required=True)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--demobase', help='the Demobase archive (1998 tehsils, with boundaries)')
+    ap.add_argument('--geo', help='PBS 2023 tehsil geometry (app/data/tehsils_2023_geo.js)')
     a = ap.parse_args()
     W, out = pathlib.Path(a.warehouse), pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -174,6 +178,59 @@ def main():
         if ind in SHARE_OF and share is not None:
             rows.append({**placed(True), 'indicator': 'HOUSING UNITS, % OF ALL',
                          'col_label': SHARE_OF[ind], 'value': share, 'is_rate': True})
+    # ── tehsils: the Demobase 1998 census, linked by ground and population ──
+    if a.demobase and a.geo:
+        units = con.sql("""SELECT province_area, district, unit, map_key, value FROM t1
+            WHERE unit_type <> 'district' AND locality = 'all'""").fetchall()
+        recs = [(r, g) for r, g in tx.read_demobase(a.demobase)
+                if g is not None and float(r['C_98_TOTAL'] or 0) > 0]
+        old = [(r['GEO_MATCH'], int(float(r['C_98_TOTAL'])), g) for r, g in recs]
+        assert sum(o[1] for o in old) == PUBLISHED_1998, 'Demobase is not the 1998 total'
+        groups, unlinked = tx.build(old, tx.read_geo_js(a.geo),
+                                    [(i, u[3], u[4]) for i, u in enumerate(units)])
+        linked = sum(old[i][1] for g in groups for i in g['t'])
+        assert not unlinked and linked == PUBLISHED_1998, f'tehsils left unlinked: {linked:,}'
+        txw = []
+        nice = lambda n: ' '.join(n.title().split())
+        for g in groups:
+            tnames = [old[i][0] for i in g['t']]
+            us = [units[i] for i in g['u']]
+            keys = sorted({k for u in us for k in (u[3] or '').split()})
+            exact = len(g['t']) == 1 and len(us) == 1 and len(keys) == 1
+            note = None if exact else (
+                '1998 ' + ' + '.join(nice(t) for t in tnames) + ' covers today’s '
+                + ', '.join(nice(u[2]) for u in us) + '; one figure is drawn across all of them.')
+            S = dbr.group_sums([recs[i][0] for i in g['t']])
+            base = {'census_year': 1998, 'province_area': us[0][0], 'table_id': 'tehsil',
+                    'district': ' + '.join(sorted({u[1] for u in us})),
+                    'unit': ' + '.join(tnames), 'unit_type': 'tehsil',
+                    'map_key': ' '.join(keys), 'map_relation': 'exact' if exact else 'combined',
+                    'map_comparable': 'yes' if exact else 'combined', 'map_note': note,
+                    'map_weight': S['C_98_TOTAL'], 'series_ambiguous': False,
+                    'published_in': dbr.SOURCE}
+            for ind, col, sex, loc, f, rate, extra in dbr.specs():
+                rows.append({**base, 'indicator': ind, 'col_label': col, 'sex': sex, 'locality': loc,
+                             'value': S[f], 'missing': False, 'is_rate': rate,
+                             'published_in': dbr.SOURCE + ('. ' + extra if extra else '')})
+            for ind, col, sex, loc, v in dbr.rates(S):
+                if v is None:
+                    continue
+                rows.append({**base, 'indicator': ind, 'col_label': col, 'sex': sex, 'locality': loc,
+                             'value': round(v, 4), 'missing': False, 'is_rate': True,
+                             'published_in': dbr.SOURCE + '; calculated from the summed counts'})
+            txw.append({'tehsils_1998': ' + '.join(tnames),
+                        'tehsils_2017': ' + '.join(u[2] for u in us),
+                        'districts_2017': base['district'], 'map_key': base['map_key'],
+                        'population_1998_demobase': int(S['C_98_TOTAL']),
+                        'population_1998_restated': int(round(sum(u[4] for u in us))),
+                        'relation': base['map_relation']})
+        with open(out / 'tehsil_crosswalk_1998.csv', 'w', newline='') as fh:
+            w = csv.DictWriter(fh, fieldnames=list(txw[0]))
+            w.writeheader(); w.writerows(txw)
+        print(f'  tehsils: {len(old)} Demobase tehsils of 1998 in {len(groups)} balanced groups '
+              f'over {len({k for g in groups for i in g["u"] for k in (units[i][3] or "").split()})} '
+              f'shapes of 2023; {sum(1 for t in txw if t["relation"] == "exact")} one to one')
+
     tmp = out / '_glance.json'
     tmp.write_text(json.dumps(rows))
     con.execute(f"CREATE TABLE g AS SELECT * FROM read_json_auto('{tmp}')")

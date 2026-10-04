@@ -498,6 +498,17 @@ def main():
         ('1998', 'glance|1981-1998 AVERAGE ANNUAL GROWTH RATE|1981-1998 AVERAGE ANNUAL GROWTH RATE', None,
          '1|1998-2017 AVERAGE ANNUAL GROWTH RATE|1998-2017 AVERAGE ANNUAL GROWTH RATE'),
         ('1998', 'glance|SEX RATIO|SEX RATIO', None, '1|POPULATION - 2017 / SEX RATIO|SEX RATIO'),
+        # tehsils, from the Demobase census by tehsil
+        ('1998', 'tehsil|POPULATION - 1998 BY SEX|MALE', 'male', POP17),
+        ('1998', 'tehsil|POPULATION - 1998 BY SEX|FEMALE', 'female', POP17),
+        ('1998', 'tehsil|SEX RATIO|SEX RATIO', None, '1|POPULATION - 2017 / SEX RATIO|SEX RATIO'),
+        ('1998', 'tehsil|LITERACY RATIO (10+)|LITERACY RATIO', None,
+         '13|LITERATE / LITERACY RATIO|LITERACY RATIO'),
+        ('1998', 'tehsil|AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE', None,
+         '1|POPULATION - 2017 / AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE'),
+        *[('1998', 'tehsil|POPULATION BY MOTHER TONGUE|' + l, None,
+           '11|POPULATION BY MOTHER TONGUE / ' + l + '|' + l)
+          for l in ('URDU', 'PUNJABI', 'SINDHI', 'PUSHTO', 'BALOCHI', 'SARAIKI')],
     ]
     attached = 0
     for yr, k98, sx, k17 in ATTACH:

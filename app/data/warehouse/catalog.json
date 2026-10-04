@@ -768,12 +768,12 @@
   {
    "name": "census_panel_1998",
    "file": "census_panel_1998.parquet",
-   "bytes": 47660,
-   "rows": 3995,
-   "description": "The 1998 census on PBS’s 2023 boundaries: population for every district and tehsil, and the district indicators PBS published for 1998.",
-   "notes": "Two layers, from what PBS still publishes. table_id '1': POPULATION - 1998, all / rural / urban, for every district and every sub-district (tehsil, taluka, sub-division, sub-tehsil) - PBS’s own restatement of 1998 onto the 2017 units, printed in the 2017 census’s table 1; it sums to 132,352,279, the published 1998 total, at both tiers, and its map_key reaches all 136 districts and all 591 tehsils of the 2023 frame through the same unit map as the 2017 panel. table_id 'glance': the District at a Glance indicators - population by sex, sex ratio, density, household size, literacy by sex, 1981 population and growth since, housing units and their amenities - for districts only. Each glance district is linked to the 2017 districts it became in groups whose 1998 populations balance against PBS’s restatement to the person (etl/census1998/glance_crosswalk.py); 86 groups balance, and Bannu, Nawabshah and Upper Dir, which do not, carry no map_key rather than a wrong one. Charsadda has no glance sheet. A glance district drawn across several 2023 shapes is map_comparable 'combined': add counts, and average rates on map_weight, the district’s 1998 population. Below the district nothing but population survives online: the District Census Reports are print-only. Do not sum across unit_type, locality or sex.",
+   "bytes": 194872,
+   "rows": 53557,
+   "description": "The 1998 census on PBS’s 2023 boundaries: population for every district and tehsil, the district indicators PBS published for 1998, and the detailed census by tehsil from the US Census Bureau’s Demobase.",
+   "notes": "Two layers, from what PBS still publishes. table_id '1': POPULATION - 1998, all / rural / urban, for every district and every sub-district (tehsil, taluka, sub-division, sub-tehsil) - PBS’s own restatement of 1998 onto the 2017 units, printed in the 2017 census’s table 1; it sums to 132,352,279, the published 1998 total, at both tiers, and its map_key reaches all 136 districts and all 591 tehsils of the 2023 frame through the same unit map as the 2017 panel. table_id 'glance': the District at a Glance indicators - population by sex, sex ratio, density, household size, literacy by sex, 1981 population and growth since, housing units and their amenities - for districts only. Each glance district is linked to the 2017 districts it became in groups whose 1998 populations balance against PBS’s restatement to the person (etl/census1998/glance_crosswalk.py); 86 groups balance, and Bannu, Nawabshah and Upper Dir, which do not, carry no map_key rather than a wrong one. Charsadda has no glance sheet. A glance district drawn across several 2023 shapes is map_comparable 'combined': add counts, and average rates on map_weight, the district’s 1998 population. Below the district, table_id 'tehsil' is the 1998 census by tehsil from the US Census Bureau’s Pakistan Demobase (from PBS’s census CD): sex, age, mother tongue, literacy and educational attainment, households by size and housing construction, for 365 tehsils of 1998. They reach the 2023 frame in 292 groups, proposed by overlaying Demobase’s 1998 boundaries on PBS’s 2023 tehsils and accepted only where the group’s 1998 population equals PBS’s restated 1998 population of its 2017 tehsils to the person (etl/census1998/tehsil_crosswalk.py); every person is linked, 174 tehsils one to one. Counts are the group’s sums; rates (literacy, sex ratio, household size) are calculated from those sums, and literacy reproduces PBS’s published 43.92% (excluding FATA). Demobase adjusted some age distributions, and wrote census dashes as zeros. Do not sum across unit_type, locality or sex.",
    "unit": "persons; rates and shares where is_rate is TRUE",
-   "source": "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance) and Census 2017 table 1 (POPULATION 1998, PBS’s restatement)",
+   "source": "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance; via the US Census Bureau’s Pakistan Demobase for tehsils) and Census 2017 table 1 (POPULATION 1998, PBS’s restatement)",
    "columns": [
     {
      "name": "census_year",
@@ -788,7 +788,7 @@
     {
      "name": "table_id",
      "type": "VARCHAR",
-     "description": "'1' for population (PBS’s restatement in the 2017 census) or 'glance' for the District at a Glance indicators"
+     "description": "'1' for population (PBS’s restatement in the 2017 census), 'glance' for the District at a Glance indicators, or 'tehsil' for the census by tehsil from Demobase"
     },
     {
      "name": "district",
@@ -849,7 +849,8 @@
     {
      "name": "value",
      "type": "DOUBLE",
-     "description": "the published figure — unit depends on the indicator, see notes"
+     "description": "the published figure — unit depends on the indicator, see notes",
+     "derived": true
     },
     {
      "name": "missing",
@@ -892,13 +893,19 @@
    "licence": {
     "reuse": "open",
     "label": "Open",
-    "note": "The link to the 2023 frame is Data Darbar’s work.",
+    "note": "Tehsil rows come from PBS’s census via the US Census Bureau’s Demobase; the link to the 2023 frame is Data Darbar’s work.",
     "terms": [
      {
       "key": "pbs-open",
       "name": "PBS open licence",
       "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
       "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "us-gov-pd",
+      "name": "US Government work (public domain)",
+      "url": "https://www.census.gov/about/policies/open-gov/open-data.html",
+      "summary": "Works of the US federal government, the Census Bureau’s included, are not subject to copyright in the US and may be reused freely; credit the Census Bureau as the source."
      },
      {
       "key": "cc-by-4.0",
@@ -911,10 +918,11 @@
    "provenance": {
     "type": "mixed",
     "label": "Includes derived",
-    "note": "Figures as PBS published them; the link of each unit to the 2023 frame, and of each glance district to the 2017 districts it became, is Data Darbar’s.",
+    "note": "Figures as PBS published them; the link of each unit to the 2023 frame, of each glance district to the 2017 districts it became, and of each 1998 tehsil to the 2017 tehsils it became, is Data Darbar’s. Tehsil rows are sums over linked groups, and their literacy, sex ratio and household size are calculated from those sums.",
     "derived_columns": [
      "map_comparable",
-     "map_weight"
+     "map_weight",
+     "value"
     ]
    },
    "span": {
@@ -930,7 +938,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8273057,
+   "bytes": 8272900,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -1340,8 +1348,8 @@
   {
    "name": "census_series_index",
    "file": "census_series_index.parquet",
-   "bytes": 153408,
-   "rows": 36153,
+   "bytes": 154697,
+   "rows": 36323,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured — a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
