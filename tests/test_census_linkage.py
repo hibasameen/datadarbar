@@ -96,3 +96,53 @@ def test_1998_admin_units_add_up():
                      OR (unit_type='tehsil' AND sub_division IS NULL)) GROUP BY 1, 2)
         SELECT d.district FROM d JOIN s USING (table_no, district) WHERE d.p <> s.p""").fetchall()
     assert not off, f'districts that do not equal their sub-units in 1998: {off[:5]}'
+
+
+PANEL_1998 = (ROOT / 'app' / 'data' / 'warehouse' / 'census_panel_1998.parquet').as_posix()
+
+
+def test_1998_panel_population_is_the_published_total_on_the_2023_frame():
+    """The 1998 panel's population is PBS's own restatement on the 2017
+    units, so both tiers must add to 132,352,279 - including the de-excluded
+    area of Rajanpur (14,051 people, unit_type 'other'), whose loss once left
+    the sub-district tier short - and every 2023 district and tehsil must get
+    a 1998 figure through the 2017 unit map."""
+    import duckdb
+    for tier in ("unit_type = 'district'", "unit_type <> 'district'"):
+        total = duckdb.execute(f"SELECT sum(value) FROM '{PANEL_1998}' WHERE table_id = '1' "
+                               f"AND locality = 'all' AND {tier}").fetchone()[0]
+        assert round(total) == 132_352_279, f'1998 {tier} sums to {total:,.0f}'
+    for tier in ('district', 'tehsil'):
+        shapes23 = {r['map_key'] for r in rows(2023, tier)}
+        side = "= 'district'" if tier == 'district' else "<> 'district'"
+        reached = {k for (mk,) in duckdb.execute(
+            f"SELECT DISTINCT map_key FROM '{PANEL_1998}' WHERE table_id = '1' "
+            f"AND unit_type {side} AND map_key IS NOT NULL").fetchall() for k in mk.split()}
+        assert shapes23 <= reached, f'{len(shapes23 - reached)} 2023 {tier}s get no 1998 figure'
+
+
+def test_1998_glance_counts_are_drawn_only_on_whole_shapes():
+    """A District at a Glance figure reaches the map only through a group of
+    2017 districts whose restated 1998 population equals the glance's own, to
+    the person; the three that do not balance stay off the map, not guessed.
+    A count is drawn only where it is the whole of its shapes: Peshawar's 2023
+    shape also took in FR Peshawar, which no glance includes, so its 1998
+    count there would undercount the shape and inflate the change since."""
+    import duckdb
+    drawn, undrawn = duckdb.execute(f"""
+        SELECT count(DISTINCT district) FILTER (WHERE map_key IS NOT NULL),
+               count(DISTINCT district) FILTER (WHERE map_key IS NULL)
+        FROM '{PANEL_1998}' WHERE table_id = 'glance' AND is_rate""").fetchone()
+    assert drawn >= 97, f'only {drawn} glance districts linked'
+    assert undrawn <= 3, f'{undrawn} glance districts unlinked'
+    # every 1998 person on the shapes a count is drawn on is in that count
+    bad = duckdb.execute(f"""
+        WITH g AS (SELECT DISTINCT district, map_key, map_weight FROM '{PANEL_1998}'
+                   WHERE table_id = 'glance' AND NOT is_rate AND map_key IS NOT NULL),
+             grp AS (SELECT map_key, sum(map_weight) w FROM g GROUP BY 1),
+             t1 AS (SELECT map_key, value FROM '{PANEL_1998}' WHERE table_id = '1'
+                    AND unit_type = 'district' AND locality = 'all')
+        SELECT map_key, w, (SELECT sum(value) FROM t1 WHERE list_has_any(
+                   string_split(t1.map_key, ' '), string_split(grp.map_key, ' '))) AS on_shapes
+        FROM grp WHERE round(w) <> round(on_shapes)""").fetchall()
+    assert not bad, f'glance counts drawn on shapes they do not fill: {bad[:3]}'

@@ -42,6 +42,7 @@ KIND = {
 
     'census_panel_2017': 'census',
     'census_panel_2023': 'census',
+    'census_panel_1998': 'census',
     'census_admin_units_1951_1998': 'census',
     'census1998_district_glance': 'census',
     'census_series_index': 'census',
@@ -206,6 +207,7 @@ LICENCE = {
     'census_entities': (['pbs-open'], ''),
     'census_panel_2017': (['pbs-open'], ''),
     'census_panel_2023': (['pbs-open'], ''),
+    'census_panel_1998': (['pbs-open', 'cc-by-4.0'], 'The link to the 2023 frame is Data Darbar\u2019s work.'),
     'census_series_index': (['pbs-open'], ''),
     'census_unit_map': (['pbs-open', 'cc-by-4.0'], 'The mapping itself is Data Darbar’s work.'),
     'climate_events': (['ec-reuse'], ''),
@@ -341,6 +343,9 @@ PROVENANCE = {
                           'urban proportion, printed as a dash, is set to 0; and the map columns '
                           'link each unit to the 2023 frame.',
                           ['map_comparable', 'map_weight', 'is_rate', 'series_ambiguous']),
+    'census_panel_1998': ('mixed', 'Figures as PBS published them; the link of each unit to the '
+                          '2023 frame, and of each glance district to the 2017 districts it became, '
+                          'is Data Darbar\u2019s.', ['map_comparable', 'map_weight']),
     'census_panel_2023': ('mixed', 'Figures as published or as corrected against PBS’s other '
                           'rendering; a wholly rural unit’s urban proportion, printed as a '
                           'dash, is set to 0.',

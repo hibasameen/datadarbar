@@ -1461,6 +1461,46 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             unit="persons, households or housing units; rates and percentages where is_rate is TRUE",
         )
 
+    p98 = (sorted(src.glob("census1998/*/panel_1998.parquet")) or [None])[-1]
+    if p98:
+        print("census 1998 panel…")
+        register(
+            "census_panel_1998",
+            "The 1998 census on PBS\u2019s 2023 boundaries: population for every district and "
+            "tehsil, and the district indicators PBS published for 1998.",
+            "Two layers, from what PBS still publishes. table_id '1': POPULATION - 1998, all / "
+            "rural / urban, for every district and every sub-district (tehsil, taluka, "
+            "sub-division, sub-tehsil) - PBS\u2019s own restatement of 1998 onto the 2017 units, "
+            "printed in the 2017 census\u2019s table 1; it sums to 132,352,279, the published "
+            "1998 total, at both tiers, and its map_key reaches all 136 districts and all 591 "
+            "tehsils of the 2023 frame through the same unit map as the 2017 panel. table_id "
+            "'glance': the District at a Glance indicators - population by sex, sex ratio, "
+            "density, household size, literacy by sex, 1981 population and growth since, "
+            "housing units and their amenities - for districts only. Each glance district is "
+            "linked to the 2017 districts it became in groups whose 1998 populations balance "
+            "against PBS\u2019s restatement to the person (etl/census1998/glance_crosswalk.py); "
+            "86 groups balance, and Bannu, Nawabshah and Upper Dir, which do not, carry no "
+            "map_key rather than a wrong one. Charsadda has no glance sheet. A glance district "
+            "drawn across several 2023 shapes is map_comparable 'combined': add counts, and "
+            "average rates on map_weight, the district\u2019s 1998 population. Below the "
+            "district nothing but population survives online: the District Census Reports "
+            "are print-only. Do not sum across unit_type, locality or sex.",
+            {**CENSUS_SHARED, **_MAP_DOCS,
+             "table_id": "'1' for population (PBS\u2019s restatement in the 2017 census) or "
+                         "'glance' for the District at a Glance indicators",
+             "unit": "the 2017 unit the 1998 population is restated on (table 1), or the "
+                     "glance district as PBS titled it",
+             "map_weight": "the unit\u2019s own 1998 population, the weight for averaging a "
+                           "rate across units drawn on one shape",
+             "is_rate": "the value is a rate, ratio or share and must not be summed",
+             "published_in": "the PBS publication the figure was read from"},
+            "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance) and "
+            "Census 2017 table 1 (POPULATION 1998, PBS\u2019s restatement)",
+            f"SELECT * FROM '{p98.as_posix()}' ORDER BY table_id, unit_type, district, unit, "
+            "locality, sex, indicator, col_label",
+            unit="persons; rates and shares where is_rate is TRUE",
+        )
+
     if p17 or p23:
         # The picker needs to know what can be mapped without loading 9 MB to
         # find out. One row per selectable series, with the count of units that
@@ -1525,6 +1565,24 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                  AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
                    = count(DISTINCT district || '|' || unit)
                        FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+        if p98:
+            parts.append(f"""
+              SELECT 1998 AS census_year, table_id,
+                     CASE WHEN unit_type = 'district' THEN 'district'
+                          ELSE 'tehsil' END AS unit_type, indicator, col_label,
+                     locality, sex, bool_or(is_rate) AS is_rate,
+                     length(list_distinct(flatten(list(str_split(map_key, ' '))
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)))) AS mappable_units,
+                     count(DISTINCT district || '|' || unit) FILTER (WHERE value IS NOT NULL) AS units_with_value,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_1998.parquet').as_posix()}'
+              GROUP BY 1, 2, 3, 4, 5, locality, sex
+              HAVING count(DISTINCT map_key) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL) > 0
+                 AND count(*) FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)
+                   = count(DISTINCT district || '|' || unit)
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
+            _title_values += (", (1998, '1', 'Population 1998, restated by PBS on the 2017 units "
+                              "(Census 2017 table 1)'), (1998, 'glance', 'District at a Glance (1998)')")
         register(
             "census_series_index",
             "One row per census series that the district and tehsil map can colour, "
@@ -1537,7 +1595,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "Series are listed per census year and must not be compared across years on "
             "table_id or indicator; see either panel's notes.",
             {
-                "census_year": "2017 or 2023",
+                "census_year": "1998, 2017 or 2023",
                 "table_id": "PBS table number within that census",
                 "table_title": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water",
                 "unit_type": "district or tehsil — the geography this series can be drawn on",
