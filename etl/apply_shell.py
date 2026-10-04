@@ -102,7 +102,8 @@ def footer(root=''):
         '<span>Code: <a href="https://opensource.org/licenses/MIT" '
         'target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: '
         '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
-        'rel="noopener">CC BY 4.0</a></span>' + sep +
+        'rel="noopener">CC BY 4.0</a> unless <a href="' + root + 'datasets/#licences">'
+        'stated otherwise</a></span>' + sep +
         '<span><a href="' + root + 'datasets/">Data Catalogue</a> &middot; '
         '<a href="' + root + 'districts/">District Profiles</a> &middot; '
         '<a href="' + root + 'methods.html">Methods</a> &middot; '

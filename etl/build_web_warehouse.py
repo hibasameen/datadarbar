@@ -2365,15 +2365,21 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
 
     # ── catalogue metadata: shelf, period covered, place keys, sample rows ──
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from catalog_meta import KIND, KINDS, TIME_COLS, KEY_COLS
+    from catalog_meta import KIND, KINDS, TIME_COLS, KEY_COLS, LICENCE, licence_of
     unfiled = [t["name"] for t in tables if t["name"] not in KIND]
     if unfiled:
         raise SystemExit(f"catalog_meta.KIND does not file: {', '.join(unfiled)}")
+    # A table without stated terms would fall back to the site-wide CC BY,
+    # which may be freer than its source allows - so it fails instead.
+    unlicensed = [t["name"] for t in tables if t["name"] not in LICENCE]
+    if unlicensed:
+        raise SystemExit(f"catalog_meta.LICENCE does not cover: {', '.join(unlicensed)}")
     samples = {}
     for t in tables:
         path = (OUT / t["file"]).as_posix()
         cols = [c["name"] for c in t["columns"]]
         t["kind"] = KIND[t["name"]]
+        t["licence"] = licence_of(t["name"])
         tc = next((c for c in TIME_COLS if c in cols), None)
         if tc:
             lo, hi = con.sql(f'SELECT min("{tc}")::VARCHAR, max("{tc}")::VARCHAR '
@@ -2392,7 +2398,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "name": "Data Darbar",
         "version": 1,
         "generated": _today(),
-        "license": "Derived data CC BY 4.0 · code MIT",
+        "license": "Data Darbar\u2019s derived data CC BY 4.0 unless a table states other "
+                   "terms (each table\u2019s licence field) · code MIT",
         "kinds": [{"key": k, "label": l, "about": a} for k, l, a in KINDS],
         "tables": sorted(tables, key=lambda t: t["name"]),
         "examples": EXAMPLES,

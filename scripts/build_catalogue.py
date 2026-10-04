@@ -231,7 +231,9 @@ def table_row(t, name_of, safety):
     return (f'<li class="crow" data-kind="{t["kind"]}" data-table="{E(t["name"])}">'
             f'<div class="crow-main"><a class="crow-title" href="{href}">{E(title)}</a>'
             f'<code class="ctbl">{E(t["name"])}</code>'
-            f'<p class="crow-desc">{E(t["description"])}</p>'
+            + (f' <span class="clic clic-{lic["reuse"]}" title="{E("; ".join(x["name"] for x in lic["terms"]))}">'
+               f'{E(lic["label"])}</span>' if (lic := t.get("licence")) and lic["reuse"] != "open" else '')
+            + f'<p class="crow-desc">{E(t["description"])}</p>'
             f'<div class="crow-fields" hidden></div></div>'
             f'<div class="crow-span">{E(sp) if sp else "<span class=cnil>—</span>"}</div>'
             f'<div class="crow-rows">{num(t["rows"])}</div>'
@@ -240,6 +242,61 @@ def table_row(t, name_of, safety):
             f'<a class="cicon" href="{query_href(starter_sql(t))}" title="Query {E(t["name"])} in the browser" aria-label="Query {E(t["name"])}">{ICON["sql"]}</a>'
             f'<a class="cicon" href="/data/warehouse/{E(t["file"])}" download title="Download Parquet, {mb(t["bytes"])}" aria-label="Download {E(t["name"])} as Parquet, {mb(t["bytes"])}">{ICON["down"]}</a>'
             f'</div></li>')
+
+
+def licence_section(tables, name_of):
+    """Every licence in use, what it lets a reader do, and the tables under it."""
+    terms, under = {}, {}
+    for t in tables:
+        for x in (t.get("licence") or {}).get("terms", []):
+            terms[x["key"]] = x
+            under.setdefault(x["key"], []).append(t)
+    reuse = {}
+    for t in tables:
+        lic = t.get("licence") or {}
+        for x in lic.get("terms", []):
+            reuse.setdefault(x["key"], set()).add(lic.get("reuse"))
+    order = ["open", "unstated", "share-alike", "non-commercial"]
+    label = {"open": "Open", "unstated": "No licence stated", "share-alike": "Share-alike",
+             "non-commercial": "Non-commercial"}
+
+    def level(k):
+        own = {"pbs-open": "open", "cc-by-4.0": "open", "cc0": "open", "imf": "open",
+               "ec-reuse": "open", "odbl": "share-alike", "cc-by-nc-4.0": "non-commercial",
+               "sbp": "non-commercial"}
+        return own.get(k, "unstated")
+    cards = []
+    for k in sorted(terms, key=lambda k: (order.index(level(k)), -len(under[k]))):
+        x = terms[k]
+        name = (f'<a href="{E(x["url"])}" target="_blank" rel="noopener">{E(x["name"])}</a>'
+                if x["url"] else E(x["name"]))
+        ts = sorted(under[k], key=lambda t: t["name"])
+        cards.append(
+            f'<div class="clicard"><div class="clicard-h"><b>{name}</b>'
+            f'<span class="clic clic-{level(k)}">{label[level(k)]}</span></div>'
+            f'<p>{E(x["summary"])}</p>'
+            + (lambda links: (
+                f'<p class="cmuted">{len(ts)} {"table" if len(ts) == 1 else "tables"}: {links}</p>'
+                if len(ts) <= 8 else
+                f'<details class="clicard-ts"><summary class="cmuted">Show {len(ts)} tables</summary>'
+                f'<p class="cmuted">{links}</p></details>'))(
+                ", ".join(f'<a href="/datasets/{slug(t["name"])}/"><code>{E(t["name"])}</code></a>'
+                          for t in ts))
+            + '</div>')
+    return (
+        '<section class="csec" id="licences"><div class="csec-head"><h2>Licences and reuse</h2>'
+        '<p>Data Darbar\u2019s own work \u2014 the cleaning, joins, crosswalks and derived '
+        'columns \u2014 is <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" '
+        'rel="noopener">CC BY 4.0</a>. The figures underneath keep their publisher\u2019s terms, '
+        'and a table is never offered on freer terms than its source allows. Most of the '
+        'catalogue is open: PBS releases its statistics under an open licence that allows '
+        'commercial reuse with attribution. The exceptions are marked on each table: State Bank '
+        'of Pakistan series and Meta\u2019s wealth index are non-commercial, OpenStreetMap '
+        'rows are share-alike, and several public bodies publish without stating a licence, so '
+        'cite them and ask before commercial reuse. Each table\u2019s page and its entry in '
+        '<code>catalog.json</code> name the terms that apply. Terms checked 4 October 2026; this '
+        'is a guide, not legal advice.</p></div>'
+        '<div class="clicards">' + "".join(cards) + '</div></section>')
 
 
 def row_head():
@@ -304,6 +361,7 @@ def index_page(cat, name_of, safety, bounds, seo):
 {"".join(sections)}
 <section class="csec" id="conventions"><div class="csec-head"><h2>Before you combine tables</h2><p>Six habits the tables need.</p></div>
 <div class="cconvs">{conv}</div></section>
+{licence_section(tables, name_of)}
 <section class="csec cmach" id="machines"><div class="csec-head"><h2>For code</h2><p>The files are static Parquet: query them over HTTP without downloading.</p></div>
 <div class="cmach-grid"><pre class="ccode"><code>import duckdb
 duckdb.sql("INSTALL httpfs; LOAD httpfs;")
@@ -406,23 +464,27 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
            + "".join(f'<li><a href="/datasets/{slug(x["name"])}/">{E(short_title(name_of[x["name"]]))}</a>'
                      f'<code class="ctbl">{E(x["name"])}</code></li>' for x in related[:8])
            + '</ul></div>') if related else ""
-    # A table redistributed from a share-alike source keeps that source's
-    # licence: ODbL data cannot be relicensed as CC BY, so the page and its
-    # JSON-LD say ODbL and the cite line says so too.
-    # A table that only carries some OpenStreetMap rows among its own is not
-    # relicensed wholesale, but those rows keep their owners' terms and the
-    # cite line has to say so.
-    src = t.get("source") or ""
-    odbl = src.startswith("\u00a9 OpenStreetMap")
-    part_odbl = not odbl and "ODbL" in src
-    lic_url = "https://opendatacommons.org/licenses/odbl/1-0/" if odbl else seo.LICENSE
-    lic_txt = ("Redistributed under the Open Database Licence (ODbL) 1.0, share-alike; "
-               "\u00a9 OpenStreetMap contributors" if odbl
-               else "Derived data CC BY 4.0, except the rows taken from OpenStreetMap, which "
-                    "stay \u00a9 OpenStreetMap contributors under the Open Database Licence "
-                    "(ODbL) 1.0; cite the original source above" if part_odbl
-               else "Derived data CC BY 4.0; cite the original source above")
-    cite = (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
+    # Each table carries the terms that govern it (etl/catalog_meta.py). A
+    # table cannot be offered on freer terms than its source: SBP's figures
+    # are non-commercial, OpenStreetMap's share-alike, and a public body that
+    # states no licence has to be asked before commercial reuse.
+    lic = t.get("licence") or {"reuse": "open", "label": "Open", "note": "", "terms": [
+        {"name": "CC BY 4.0", "url": seo.LICENSE, "summary": ""}]}
+    lic_url = lic["terms"][0]["url"] or seo.LICENSE
+    names = " + ".join(x["name"] for x in lic["terms"])
+    lic_txt = {"open": f"Reuse under {names}; cite the original source above",
+               "share-alike": f"{names}: share-alike; cite the original source above",
+               "non-commercial": f"{names}: non-commercial use only; cite the original source above",
+               "unstated": f"{names}: cite the original source above and ask it before "
+                           "commercial reuse"}[lic["reuse"]]
+    licbox = ('<div class="dside-box dlic"><h2>Licence</h2>'
+              f'<p><span class="clic clic-{lic["reuse"]}">{E(lic["label"])}</span></p>'
+              + "".join('<p class="dlic-term"><b>' + (f'<a href="{E(x["url"])}" target="_blank" '
+                        f'rel="noopener">{E(x["name"])}</a>' if x["url"] else E(x["name"]))
+                        + f'</b> {E(x["summary"])}</p>' for x in lic["terms"])
+              + (f'<p class="cmuted">{E(lic["note"])}</p>' if lic["note"] else '')
+              + '<p class="cmuted"><a href="/datasets/#licences">How licences work here</a></p></div>')
+    cite = licbox + (f'<div class="dside-box"><h2>Cite</h2><p class="dcite">Hiba Sameen / Data Darbar. '
             f'{E(title)}. {seo.ORIGIN}{path}. Release {E(str(cat["generated"]))}. '
             f'{lic_txt}.</p></div>')
 

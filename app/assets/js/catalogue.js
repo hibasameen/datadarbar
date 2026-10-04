@@ -106,7 +106,7 @@
       var any = $$('.crow[data-table]', sec).some(function (li) { return !li.hidden; });
       sec.hidden = narrowed && !any;
     });
-    $$('#conventions,#machines').forEach(function (s) { s.hidden = narrowed; });
+    $$('#conventions,#licences,#machines').forEach(function (s) { s.hidden = narrowed; });
     $('#cempty').hidden = !(narrowed && shown === 0);
     $('#cstat').textContent = narrowed
       ? shown + (shown === 1 ? ' table' : ' tables')

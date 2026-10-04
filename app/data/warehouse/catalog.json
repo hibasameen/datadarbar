@@ -2,7 +2,7 @@
  "name": "Data Darbar",
  "version": 1,
  "generated": "2026-10-04",
- "license": "Derived data CC BY 4.0 · code MIT",
+ "license": "Data Darbar’s derived data CC BY 4.0 unless a table states other terms (each table’s licence field) · code MIT",
  "kinds": [
   {
    "key": "geography",
@@ -93,6 +93,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Finance Division, Budget in Brief.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "doc_fy",
     "from": "2009-10",
@@ -162,6 +175,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "keys": [
     "district"
    ]
@@ -238,6 +264,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "census_year",
     "from": "1951",
@@ -435,6 +474,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "keys": [
     "district_key",
     "district"
@@ -487,6 +539,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "keys": [
     "map_key"
    ]
@@ -494,7 +559,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8272895,
+   "bytes": 8272883,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -598,6 +663,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "census_year",
     "from": "2017",
@@ -740,6 +818,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "census_year",
     "from": "2023",
@@ -830,6 +921,19 @@
     }
    ],
    "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "census_year",
     "from": "2017",
@@ -894,6 +998,25 @@
     }
    ],
    "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The mapping itself is Data Darbar’s work.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "span": {
     "column": "census_year",
     "from": "2017",
@@ -1026,6 +1149,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "ec-reuse",
+      "name": "European Commission reuse policy (CC BY 4.0)",
+      "url": "https://www.gdacs.org/About/termofuse.aspx",
+      "summary": "GDACS is run by the European Commission’s Joint Research Centre; Commission content is reusable with acknowledgement under its reuse decision (2011/833/EU, implemented through CC BY 4.0). GDACS’s disclaimer applies alongside."
+     }
+    ]
+   },
    "span": {
     "column": "start_date",
     "from": "2001-07-22",
@@ -1120,6 +1256,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NDMA situation reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "period_start",
     "from": "2026-06-26",
@@ -1184,6 +1333,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "1981-82",
@@ -1237,6 +1399,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Bureau of Emigration figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2011",
@@ -1276,6 +1451,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Bureau of Emigration figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "1971",
@@ -1330,6 +1518,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Bureau of Emigration figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2011",
@@ -1368,6 +1569,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Bureau of Emigration figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2024",
@@ -1402,6 +1616,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Bureau of Emigration figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2006",
@@ -1461,6 +1688,25 @@
     }
    ],
    "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The crosswalk is Data Darbar’s work.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -1540,6 +1786,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "PBS figures are open; the DHS and MICS estimates follow the survey programmes’ terms.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "survey-programmes",
+      "name": "Survey programme terms (DHS Program, UNICEF MICS)",
+      "url": "https://dhsprogram.com/data/Terms-of-Use.cfm",
+      "summary": "District estimates computed from DHS and MICS survey microdata. Cite the survey; the programmes’ terms govern the microdata, which is not redistributed here. No licence is stated for estimates like these."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2017",
@@ -1598,6 +1863,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "FBR figures as disseminated by PBS.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "1991-92",
@@ -1667,6 +1945,25 @@
     }
    ],
    "kind": "reference",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Lists PBS and Finance Division files.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -1721,6 +2018,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "1951-52",
@@ -1775,6 +2085,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "1999-00",
@@ -1829,6 +2152,19 @@
     }
    ],
    "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Data Darbar’s measurements of the PBS layers.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -1878,6 +2214,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "1999-00",
@@ -1937,6 +2286,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2015-16",
@@ -2061,6 +2423,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Malaria Atlas Project and WorldPop, both CC BY 4.0.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "district_key",
     "district",
@@ -2169,6 +2544,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Malaria Atlas Project and WorldPop, both CC BY 4.0.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "dd_id",
     "district_key",
@@ -2317,6 +2705,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "ALHASAN Systems via the Humanitarian Data Exchange.",
+    "terms": [
+     {
+      "key": "cc0",
+      "name": "CC0 1.0",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "summary": "Public domain dedication: no conditions, though credit is courteous."
+     }
+    ]
+   },
    "keys": [
     "district_code",
     "district_key",
@@ -2461,6 +2862,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "share-alike",
+    "label": "Share-alike",
+    "note": "",
+    "terms": [
+     {
+      "key": "odbl",
+      "name": "ODbL 1.0",
+      "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+      "summary": "© OpenStreetMap contributors. Reuse with attribution; a database made from it must be shared under the ODbL too."
+     }
+    ]
+   },
    "keys": [
     "district_code",
     "district_key"
@@ -2518,6 +2932,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "imf",
+      "name": "IMF terms of use",
+      "url": "https://www.imf.org/en/About/copyright-and-terms",
+      "summary": "Reuse, derived works and redistribution allowed with attribution to the IMF; a materially transformed figure must say so."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "1950",
@@ -2712,6 +3139,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Law & Justice Commission of Pakistan.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2020",
@@ -2828,6 +3268,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Law & Justice Commission of Pakistan.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2020",
@@ -2900,6 +3353,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Law & Justice Commission of Pakistan.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2020",
@@ -3001,6 +3467,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Law & Justice Commission of Pakistan.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2023",
@@ -3052,6 +3531,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "month",
     "from": "2016-07",
@@ -3106,6 +3598,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2005-06",
@@ -3180,6 +3685,25 @@
     }
    ],
    "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "geoBoundaries ADM3 is CC BY 4.0.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "tehsil_code",
     "dd_id",
@@ -4350,6 +4874,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "keys": [
     "tehsil_code",
     "district_code",
@@ -4449,6 +4986,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Computed by Data Darbar from PBS PSLM/HIES microdata.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "district_key"
    ]
@@ -4500,6 +5056,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "1951-52",
@@ -4594,6 +5163,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2006-07",
@@ -4653,6 +5235,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "fiscal_year",
     "from": "2017-18",
@@ -4712,6 +5307,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -4836,6 +5444,37 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "Each row keeps its source’s terms: rows in group rwi are Meta’s Relative Wealth Index, non-commercial; DHS and MICS rows follow the survey programmes.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "survey-programmes",
+      "name": "Survey programme terms (DHS Program, UNICEF MICS)",
+      "url": "https://dhsprogram.com/data/Terms-of-Use.cfm",
+      "summary": "District estimates computed from DHS and MICS survey microdata. Cite the survey; the programmes’ terms govern the microdata, which is not redistributed here. No licence is stated for estimates like these."
+     },
+     {
+      "key": "cc-by-nc-4.0",
+      "name": "CC BY-NC 4.0",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "summary": "Attribution, non-commercial use only. Applies to Meta’s Relative Wealth Index."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -4895,6 +5534,37 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "Each row keeps its source’s terms: rows in group rwi are Meta’s Relative Wealth Index, non-commercial; DHS and MICS rows follow the survey programmes.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "survey-programmes",
+      "name": "Survey programme terms (DHS Program, UNICEF MICS)",
+      "url": "https://dhsprogram.com/data/Terms-of-Use.cfm",
+      "summary": "District estimates computed from DHS and MICS survey microdata. Cite the survey; the programmes’ terms govern the microdata, which is not redistributed here. No licence is stated for estimates like these."
+     },
+     {
+      "key": "cc-by-nc-4.0",
+      "name": "CC BY-NC 4.0",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "summary": "Attribution, non-commercial use only. Applies to Meta’s Relative Wealth Index."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2011",
@@ -5031,6 +5701,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Provincial police returns.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -5165,6 +5848,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Provincial police returns.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -5269,6 +5965,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "",
+    "terms": [
+     {
+      "key": "sbp",
+      "name": "State Bank of Pakistan terms",
+      "url": "https://archive.sbp.org.pk/Museum/dsclmr.htm",
+      "summary": "SBP information may be copied and used with reference to the source, for non-commercial use, without being changed."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "1950",
@@ -5318,6 +6027,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "",
+    "terms": [
+     {
+      "key": "sbp",
+      "name": "State Bank of Pakistan terms",
+      "url": "https://archive.sbp.org.pk/Museum/dsclmr.htm",
+      "summary": "SBP information may be copied and used with reference to the source, for non-commercial use, without being changed."
+     }
+    ]
+   },
    "span": {
     "column": "obs_date",
     "from": "1947-08-31",
@@ -5668,6 +6390,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "",
+    "terms": [
+     {
+      "key": "sbp",
+      "name": "State Bank of Pakistan terms",
+      "url": "https://archive.sbp.org.pk/Museum/dsclmr.htm",
+      "summary": "SBP information may be copied and used with reference to the source, for non-commercial use, without being changed."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -5907,6 +6642,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Derived by Data Darbar from schools_pk, WorldPop and the Malaria Atlas friction surface.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "keys": [
     "district_key",
     "district"
@@ -6054,6 +6808,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Derived by Data Darbar from schools_pk and WorldPop.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "dd_id",
     "district_key"
@@ -6146,6 +6913,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Derived by Data Darbar from schools_pk and WorldPop.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "district_key"
    ]
@@ -6232,6 +7012,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Data Darbar’s ledger of the school layer.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -6601,6 +7394,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "district_key"
    ]
@@ -6662,6 +7474,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -6826,6 +7657,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "district_key"
    ]
@@ -7112,6 +7962,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "share-alike",
+    "label": "Share-alike",
+    "note": "Compiled by Adaad from provincial school registers, which state no licence; the Islamabad rows come from OpenStreetMap and stay under the ODbL.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     },
+     {
+      "key": "odbl",
+      "name": "ODbL 1.0",
+      "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+      "summary": "© OpenStreetMap contributors. Reuse with attribution; a database made from it must be shared under the ODbL too."
+     }
+    ]
+   },
    "keys": [
     "district_key",
     "district",
@@ -7315,6 +8184,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Sindh Police.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2019",
@@ -7424,6 +8306,19 @@
     }
    ],
    "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Sindh Police.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
    "span": {
     "column": "report_date",
     "from": "2025-09-15",
@@ -7493,6 +8388,25 @@
     }
    ],
    "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The crosswalk is Data Darbar’s work.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": []
   },
   {
@@ -7522,6 +8436,19 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Earth Observation Group, CC BY 4.0.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2020",
@@ -7608,6 +8535,25 @@
     }
    ],
    "kind": "places",
+   "licence": {
+    "reuse": "non-commercial",
+    "label": "Non-commercial",
+    "note": "The Relative Wealth Index is Meta’s, non-commercial; the WorldPop columns are CC BY 4.0.",
+    "terms": [
+     {
+      "key": "cc-by-nc-4.0",
+      "name": "CC BY-NC 4.0",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "summary": "Attribution, non-commercial use only. Applies to Meta’s Relative Wealth Index."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "keys": [
     "tehsil_id",
     "dk"
@@ -7680,6 +8626,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2003-04",
@@ -7734,6 +8693,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2003-04",
@@ -7803,6 +8775,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fiscal_year",
     "from": "2015-16",
@@ -7857,6 +8842,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "2003",
@@ -7991,6 +8989,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
    "span": {
     "column": "fy",
     "from": "2003-04",
@@ -8045,6 +9056,19 @@
     }
    ],
    "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "World Bank.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
    "span": {
     "column": "year",
     "from": "1960",
