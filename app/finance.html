@@ -3,21 +3,21 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=1a7cbb43"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=1a7cbb43"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=1a7cbb43"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=7a9464a2"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=7a9464a2"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=7a9464a2"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=1a7cbb43"></script>
-<script src="assets/js/palette.js?v=1a7cbb43"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=7a9464a2"></script>
+<script src="assets/js/palette.js?v=7a9464a2"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
-<meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
+<meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
 <meta property="og:title" content="Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar">
-<meta property="og:description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
+<meta property="og:description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers.">
 <meta property="og:url" content="https://darbar.adaad.org/finance.html">
 <meta name="twitter:title" content="Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar">
-<meta name="twitter:description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Data Darbar"><meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/finance.html#page", "url": "https://darbar.adaad.org/finance.html", "name": "Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "description": "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<meta name="twitter:description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Data Darbar"><meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/finance.html#page", "url": "https://darbar.adaad.org/finance.html", "name": "Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "description": "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
 <!-- SEO:END -->
 </head><body>
 <!-- dd:header -->
@@ -345,6 +345,52 @@
  </div>
 
 <!-- basket: treemap + top products -->
+
+ <div class="card" data-topic="longrun" id="sec-gdplong">
+  <button class="csvbtn" data-csv="gdplong">CSV</button>
+  <h2>The economy since FY50 <span class="unit">— real GDP at 2005-06 factor cost, and its growth</span></h2>
+  <div class="desc">Seventy years on one line. On the ratio scale an equal slope is an equal rate of growth, so the steep 1960s and the flatter stretches after them can be compared directly. The level is the State Bank&rsquo;s own splice of every PBS base onto 2005-06 prices; the growth rate is the one it prints beside it.</div>
+  <div class="controls"><div class="seg" id="gdpLongSeg"><button data-gv="level" class="on">Level (ratio scale)</button><button data-gv="growth">Growth, % a year</button></div></div>
+  <div id="chGdpLong"></div>
+  <div class="src">State Bank of Pakistan, Handbook of Statistics on Pakistan Economy 2020, table 1.5: GDP at constant factor cost, FY50 to FY21, as published. Fiscal years are named by the year they end (FY50 = 1949-50).</div>
+ </div>
+
+ <div class="card" data-topic="longrun" id="sec-moneylong">
+  <button class="csvbtn" data-csv="moneylong">CSV</button>
+  <h2>Money and prices since 1950 <span class="unit">— % change on a year earlier</span></h2>
+  <div class="desc">Broad money against consumer prices. Money growing much faster than output tends to show up later in prices; the 1970s and the years after 2018 are where the two lines rise together. The line breaks wherever the comparison would not be like with like: where the State Bank changes the definition of money (1986, 1991 and 2005), in 1972, when the figures stop including East Pakistan, and wherever the price index changes its base.</div>
+  <div class="chips" id="chips-moneylong"></div>
+  <div id="chMoneyLong"></div>
+  <div class="src">State Bank of Pakistan, Handbook of Statistics on Pakistan Economy 2020: table 4.1 (monetary statistics, from 1950) and table 2.8 (consumer price index, from FY50). The growth rates are computed by Data Darbar from SBP&rsquo;s levels and indices, within each block and base. The current money series, from 2006, is under Money &amp; banks.</div>
+ </div>
+
+ <div class="card" data-topic="longrun" id="sec-fiscal">
+  <button class="csvbtn" data-csv="fiscal">CSV</button>
+  <h2>The state&rsquo;s finances since 1950 <span class="unit">— % of GDP</span></h2>
+  <div class="desc">What the government raises, what it spends, and the gap before interest. The IMF&rsquo;s series reaches back to 1950; the State Bank&rsquo;s consolidated federal and provincial budget, from FY76, is offered alongside as Pakistan&rsquo;s own count. The two differ in coverage, so where both are shown they will not match exactly.</div>
+  <div class="chips" id="chips-fiscal"></div>
+  <div id="chFiscal"></div>
+  <div class="src">International Monetary Fund, Public Finances in Modern History (Mauro et al. 2015; December 2025 edition), 1950&ndash;2024, as published, years as the IMF labels them. State Bank of Pakistan, Handbook of Statistics 2020, table 3.7, summary of public finance, FY76&ndash;FY20.</div>
+ </div>
+
+ <div class="card" data-topic="longrun" id="sec-debt">
+  <button class="csvbtn" data-csv="debt">CSV</button>
+  <h2>Public debt since 1951 <span class="unit">— gross public debt, % of GDP</span></h2>
+  <div class="desc">The stock that the deficits above add up to.</div>
+  <div id="chDebt"></div>
+  <div class="src">International Monetary Fund, Public Finances in Modern History, gross public debt, 1951&ndash;2024, as published.</div>
+ </div>
+
+ <div class="card" data-topic="peers" id="sec-peers">
+  <button class="csvbtn" data-csv="peers">CSV</button>
+  <h2>Pakistan and its peers <span class="unit">— <span id="peerUnit"></span></span></h2>
+  <div class="desc">Pick a measure, then the countries to set beside Pakistan. South Asia, lower-middle income and the world are averages, drawn dashed. Several of these are the World Bank&rsquo;s or the ILO&rsquo;s modelled estimates rather than national figures; for Pakistan&rsquo;s own series use the rest of this page.</div>
+  <div class="controls"><div class="select-wrap"><select id="peerInd" aria-label="Measure"></select><svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+  <div class="chips" id="chips-peers"></div>
+  <div id="chPeers"></div>
+  <div class="src">World Bank, World Development Indicators (CC BY 4.0), as published, calendar years from 1960.</div>
+ </div>
+
  <div class="card" data-topic="basket" id="sec-drill">
   <button class="csvbtn" data-csv="drill" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <h2>What Pakistan trades <span class="unit">— every product, grouped by sector</span></h2>
@@ -422,26 +468,27 @@
 </div>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=1a7cbb43"></script>
-<script src="data/growth_data.js?v=1a7cbb43"></script>
-<script src="data/structure_data.js?v=1a7cbb43"></script>
-<script src="data/money_data.js?v=1a7cbb43"></script>
-<script src="data/migration_data.js?v=1a7cbb43"></script>
-<script src="data/recon_data.js?v=1a7cbb43"></script>
-<script src="data/provenance.js?v=1a7cbb43"></script>
-<script src="data/trade_data.js?v=1a7cbb43"></script>
-<script src="assets/js/provenance.js?v=1a7cbb43"></script>
-<script src="assets/js/econ_data.js?v=1a7cbb43"></script>
-<script src="assets/js/econ-shell.js?v=1a7cbb43"></script>
-<script type="module" src="assets/js/finance.js?v=1a7cbb43"></script>
-<script type="module" src="assets/js/money.js?v=1a7cbb43"></script>
-<script type="module" src="assets/js/trade.js?v=1a7cbb43"></script>
-<script src="assets/js/explorer.js?v=1a7cbb43"></script>
-<script src="assets/js/economy-rail.js?v=1a7cbb43"></script>
-<script src="assets/js/sidebar-mobile.js?v=1a7cbb43"></script>
-<script src="assets/js/shell.js?v=1a7cbb43"></script>
-<script src="assets/js/modals.js?v=1a7cbb43"></script>
-<script src="assets/js/analytics.js?v=1a7cbb43"></script>
+<script src="data/macro_data.js?v=7a9464a2"></script>
+<script src="data/growth_data.js?v=7a9464a2"></script>
+<script src="data/structure_data.js?v=7a9464a2"></script>
+<script src="data/money_data.js?v=7a9464a2"></script>
+<script src="data/history_data.js?v=7a9464a2"></script>
+<script src="data/migration_data.js?v=7a9464a2"></script>
+<script src="data/recon_data.js?v=7a9464a2"></script>
+<script src="data/provenance.js?v=7a9464a2"></script>
+<script src="data/trade_data.js?v=7a9464a2"></script>
+<script src="assets/js/provenance.js?v=7a9464a2"></script>
+<script src="assets/js/econ_data.js?v=7a9464a2"></script>
+<script src="assets/js/econ-shell.js?v=7a9464a2"></script>
+<script type="module" src="assets/js/finance.js?v=7a9464a2"></script>
+<script type="module" src="assets/js/money.js?v=7a9464a2"></script>
+<script type="module" src="assets/js/trade.js?v=7a9464a2"></script>
+<script src="assets/js/explorer.js?v=7a9464a2"></script>
+<script src="assets/js/economy-rail.js?v=7a9464a2"></script>
+<script src="assets/js/sidebar-mobile.js?v=7a9464a2"></script>
+<script src="assets/js/shell.js?v=7a9464a2"></script>
+<script src="assets/js/modals.js?v=7a9464a2"></script>
+<script src="assets/js/analytics.js?v=7a9464a2"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> unless <a href="datasets/#licences">stated otherwise</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

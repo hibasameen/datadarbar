@@ -53,8 +53,23 @@ const SER = {
   gx:['Goods exports','var(--green-600)'], gm:['Goods imports','var(--negative)'], sx:['Services exports','var(--green-400)'],
   sm:['Services imports','var(--negative-100)'], ca:['Current account','var(--green-800)'], remit_bop:['Remittances','var(--teal-700)'],
   m1:['M1','var(--gold-600)'], m2:['M2','var(--green-700)'], m3:['M3','var(--green-800)'], notes:['Notes in circulation','var(--muted-2)'],
-  npl_ratio:['NPL ratio','var(--negative)']
+  npl_ratio:['NPL ratio','var(--negative)'],
+  /* the long run (data/history_data.js) */
+  gdp_growth:['Real GDP growth','var(--green-800)'],
+  m2_growth:['Broad money (M2)','var(--green-700)'], m0_growth:['Reserve money (M0)','var(--gold-600)'],
+  cpi_infl:['CPI inflation','var(--negative)'],
+  imf_rev:['Revenue, IMF','var(--green-700)'], imf_exp:['Spending, IMF','var(--negative)'],
+  imf_pb:['Primary balance, IMF','var(--teal-700)'], imf_ie:['Interest paid, IMF','var(--gold-600)'],
+  sbp_rev:['Revenue, SBP','var(--green-300)'], sbp_exp:['Spending, SBP','var(--sienna-300)'],
+  sbp_fb:['Fiscal balance, SBP','var(--teal-300)'],
+  imf_debt:['Public debt','var(--body)']
 };
+/* Pakistan's comparators: each a chip on the peers chart. Pakistan is drawn
+   heavier and in the house green; aggregates are dashed. */
+const PEER_COL = { PAK:'var(--green-800)', IND:'var(--sienna)', BGD:'var(--teal-700)', LKA:'var(--plum)',
+  NPL:'var(--slate)', AFG:'var(--muted)', IRN:'var(--olive)', EGY:'var(--gold-600)', IDN:'var(--rust)',
+  NGA:'var(--grey-blue)', TUR:'var(--mauve)', SAS:'var(--body)', XN:'var(--muted-2)', WLD:'var(--line-strong)' };
+const PEER_AGG = { SAS:1, XN:1, WLD:1 };
 const lbl = k => SER[k] ? SER[k][0] : k, col = k => SER[k] ? SER[k][1] : 'var(--muted)';
 
 /* chart -> {avail: keys offered as chips, def: default selection} */
@@ -68,12 +83,20 @@ const CH = {
   spread: { avail:['lend','depo'], def:['lend','depo'] },
   res:    { avail:['res_sbp','res_banks','res_gold','res_imf'], def:['res_sbp','res_banks'] },
   bop:    { avail:['gx','gm','sx','sm','remit_bop','ca'], def:['gx','gm','sx','sm','ca'] },
-  money:  { avail:['m1','m2','m3','notes'], def:['m1','m2','m3'] }
+  money:  { avail:['m1','m2','m3','notes'], def:['m1','m2','m3'] },
+  gdplong: { avail:['gdp_growth'], def:['gdp_growth'] },
+  moneylong: { avail:['m2_growth','m0_growth','cpi_infl'], def:['m2_growth','cpi_infl'] },
+  debt:   { avail:['imf_debt'], def:['imf_debt'] },
+  fiscal: { avail:['imf_rev','imf_exp','imf_pb','imf_ie','sbp_rev','sbp_exp','sbp_fb'],
+            def:['imf_rev','imf_exp','imf_pb'] },
+  peers:  { avail:['PAK','IND','BGD','LKA','NPL','AFG','IRN','EGY','IDN','NGA','TUR','SAS','XN','WLD'],
+            def:['PAK','IND','BGD','LKA','SAS'] }
 };
 const SEL = {}; Object.keys(CH).forEach(c => SEL[c] = new Set(CH[c].def));
 const isDefault = c => { const d = CH[c].def; return SEL[c].size === d.length && d.every(k => SEL[c].has(k)); };
 
-let D, S, M, scale = 'log', fy = null, fys = [], bopView = 'tree';
+let D, S, M, H, scale = 'log', fy = null, fys = [], bopView = 'tree';
+let gdpView = 'level', peerInd = 'NY.GDP.PCAP.PP.KD';
 let topic = 'rupee', applyingHash = false, _lastNavHash = '';
 
 /* ---------------- topics ---------------- */
@@ -95,20 +118,29 @@ const TOPICS = [
   meta:'SBP gold and FX reserves (from Jun-1948), the BPM6 monthly balance of payments summary (from Jul-2013), and country-wise workers’ remittances (from Jul-1972).'},
  {k:'money', label:'Money & banks',
   desc:'The money supply and the banking system’s bad loans.',
-  meta:'SBP monetary aggregates M3 monthly profile (from Jun-2006) and segment-wise advances and non-performing loans (quarterly, to Jun-2025).'}];
+  meta:'SBP monetary aggregates M3 monthly profile (from Jun-2006) and segment-wise advances and non-performing loans (quarterly, to Jun-2025).'},
+ {k:'longrun', label:'The long run',
+  desc:'Seventy years: the size of the economy, money and prices, and the state’s finances since independence.',
+  meta:'SBP Handbook of Statistics on Pakistan Economy 2020 (real GDP and prices from FY50, money from 1950, the consolidated budget from FY76) and the IMF’s Public Finances in Modern History (from 1950).'},
+ {k:'peers', label:'Pakistan and its peers',
+  desc:'Pakistan beside its neighbours and comparable economies, on the World Bank’s figures.',
+  meta:'World Bank, World Development Indicators (CC BY 4.0), 1960 onwards.'}];
 
 const TOPIC_DRAWS = {
   rupee:    () => { drawUsd(); drawReer(); },
   prices:   () => { drawCpi(); drawFood(); },
   rates:    () => { drawPolicy(); drawKibor(); drawSpread(); },
   external: () => { drawRes(); drawBop(); drawRemit(); drawEmig(); },
-  money:    () => { drawMoney(); drawNpl(); }
+  money:    () => { drawMoney(); drawNpl(); },
+  longrun:  () => { drawGdpLong(); drawMoneyLong(); drawFiscal(); drawDebt(); },
+  peers:    () => { drawPeers(); }
 };
 const TOPIC_GROUPS = [
  {label:null, keys:['all']},
  {label:'Prices & the rupee', keys:['rupee','prices']},
  {label:'Rates & money', keys:['rates','money']},
- {label:'The outside world', keys:['external']}];
+ {label:'The outside world', keys:['external']},
+ {label:'The long view', keys:['longrun','peers']}];
 const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
 
 /* An ES module since Economy became one page. Nothing here was renamed:
@@ -285,13 +317,16 @@ function freshLine(chart, keys) {
 function multiLine(chart, sel, opts) {
   const keys = CH[chart].avail.filter(k => SEL[chart].has(k) && S[k] && S[k].length);
   if (!keys.length) return nodata(sel, 'Pick at least one series.');
-  freshLine(chart, keys);
+  /* The long-run series are annual and dated mid-year only to sit on a time
+     axis; "observations to 30 June" would read that placeholder as a date. */
+  if (!opts.annual) freshLine(chart, keys);
   const f = frame(sel, opts.hFrac || 0.27, opts.m || { t: 16, r: 110, b: 28, l: 46 });
   const all = keys.flatMap(k => S[k]);
   const x = xTime(f, d3.extent(all, p => dt(p[0])));
   const lo = opts.zero === false ? d3.min(all, p => p[1]) * 0.94 : Math.min(0, d3.min(all, p => p[1]));
   const y = d3.scaleLinear().domain([lo, d3.max(all, p => p[1]) * 1.08]).nice().range([f.H - f.m.b, f.m.t]);
-  axes(f, x, y, opts.yFmt);
+  // annual series get a tick a decade (two on a phone), not d3's guess
+  axes(f, x, y, opts.yFmt, opts.annual ? d3.timeYear.every(f.narrow ? 20 : 10) : undefined);
   if (opts.refLine != null) {
     f.svg.append('line').attr('x1', f.m.l).attr('x2', f.W - f.m.r).attr('y1', y(opts.refLine)).attr('y2', y(opts.refLine))
       .attr('stroke', 'var(--line-strong)').attr('stroke-dasharray', '3 3');
@@ -300,12 +335,13 @@ function multiLine(chart, sel, opts) {
   } else if (lo < 0) zeroLine(f, x, y);
   if (opts.before) opts.before(f, x, y, keys);
   keys.forEach(k => {
-    linePath(f, S[k], x, y, col(k), opts.emph && opts.emph === k ? 2.6 : 1.8);
+    linePath(f, S[k], x, y, col(k), opts.emph && opts.emph === k ? 2.6 : 1.8,
+             opts.dash ? opts.dash(k) : null);
     endLabel(f, x, y, S[k][S[k].length - 1], col(k), lbl(k));
   });
   placeLabels(f);
   const dates = [...new Set(all.map(p => p[0]))].sort();
-  hoverLayer(f, x, dates, d => `<b>${mLbl(d)}</b><br>` +
+  hoverLayer(f, x, dates, d => `<b>${(opts.dLbl || mLbl)(d)}</b><br>` +
     keys.map(k => `${lbl(k)} ${opts.fmt ? opts.fmt(at(k, d)) : num(at(k, d), 2)}`).join('<br>'));
   return f;
 }
@@ -753,6 +789,85 @@ function emigSkill(M, el, W) {
   });
 }
 
+/* ---------------- charts: the long run ----------------
+   Annual series from data/history_data.js, dated mid-year. A NULL in a
+   series is a deliberate gap - a change of definition, of index base or of
+   territory - and the line breaks there rather than joining across it. */
+const yLbl = d => d.slice(0, 4);
+function drawGdpLong() {
+  d3.selectAll('#gdpLongSeg button').classed('on', function () { return this.dataset.gv === gdpView; });
+  if (gdpView === 'growth') {
+    return multiLine('gdplong', '#chGdpLong', { annual: true, fmt: v => num(v, 1) + '%', dLbl: d => 'FY' + yLbl(d),
+      yFmt: d => d + '%', m: { t: 16, r: 120, b: 28, l: 46 } });
+  }
+  const pts = S.gdp_level; if (!pts) return nodata('#chGdpLong', 'No GDP data.');
+  const f = frame('#chGdpLong', 0.3, { t: 22, r: 30, b: 28, l: 52 });
+  const x = xTime(f, d3.extent(pts, p => dt(p[0])));
+  const y = d3.scaleLog().domain([d3.min(pts, p => p[1]) * 0.9, d3.max(pts, p => p[1]) * 1.1])
+    .range([f.H - f.m.b, f.m.t]);
+  const tr = v => 'Rs ' + (v >= 1e6 ? (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + ' tn' : Math.round(v / 1e3) + ' bn');
+  // axis labels without the currency, which goes in the axis title: "Rs 10 tn"
+  // did not fit the left margin on a phone
+  const ax = v => v >= 1e6 ? (v / 1e6) + ' tn' : (v / 1e3) + ' bn';
+  f.svg.append('g').attr('transform', `translate(0,${f.H - f.m.b})`).attr('class', 'axis')
+    .call(d3.axisBottom(x).ticks(d3.timeYear.every(f.narrow ? 20 : 10)).tickFormat(d3.timeFormat('%Y')));
+  f.svg.append('g').attr('transform', `translate(${f.m.l},0)`).attr('class', 'axis')
+    .call(d3.axisLeft(y).tickValues([5e5, 1e6, 2e6, 5e6, 1e7]).tickFormat(ax))
+    .call(g => g.selectAll('.tick line').clone().attr('x2', f.W - f.m.r - f.m.l).attr('class', 'gl'));
+  f.svg.append('text').attr('x', f.m.l).attr('y', f.m.t - 4).attr('font-size', 10)
+    .attr('fill', 'var(--muted-2)').text('Rupees, 2005-06 prices');
+  linePath(f, pts, x, y, col('gdp_growth'), 2.4);
+  hoverLayer(f, x, pts.map(p => p[0]), d => `<b>FY${yLbl(d)}</b><br>GDP ${tr(pts.find(p => p[0] === d)[1])}` +
+    ' at 2005-06 factor cost');
+}
+function drawMoneyLong() {
+  chips('moneylong', drawMoneyLong);
+  multiLine('moneylong', '#chMoneyLong', { annual: true, fmt: v => v == null ? '—' : num(v, 1) + '%', dLbl: yLbl,
+    yFmt: d => d + '%', m: { t: 16, r: 130, b: 28, l: 46 } });
+}
+function drawFiscal() {
+  chips('fiscal', drawFiscal);
+  multiLine('fiscal', '#chFiscal', { annual: true, fmt: v => v == null ? '—' : num(v, 1) + '% of GDP', dLbl: yLbl,
+    yFmt: d => d + '%', m: { t: 16, r: 140, b: 28, l: 46 } });
+}
+function drawDebt() {
+  multiLine('debt', '#chDebt', { annual: true, fmt: v => v == null ? '—' : num(v, 1) + '% of GDP', dLbl: yLbl,
+    yFmt: d => d + '%', m: { t: 16, r: 110, b: 28, l: 46 } });
+}
+/* One indicator, many countries. The series are swapped into S under the
+   country codes each time the indicator changes, so the chips, the labels and
+   the CSV all work as they do for every other chart here. */
+function peerSeries() {
+  const P = (H && H.peers) || { indicators: [], countries: [], data: {} };
+  const ind = P.indicators.find(i => i.code === peerInd) || P.indicators[0];
+  if (!ind) return null;
+  peerInd = ind.code;
+  P.countries.forEach(c => {
+    S[c.code] = (P.data[ind.code] || {})[c.code] || [];
+    SER[c.code] = [c.code === 'PAK' ? 'Pakistan' : c.name, PEER_COL[c.code] || 'var(--muted)'];
+  });
+  return ind;
+}
+function drawPeers() {
+  const P = (H && H.peers) || null;
+  if (!P) return nodata('#chPeers', 'No comparison data.');
+  const sel = d3.select('#peerInd');
+  if (sel.selectAll('option').empty()) {
+    sel.selectAll('option').data(P.indicators).join('option').attr('value', d => d.code)
+      .text(d => d.label + ' — ' + d.unit);
+    sel.on('change', function () { peerInd = this.value; drawPeers(); writeHash(false); });
+  }
+  const ind = peerSeries(); sel.property('value', ind.code);
+  CH.peers.avail = P.countries.map(c => c.code);
+  chips('peers', drawPeers);
+  multiLine('peers', '#chPeers', { fmt: v => v == null ? '—' : num(v, ind.dp), dLbl: yLbl,
+    zero: false, emph: 'PAK', annual: true, m: { t: 16, r: 130, b: 28, l: 54 },
+    dash: k => PEER_AGG[k] ? '4 3' : null,
+    yFmt: d => d3.format('~s')(d) });
+  d3.select('#peerUnit').text(ind.unit);
+}
+function setGdpView(v) { gdpView = v; drawGdpLong(); writeHash(false); }
+
 /* ---------------- charts: money & banks ---------------- */
 function drawMoney() {
   chips('money', drawMoney);
@@ -835,6 +950,12 @@ const CSV = {
   remit:  () => ['remittances-by-source', [['source', 'fiscal_year', 'mn_usd'], ...D.remit]],
   money:  () => ['monetary-aggregates', pairTable(CH.money.avail)],
   npl:    () => ['non-performing-loans', pairTable(['npl_ratio', 'npl_level'])],
+  gdplong: () => ['real-gdp-since-fy50', pairTable(['gdp_level', 'gdp_growth'])],
+  moneylong: () => ['money-and-inflation-since-1950', pairTable(CH.moneylong.avail)],
+  fiscal: () => ['public-finances-since-1950', pairTable(CH.fiscal.avail)],
+  debt:   () => ['public-debt-since-1951', pairTable(['imf_debt'])],
+  peers:  () => { const ind = peerSeries();
+    return ['peers-' + ind.code.toLowerCase().replace(/\./g, '-'), pairTable(CH.peers.avail)]; },
   /* The emigration card shipped with a CSV button and no entry here, so the
      button did nothing. It was not visible as a fault: the old initCsv bound
      every .csvbtn and returned quietly on a key it did not know, and only
@@ -896,7 +1017,8 @@ function initShare() {
 
 /* ---------------- topics, hash, wiring ---------------- */
 const TOPIC_CHARTS = { rupee:['reer'], prices:['cpi','food'], rates:['policy','kibor','spread'],
-                       external:['res','bop'], money:['money'] };
+                       external:['res','bop'], money:['money'], longrun:['moneylong','fiscal'],
+                       peers:['peers'] };
 function applyTopic(k, push) {
   topic = k;
   const t = TOPICS.find(x => x.k === k);
@@ -943,6 +1065,8 @@ function writeHash(push) {
   if ((topic === 'external' || all) && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
   if ((topic === 'external' || all) && bopView !== 'tree') p.set('bv', bopView);
   if ((topic === 'external' || all) && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
+  if (topic === 'peers' && peerInd !== 'NY.GDP.PCAP.PP.KD') p.set('pi', peerInd);
+  if (topic === 'longrun' && gdpView !== 'level') p.set('gv', gdpView);
   const charts = all ? Object.values(TOPIC_CHARTS).flat() : (TOPIC_CHARTS[topic] || []);
   charts.forEach(c => { if (!isDefault(c)) p.set('c_' + c, [...SEL[c]].join('.')); });
   const hv = '#' + p.toString(); _lastNavHash = hv;
@@ -971,6 +1095,8 @@ function applyStateFromHash() {
     if (!SEL[c].size) SEL[c] = new Set(CH[c].def);
   });
   if (o.bv === 'trend' || o.bv === 'tree') bopView = o.bv;
+  if (o.pi) peerInd = o.pi;
+  gdpView = o.gv === 'growth' ? 'growth' : 'level';
   bopOpen = new Set();
   if (o.bz) o.bz.split('|').forEach(s => { const p = s.split('.').map((x, i) => i ? +x : x);
     if (drillRoot(p[0]) && p.slice(1).every(Number.isInteger) && drillNode(p)) {
@@ -990,6 +1116,7 @@ function initTopics() {
   d3.selectAll('#scaleSeg button').on('click', function () { setScale(this.dataset.sc); });
   d3.selectAll('#bopSeg button').on('click', function () { setBopView(this.dataset.bv); });
   d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
+  d3.selectAll('#gdpLongSeg button').on('click', function () { setGdpView(this.dataset.gv); });
   d3.select('#fySelect').on('change', function () { setFy(this.value); });
   d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopOpen.size) { bopOpen.clear(); drawBop(); writeHash(true); } });
   window.addEventListener('hashchange', () => { if (!applyingHash) applyStateFromHash(); });
@@ -1025,8 +1152,10 @@ function buildFoot() {
 
 /* ---------------- boot ---------------- */
 function start() {
-  if (!window.DD_MONEY) { return setTimeout(start, 30); }
-  D = window.DD_MONEY; S = D.series; M = D.meta;
+  if (!window.DD_MONEY || !window.DD_HISTORY) { return setTimeout(start, 30); }
+  D = window.DD_MONEY; H = window.DD_HISTORY;
+  S = Object.assign({}, D.series, H.series);
+  M = D.meta = Object.assign({}, D.meta, H.meta);
   buildFySelect(); buildFoot(); initCsv(); wireEmig();
   initTopics();          // last: it triggers the first render via applyStateFromHash()
   let rt;

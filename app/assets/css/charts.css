@@ -91,7 +91,10 @@ body{padding-bottom:34px}
 @media(max-width:640px){
 .site-footer{position:static;flex-wrap:wrap;justify-content:center;gap:4px 8px;padding:12px 14px;font-size:10.5px;line-height:1.5;text-align:center}
 body{padding-bottom:0}
-.card:has(.csvbtn){padding-top:52px}
+/* The page rules below (html[data-page="finance"] .card{padding:18px}) are more
+   specific than this one, so on Economy the title sat under the Share and CSV
+   buttons on every phone. Matched in specificity, so the room for them wins. */
+.card:has(.csvbtn),html[data-page] .card:has(.csvbtn){padding-top:52px}
 .card .csvbtn{top:12px}
 .card .sharebtn{top:12px}
 .card h2{font-size:16px}

@@ -135,7 +135,7 @@ BASE_PAGES = {
     # Economy is one page, and _retired() keeps them out of the sitemap. The
     # title below has to cover all fifteen topics, because it is the only
     # page any of them has.
-    "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances and the external balance."),
+    "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
     "about.html": ("About Data Darbar — Pakistan in Numbers", "What Data Darbar is, what it covers across Places, Economy and State, how it is built and who built it."),
     "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),

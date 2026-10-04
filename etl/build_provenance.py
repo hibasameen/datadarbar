@@ -190,6 +190,26 @@ CHARTS = {
  'sec-npl': dict(table='sbp_observations', publication='Segment-wise advances and non-performing loans',
     selection='NPLs as a share of gross advances',
     note='The series ends June 2025.'),
+ # ---- the long run (data/history_data.js) ----
+ 'sec-gdplong': dict(table='sbp_handbook_series',
+    publication='Handbook of Statistics on Pakistan Economy 2020, table 1.5, GDP at constant factor cost',
+    selection='real GDP at 2005-06 prices and its growth rate, FY50 to FY21, both as SBP prints them'),
+ 'sec-moneylong': dict(table='sbp_handbook_series',
+    publication='Handbook of Statistics on Pakistan Economy 2020, tables 4.1 and 2.8',
+    selection='broad money (M2), reserve money (M0) and the consumer price index, from 1950',
+    calc='growth on a year earlier, computed from SBP\u2019s levels and indices only within one printed '
+         'block and one index base; the line breaks at each change of definition or base and in 1972, '
+         'when East Pakistan leaves the figures'),
+ 'sec-fiscal': dict(table='imf_pakistan_fiscal', also=['sbp_handbook_series'],
+    publication='Public Finances in Modern History (December 2025); SBP Handbook 2020, table 3.7',
+    selection='revenue, expenditure, primary balance and interest as % of GDP from 1950 (IMF), and the '
+              'consolidated federal and provincial budget from FY76 (SBP), each as published'),
+ 'sec-debt': dict(table='imf_pakistan_fiscal',
+    publication='Public Finances in Modern History (December 2025), gross public debt',
+    selection='gross public debt as % of GDP, 1951 to 2024, as published'),
+ 'sec-peers': dict(table='wdi_comparators', publication='World Development Indicators',
+    selection='one indicator at a time, Pakistan beside the countries and aggregates chosen, as '
+              'published'),
  # ---- external ----
  # NOT diaspora_remittances_monthly, which the rail used to name. That table
  # is 236 rows of a NATIONAL series with no country dimension at all - the
