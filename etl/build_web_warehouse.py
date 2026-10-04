@@ -1203,6 +1203,83 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             unit="as given in each indicator’s label",
         )
 
+    # ── 4c. the 1998 census, and population back to 1951 ─────────────────────
+    # What PBS still serves of 1998 is the summary layer; the District Census
+    # Reports are print-only. Both tables are read from text PDFs PBS exported
+    # from spreadsheets (etl/census1998), figures as printed.
+    c98 = (sorted(src.glob("census1998/*/census_admin_units_1951_1998.parquet")) or [None])[-1]
+    if c98:
+        print("census 1998…")
+        register(
+            "census_admin_units_1951_1998",
+            "Population and area of every province, district, sub-division, tehsil and town at "
+            "the 1951, 1961, 1972, 1981 and 1998 censuses, rural and urban.",
+            "PBS\u2019s Area & Population of Administrative Units (1998). One row per unit, "
+            "locality and census. The units are the 1998 frame, with each earlier census restated "
+            "onto it, so a district created after 1951 has no total for 1951 (a dash, NULL here) "
+            "although its towns may already be counted; summing districts at an early census "
+            "therefore falls short - use the province row. Levels: country, province, district "
+            "(districts, tribal agencies and frontier regions), sub_division and tehsil (in "
+            "Balochistan tehsils sit inside sub-divisions, elsewhere they stand alone - do not add "
+            "both), and urban_locality (municipal and town committees, cantonments; urban "
+            "population only). Peshawar is printed twice over, as Towns 1-4 and as the city\u2019s "
+            "rural and urban parts: the parts are district_part and must not be added to the "
+            "towns. Checked: Pakistan equals its provinces at all five censuses, and every "
+            "district equals its sub-units in 1998. Two inconsistencies are PBS\u2019s and are left "
+            "as printed: Tharparkar\u2019s rural and urban do not add to its total in 1972 and "
+            "1981. Footnote marks are kept in mark; the footnotes themselves are in the source "
+            "PDF. FATA, Islamabad and all four provinces are included; AJK and Gilgit-Baltistan "
+            "were not in the census.",
+            {"table_no": "table in the publication (1 Pakistan, 2 NWFP, 3 FATA, 4 Punjab, "
+                         "5 Sindh, 6 Balochistan, 7 Islamabad)",
+             "province": "province or area as printed",
+             "district": "district, agency or frontier region the unit belongs to",
+             "sub_division": "sub-division the unit belongs to, where it has one",
+             "tehsil": "tehsil, taluka or town the unit belongs to, where it has one",
+             "unit_type": "country, province, district, district_part, sub_division, tehsil "
+                          "or urban_locality",
+             "unit": "name as printed",
+             "locality": "all, rural or urban",
+             "census_year": "1951, 1961, 1972, 1981 or 1998",
+             "population": "persons; NULL where PBS prints a dash",
+             "mark": "footnote mark printed beside the figure",
+             "area_sq_km": "area in square kilometres, on the unit\u2019s all-locality rows"},
+            "Pakistan Bureau of Statistics, Population Census 1998: Area & Population of "
+            "Administrative Units (pbs.gov.pk census archive)",
+            f"SELECT * FROM '{c98.as_posix()}' ORDER BY table_no, census_year",
+            unit="persons; area in square kilometres",
+        )
+        register(
+            "census1998_district_glance",
+            "The 1998 census district by district: population by sex, urban share, density, "
+            "household size, literacy by sex, growth since 1981 and housing amenities.",
+            "PBS\u2019s District at a Glance (1998), one sheet per district, long format: about "
+            "twenty indicators each. These sheets are on the districts as they stood after the "
+            "2000-01 changes - Umerkot apart from Mirpur Khas, City District Karachi as one - so "
+            "they do not match census_admin_units_1951_1998, which keeps the 1998 frame (Mirpur "
+            "Khas there includes Umerkot\u2019s 663,095). Charsadda\u2019s sheet is linked by PBS "
+            "but the file is refused by its server, so Charsadda is absent; its population is in "
+            "the admin units table. District names are as PBS titled them, misspellings included "
+            "(SHAIWAL, JACCOBABAD). share_pct is the percentage PBS prints beside a figure. A "
+            "figure that cannot be what its label says is not read: Ghotki\u2019s household size "
+            "is printed 505, so value is NULL and flag says why.",
+            {"district": "district as titled on the sheet",
+             "title": "the sheet\u2019s full title",
+             "file": "the PBS file it was read from",
+             "indicator": "machine name of the indicator",
+             "label": "label as printed",
+             "value": "the figure",
+             "share_pct": "percentage printed beside it, e.g. urban population (82.44 %)",
+             "unit": "what the figure counts",
+             "as_printed": "the figure and its percentage as printed",
+             "flag": "why a printed figure was not read"},
+            "Pakistan Bureau of Statistics, Population Census 1998: District at a Glance "
+            "(pbs.gov.pk census archive)",
+            f"SELECT * FROM '{(c98.parent / 'census1998_district_glance.parquet').as_posix()}' "
+            "ORDER BY district, indicator",
+            unit="per indicator: persons, percent, units, sq km",
+        )
+
     # ── 5. census panels: the 2017 and 2023 unit tables ──────────────────────
     # Two tables, deliberately not one. The years cannot be stacked yet: only 50
     # of 2017's 377 indicator labels appear verbatim among 2023's 201, and most of

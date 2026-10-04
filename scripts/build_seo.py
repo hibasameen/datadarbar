@@ -55,6 +55,8 @@ FIELDS = [
 DATASET_NAMES = {
     "budget_lines": "Pakistan federal budget line items",
     "census_panel_2017": "Pakistan Census 2017 district and tehsil tables",
+    "census_admin_units_1951_1998": "Pakistan population by district and tehsil, censuses 1951 to 1998",
+    "census1998_district_glance": "Pakistan Census 1998 district summaries",
     "census_series_index": "Pakistan census map series index",
     "census_panel_2023": "Pakistan Census 2023 district and tehsil tables",
     "district_indicators": "Pakistan district census and survey indicators",

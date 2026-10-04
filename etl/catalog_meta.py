@@ -19,8 +19,8 @@ KINDS = [
      'Boundaries, the identifiers that name places, and the crosswalks between '
      'every frame the site has used. Every other table joins on one of these keys.'),
     ('census', 'Census tables',
-     'The 2017 and 2023 census tables as PBS published them, and the index of '
-     'what can be mapped.'),
+     'The 2017 and 2023 census tables as PBS published them, what survives of '
+     '1998, population back to 1951, and the index of what can be mapped.'),
     ('places', 'Place indicators',
      'District and tehsil figures from surveys, satellites, the Mouza Census and '
      'administrative registers.'),
@@ -42,6 +42,8 @@ KIND = {
 
     'census_panel_2017': 'census',
     'census_panel_2023': 'census',
+    'census_admin_units_1951_1998': 'census',
+    'census1998_district_glance': 'census',
     'census_series_index': 'census',
     'census_entities': 'census',
     'census_enrolment_5_16_by_sex': 'census',
