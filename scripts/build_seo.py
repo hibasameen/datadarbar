@@ -56,6 +56,8 @@ DATASET_NAMES = {
     "budget_lines": "Pakistan federal budget line items",
     "census_panel_2017": "Pakistan Census 2017 district and tehsil tables",
     "census_panel_1998": "Pakistan Census 1998 on 2023 district and tehsil boundaries",
+    "census_panel_1951_1981": "Pakistan Census 1951-1981 population on 2023 districts",
+    "census_population_history": "Pakistan population by census 1951-2023, by district and province",
     "census_admin_units_1951_1998": "Pakistan population by district and tehsil, censuses 1951 to 1998",
     "census1998_district_glance": "Pakistan Census 1998 district summaries",
     "census_series_index": "Pakistan census map series index",

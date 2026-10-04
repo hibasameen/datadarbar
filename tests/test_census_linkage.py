@@ -146,3 +146,70 @@ def test_1998_glance_counts_are_drawn_only_on_whole_shapes():
                    string_split(t1.map_key, ' '), string_split(grp.map_key, ' '))) AS on_shapes
         FROM grp WHERE round(w) <> round(on_shapes)""").fetchall()
     assert not bad, f'glance counts drawn on shapes they do not fill: {bad[:3]}'
+
+
+WAREHOUSE = ROOT / 'app' / 'data' / 'warehouse'
+PUBLISHED = {1951: 33_740_167, 1961: 42_880_378, 1972: 65_309_340, 1981: 84_253_644,
+             1998: 132_352_279, 2017: 207_684_626, 2023: 241_499_431}
+
+
+def test_1951_1981_footprints_add_up_to_the_published_totals():
+    """Each earlier census, drawn on the 2023 frame through PBS's restatement
+    on the districts of 1998 and the footnoted merges, is the whole country -
+    and no 2023 shape is claimed by two footprints in one year."""
+    import duckdb
+    t = (WAREHOUSE / 'census_panel_1951_1981.parquet').as_posix()
+    for y in (1951, 1961, 1972, 1981):
+        total = duckdb.execute(f"SELECT sum(value) FROM '{t}' WHERE census_year = ? "
+                               "AND locality = 'all'", [y]).fetchone()[0]
+        assert round(total) == PUBLISHED[y], f'{y} sums to {total:,.0f}'
+    twice = duckdb.execute(f"""SELECT census_year, k FROM (
+        SELECT census_year, unit, unnest(string_split(map_key, ' ')) k FROM '{t}'
+        WHERE locality = 'all') GROUP BY 1, 2 HAVING count(DISTINCT unit) > 1""").fetchall()
+    assert not twice, f'shapes in two footprints: {twice[:3]}'
+
+
+def test_population_history_districts_are_the_country():
+    import duckdb
+    t = (WAREHOUSE / 'census_population_history.parquet').as_posix()
+    for y in (1998, 2017, 2023):
+        total = duckdb.execute(f"SELECT sum(population) FROM '{t}' WHERE level = 'district' "
+                               "AND census_year = ?", [y]).fetchone()[0]
+        assert round(total) == PUBLISHED[y], f'history {y} sums to {total:,.0f}'
+    for y in (1951, 1961, 1972, 1981):
+        p = duckdb.execute(f"SELECT population FROM '{t}' WHERE level = 'country' "
+                           "AND census_year = ?", [y]).fetchone()[0]
+        assert p == PUBLISHED[y]
+
+
+def test_no_curated_shape_is_counted_twice():
+    """One figure per shape per measure and year. Karachi West's 2017 figure
+    repeated on Keamari as a second row put 3.9 million people on the map
+    twice; a split district is one row drawn across its successors."""
+    import duckdb
+    t = (WAREHOUSE / 'place_indicators.parquet').as_posix()
+    twice = duckdb.execute(f"""SELECT group_key, indicator, year, k FROM (
+        SELECT group_key, indicator, year, source_key, level,
+               unnest(string_split(map_key, ' ')) k FROM '{t}' WHERE value IS NOT NULL)
+        GROUP BY ALL HAVING count(DISTINCT source_key) > 1""").fetchall()
+    assert not twice, f'{len(twice)} shapes carry two rows, e.g. {twice[:3]}'
+
+
+def test_curated_population_matches_the_census_less_the_frontier_regions():
+    """The curated Total Population is a row per 2017 district, without the
+    six Frontier Regions, in 1998 and 2017 alike - so the change between them
+    is like for like."""
+    import duckdb
+    t = (WAREHOUSE / 'place_indicators.parquet').as_posix()
+    p98 = (WAREHOUSE / 'census_panel_1998.parquet').as_posix()
+    p17 = (WAREHOUSE / 'census_panel_2017.parquet').as_posix()
+    fr98 = duckdb.execute(f"SELECT sum(value) FROM '{p98}' WHERE table_id = '1' AND "
+                          "unit_type = 'district' AND locality = 'all' AND unit LIKE 'FR %'").fetchone()[0]
+    fr17 = duckdb.execute(f"SELECT sum(value) FROM '{p17}' WHERE table_id = '1' AND "
+                          "unit_type = 'district' AND locality = 'all' AND sex = 'all' AND "
+                          "indicator = 'POPULATION - 2017 / ALL SEXES' AND unit LIKE 'FR %'").fetchone()[0]
+    got = dict(duckdb.execute(f"SELECT year, sum(value) FROM '{t}' WHERE group_key = "
+                              "'demographics' AND indicator = 'pop_total' GROUP BY 1").fetchall())
+    assert round(got['1998']) == PUBLISHED[1998] - fr98
+    assert round(got['2017']) == PUBLISHED[2017] - fr17
+    assert round(got['Δ1998-2017']) == round(got['2017'] - got['1998'])

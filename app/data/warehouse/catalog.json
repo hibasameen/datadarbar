@@ -610,9 +610,165 @@
    ]
   },
   {
+   "name": "census_panel_1951_1981",
+   "file": "census_panel_1951_1981.parquet",
+   "bytes": 17386,
+   "rows": 1146,
+   "description": "Pakistan’s population at the 1951, 1961, 1972 and 1981 censuses, on PBS’s 2023 districts.",
+   "notes": "From PBS’s Area & Population of Administrative Units 1951-1998, which restates the earlier censuses on the 115 districts and agencies of 1998. Each 1998 district is linked to the 2017 districts it became only where its 1998 population equals PBS’s restated 1998 population of those districts to the person - all 115 do (etl/census1998/glance_crosswalk.py) - and through them to the 2023 shapes. A row is a footprint: one 1998 district, or several drawn as one where they share a 2023 shape (a Frontier Region and its host district) or where PBS counted one inside another at that census (the table’s footnotes: Lower Dir in Upper Dir in 1951 and 1961, Kohistan and Batagram in Mansehra, much of Balochistan in 1951). Bolan, Jafarabad and Jhal Magsi are blank in 1951 with no footnote; they are drawn with Sibi and Kalat and the note says so. Every year sums to PBS’s published national total. Where a district printed no total, its printed urban or rural part is counted and the rest is in the district that counted it. The schema is census_panel_1998’s; select one census_year.",
+   "unit": "persons",
+   "source": "Pakistan Bureau of Statistics, Area & Population of Administrative Units by Rural/Urban: 1951-1998 Censuses",
+   "columns": [
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "1951, 1961, 1972 or 1981"
+    },
+    {
+     "name": "province_area",
+     "type": "VARCHAR",
+     "description": "province, or FATA / Islamabad Capital Territory — the census frame has four provinces and two federal areas, not six provinces"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "PBS table number WITHIN that census. Numbering is not comparable across years: 2017's table 23 is a locality table, 2023's is drinking water"
+    },
+    {
+     "name": "district",
+     "type": "VARCHAR",
+     "description": "district the unit sits in; equal to unit on district rows"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the 1998 district or districts the footprint is made of, joined by ' + '"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "district, tehsil, sub_tehsil, sub_division or other. Rows of DIFFERENT unit_type are nested, so summing across them double-counts"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the PBS Digital Census 2023 shape this row is drawn on — the district code on district rows, dds_id below that. NULL where no 2023 shape can carry the figure, which for 2017 means the unit was split or redrawn",
+     "derived": true
+    },
+    {
+     "name": "map_relation",
+     "type": "VARCHAR",
+     "description": "how this unit relates to the 2023 frame: exact, renamed, merged, split, boundary transfer, or restructured below the district"
+    },
+    {
+     "name": "map_comparable",
+     "type": "VARCHAR",
+     "description": "yes where the figure belongs on the 2023 shape as published; combined where two 2017 units share one 2023 shape and must be added, or averaged on map_weight for a rate; flagged where the district persists but its territory changed; no where nothing can honestly be drawn",
+     "derived": true
+    },
+    {
+     "name": "map_note",
+     "type": "VARCHAR",
+     "description": "the reason, in words, for anything other than a straight match — written to be shown to a reader, not parsed"
+    },
+    {
+     "name": "map_weight",
+     "type": "DOUBLE",
+     "description": "the footprint’s population at that census",
+     "derived": true
+    },
+    {
+     "name": "locality",
+     "type": "VARCHAR",
+     "description": "all, rural or urban. rural + urban = all, so pick one"
+    },
+    {
+     "name": "sex",
+     "type": "VARCHAR",
+     "description": "all, male, female or transgender. The three sexes sum to all, so pick one"
+    },
+    {
+     "name": "indicator",
+     "type": "VARCHAR",
+     "description": "the indicator as PBS labels it, joined with / down the header hierarchy"
+    },
+    {
+     "name": "col_label",
+     "type": "VARCHAR",
+     "description": "the column heading the value sat under, kept because the same indicator can appear under several columns"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the published figure — unit depends on the indicator, see notes",
+     "derived": true
+    },
+    {
+     "name": "missing",
+     "type": "BOOLEAN",
+     "description": "the cell was printed as a dash rather than a number"
+    },
+    {
+     "name": "is_rate",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "series_ambiguous",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "published_in",
+     "type": "VARCHAR",
+     "description": "the PBS publication the figure was read from"
+    }
+   ],
+   "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The link to the 2023 frame is Data Darbar’s work.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Figures as PBS published them on the districts of 1998; footprints that join districts PBS counted together, and the link to the 2023 frame, are Data Darbar’s.",
+    "derived_columns": [
+     "map_key",
+     "map_comparable",
+     "map_weight",
+     "value"
+    ]
+   },
+   "span": {
+    "column": "census_year",
+    "from": "1951",
+    "to": "1981"
+   },
+   "keys": [
+    "map_key",
+    "district"
+   ]
+  },
+  {
    "name": "census_panel_1998",
    "file": "census_panel_1998.parquet",
-   "bytes": 45119,
+   "bytes": 47660,
    "rows": 3995,
    "description": "The 1998 census on PBS’s 2023 boundaries: population for every district and tehsil, and the district indicators PBS published for 1998.",
    "notes": "Two layers, from what PBS still publishes. table_id '1': POPULATION - 1998, all / rural / urban, for every district and every sub-district (tehsil, taluka, sub-division, sub-tehsil) - PBS’s own restatement of 1998 onto the 2017 units, printed in the 2017 census’s table 1; it sums to 132,352,279, the published 1998 total, at both tiers, and its map_key reaches all 136 districts and all 591 tehsils of the 2023 frame through the same unit map as the 2017 panel. table_id 'glance': the District at a Glance indicators - population by sex, sex ratio, density, household size, literacy by sex, 1981 population and growth since, housing units and their amenities - for districts only. Each glance district is linked to the 2017 districts it became in groups whose 1998 populations balance against PBS’s restatement to the person (etl/census1998/glance_crosswalk.py); 86 groups balance, and Bannu, Nawabshah and Upper Dir, which do not, carry no map_key rather than a wrong one. Charsadda has no glance sheet. A glance district drawn across several 2023 shapes is map_comparable 'combined': add counts, and average rates on map_weight, the district’s 1998 population. Below the district nothing but population survives online: the District Census Reports are print-only. Do not sum across unit_type, locality or sex.",
@@ -720,6 +876,16 @@
      "type": "DOUBLE",
      "description": "the unit’s own 1998 population, the weight for averaging a rate across units drawn on one shape",
      "derived": true
+    },
+    {
+     "name": "districts_2017",
+     "type": "VARCHAR",
+     "description": "glance rows: the 2017 districts this glance district’s balanced group became, joined by ' + '"
+    },
+    {
+     "name": "glance_group",
+     "type": "VARCHAR",
+     "description": "glance rows: the glance districts in that group"
     }
    ],
    "kind": "census",
@@ -764,7 +930,7 @@
   {
    "name": "census_panel_2017",
    "file": "census_panel_2017.parquet",
-   "bytes": 8273052,
+   "bytes": 8273057,
    "rows": 4397361,
    "description": "Population and Housing Census 2017 unit tables: 35 of 40 tables at district, tehsil, sub-tehsil and sub-division level.",
    "notes": "Do not sum across unit_type, locality or sex — each is a nested hierarchy and adding the levels together double- or triple-counts. Tables are not uniform about the sex column: in table 1, 5,997 rows carry the sex split in the indicator label while sex stays 'all', so filter on the indicator there rather than on sex. Many indicators are RATES or PERCENTAGES (literacy, sex ratio, growth) and must never be summed; read the indicator label before aggregating. missing = TRUE marks a cell PBS printed as a dash; in this panel 899,800 of those 901,438 rows carry a recovered value of 0, read back from the combined district PDFs, so the zero is real rather than absent — unlike 2023, where a dash is left NULL. series_ambiguous = TRUE on 31,963 rows flags a series whose key is not unique within its table, so a filter on indicator and col_label alone may return more than one series there. Tables 23–26 are the individual-locality tables and are not in this panel. Comparing to census_panel_2023 by table_id or indicator is unsafe: the numbering differs and only 50 indicator labels match verbatim.",
@@ -1080,10 +1246,102 @@
    ]
   },
   {
+   "name": "census_population_history",
+   "file": "census_population_history.parquet",
+   "bytes": 7653,
+   "rows": 713,
+   "description": "Population at every census from 1951 to 2023, for Pakistan, each province and each district, on boundaries that hold still.",
+   "notes": "One series per place for a chart of population over time. Pakistan and the provinces as PBS prints them (1951-1998, table 1 of the administrative units table). Districts as footprints on the 2023 frame that are the same ground in every year shown: a 1998 district with the 2017 districts it became, joined to its neighbour where the two cannot be told apart - Lahore and Kasur, which exchanged ground between 1998 and 2017, are one series. 1951 and 1961 appear only where PBS counted the footprint on its own that year. 1998 and earlier are PBS’s restatement on 1998 districts; 2017 is table 1 of the 2017 census; 2023 is table 1 of the 2023 census. Each year’s district rows sum to the published national total.",
+   "unit": "persons",
+   "source": "Pakistan Bureau of Statistics: Administrative Units 1951-1998; Census 2017 and 2023 table 1",
+   "columns": [
+    {
+     "name": "level",
+     "type": "VARCHAR",
+     "description": "country, province or district"
+    },
+    {
+     "name": "map_key",
+     "type": "VARCHAR",
+     "description": "the 2023 district shapes the footprint covers (districts only)",
+     "derived": true
+    },
+    {
+     "name": "place",
+     "type": "VARCHAR",
+     "description": "the 1998 district or districts of the footprint, or the province"
+    },
+    {
+     "name": "today",
+     "type": "VARCHAR",
+     "description": "the 2017 districts the footprint is today (2023 splits aside)"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "the province of the footprint’s largest district"
+    },
+    {
+     "name": "census_year",
+     "type": "INTEGER",
+     "description": "1951, 1961, 1972, 1981, 1998, 2017 or 2023"
+    },
+    {
+     "name": "population",
+     "type": "DOUBLE",
+     "description": "persons enumerated",
+     "derived": true
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "exact for one district on one shape; combined otherwise"
+    }
+   ],
+   "kind": "census",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The footprints that hold still across censuses are Data Darbar’s work.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Pakistan and provinces as PBS printed them; district series are sums over footprints that hold still, built by Data Darbar.",
+    "derived_columns": [
+     "population",
+     "map_key"
+    ]
+   },
+   "span": {
+    "column": "census_year",
+    "from": "1951",
+    "to": "2023"
+   },
+   "keys": [
+    "map_key",
+    "province"
+   ]
+  },
+  {
    "name": "census_series_index",
    "file": "census_series_index.parquet",
-   "bytes": 152956,
-   "rows": 36141,
+   "bytes": 153408,
+   "rows": 36153,
    "description": "One row per census series that the district and tehsil map can colour, for both census years.",
    "notes": "This is a guide to the two census panels, not data in its own right: every row points at a series in census_panel_2017 or census_panel_2023, which is where the values are. mappable_units counts the units that have both a value and a boundary, so it is the number of shapes that would actually be coloured — a series with a low count is thin, not broken. is_rate marks series that must not be summed. Series are listed per census year and must not be compared across years on table_id or indicator; see either panel's notes.",
    "unit": "counts of units; the values themselves live in the panels",
@@ -1092,7 +1350,7 @@
     {
      "name": "census_year",
      "type": "INTEGER",
-     "description": "1998, 2017 or 2023"
+     "description": "1951, 1961, 1972, 1981, 1998, 2017 or 2023"
     },
     {
      "name": "unit_type",
@@ -1177,7 +1435,7 @@
    },
    "span": {
     "column": "census_year",
-    "from": "1998",
+    "from": "1951",
     "to": "2023"
    },
    "keys": []
@@ -5843,7 +6101,7 @@
   {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
-   "bytes": 116945,
+   "bytes": 117344,
    "rows": 5302,
    "description": "One row per indicator Places can draw, curated and census alike.",
    "notes": "The picker reads this and nothing else: 296 curated indicators beside 37,971 census series, with the words a reader sees and the number of shapes behind each. source says where the values are — place_indicators, or a census panel — which is what lets one list cover both without copying 17 MB of census into a table it does not fit. shapes counts shapes and units counts census units; they differ wherever a unit is drawn across its successors.",
@@ -6009,8 +6267,8 @@
   {
    "name": "place_indicators",
    "file": "place_indicators.parquet",
-   "bytes": 313794,
-   "rows": 110077,
+   "bytes": 323294,
+   "rows": 111300,
    "description": "Every curated district and tehsil indicator, on PBS’s 2023 frame.",
    "notes": "Values only — the words belong to place_indicator_index, because repeating a label 90,000 times is most of what makes a payload large. map_key names the PBS 2023 shape(s) a row is drawn on and follows the same convention as census_unit_map: a unit that was later split names all of its successors, so count units and not shapes when totalling. 73 of the fields here are provenance rather than indicators — dhs_coverage, hies_inherited_from, the *_n_obs and *_low_n flags — which is why they have no index entry.",
    "unit": "indicator values",
@@ -6102,7 +6360,7 @@
    },
    "span": {
     "column": "year",
-    "from": "2011",
+    "from": "1998",
     "to": "2026"
    },
    "keys": [

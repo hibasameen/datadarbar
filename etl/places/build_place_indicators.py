@@ -21,6 +21,7 @@ import duckdb
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from place_map import ALIAS, SPLIT, NOTE
+import demographics_1998
 
 
 def norm(s):
@@ -113,6 +114,10 @@ def main():
         FROM '{a.src}/district_indicators.parquet' AS d
         JOIN m ON m.slug = d.district_key
         ORDER BY d.group_key, d.indicator, d.year, m.map_key""")
+
+    demographics_1998.fold_keamari(con, NOTE['split'].format(
+        old='Karachi West', new='Karachi West, Keamari'))
+    demographics_1998.add_1998(con, a.src)
 
     # Two curated district groups keep their values in tables of their own
     # rather than in district_indicators, so they arrive column-shaped and have

@@ -43,6 +43,8 @@ KIND = {
     'census_panel_2017': 'census',
     'census_panel_2023': 'census',
     'census_panel_1998': 'census',
+    'census_panel_1951_1981': 'census',
+    'census_population_history': 'census',
     'census_admin_units_1951_1998': 'census',
     'census1998_district_glance': 'census',
     'census_series_index': 'census',
@@ -208,6 +210,8 @@ LICENCE = {
     'census_panel_2017': (['pbs-open'], ''),
     'census_panel_2023': (['pbs-open'], ''),
     'census_panel_1998': (['pbs-open', 'cc-by-4.0'], 'The link to the 2023 frame is Data Darbar\u2019s work.'),
+    'census_panel_1951_1981': (['pbs-open', 'cc-by-4.0'], 'The link to the 2023 frame is Data Darbar\u2019s work.'),
+    'census_population_history': (['pbs-open', 'cc-by-4.0'], 'The footprints that hold still across censuses are Data Darbar\u2019s work.'),
     'census_series_index': (['pbs-open'], ''),
     'census_unit_map': (['pbs-open', 'cc-by-4.0'], 'The mapping itself is Data Darbar’s work.'),
     'climate_events': (['ec-reuse'], ''),
@@ -346,6 +350,13 @@ PROVENANCE = {
     'census_panel_1998': ('mixed', 'Figures as PBS published them; the link of each unit to the '
                           '2023 frame, and of each glance district to the 2017 districts it became, '
                           'is Data Darbar\u2019s.', ['map_comparable', 'map_weight']),
+    'census_panel_1951_1981': ('mixed', 'Figures as PBS published them on the districts of 1998; '
+                               'footprints that join districts PBS counted together, and the link '
+                               'to the 2023 frame, are Data Darbar\u2019s.',
+                               ['map_key', 'map_comparable', 'map_weight', 'value']),
+    'census_population_history': ('mixed', 'Pakistan and provinces as PBS printed them; district '
+                                  'series are sums over footprints that hold still, built by '
+                                  'Data Darbar.', ['population', 'map_key']),
     'census_panel_2023': ('mixed', 'Figures as published or as corrected against PBS’s other '
                           'rendering; a wholly rural unit’s urban proportion, printed as a '
                           'dash, is set to 0.',
