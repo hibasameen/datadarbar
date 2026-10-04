@@ -35,6 +35,10 @@ window.DDWarehouse = (function () {
     // to self-host the wasm (offline use, or a CI environment with no CDN access).
     var esmUrl = opts.esm || DUCKDB_ESM;
     var bundleOverride = opts.bundles || null;
+    // eager: false loads no table until a query names it. The Query page wants
+    // every small table ready; a map wants two of seventy-three, and fetching
+    // all of them first made one failed download out of sixty fail the map.
+    var eagerAll = opts.eager !== false;
     var duckdb = null, db = null, conn = null;
     var catalog = null;
     var registered = {};   // table -> 'buffer' | 'url'
@@ -94,7 +98,7 @@ window.DDWarehouse = (function () {
         })
         .then(function (ok) {
           rangeOK = ok;
-          var eager = catalog.tables.filter(function (t) { return t.bytes < eagerLimit; });
+          var eager = eagerAll ? catalog.tables.filter(function (t) { return t.bytes < eagerLimit; }) : [];
           say('Loading ' + eager.length + ' tables…');
           return Promise.all(eager.map(function (t) { return load(t); }));
         })

@@ -96,15 +96,30 @@
              : { maximumFractionDigits: 0 });
   }
 
+  /* A file that failed to arrive is tried once more, and a failure is not
+     remembered: it used to be cached as a rejected promise, so one dropped
+     download of the 1.8 MB tehsil boundaries left the tehsil map blank for
+     the rest of the visit, and only a refresh brought it back. */
   function script(src) {
     if (loaded[src]) return loaded[src];
-    loaded[src] = new Promise(function (res, rej) {
-      var el = document.createElement('script');
-      el.src = src; el.async = false;
-      el.onload = res;
-      el.onerror = function () { rej(new Error('could not load ' + src)); };
-      document.head.appendChild(el);
-    });
+    var attempt = function (n) {
+      return new Promise(function (res, rej) {
+        var el = document.createElement('script');
+        el.src = src; el.async = false;
+        el.onload = res;
+        el.onerror = function () {
+          el.remove();
+          rej(new Error('could not load ' + src));
+        };
+        document.head.appendChild(el);
+      }).catch(function (e) {
+        if (n > 0) return new Promise(function (r) { setTimeout(r, 800); })
+          .then(function () { return attempt(n - 1); });
+        throw e;
+      });
+    };
+    loaded[src] = attempt(1);
+    loaded[src].catch(function () { delete loaded[src]; });
     return loaded[src];
   }
 
@@ -154,12 +169,24 @@
     });
   }
 
+  /* The query engine, started once - and started again if it failed. A
+     failed start was kept for the whole visit, and the default tehsil map is
+     a census table, so a hiccup while the engine loaded left tehsils blank
+     until a refresh while districts, which open on a curated file, drew
+     fine. It loads only the tables a map asks for, and tries a failed start
+     once more before giving up. */
   function engine() {
     if (whBooting) return whBooting;
-    whBooting = script('assets/js/warehouse.js').then(function () {
-      wh = window.DDWarehouse.create({ base: 'data/warehouse/' });
-      return wh.init();
-    }).then(function () { return wh; });
+    var start = function () {
+      return script('assets/js/warehouse.js').then(function () {
+        wh = window.DDWarehouse.create({ base: 'data/warehouse/', eager: false });
+        return wh.init();
+      }).then(function () { return wh; });
+    };
+    whBooting = start().catch(function () {
+      return new Promise(function (r) { setTimeout(r, 1000); }).then(start);
+    });
+    whBooting.catch(function () { whBooting = null; wh = null; });
     return whBooting;
   }
 
@@ -216,7 +243,7 @@
      rates cannot be combined without their populations, and a guessed
      average would be a figure nobody published. Places with a figure in
      only one of the years are left out, never read as zero. */
-  function placeChange(A, B, summable) {
+  function placeChange(A, B, summable, ws, how) {
     var fp = footprints();
     A.units.concat(B.units).forEach(function (u) { fp.join(u.keys); });
     var side = function (res) {
@@ -224,28 +251,46 @@
       res.units.forEach(function (u) {
         if (u.v == null) return;
         var id = fp.of(u.keys[0]);
-        var e = g[id] = g[id] || { v: 0, n: 0, keys: {} };
-        e.v += u.v; e.n += 1;
+        var e = g[id] = g[id] || { v: 0, n: 0, keys: {}, units: [] };
+        e.v += u.v; e.n += 1; e.units.push(u);
         u.keys.forEach(function (k) { e.keys[k] = 1; });
       });
       return g;
     };
-    var a = side(A), b = side(B), out = {}, units = [], meta = {}, shared = 0;
+    /* A rate on a footprint of several rows is the rows' census-population
+       weighted rate - exact for sex ratio, density and household size, close
+       for the rest - in each year with that year's population. */
+    var rate = function (e, w) {
+      if (e.n === 1) return e.units[0].v;
+      if (!w) return null;
+      return combineRate(how, e.units.map(function (u) {
+        var wt = 0;
+        u.keys.forEach(function (k) { wt += w.per[k] || 0; });
+        return { v: u.v, w: wt };
+      }));
+    };
+    var a = side(A), b = side(B), out = {}, units = [], meta = {}, shared = 0, weighted = 0;
     Object.keys(b).forEach(function (id) {
       if (!a[id]) return;
       var keys = Object.keys(Object.assign({}, a[id].keys, b[id].keys));
-      if (!summable && (a[id].n > 1 || b[id].n > 1)) { shared += keys.length; return; }
-      var d = b[id].v - a[id].v;
+      var va = a[id].v, vb = b[id].v;
+      if (!summable) {
+        va = rate(a[id], ws && ws[0]); vb = rate(b[id], ws && ws[1]);
+        if (va == null || vb == null) { shared += keys.length; return; }
+        if (a[id].n > 1 || b[id].n > 1) weighted += keys.length;
+      }
+      var d = vb - va;
       keys.forEach(function (k) {
         out[k] = d;
         if (keys.length > 1) {
           meta[k] = { relation: 'combined', note: 'The boundaries differ between the two '
-            + 'years, so the change is for all ' + keys.length + ' of these districts together.' };
+            + 'years, so the change is for all ' + keys.length + ' of these districts together'
+            + (summable ? '.' : ', each year\u2019s rate weighted by that year\u2019s census population.') };
         }
       });
       units.push({ keys: keys, v: d });
     });
-    return { values: out, meta: meta, units: units, shared: shared };
+    return { values: out, meta: meta, units: units, shared: shared, weighted: weighted };
   }
 
   function rawValues(i) {
@@ -261,9 +306,19 @@
              worked out from the two years here, on ground that is the same in
              both (placeChange). A stored change is always used as published. */
           if (/^\u0394/.test(Y || '') && !res.units.length && changeYears(Y)) {
-            var pr = changeYears(Y);
-            res = placeChange(placeRows(both[0].d, ind, pr[0]),
-                              placeRows(both[0].d, ind, pr[1]), col('h_sum', i) === 1);
+            var pr = changeYears(Y), can = col('h_sum', i) === 1;
+            var A = placeRows(both[0].d, ind, pr[0]), B = placeRows(both[0].d, ind, pr[1]);
+            // a rate on ground that changed is combined with each year's own
+            // census population, so it needs those populations first
+            var weights = can ? Promise.resolve([null, null])
+              : Promise.all([popPer(censusFor(pr[0]), state.sex, state.locality),
+                             popPer(censusFor(pr[1]), state.sex, state.locality)])
+                  .catch(function () { return [null, null]; });
+            return weights.then(function (ws) {
+              var r = placeChange(A, B, can, ws, rateHow(col('label', i)));
+              applyFlags(gk, fams, r.values, r.meta);
+              return r;
+            });
           }
           applyFlags(gk, fams, res.values, res.meta);
           return res;
@@ -919,7 +974,11 @@
       });
     }).catch(function (e) {
       if (mine !== drawSeq) return;
-      $('legendSub').textContent = 'Could not load this indicator: ' + e.message;
+      // a failure is no longer cached, so trying again does try again
+      $('legendSub').innerHTML = 'Could not load this indicator: ' + esc(e.message)
+        + ' <button type="button" class="retry" id="retryLoad">Try again</button>';
+      var again = $('retryLoad');
+      if (again) again.onclick = function () { choose(state.row); };
     });
   }
 
@@ -1003,7 +1062,7 @@
   function ensureGeo() {
     var g = GEO[state.level];
     if (geoCache[state.level]) return Promise.resolve(geoCache[state.level]);
-    return script(g.file).then(function () {
+    return script(g.file + STAMP).then(function () {
       geoCache[state.level] = window[g.global];
       return geoCache[state.level];
     });
@@ -1568,22 +1627,20 @@
   function weightYear() {
     var y = String(state.year || ''), c = changeYears(y);
     if (c) y = c[1];
-    if (EARLY.indexOf(y) >= 0 || y === '1998' || y === '2017' || y === '2023') return y;
     // most curated sources carry no structured year; their name does
     // ("PSLM 2019-20"), and the nearest census is read from that
-    var m = /(19|20)\d\d/.exec(y) || /(19|20)\d\d/.exec(String(col('dataset', state.row) || ''));
-    var n = m ? +m[0] : 2023;
-    return n <= 2007 ? '1998' : n <= 2020 ? '2017' : '2023';
+    if (!/(19|20)\d\d/.test(y)) y = String(col('dataset', state.row) || '');
+    return censusFor(y);
   }
   /* Population per shape. A census unit drawn across several shapes - a
      district split after 2017 - shares its population equally among them,
      so the weights still add up to the census and no one is counted twice. */
-  function popWeights() {
-    var y = weightYear(), sx = state.sex, ind = popIndicator(y);
+  function popPer(y, sx, locIn) {
+    var ind = popIndicator(y);
     if ((sx === 'female' || sx === 'male') && (y === '2017' || y === '2023')) {
       ind = (y === '2017' ? 'POPULATION - 2017 / ' : 'POPULATION-2023 / ') + sx.toUpperCase();
     }
-    var loc = ['all', 'rural', 'urban'].indexOf(state.locality) >= 0 ? state.locality : 'all';
+    var loc = ['all', 'rural', 'urban'].indexOf(locIn) >= 0 ? locIn : 'all';
     var id = [y, ind, loc, state.level].join('|');
     if (!POPW[id]) {
       POPW[id] = engine().then(function (w) {
@@ -1605,15 +1662,41 @@
     }
     return POPW[id];
   }
+  function popWeights() { return popPer(weightYear(), state.sex, state.locality); }
+  /* The census whose population weights a year: its own, or the nearest. */
+  function censusFor(y) {
+    y = String(y);
+    if (EARLY.indexOf(y) >= 0 || y === '1998' || y === '2017' || y === '2023') return y;
+    var n = +(/(19|20)\d\d/.exec(y) || [2023])[0];
+    return n <= 2007 ? '1998' : n <= 2020 ? '2017' : '2023';
+  }
+  /* How a rate combines across places: exactly, where its denominator follows
+     from population, or as a population-weighted mean. */
+  function rateHow(label) {
+    label = String(label || '');
+    return /sex ratio/i.test(label) ? 'sexratio'
+      : /density|per\s*(sq\.?\s*)?km/i.test(label) ? 'harmonic'
+      : /household size|persons per household/i.test(label) ? 'harmonic' : 'mean';
+  }
+  function combineRate(how, items) {
+    var sw = 0, swv = 0, swi = 0, sm = 0, sf = 0;
+    for (var j = 0; j < items.length; j++) {
+      var v = items[j].v, w = items[j].w;
+      if (v == null || !isFinite(v) || !(w > 0)) return null;
+      sw += w; swv += w * v;
+      if (v) swi += w / v;
+      sm += w * v / (100 + v); sf += w * 100 / (100 + v);
+    }
+    if (!sw) return null;
+    return how === 'harmonic' ? (swi ? sw / swi : null)
+         : how === 'sexratio' ? (sf ? sm / sf * 100 : null) : swv / sw;
+  }
   function fillWeighted(wt, rangeTitle) {
     var token = {};
     fillWeighted.token = token;
     var label = String(col('label', state.row) || '');
     var change = /^\u0394/.test(state.year || '');
-    var how = change ? 'mean'
-      : /sex ratio/i.test(label) ? 'sexratio'
-      : /density|per\s*(sq\.?\s*)?km/i.test(label) ? 'harmonic'
-      : /household size|persons per household/i.test(label) ? 'harmonic' : 'mean';
+    var how = change ? 'mean' : rateHow(label);
     popWeights().then(function (P) {
       if (fillWeighted.token !== token) return;
       var sw = 0, swv = 0, swi = 0, sm = 0, sf = 0, used = 0;
