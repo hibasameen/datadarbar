@@ -59,7 +59,7 @@
 .map-card{position:absolute;background:rgba(255,255,255,.96);border:1px solid var(--line);
   border-radius:10px;z-index:500}
 :root[data-theme="dark"] .map-card{background:rgba(24,32,25,.96)}
-.legend{left:16px;bottom:16px;padding:13px 15px;min-width:250px;
+.legend{right:16px;bottom:16px;padding:13px 15px;min-width:250px;
   display:flex;flex-direction:column;gap:9px}
 .legend h2{margin:0;font-size:13px;font-weight:700;color:var(--green-900);line-height:1.25}
 .legend .sub{font-size:11px;color:var(--muted);line-height:1.4}
@@ -449,3 +449,23 @@
 .mh-derived{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;line-height:1;
   padding:2px 6px;border-radius:999px;background:#f3edf6;color:var(--plum,#6b4c7a);
   border:1px solid var(--plum-300,#a98cb5);vertical-align:1px;cursor:help}
+
+/* A census slider keeps its changes as buttons under it; while a change is
+   shown, the slider is dimmed rather than pretending to point at a year. */
+.year-ctl:has(.year-slide) button{margin:6px 6px 0 0;padding:4px 10px;font:inherit;
+  font-size:11.5px;border:1px solid var(--line-strong);border-radius:6px;
+  background:var(--surface);color:var(--ink);cursor:pointer}
+.year-ctl:has(.year-slide) button[aria-pressed="true"]{background:var(--green-900);
+  border-color:var(--green-900);color:#fff}
+.year-slide.is-off input[type=range]{opacity:.45}
+
+/* population over time, in the place panel */
+.pop-hist{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.pop-hist-name{font-size:12.5px;font-weight:700;color:var(--ink);margin:2px 0 4px}
+.pop-hist svg{width:100%;height:auto;display:block;color:var(--green-700)}
+.pop-hist svg path{fill:none;stroke:currentColor;stroke-width:1.8}
+.pop-hist svg circle{fill:currentColor}
+.pop-hist svg .ax{stroke:var(--line-strong);stroke-width:1}
+.pop-hist svg text{font-size:9.5px;fill:var(--muted)}
+.pop-hist svg text.lab{font-size:10.5px;font-weight:700;fill:var(--ink)}
+.pop-hist .sub{font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px}

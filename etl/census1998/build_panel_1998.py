@@ -151,7 +151,11 @@ def main():
                 'map_key': ' '.join(keys) or None, 'map_relation': rel, 'map_comparable': comp,
                 'map_note': note, 'locality': 'all', 'sex': sex, 'missing': value is None,
                 'series_ambiguous': False, 'map_weight': gpop.get(district),
-                'published_in': 'District at a Glance (1998)'}
+                'published_in': 'District at a Glance (1998)',
+                # the 2017 districts this glance district's group became, and
+                # the glance districts in that group
+                'districts_2017': ' + '.join(ds) if L else None,
+                'glance_group': ' + '.join(gs)}
         out_ = left_out(keys, ds) if L else []
 
         def placed(is_rate):

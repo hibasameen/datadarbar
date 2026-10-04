@@ -22,6 +22,11 @@ SPELLING = {   # glance title -> 2017 name, where PBS spells them differently
     'MALAKAND PROTECTED AREA': 'MALAKAND', 'NAWABSHAH': 'SHAHEED BENAZIRABAD',
     'SHAIWAL': 'SAHIWAL', 'SHIKAPUR': 'SHIKARPUR', 'UMERKOT': 'UMER KOT',
     'LAHORE': 'LAHORE', 'KARACHI': None,
+    # the spellings of the 1951-1998 administrative units table
+    'D.G.KHAN': 'DERA GHAZI KHAN', 'D.I.KHAN': 'DERA ISMAIL KHAN', 'NAWAB SHAH': 'SHAHEED BENAZIRABAD',
+    'JAFARABAD': 'JAFFARABAD',
+    **{f'TRIBAL AREA ADJOINING {t}': f'FR {t}'
+       for t in ('BANNU', 'D.I.KHAN', 'KOHAT', 'LAKKI MARWAT', 'PESHAWAR', 'TANK')},
 }
 
 

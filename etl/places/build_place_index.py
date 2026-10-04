@@ -335,10 +335,11 @@ def main():
                years[1] AS yr, coalesce(_sex_of(measure), 'all') AS sx,
                _norm_meas(measure, years[1]) AS nm
         FROM place_indicator_index
-        -- 1998 joins only through ATTACH_1998 below, a reviewed list: left to
-        -- this spelling match, 1998 glance Area merged itself with 2017 Area
+        -- 1998 and the censuses before it join only through ATTACH below, a
+        -- reviewed list: left to this spelling match, 1998 glance Area merged
+        -- itself with 2017 Area
         WHERE source = 'census' AND NOT redundant AND len(years) = 1
-          AND years <> ['1998']""")
+          AND years[1] NOT IN ('1951', '1961', '1972', '1981', '1998')""")
     con.execute("""CREATE OR REPLACE TEMP TABLE _merge AS
         SELECT level, topic, dataset, nm, metric
         FROM _cand
@@ -480,49 +481,54 @@ def main():
     # same level - population at district AND tehsil, the glance indicators at
     # district. What has no later counterpart (housing units, 1981 population)
     # stays in the panel and the catalogue, off the map.
-    ATTACH_1998 = [
-        # 1998 cell, sex part (None = not split by sex), the 2017 cell it joins
-        ('1|POPULATION - 1998|POPULATION - 1998 / ALL SEXES', 'all',
-         '1|POPULATION - 2017 / ALL SEXES|ALL SEXES'),
-        ('glance|POPULATION - 1998 BY SEX|MALE', 'male', '1|POPULATION - 2017 / ALL SEXES|ALL SEXES'),
-        ('glance|POPULATION - 1998 BY SEX|FEMALE', 'female', '1|POPULATION - 2017 / ALL SEXES|ALL SEXES'),
-        ('glance|LITERACY RATIO (10+)|LITERACY RATIO', None, '13|LITERATE / LITERACY RATIO|LITERACY RATIO'),
-        ('glance|AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE', None,
+    POP17 = '1|POPULATION - 2017 / ALL SEXES|ALL SEXES'
+    ATTACH = [
+        # year, its cell, sex part (None = not split by sex), the 2017 cell it joins
+        # 1951-1981: PBS's restatement on the districts of 1998, district only
+        *[(y, '1|POPULATION|POPULATION / ALL SEXES', 'all', POP17)
+          for y in ('1951', '1961', '1972', '1981')],
+        ('1998', '1|POPULATION - 1998|POPULATION - 1998 / ALL SEXES', 'all', POP17),
+        ('1998', 'glance|POPULATION - 1998 BY SEX|MALE', 'male', POP17),
+        ('1998', 'glance|POPULATION - 1998 BY SEX|FEMALE', 'female', POP17),
+        ('1998', 'glance|LITERACY RATIO (10+)|LITERACY RATIO', None, '13|LITERATE / LITERACY RATIO|LITERACY RATIO'),
+        ('1998', 'glance|AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE', None,
          '1|POPULATION - 2017 / AVERAGE HOUSEHOLD SIZE|AVERAGE HOUSEHOLD SIZE'),
-        ('glance|POPULATION DENSITY PER SQ. KM.|POPULATION DENSITY PER SQ. KM.', None,
+        ('1998', 'glance|POPULATION DENSITY PER SQ. KM.|POPULATION DENSITY PER SQ. KM.', None,
          '1|POPULATION - 2017 / POPULATION DENSITY PER SQ. KM.|POPULATION DENSITY PER SQ. KM.'),
-        ('glance|1981-1998 AVERAGE ANNUAL GROWTH RATE|1981-1998 AVERAGE ANNUAL GROWTH RATE', None,
+        ('1998', 'glance|1981-1998 AVERAGE ANNUAL GROWTH RATE|1981-1998 AVERAGE ANNUAL GROWTH RATE', None,
          '1|1998-2017 AVERAGE ANNUAL GROWTH RATE|1998-2017 AVERAGE ANNUAL GROWTH RATE'),
-        ('glance|SEX RATIO|SEX RATIO', None, '1|POPULATION - 2017 / SEX RATIO|SEX RATIO'),
+        ('1998', 'glance|SEX RATIO|SEX RATIO', None, '1|POPULATION - 2017 / SEX RATIO|SEX RATIO'),
     ]
     attached = 0
-    for k98, sx, k17 in ATTACH_1998:
+    for yr, k98, sx, k17 in ATTACH:
         src = con.execute("""SELECT level, units, shapes, min_value, max_value, localities
-            FROM place_indicator_index WHERE source = 'census' AND years = ['1998']
-              AND indicator = ?""", [k98]).fetchall()
+            FROM place_indicator_index WHERE source = 'census' AND list_contains(years, ?)
+              AND list_has_all(['1951', '1961', '1972', '1981', '1998'], years)
+              AND indicator = ?""", [yr, k98]).fetchall()
         for level, units, shapes, lo, hi, locs in src:
             tgt = con.execute("""SELECT rowid, indicator FROM place_indicator_index
                 WHERE source = 'census' AND level = ? AND list_contains(years, '2017')
                   AND (indicator = ? OR indicator LIKE ? OR indicator LIKE ?)""",
                 [level, k17, '%=' + k17, '%=' + k17 + '\x1f%']).fetchall()
-            assert len(tgt) == 1, f'1998 {k98} at {level}: {len(tgt)} rows carry {k17}'
+            assert len(tgt) == 1, f'{yr} {k98} at {level}: {len(tgt)} rows carry {k17}'
             rid, ind = tgt[0]
             compound = bool(re.match(r'^(?:19|20)\d\d(?::[a-z]+)?=', ind))
             with_sex = compound and bool(re.match(r'^\d{4}:[a-z]+=', ind))
             if not compound:
                 ind = '2017=' + ind
-            part = ('1998:' + (sx or 'all') if with_sex else '1998') + '=' + k98
+            part = (yr + ':' + (sx or 'all') if with_sex else yr) + '=' + k98
             con.execute("""UPDATE place_indicator_index SET
-                indicator = ?, years = list_sort(list_distinct(years || ['1998'])),
+                indicator = ?, years = list_sort(list_distinct(years || [?])),
                 localities = list_sort(list_distinct(localities || ?)),
                 units = greatest(units, ?), shapes = greatest(shapes, ?),
                 min_value = least(min_value, ?), max_value = greatest(max_value, ?)
-                WHERE rowid = ?""", [part + '\x1f' + ind, locs, units, shapes, lo, hi, rid])
+                WHERE rowid = ?""", [part + '\x1f' + ind, yr, locs, units, shapes, lo, hi, rid])
             attached += 1
-    dropped = con.sql("SELECT count(*) FROM place_indicator_index WHERE years = ['1998']").fetchone()[0]
-    con.execute("DELETE FROM place_indicator_index WHERE years = ['1998']")
-    print(f'  {attached} 1998 cells attached to their 2017/2023 rows; {dropped} 1998-only '
-          f'cells left to the panel')
+    OLD = "list_has_all(['1951', '1961', '1972', '1981', '1998'], years) AND source = 'census'"
+    dropped = con.sql(f"SELECT count(*) FROM place_indicator_index WHERE {OLD}").fetchone()[0]
+    con.execute(f"DELETE FROM place_indicator_index WHERE {OLD}")
+    print(f'  {attached} 1951-1998 cells attached to their 2017/2023 rows; {dropped} cells '
+          f'with no later counterpart left to the panel')
 
     # Folding five census entries into one dataset puts six identical
     # "Total Population, 50-54" rows in the Demographics list - one per table
@@ -551,7 +557,12 @@ def main():
           FROM place_indicator_index
           GROUP BY 1, 2, 3, 4 HAVING count(*) > 1)
         SELECT i.* REPLACE (
+          -- census table rows only: a curated measure shares its name with
+          -- another group's ("Total Population" in Demographics and in Urban &
+          -- rural), and naming it "Total Population · 1998/2017/2023/Δ1998-2017
+          -- /Δ2017-23" on the map's headline told the reader nothing
           CASE WHEN d.label IS NOT NULL AND len(i.years) > 0
+                    AND i.group_key LIKE 'census\\_t%' ESCAPE '\\'
                THEN i.label || ' \u00b7 ' || list_aggregate(i.years, 'string_agg', '/')
                ELSE i.label END AS label)
         FROM place_indicator_index i

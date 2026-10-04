@@ -133,11 +133,22 @@
   /* ── values ─────────────────────────────────────────────────────────────
      Three routes, one interface. Each returns {key -> value} for the facets
      currently chosen. */
+  /* The build stamps one hash on every asset and payload link in the page,
+     and the hash covers data/places/ too - but these files are fetched from
+     script, where no stamp was ever applied, so a returning reader kept
+     yesterday's group file under today's code. It is read off this script's
+     own address. */
+  var STAMP = (function () {
+    var el = document.querySelector('script[src*="assets/js/places.js"]');
+    var m = el && /[?&]v=([0-9a-f]+)/.exec(el.getAttribute('src'));
+    return m ? '?v=' + m[1] : '';
+  }());
+
   function loadGroup(gk) {
     if (groupCache[gk]) return Promise.resolve(groupCache[gk]);
     var safe = gk.replace(/[^A-Za-z0-9_-]/g, '_');
     var name = 'DD_PLACES_G_' + gk.replace(/[^A-Za-z0-9_]/g, '_');
-    return script('data/places/' + safe + '.js').then(function () {
+    return script('data/places/' + safe + '.js' + STAMP).then(function () {
       groupCache[gk] = window[name];
       return groupCache[gk];
     });
@@ -271,7 +282,7 @@
              an ambiguous source cell; two units once each is a district that
              merged. The first must not be added up, the second must be. */
           'SELECT map_key AS k, value AS v, unit AS u, map_weight AS w,'
-          + ' map_relation AS rel, map_note AS note FROM census_panel_' + y
+          + ' map_relation AS rel, map_note AS note FROM ' + panelOf(y)
           + ' WHERE table_id = ' + q(c[0])
           + '   AND indicator = ' + q(c[1])
           + "   AND coalesce(col_label, '') = " + q(c[2])
@@ -393,7 +404,8 @@
        Locality is matched, so a rural count is divided by the rural
        population, and each year uses its OWN population. */
     function popIndFor(y) {
-      return y === '1998' ? 'POPULATION - 1998'
+      return EARLY.indexOf(String(y)) >= 0 ? 'POPULATION'
+           : y === '1998' ? 'POPULATION - 1998'
            : y === '2017' ? 'POPULATION - 2017 / ALL SEXES'
                           : 'POPULATION-2023 / ALL SEXES';
     }
@@ -473,7 +485,7 @@
   function population(year, indicator) {
     return engine().then(function (w) {
       return w.query(
-        'SELECT map_key AS k, value AS v FROM census_panel_' + year
+        'SELECT map_key AS k, value AS v FROM ' + panelOf(year)
         + " WHERE table_id = '1'"
         + '   AND indicator = ' + q(indicator)
         + '   AND locality = ' + q(state.locality)
@@ -503,7 +515,7 @@
   var provCache = null;
   function loadProvenance() {
     if (provCache) return Promise.resolve(provCache);
-    return script('data/places/provenance.js').then(function () {
+    return script('data/places/provenance.js' + STAMP).then(function () {
       provCache = window.DD_PLACES_PROV;
       return provCache;
     });
@@ -718,6 +730,16 @@
     if (yrs.indexOf('2017') >= 0 && yrs.indexOf('2023') >= 0) d.push('\u03942017-23');
     return yrs.concat(d);
   }
+  /* The panel a census year is read from. 1951 to 1981 share one table, PBS's
+     restatement of the four censuses on the districts of 1998. */
+  var EARLY = ['1951', '1961', '1972', '1981'];
+  function panelOf(y) {
+    y = String(y);
+    return EARLY.indexOf(y) >= 0
+      ? '(SELECT * FROM census_panel_1951_1981 WHERE census_year = ' + (+y) + ') p'
+      : 'census_panel_' + y;
+  }
+
   /* "Δ2017-23" -> ['2017', '2023']; "Δ1998-2017" -> ['1998', '2017'] */
   function changeYears(y) {
     var m = /^\u0394(\d{4})-(\d{2,4})$/.exec(y || '');
@@ -1146,15 +1168,27 @@
        pairs have two years and a change; crops run to 39 fiscal years, and 39
        buttons in a 616px card is not a control. Past five, it becomes a slider
        with the year named beside it - the design's YEAR control. */
-    if (yrs.length > 5) {
+    /* A census series with a long run - population, 1951 to 2023 - slides
+       over its census years, and its changes stay buttons beside the slider:
+       a change is not a point on the same line. */
+    var changes = yrs.filter(function (y) { return /^\u0394/.test(y); });
+    var plain = yrs.filter(function (y) { return !/^\u0394/.test(y); });
+    if (changes.length && plain.length > 3) yrs = plain;
+    else changes = [];
+    if (yrs.length > 5 || changes.length) {
       var at = Math.max(0, yrs.indexOf(state.year));
-      h += '<div class="year-slide">'
+      var off = yrs.indexOf(state.year) < 0 && changes.indexOf(state.year) >= 0;
+      h += '<div class="year-slide' + (off ? ' is-off' : '') + '">'
          + '<span class="year-slide-lab">Year</span>'
          + '<input type="range" id="yearRange" min="0" max="' + (yrs.length - 1)
          + '" value="' + at + '" step="1" aria-label="Year"/>'
-         + '<b id="yearNow">' + esc(yrs[at]) + '</b>'
+         + '<b id="yearNow">' + esc(off ? '' : yrs[at]) + '</b>'
          + '<span class="year-slide-span">' + esc(yrs[0]) + ' to '
          + esc(yrs[yrs.length - 1]) + '</span></div>';
+      h += changes.map(function (y) {
+        return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
+             + (y === state.year) + '">' + esc(changeLabel(y, changes.length > 1)) + '</button>';
+      }).join('');
     } else if (yrs.length > 1) {
       /* The two census panels both sit on the 2023 frame, so where a cell
          exists in each the difference is meaningful and is offered. The
@@ -1546,7 +1580,9 @@
     var g = GEO[state.level];
     if (!state.place) {
       host.innerHTML = '<p class="placeholder">Choose a ' + g.noun
-        + ' on the map to see its figure, its rank and the places around it.</p>';
+        + ' on the map to see its figure, its rank and the places around it.</p>'
+        + (isPopulationRow() ? '<div id="popHist"></div>' : '');
+      drawHistory(null);
       return;
     }
     var key = state.place, v = state.values ? state.values[key] : null;
@@ -1608,7 +1644,110 @@
       h += '<div><div class="eyebrow">Ranking</div><div class="rank-list">'
          + rankRows(entries, pos, dp) + '</div></div>';
     }
+    if (isPopulationRow() && state.level === 'district') h += '<div id="popHist"></div>';
     host.innerHTML = h;
+    drawHistory(key);
+  }
+
+  /* ── population over time ───────────────────────────────────────────────
+     Population at every census since 1951, for the chosen district - or for
+     Pakistan before one is chosen. From census_population_history, where each
+     district is a footprint that is the same ground in every year shown, so
+     the line never jumps because a boundary moved: a place PBS cannot
+     separate from its neighbour in some census is drawn with it throughout,
+     and named that way. */
+  function isPopulationRow() {
+    if (state.row == null) return false;
+    var ind = String(col('indicator', state.row) || '');
+    return ind.indexOf('1|POPULATION - 2017 / ALL SEXES') >= 0
+        || (col('group_key', state.row) === 'demographics' && ind === 'pop_total');
+  }
+  var HISTORY = null;
+  function popHistory() {
+    if (!HISTORY) {
+      HISTORY = engine().then(function (w) {
+        return w.query('SELECT level, map_key, place, today, CAST(census_year AS INTEGER) AS y, CAST(population AS DOUBLE) AS v '
+                       + 'FROM census_population_history ORDER BY census_year');
+      }).then(function (res) { return res.rows; });
+      HISTORY.catch(function () { HISTORY = null; });
+    }
+    return HISTORY;
+  }
+  function drawHistory(key) {
+    if (!document.getElementById('popHist')) return;
+    popHistory().then(function (rows) {
+      var host = document.getElementById('popHist');
+      if (!host) return;
+      var pts, name, today = '';
+      if (key == null) {
+        pts = rows.filter(function (r) { return r.level === 'country'; });
+        name = 'Pakistan';
+        // 2017 and 2023 are the districts' sum, which the build checks
+        // against PBS's national totals
+        [2017, 2023].forEach(function (y) {
+          var t = 0;
+          rows.forEach(function (r) { if (r.level === 'district' && r.y === y) t += r.v; });
+          if (t) pts.push({ y: y, v: t });
+        });
+      } else {
+        pts = rows.filter(function (r) {
+          return r.level === 'district' && String(r.map_key).split(' ').indexOf(String(key)) >= 0;
+        });
+        name = pts.length ? pts[0].place : '';
+        today = pts.length ? pts[0].today : '';
+      }
+      pts = pts.slice().sort(function (a, b) { return a.y - b.y; });
+      if (pts.length < 2) { host.innerHTML = ''; return; }
+      host.innerHTML = historySvg(pts, name, key != null, today);
+    }, function () {
+      var host = document.getElementById('popHist');
+      if (host) host.innerHTML = '';
+    });
+  }
+  function historySvg(pts, name, combinedNote, today) {
+    var W = 268, H = 128, L = 6, R = 6, T = 16, B = 20;
+    var y0 = 1951, y1 = 2023, vmax = 0;
+    pts.forEach(function (p) { if (p.v > vmax) vmax = p.v; });
+    var X = function (y) { return L + (y - y0) / (y1 - y0) * (W - L - R); };
+    var Y = function (v) { return T + (1 - v / vmax) * (H - T - B); };
+    var line = pts.map(function (p, i) {
+      return (i ? 'L' : 'M') + X(p.y).toFixed(1) + ' ' + Y(p.v).toFixed(1);
+    }).join(' ');
+    var dots = pts.map(function (p) {
+      return '<circle cx="' + X(p.y).toFixed(1) + '" cy="' + Y(p.v).toFixed(1)
+        + '" r="2.6"><title>' + p.y + ': ' + Math.round(p.v).toLocaleString() + '</title></circle>';
+    }).join('');
+    var ticks = [1951, 1961, 1972, 1981, 1998, 2017, 2023].map(function (y) {
+      var anchor = y === 1951 ? 'start' : y === 2023 ? 'end' : 'middle';
+      return '<text x="' + X(y).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + anchor
+        + '">' + (y === 1951 ? y : "'" + String(y).slice(2)) + '</text>';
+    }).join('');
+    var first = pts[0], last = pts[pts.length - 1];
+    var mult = first.v ? last.v / first.v : null;
+    var missing = [1951, 1961, 1972, 1981, 1998, 2017, 2023].filter(function (y) {
+      return !pts.some(function (p) { return p.y === y; });
+    });
+    var note = '';
+    if (combinedNote && / \+ /.test(name)) {
+      note += 'Drawn as one because PBS\u2019s figures cannot separate them in every census. ';
+    }
+    if (missing.length) {
+      note += 'No separate figure in ' + missing.join(' or ') + ': PBS counted it with a neighbour.';
+    }
+    return '<div class="pop-hist"><div class="eyebrow">Population at each census</div>'
+      + '<div class="pop-hist-name">' + esc(name) + '</div>'
+      + (today && today !== name ? '<div class="sub">Today ' + esc(today) + '</div>' : '')
+      + '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Population of '
+      + esc(name) + ' at each census from ' + first.y + ' to ' + last.y + ', rising from '
+      + big(first.v) + ' to ' + big(last.v) + '">'
+      + '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" class="ax"/>'
+      + '<path d="' + line + '"/>' + dots + ticks
+      + '<text x="' + X(first.y).toFixed(1) + '" y="' + (Y(first.v) - 6).toFixed(1)
+      + '" text-anchor="start" class="lab">' + big(first.v) + '</text>'
+      + '<text x="' + X(last.y).toFixed(1) + '" y="' + Math.max(11, Y(last.v) - 6).toFixed(1)
+      + '" text-anchor="end" class="lab">' + big(last.v) + '</text></svg>'
+      + '<div class="sub">' + (mult ? '\u00d7' + mult.toFixed(1) + ' since ' + first.y + '. ' : '')
+      + esc(note) + ' PBS restates 1951\u20131998 on the districts of 1998.</div></div>';
   }
 
   function title(s) {
@@ -1681,7 +1820,7 @@
       label: 'Government schools', box: 'ovSchools',
       data: function () { return window.DD_SCHOOL_POINTS; },
       ink: '--pt-schools', note: 'ovSchoolsN', idle: '123k', cap: [12000, 60000],
-      file: 'data/places/overlay_schools.js',
+      file: 'data/places/overlay_schools.js' + STAMP,
       filled: function (f) { return f >= 100; }, big: function () { return false; },
       filter: { a: 'all', b: 'all' },
       show: function (f, q) {
@@ -1710,7 +1849,7 @@
       data: function () { return window.DD_HEALTH_POINTS; },
       // 20,536 points draw quickly, so the whole set is drawn at every zoom.
       ink: '--pt-health', note: 'ovHealthN', idle: '21k', cap: [30000, 30000],
-      file: 'data/places/overlay_health.js',
+      file: 'data/places/overlay_health.js' + STAMP,
       filled: function (f) { return f >= 10; }, big: function (f) { return f % 10 === 0; },
       filter: { a: 'all', b: 'all' },
       show: function (f, q) {
@@ -2191,7 +2330,7 @@
 
     /* Bottom right, clear of the measure header and the tools over the map's
        top edge: in the top-left corner Leaflet put it on top of both. */
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
     rail = window.DDPlacesRail && window.DDPlacesRail.mount({
       el: $('rail'), libraryEl: $('library'), searchEl: $('indSearch'),
       IX: IX, N: N, col: col, list: list, level: state.level,

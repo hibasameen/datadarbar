@@ -1493,12 +1493,76 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "map_weight": "the unit\u2019s own 1998 population, the weight for averaging a "
                            "rate across units drawn on one shape",
              "is_rate": "the value is a rate, ratio or share and must not be summed",
-             "published_in": "the PBS publication the figure was read from"},
+             "published_in": "the PBS publication the figure was read from",
+             "districts_2017": "glance rows: the 2017 districts this glance district\u2019s "
+                               "balanced group became, joined by ' + '",
+             "glance_group": "glance rows: the glance districts in that group"},
             "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance) and "
             "Census 2017 table 1 (POPULATION 1998, PBS\u2019s restatement)",
             f"SELECT * FROM '{p98.as_posix()}' ORDER BY table_id, unit_type, district, unit, "
             "locality, sex, indicator, col_label",
             unit="persons; rates and shares where is_rate is TRUE",
+        )
+
+    ph = (sorted(src.glob("census1998/*/panel_1951_1981.parquet")) or [None])[-1]
+    if ph:
+        print("census 1951-1981 panel…")
+        register(
+            "census_panel_1951_1981",
+            "Pakistan\u2019s population at the 1951, 1961, 1972 and 1981 censuses, on PBS\u2019s "
+            "2023 districts.",
+            "From PBS\u2019s Area & Population of Administrative Units 1951-1998, which restates "
+            "the earlier censuses on the 115 districts and agencies of 1998. Each 1998 district "
+            "is linked to the 2017 districts it became only where its 1998 population equals "
+            "PBS\u2019s restated 1998 population of those districts to the person - all 115 do "
+            "(etl/census1998/glance_crosswalk.py) - and through them to the 2023 shapes. A row "
+            "is a footprint: one 1998 district, or several drawn as one where they share a "
+            "2023 shape (a Frontier Region and its host district) or where PBS counted one "
+            "inside another at that census (the table\u2019s footnotes: Lower Dir in Upper Dir "
+            "in 1951 and 1961, Kohistan and Batagram in Mansehra, much of Balochistan in 1951). "
+            "Bolan, Jafarabad and Jhal Magsi are blank in 1951 with no footnote; they are drawn "
+            "with Sibi and Kalat and the note says so. Every year sums to PBS\u2019s published "
+            "national total. Where a district printed no total, its printed urban or rural part "
+            "is counted and the rest is in the district that counted it. The schema is "
+            "census_panel_1998\u2019s; select one census_year.",
+            {**CENSUS_SHARED, **_MAP_DOCS,
+             "census_year": "1951, 1961, 1972 or 1981",
+             "unit": "the 1998 district or districts the footprint is made of, joined by ' + '",
+             "map_weight": "the footprint\u2019s population at that census",
+             "published_in": "the PBS publication the figure was read from"},
+            "Pakistan Bureau of Statistics, Area & Population of Administrative Units by "
+            "Rural/Urban: 1951-1998 Censuses",
+            f"SELECT * FROM '{ph.as_posix()}' ORDER BY census_year, map_key, locality",
+            unit="persons",
+        )
+    hist = (sorted(src.glob("census1998/*/population_history.parquet")) or [None])[-1]
+    if hist:
+        register(
+            "census_population_history",
+            "Population at every census from 1951 to 2023, for Pakistan, each province and "
+            "each district, on boundaries that hold still.",
+            "One series per place for a chart of population over time. Pakistan and the "
+            "provinces as PBS prints them (1951-1998, table 1 of the administrative units "
+            "table). Districts as footprints on the 2023 frame that are the same ground in "
+            "every year shown: a 1998 district with the 2017 districts it became, joined to "
+            "its neighbour where the two cannot be told apart - Lahore and Kasur, which "
+            "exchanged ground between 1998 and 2017, are one series. 1951 and 1961 appear "
+            "only where PBS counted the footprint on its own that year. 1998 and earlier "
+            "are PBS\u2019s restatement on 1998 districts; 2017 is table 1 of the 2017 census; "
+            "2023 is table 1 of the 2023 census. Each year\u2019s district rows sum to the "
+            "published national total.",
+            {"level": "country, province or district",
+             "map_key": "the 2023 district shapes the footprint covers (districts only)",
+             "place": "the 1998 district or districts of the footprint, or the province",
+             "today": "the 2017 districts the footprint is today (2023 splits aside)",
+             "province": "the province of the footprint\u2019s largest district",
+             "census_year": "1951, 1961, 1972, 1981, 1998, 2017 or 2023",
+             "population": "persons enumerated",
+             "relation": "exact for one district on one shape; combined otherwise"},
+            "Pakistan Bureau of Statistics: Administrative Units 1951-1998; Census 2017 and "
+            "2023 table 1",
+            f"SELECT * FROM '{hist.as_posix()}' ORDER BY level, place, census_year",
+            unit="persons",
         )
 
     if p17 or p23:
@@ -1583,6 +1647,19 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                        FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
             _title_values += (", (1998, '1', 'Population 1998, restated by PBS on the 2017 units "
                               "(Census 2017 table 1)'), (1998, 'glance', 'District at a Glance (1998)')")
+        if ph:
+            parts.append(f"""
+              SELECT census_year, table_id, 'district' AS unit_type, indicator, col_label,
+                     locality, sex, bool_or(is_rate) AS is_rate,
+                     length(list_distinct(flatten(list(str_split(map_key, ' '))
+                       FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)))) AS mappable_units,
+                     count(DISTINCT unit) FILTER (WHERE value IS NOT NULL) AS units_with_value,
+                     min(value) AS min_value, max(value) AS max_value
+              FROM '{(OUT / 'census_panel_1951_1981.parquet').as_posix()}'
+              GROUP BY ALL""")
+            _title_values += "".join(
+                f", ({y}, '1', 'Population {y}, restated by PBS on the districts of 1998')"
+                for y in (1951, 1961, 1972, 1981))
         register(
             "census_series_index",
             "One row per census series that the district and tehsil map can colour, "
@@ -1595,7 +1672,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "Series are listed per census year and must not be compared across years on "
             "table_id or indicator; see either panel's notes.",
             {
-                "census_year": "1998, 2017 or 2023",
+                "census_year": "1951, 1961, 1972, 1981, 1998, 2017 or 2023",
                 "table_id": "PBS table number within that census",
                 "table_title": "the table\u2019s published title, as the ETL already records it. Titles are not interchangeable between years: 2017\u2019s table 23 is a locality table and 2023\u2019s is drinking water",
                 "unit_type": "district or tehsil — the geography this series can be drawn on",
