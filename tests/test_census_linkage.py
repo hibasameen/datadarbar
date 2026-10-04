@@ -72,3 +72,27 @@ def test_misspelt_2017_headings_rejoin_their_series():
         " AND col_label=? AND locality='all' AND sex='all' AND value IS NOT NULL",
         list(r)).fetchone()[0]]
     assert not lost, f'{len(lost)} district tables split off again, e.g. {lost[0]}'
+
+
+def test_1998_admin_units_add_up():
+    """Pakistan equals its provinces at every census 1951-1998, and in 1998
+    every district equals its sub-units - the check that caught Balochistan's
+    two nested levels and Peshawar's double breakdown in the parse."""
+    import duckdb
+    t = (ROOT / 'app' / 'data' / 'warehouse' / 'census_admin_units_1951_1998.parquet').as_posix()
+    gap = duckdb.execute(f"""
+        SELECT census_year,
+               sum(population) FILTER (WHERE unit_type='country')
+             - sum(population) FILTER (WHERE unit_type='province') AS d
+        FROM '{t}' WHERE table_no=1 AND locality='all' GROUP BY 1 HAVING d <> 0""").fetchall()
+    assert not gap, f'Pakistan and its provinces disagree: {gap}'
+    assert duckdb.execute(f"SELECT population FROM '{t}' WHERE unit_type='country' "
+                          "AND census_year=1998 AND locality='all'").fetchone()[0] == 132_352_279
+    off = duckdb.execute(f"""
+        WITH d AS (SELECT table_no, unit AS district, population p FROM '{t}'
+                   WHERE unit_type='district' AND census_year=1998 AND locality='all'),
+             s AS (SELECT table_no, district, sum(population) p FROM '{t}'
+                   WHERE census_year=1998 AND locality='all' AND (unit_type='sub_division'
+                     OR (unit_type='tehsil' AND sub_division IS NULL)) GROUP BY 1, 2)
+        SELECT d.district FROM d JOIN s USING (table_no, district) WHERE d.p <> s.p""").fetchall()
+    assert not off, f'districts that do not equal their sub-units in 1998: {off[:5]}'
