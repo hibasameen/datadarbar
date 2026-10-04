@@ -1467,7 +1467,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         register(
             "census_panel_1998",
             "The 1998 census on PBS\u2019s 2023 boundaries: population for every district and "
-            "tehsil, and the district indicators PBS published for 1998.",
+            "tehsil, the district indicators PBS published for 1998, and the detailed census by "
+            "tehsil from the US Census Bureau\u2019s Demobase.",
             "Two layers, from what PBS still publishes. table_id '1': POPULATION - 1998, all / "
             "rural / urban, for every district and every sub-district (tehsil, taluka, "
             "sub-division, sub-tehsil) - PBS\u2019s own restatement of 1998 onto the 2017 units, "
@@ -1483,11 +1484,22 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "map_key rather than a wrong one. Charsadda has no glance sheet. A glance district "
             "drawn across several 2023 shapes is map_comparable 'combined': add counts, and "
             "average rates on map_weight, the district\u2019s 1998 population. Below the "
-            "district nothing but population survives online: the District Census Reports "
-            "are print-only. Do not sum across unit_type, locality or sex.",
+            "district, table_id 'tehsil' is the 1998 census by tehsil from the US Census "
+            "Bureau\u2019s Pakistan Demobase (from PBS\u2019s census CD): sex, age, mother tongue, "
+            "literacy and educational attainment, households by size and housing construction, "
+            "for 365 tehsils of 1998. They reach the 2023 frame in 292 groups, proposed by "
+            "overlaying Demobase\u2019s 1998 boundaries on PBS\u2019s 2023 tehsils and accepted only "
+            "where the group\u2019s 1998 population equals PBS\u2019s restated 1998 population of "
+            "its 2017 tehsils to the person (etl/census1998/tehsil_crosswalk.py); every person "
+            "is linked, 174 tehsils one to one. Counts are the group\u2019s sums; rates (literacy, "
+            "sex ratio, household size) are calculated from those sums, and literacy reproduces "
+            "PBS\u2019s published 43.92% (excluding FATA). Demobase adjusted some age "
+            "distributions, and wrote census dashes as zeros. Do not sum across unit_type, "
+            "locality or sex.",
             {**CENSUS_SHARED, **_MAP_DOCS,
-             "table_id": "'1' for population (PBS\u2019s restatement in the 2017 census) or "
-                         "'glance' for the District at a Glance indicators",
+             "table_id": "'1' for population (PBS\u2019s restatement in the 2017 census), "
+                         "'glance' for the District at a Glance indicators, or 'tehsil' for "
+                         "the census by tehsil from Demobase",
              "unit": "the 2017 unit the 1998 population is restated on (table 1), or the "
                      "glance district as PBS titled it",
              "map_weight": "the unit\u2019s own 1998 population, the weight for averaging a "
@@ -1497,7 +1509,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "districts_2017": "glance rows: the 2017 districts this glance district\u2019s "
                                "balanced group became, joined by ' + '",
              "glance_group": "glance rows: the glance districts in that group"},
-            "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance) and "
+            "Pakistan Bureau of Statistics, Population Census 1998 (District at a Glance; via "
+            "the US Census Bureau\u2019s Pakistan Demobase for tehsils) and "
             "Census 2017 table 1 (POPULATION 1998, PBS\u2019s restatement)",
             f"SELECT * FROM '{p98.as_posix()}' ORDER BY table_id, unit_type, district, unit, "
             "locality, sex, indicator, col_label",
@@ -1646,7 +1659,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                    = count(DISTINCT district || '|' || unit)
                        FILTER (WHERE value IS NOT NULL AND map_key IS NOT NULL)""")
             _title_values += (", (1998, '1', 'Population 1998, restated by PBS on the 2017 units "
-                              "(Census 2017 table 1)'), (1998, 'glance', 'District at a Glance (1998)')")
+                              "(Census 2017 table 1)'), (1998, 'glance', 'District at a Glance (1998)'), "
+                              "(1998, 'tehsil', 'Census 1998 by tehsil (US Census Bureau Demobase)')")
         if ph:
             parts.append(f"""
               SELECT census_year, table_id, 'district' AS unit_type, indicator, col_label,

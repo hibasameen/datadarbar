@@ -364,6 +364,15 @@ def main():
     def resolve(k):
         if k in hmap:
             return hmap[k], [k]
+        # 1998 and the censuses before it are attached to rows the hierarchy
+        # already knows (build_place_index.py, ATTACH), after the hierarchy
+        # was written; the row is placed by what it was before they joined.
+        lv_, gk_, ind_ = k.split('\u001f', 2)
+        later = [p for p in ind_.split('\u001f') if not re.match(r'^(19\d\d)(:[a-z]+)?=', p)]
+        if later and len(later) < len(ind_.split('\u001f')):
+            k2 = '\u001f'.join([lv_, gk_] + later)
+            if k2 in hmap:
+                return hmap[k2], [k2]
         lvl0, gk0, ind0 = k.split('\u001f', 2)
         if not cells(ind0) and (lvl0, ind0) in parts_of:
             seen = parts_of[(lvl0, ind0)]

@@ -154,6 +154,12 @@ LICENCES = {
         name='CC BY 4.0', reuse='open',
         url='https://creativecommons.org/licenses/by/4.0/',
         summary='Any use, commercial included, with attribution.'),
+    'us-gov-pd': dict(
+        name='US Government work (public domain)', reuse='open',
+        url='https://www.census.gov/about/policies/open-gov/open-data.html',
+        summary='Works of the US federal government, the Census Bureau\u2019s included, are '
+                'not subject to copyright in the US and may be reused freely; credit the '
+                'Census Bureau as the source.'),
     'cc0': dict(
         name='CC0 1.0', reuse='open',
         url='https://creativecommons.org/publicdomain/zero/1.0/',
@@ -209,7 +215,7 @@ LICENCE = {
     'census_entities': (['pbs-open'], ''),
     'census_panel_2017': (['pbs-open'], ''),
     'census_panel_2023': (['pbs-open'], ''),
-    'census_panel_1998': (['pbs-open', 'cc-by-4.0'], 'The link to the 2023 frame is Data Darbar\u2019s work.'),
+    'census_panel_1998': (['pbs-open', 'us-gov-pd', 'cc-by-4.0'], 'Tehsil rows come from PBS\u2019s census via the US Census Bureau\u2019s Demobase; the link to the 2023 frame is Data Darbar\u2019s work.'),
     'census_panel_1951_1981': (['pbs-open', 'cc-by-4.0'], 'The link to the 2023 frame is Data Darbar\u2019s work.'),
     'census_population_history': (['pbs-open', 'cc-by-4.0'], 'The footprints that hold still across censuses are Data Darbar\u2019s work.'),
     'census_series_index': (['pbs-open'], ''),
@@ -348,8 +354,11 @@ PROVENANCE = {
                           'link each unit to the 2023 frame.',
                           ['map_comparable', 'map_weight', 'is_rate', 'series_ambiguous']),
     'census_panel_1998': ('mixed', 'Figures as PBS published them; the link of each unit to the '
-                          '2023 frame, and of each glance district to the 2017 districts it became, '
-                          'is Data Darbar\u2019s.', ['map_comparable', 'map_weight']),
+                          '2023 frame, of each glance district to the 2017 districts it became, '
+                          'and of each 1998 tehsil to the 2017 tehsils it became, is Data '
+                          'Darbar\u2019s. Tehsil rows are sums over linked groups, and their '
+                          'literacy, sex ratio and household size are calculated from those sums.',
+                          ['map_comparable', 'map_weight', 'value']),
     'census_panel_1951_1981': ('mixed', 'Figures as PBS published them on the districts of 1998; '
                                'footprints that join districts PBS counted together, and the link '
                                'to the 2023 frame, are Data Darbar\u2019s.',

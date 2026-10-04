@@ -25,3 +25,6 @@ etl/downloads/
 node_modules/
 node_modules
 
+
+# iCloud sync duplicates ("name 2.js") - never part of the site
+* [0-9].*

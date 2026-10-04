@@ -213,3 +213,27 @@ def test_curated_population_matches_the_census_less_the_frontier_regions():
     assert round(got['1998']) == PUBLISHED[1998] - fr98
     assert round(got['2017']) == PUBLISHED[2017] - fr17
     assert round(got['Δ1998-2017']) == round(got['2017'] - got['1998'])
+
+
+def test_1998_tehsils_from_demobase_link_everyone_and_reproduce_pbs():
+    """Every person of the 1998 census by tehsil is linked to the 2023 frame
+    through a group that balances against PBS's restatement; no 2023 tehsil
+    is claimed by two groups; and literacy computed from the linked counts is
+    PBS's published 43.92% / 54.81% / 32.02% (excluding FATA)."""
+    import duckdb
+    P = PANEL_1998
+    pop = duckdb.execute(f"SELECT sum(value) FROM '{P}' WHERE table_id = 'tehsil' AND "
+                         "indicator = 'POPULATION BY AGE' AND sex = 'all'").fetchone()[0]
+    assert round(pop) == 132_352_279, f'tehsil groups hold {pop:,.0f}'
+    twice = duckdb.execute(f"""SELECT k FROM (SELECT DISTINCT unit,
+        unnest(string_split(map_key, ' ')) k FROM '{P}' WHERE table_id = 'tehsil')
+        GROUP BY k HAVING count(*) > 1""").fetchall()
+    assert not twice, f'tehsil shapes in two groups: {twice[:3]}'
+    lit = dict(duckdb.execute(f"""SELECT sex, round(100 * sum(value) FILTER (WHERE col_label = 'LITERATE')
+        / sum(value) FILTER (WHERE col_label = 'POPULATION 10+'), 2) FROM '{P}'
+        WHERE table_id = 'tehsil' AND indicator = 'LITERACY (10+)' AND province_area <> 'FATA'
+        GROUP BY 1""").fetchall())
+    assert lit == {'all': 43.92, 'male': 54.81, 'female': 32.02}, lit
+    shapes = {k for (mk,) in duckdb.execute(f"SELECT DISTINCT map_key FROM '{P}' WHERE "
+                                             "table_id = 'tehsil'").fetchall() for k in mk.split()}
+    assert {r['map_key'] for r in rows(2023, 'tehsil')} <= shapes

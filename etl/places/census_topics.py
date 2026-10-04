@@ -33,7 +33,7 @@ def _set(year, topic, *tables):
 # census), 'glance' the District at a Glance sheets. Only what attaches to a
 # 2017/2023 row reaches the map (build_place_index ATTACH_1998), so the topic
 # here only has to let the rows through.
-_set(1998, 'demographics', '1', 'glance')
+_set(1998, 'demographics', '1', 'glance', 'tehsil')
 for _y in (1951, 1961, 1972, 1981):
     _set(_y, 'demographics', '1')
 
