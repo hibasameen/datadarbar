@@ -238,6 +238,15 @@
         if (sx && p.sex === String(sx)) want = p.cell;
         if (yearOnly == null) yearOnly = p.cell;
       });
+      /* A sex this census does not publish here is no data, never the
+         all-sexes figure under the chosen sex's name: 1998 gives population
+         by sex for districts only, so a tehsil asked for women in 1998 used
+         to be answered with everyone. */
+      var bySexRow = parts.some(function (p) { return !!p.sex; });
+      if (bySexRow && sx && sx !== 'all' && !want
+          && parts.some(function (p) { return p.year === String(y); })) {
+        var none = ['', '', '']; none.bySex = true; none.none = true; return none;
+      }
       var out = (want || yearOnly || parts[0].cell).split('|');
       /* Where the key carries the sex, the panel does NOT: PBS published
          those as separate columns, so every one of their rows sits under
@@ -255,6 +264,7 @@
     function censusYear(y) {
       var c = cellFor(y, state.sex);
       return engine().then(function (w) {
+        if (c.none) return { rows: [] };           // nothing published here
         return w.query(
           /* unit, because a shape and a source row are not the same thing and
              two different faults look identical without it. One unit twice is
@@ -307,7 +317,8 @@
     // it ran first - so picking Change with a share selected quietly gave the
     // count difference while the legend said "change in % of population".
     if (/^\u0394/.test(year) && !state.norm) {
-      return Promise.all([censusYear('2017'), censusYear('2023')])
+      var pair = changeYears(year);
+      return Promise.all([censusYear(pair[0]), censusYear(pair[1])])
         .then(function (both) {
           /* Grouped across BOTH censuses before subtracting. Keyed on the
              shape string, the old code never matched a split parent to its
@@ -382,7 +393,8 @@
        Locality is matched, so a rural count is divided by the rural
        population, and each year uses its OWN population. */
     function popIndFor(y) {
-      return y === '2017' ? 'POPULATION - 2017 / ALL SEXES'
+      return y === '1998' ? 'POPULATION - 1998'
+           : y === '2017' ? 'POPULATION - 2017 / ALL SEXES'
                           : 'POPULATION-2023 / ALL SEXES';
     }
 
@@ -402,7 +414,8 @@
 
        Both years' parts travel on each unit, because the national change is
        the change in the national rate, not the mean of 136 district changes. */
-    return Promise.all([normalisedYear('2017'), normalisedYear('2023')])
+    var pr = changeYears(year);
+    return Promise.all([normalisedYear(pr[0]), normalisedYear(pr[1])])
       .then(function (b) {
         var a = b[0], c2 = b[1], out = {};
         Object.keys(c2.values).forEach(function (k) {
@@ -695,11 +708,27 @@
      2023. */
   function yearsFor(i) {
     var yrs = list('years', i);
-    if (col('source', i) === 'census' && yrs.length === 2
-        && yrs[0] === '2017' && yrs[1] === '2023') {
-      return yrs.concat(['\u03942017-23']);
-    }
-    return yrs;
+    if (col('source', i) !== 'census') return yrs;
+    /* A change for each pair of consecutive censuses the series has. All
+       three panels sit on the 2023 frame, so each difference is like for
+       like; 1998 to 2023 is not offered, because the two steps already say
+       it and a third button would crowd the card. */
+    var d = [];
+    if (yrs.indexOf('1998') >= 0 && yrs.indexOf('2017') >= 0) d.push('\u03941998-2017');
+    if (yrs.indexOf('2017') >= 0 && yrs.indexOf('2023') >= 0) d.push('\u03942017-23');
+    return yrs.concat(d);
+  }
+  /* "Δ2017-23" -> ['2017', '2023']; "Δ1998-2017" -> ['1998', '2017'] */
+  function changeYears(y) {
+    var m = /^\u0394(\d{4})-(\d{2,4})$/.exec(y || '');
+    if (!m) return null;
+    return [m[1], m[2].length === 2 ? m[1].slice(0, 2) + m[2] : m[2]];
+  }
+  function changeLabel(y, short) {
+    var c = changeYears(y);
+    if (!c) return y;
+    return short ? 'Change ' + c[0].slice(2) + '\u2013' + c[1].slice(2)
+                 : 'Change ' + c[0] + '\u2013' + c[1];
   }
 
   /* Keep what the reader chose if this series has it; otherwise the series'
@@ -1018,7 +1047,7 @@
     if (IX.derived && col('derived', i) === 1) why.push('constructed by Data Darbar from the source (computed, estimated from survey microdata or aggregated from grids), not published by it');
     if (/^\u0394/.test(state.year || '')) why.push('the change is computed here from the two censuses');
     if (state.norm) why.push('the rate is computed here against the population');
-    if (state.weighted) why.push('combined areas are averaged here on 2017 population');
+    if (state.weighted) why.push('combined areas are averaged here on each unit\u2019s census population');
     if (why.length) {
       var tag = document.createElement('span');
       tag.className = 'mh-derived';
@@ -1131,8 +1160,9 @@
          exists in each the difference is meaningful and is offered. The
          curated pairs already ship a stored change; these 34 get a computed
          one, marked the same way. */
+      var nChange = yrs.filter(function (y) { return /^\u0394/.test(y); }).length;
       h += yrs.map(function (y) {
-        var lab = /^\u0394/.test(y) ? 'Change' : y;
+        var lab = /^\u0394/.test(y) ? (nChange > 1 ? changeLabel(y, true) : 'Change') : y;
         return '<button type="button" data-year="' + esc(y) + '" aria-pressed="'
              + (y === state.year) + '">' + esc(lab) + '</button>';
       }).join('');
@@ -1356,8 +1386,9 @@
       + (state.weighted
          ? '<div class="tot tot-note"><span class="tot-k">Combined</span><b>'
            + state.weighted + ' ' + esc(g.noun) + (state.weighted === 1 ? '' : 's')
-           + ' show a 2017 rate for units that merged or were redrawn, weighted by'
-           + ' each unit\u2019s 2017 population</b></div>'
+           + ' show a ' + (/^\d{4}$/.test(state.year || '') ? state.year + ' ' : '')
+           + 'rate for units that merged or were redrawn, weighted by each unit\u2019s '
+           + (/^\d{4}$/.test(state.year || '') ? state.year : 'census') + ' population</b></div>'
          : '')
       /* A hole in the map with nothing said about it reads as missing data.
          Where a footprint's units cannot all be weighted, the figure is not
@@ -1394,7 +1425,7 @@
      failed to load. Undated is a fact about the source and is said as one. */
   function yearLabel() {
     if (!state.year) return col('source', state.row) === 'census' ? '' : 'undated';
-    return /^\u0394/.test(state.year) ? 'Change 2017\u201323' : state.year;
+    return /^\u0394/.test(state.year) ? changeLabel(state.year) : state.year;
   }
 
   /* 241,499,431 reads as noise in a strip; 241.5m reads as a number. */

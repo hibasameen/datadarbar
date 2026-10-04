@@ -28,6 +28,13 @@ def _set(year, topic, *tables):
         TOPIC_OF_TABLE[(str(year), t)] = topic
 
 
+# ── 1998 ────────────────────────────────────────────────────────────────────
+# census_panel_1998: table 1 is population (PBS's restatement in the 2017
+# census), 'glance' the District at a Glance sheets. Only what attaches to a
+# 2017/2023 row reaches the map (build_place_index ATTACH_1998), so the topic
+# here only has to let the rows through.
+_set(1998, 'demographics', '1', 'glance')
+
 # ── 2017 ────────────────────────────────────────────────────────────────────
 _set(2017, 'demographics',
      '1',    # area, population, density, growth
