@@ -1,4 +1,52 @@
+# Data Darbar - crawling policy
+#
+# Search engines may index the pages. The data files the pages load
+# (/data/) are not for crawling, and AI-training and bulk crawlers are
+# not welcome anywhere on the site.
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: Applebot-Extended
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: meta-externalfetcher
+User-agent: FacebookBot
+User-agent: cohere-ai
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: AI2Bot
+User-agent: Ai2Bot-Dolma
+User-agent: YouBot
+User-agent: Timpibot
+User-agent: ImagesiftBot
+User-agent: omgili
+User-agent: omgilibot
+User-agent: img2dataset
+User-agent: DataForSeoBot
+User-agent: PetalBot
+User-agent: MistralAI-User
+User-agent: DuckAssistBot
+User-agent: Kangaroo Bot
+User-agent: PanguBot
+User-agent: Webzio-Extended
+User-agent: ICC-Crawler
+User-agent: SemrushBot-OCOB
+User-agent: VelenPublicWebCrawler
+Disallow: /
+
 User-agent: *
+Disallow: /data/
 Allow: /
 
 Sitemap: https://darbar.adaad.org/sitemap.xml
