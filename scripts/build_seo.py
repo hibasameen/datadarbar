@@ -353,8 +353,42 @@ def build():
     for path in sorted(set(paths)):
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))
-    (APP / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {ORIGIN}/sitemap.xml\n")
+    (APP / "robots.txt").write_text(robots_txt())
     print(f"Built {len(PROFILES)} district profiles, {n_tables} dataset pages and {len(set(paths))} sitemap entries.")
+
+
+# Crawlers that collect pages for AI training or bulk datasets, kept off the
+# whole site. A crawler that answers a person's question in the moment (a
+# "-User" agent) is listed too, because the request was to keep bots out of
+# the data, not to choose between them.
+AI_AND_BULK_CRAWLERS = [
+    "GPTBot", "OAI-SearchBot", "ChatGPT-User",
+    "ClaudeBot", "Claude-User", "Claude-SearchBot", "anthropic-ai",
+    "CCBot", "Google-Extended", "GoogleOther", "Applebot-Extended",
+    "PerplexityBot", "Perplexity-User", "Bytespider", "Amazonbot",
+    "meta-externalagent", "meta-externalfetcher", "FacebookBot",
+    "cohere-ai", "cohere-training-data-crawler", "Diffbot", "AI2Bot", "Ai2Bot-Dolma",
+    "YouBot", "Timpibot", "ImagesiftBot", "omgili", "omgilibot", "img2dataset",
+    "DataForSeoBot", "PetalBot", "MistralAI-User", "DuckAssistBot", "Kangaroo Bot",
+    "PanguBot", "Webzio-Extended", "ICC-Crawler", "SemrushBot-OCOB", "VelenPublicWebCrawler",
+]
+
+
+def robots_txt():
+    """The pages are for reading and for search engines; the data the pages
+    load is for the people using them. Every crawler is kept out of /data/,
+    and AI-training and bulk crawlers out of the whole site. robots.txt binds
+    only crawlers that honour it - enforcement against the rest needs a proxy
+    in front of GitHub Pages (see docs/bot-protection.md)."""
+    lines = ["# Data Darbar - crawling policy", "#",
+             "# Search engines may index the pages. The data files the pages load",
+             "# (/data/) are not for crawling, and AI-training and bulk crawlers are",
+             "# not welcome anywhere on the site.", ""]
+    for ua in AI_AND_BULK_CRAWLERS:
+        lines.append(f"User-agent: {ua}")
+    lines += ["Disallow: /", "", "User-agent: *", "Disallow: /data/", "Allow: /", "",
+              f"Sitemap: {ORIGIN}/sitemap.xml", ""]
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":
