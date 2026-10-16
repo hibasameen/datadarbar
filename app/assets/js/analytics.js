@@ -1,20 +1,25 @@
 /* Data Darbar — GoatCounter analytics (cookieless, no consent banner needed).
-   Self-contained: loads on every page next to nav.js / modals.js.
+   Self-contained: loads on every page next to shell.js (etl/apply_shell.py
+   puts it there; build_seo.py and build_catalogue.py on generated pages).
    Auto-counts a pageview on load; adds a few lightweight engagement events.
    GoatCounter skips localhost / file:// automatically, so local dev is not counted. */
 (function () {
   // Exclude local previews, staging and old hosts from production reporting.
   if (location.hostname !== 'darbar.adaad.org') return;
-  var ENDPOINT = 'https://datadarbar.goatcounter.com/count';
+  // Pageviews go through the first-party relay at s.adaad.org, which forwards
+  // them to GoatCounter's count API with the visitor's IP and User-Agent.
+  // Tracker blocklists match gc.zgo.at and goatcounter.com, so the counter
+  // script is served from here (assets/js/tally.js, a copy of count.js) and
+  // the beacon never leaves adaad.org. Relay source: Adaad/site/analytics-relay.
+  var ENDPOINT = 'https://s.adaad.org/v/d';
 
-  // Config object must exist before count.js loads.
+  // Config object must exist before the counter script loads.
   window.goatcounter = window.goatcounter || {};
+  window.goatcounter.endpoint = ENDPOINT;
 
-  // Load the official counter script (mirrors GoatCounter's recommended snippet).
   var s = document.createElement('script');
   s.async = true;
-  s.src = '//gc.zgo.at/count.js';
-  s.setAttribute('data-goatcounter', ENDPOINT);
+  s.src = '/assets/js/tally.js';
   (document.head || document.body).appendChild(s);
 
   // Which product page are we on? (index|map|trade|finance|poverty)

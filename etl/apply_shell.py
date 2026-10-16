@@ -262,6 +262,18 @@ def ensure_script(text):
                     + '<script src="assets/js/shell.js"></script>\n'
                     + text[m.start():])
             changed = True
+    # assets/js/analytics.js counts the page. The landing-page rebuild of
+    # 27 Sep 2026 dropped it from index.html, and places, state, about and
+    # methods never had it, so the dashboard saw district and dataset pages
+    # but not the front door. Every hand-written page gets it, in front of
+    # shell.js; generated pages get it from build_seo.py / build_catalogue.py.
+    if 'assets/js/analytics.js' not in text:
+        m = re.search(r'<script src="assets/js/shell\.js[^"]*"></script>', text)
+        if m:
+            text = (text[:m.start()]
+                    + '<script src="assets/js/analytics.js"></script>\n'
+                    + text[m.start():])
+            changed = True
     return text, changed
 
 
