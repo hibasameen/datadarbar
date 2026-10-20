@@ -338,8 +338,10 @@ PROVENANCE = {
         'sbp_handbook_series', 'sbp_observations', 'sbp_series_catalog',
         'sindh_crime_annual', 'sindh_fir_daily', 'trade_by_group', 'trade_hs8',
         'trade_monthly_totals', 'wdi_comparators']},
-    'crops_district_fy': ('published', 'Figures as PBS published them, less the 14 rows '
-                          'filed under Sujawal’s rice that repeat the Sindh total.', []),
+    'crops_district_fy': ('published', 'Figures as PBS published them, less 402 rows that '
+                          'are not figures: Sujawal’s rice, which repeats the Sindh total, '
+                          'and Balochistan’s Kinno and 2013-14 sugar beet, which double from '
+                          'one district to the next. Cotton is in bales, as published.', []),
     # ── the publisher's figures plus columns we constructed ──
     'budget_lines': ('mixed', 'What each printed column means is inferred from its position.',
                      ['col_label', 'is_own_year_be']),
