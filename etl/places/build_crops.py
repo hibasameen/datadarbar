@@ -1,7 +1,7 @@
 """Crops by district and fiscal year, from PBS's Agriculture Statistics.
 
 108 crops across 123 districts and 44 fiscal years back to 1981-82, with area,
-production and yield. 78,425 rows - which is why the values do not join the
+production and yield. 78,411 rows - which is why the values do not join the
 Places payload: three measures over that many rows would more than triple it,
 past the point where shipping beats querying. Crops follow the census pattern
 instead: a source-faithful table, and index rows that point at it. The picker
@@ -24,6 +24,16 @@ What the frame does and does not cover, checked rather than assumed:
   names rather than dropped, because dropping a sizeable crop silently is worse
   than carrying one nobody has named.
 
+  Sujawal's rice is the Sindh total. In every year it has, 2004-05 to 2022-23
+  (nine years before the district existed), it equals the sum of Sindh's other
+  districts to the third decimal, so the map drew Sujawal as 700,000-odd
+  hectares of rice and any Sindh or national sum counted the province twice.
+  Those rows are dropped, not kept with a flag: the map and the query console
+  read this table directly. A row goes only where it still equals the rest of
+  its province, so a genuine Sujawal figure in a later pull survives. A scan of
+  every crop found no other district carrying its province's total; Adaad's
+  crop audit of 19 Oct 2026 found the same.
+
 Usage:
   build_crops.py --src <parquet> --geo <districts_2023_geo.js>
                  --out-table <parquet> --out-index <parquet>
@@ -39,6 +49,8 @@ MEASURES = [
 ]
 UNNAMED = {'newCrop': 'Unnamed crop (portal id 124)',
            'crop2': 'Unnamed crop (portal id 125)'}
+# (district code, crop) pairs the portal files the provincial total under
+PROVINCE_TOTALS = [('152', 'Rice')]   # Sujawal
 
 
 def main():
@@ -58,15 +70,36 @@ def main():
                     [(f['properties']['code'], f['properties']['n'],
                       f['properties']['p']) for f in gj['features']])
 
+    con.execute(f"""CREATE TABLE src AS
+        SELECT *, lpad(CAST(dsid AS VARCHAR), 3, '0') AS code FROM '{a.src}'""")
+
+    # a listed row goes only where it equals the rest of its province, on
+    # either measure (Sujawal 2022-23 has production but no area)
+    keys = ', '.join(f"('{d}', '{c}')" for d, c in PROVINCE_TOTALS)
+    con.execute(f"""CREATE TABLE misfiled AS
+        WITH k(code, crop) AS (VALUES {keys}),
+        r AS (SELECT s.code, s.crop, s.fy, s.area_000ha AS a, s.production_000t AS p,
+                     sum(s.area_000ha) OVER w - coalesce(s.area_000ha, 0) AS rest_a,
+                     sum(s.production_000t) OVER w - coalesce(s.production_000t, 0) AS rest_p
+              FROM src s JOIN geo g ON g.code = s.code
+              WINDOW w AS (PARTITION BY s.crop, s.fy, g.prov))
+        SELECT r.code, r.crop, r.fy FROM r JOIN k USING (code, crop)
+        WHERE (r.a > 0 AND abs(r.a - r.rest_a) <= 0.001 * r.a)
+           OR (r.p > 0 AND abs(r.p - r.rest_p) <= 0.001 * r.p)""")
+    print(con.sql("""SELECT code, crop, count(*) AS rows_dropped,
+                            min(fy) AS first, max(fy) AS last
+                     FROM misfiled GROUP BY ALL""").df().to_string(index=False))
+
     ren = ', '.join(f"('{k}', '{v}')" for k, v in UNNAMED.items())
     con.execute(f"""CREATE TABLE crops_district_fy AS
         WITH ren(raw, nice) AS (VALUES {ren})
-        SELECT lpad(CAST(c.dsid AS VARCHAR), 3, '0') AS district_code,
+        SELECT c.code AS district_code,
                g.name AS district, g.prov AS province,
                c.crop_id, coalesce(ren.nice, c.crop) AS crop, c.fy,
                c.area_000ha, c.production_000t, c.yield_t_per_ha
-        FROM '{a.src}' c
-        JOIN geo g ON g.code = lpad(CAST(c.dsid AS VARCHAR), 3, '0')
+        FROM src c
+        JOIN geo g ON g.code = c.code
+        ANTI JOIN misfiled m ON m.code = c.code AND m.crop = c.crop AND m.fy = c.fy
         LEFT JOIN ren ON ren.raw = c.crop
         ORDER BY c.crop_id, c.fy, district_code""")
 

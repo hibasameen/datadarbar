@@ -22,7 +22,7 @@ What ships and what does not is decided by size, not by source:
                  range request when a series is chosen, which is how the census
                  map already works.
 
-  crop values    78,425 rows over three measures. Same treatment - the index
+  crop values    78,411 rows over three measures. Same treatment - the index
                  lists them, the values are read on demand.
 
 Interning matters more than it looks. The index's labels are built from a small

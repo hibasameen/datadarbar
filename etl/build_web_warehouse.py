@@ -2368,7 +2368,10 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than "
             "dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage "
             "varies by crop: the majors run from 1981\u201382, most vegetables and "
-            "fruit from 2008\u201309.",
+            "fruit from 2008\u201309. The portal files the Sindh rice total under "
+            "Sujawal in every year it has, 2004\u201305 to 2022\u201323; those 14 rows "
+            "are left out, so Sindh and national sums no longer count the province "
+            "twice.",
             {"district_code": "PBS 2023 district code, joining to geography_keys",
              "district": "district name as PBS\u2019s 2023 layer gives it",
              "province": "province or area",

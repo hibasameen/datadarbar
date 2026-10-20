@@ -1804,10 +1804,10 @@
   {
    "name": "crops_district_fy",
    "file": "crops_district_fy.parquet",
-   "bytes": 746807,
-   "rows": 78425,
+   "bytes": 746118,
+   "rows": 78411,
    "description": "Area, production and yield by crop, district and fiscal year, 1981–82 to 2024–25.",
-   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all — every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi’s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central’s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS’s portal and are carried as ‘Unnamed crop (portal id 124/125)’ rather than dropped — 125 is not small, at 85,000 hectares in 2024–25. Coverage varies by crop: the majors run from 1981–82, most vegetables and fruit from 2008–09.",
+   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all — every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi’s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central’s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS’s portal and are carried as ‘Unnamed crop (portal id 124/125)’ rather than dropped — 125 is not small, at 85,000 hectares in 2024–25. Coverage varies by crop: the majors run from 1981–82, most vegetables and fruit from 2008–09. The portal files the Sindh rice total under Sujawal in every year it has, 2004–05 to 2022–23; those 14 rows are left out, so Sindh and national sums no longer count the province twice.",
    "unit": "thousand hectares, thousand tonnes, tonnes per hectare",
    "source": "PBS Agriculture Statistics via the national accounts portal, pull of 2026-09-27",
    "columns": [
@@ -1874,7 +1874,7 @@
    "provenance": {
     "type": "published",
     "label": "As published",
-    "note": "",
+    "note": "Figures as PBS published them, less the 14 rows filed under Sujawal’s rice that repeat the Sindh total.",
     "derived_columns": []
    },
    "span": {
