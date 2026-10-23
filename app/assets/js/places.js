@@ -10,7 +10,7 @@
      census    17 MB across two Parquet panels, read by range request through
                DuckDB-WASM when a census series is picked. The engine is 6.3 MB,
                so it loads then and not before.
-     crops     78,425 rows, same treatment as census.
+     crops     78,023 rows, same treatment as census.
 
    Facets follow the design: locality and sex are chosen after an indicator, not
    searched through. The year is offered only where the indicator has more than

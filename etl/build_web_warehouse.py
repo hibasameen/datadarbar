@@ -2405,20 +2405,31 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             "crops_district_fy",
             "Area, production and yield by crop, district and fiscal year, "
             "1981\u201382 to 2024\u201325.",
-            "108 crops over 123 districts and 44 fiscal years. All 123 district "
-            "codes join the PBS 2023 layer exactly, but the frame is older than "
-            "that layer: 33 of the 156 districts Data Darbar draws have no crop "
+            "108 crops over 122 districts and 44 fiscal years. Every district "
+            "code joins the PBS 2023 layer exactly, but the frame is older than "
+            "that layer: 34 of the 156 districts Data Darbar draws have no crop "
             "rows at all \u2014 every district of Azad Jammu & Kashmir and "
             "Gilgit-Baltistan, which have their own agricultural authorities, six "
-            "of Karachi\u2019s seven, and the most recently created districts "
+            "of Karachi\u2019s seven, the most recently created districts "
             "(Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower "
-            "Kohistan, Keamari). Karachi appears once, under Karachi Central\u2019s "
+            "Kohistan, Keamari), and Sujawal, whose only rows were the Sindh rice "
+            "total (below). Karachi appears once, under Karachi Central\u2019s "
             "code, and is vestigial rather than city-wide: six crops and nothing "
             "at all in recent years. Two crops are unlabelled on PBS\u2019s portal "
             "and are carried as \u2018Unnamed crop (portal id 124/125)\u2019 rather than "
             "dropped \u2014 125 is not small, at 85,000 hectares in 2024\u201325. Coverage "
             "varies by crop: the majors run from 1981\u201382, most vegetables and "
-            "fruit from 2008\u201309.",
+            "fruit from 2008\u201309. Cotton production is in thousand bales of 170 kg "
+            "and its yield in bales per hectare, though the portal labels every crop "
+            "in tonnes: the rows sum to the official bales series. 402 rows the "
+            "portal publishes are left out because they are not figures. The Sindh "
+            "rice total is filed under Sujawal in every year it has, 2004\u201305 to "
+            "2022\u201323 (14 rows), so Sindh and national sums would count the "
+            "province twice. Balochistan\u2019s Kinno, 2010\u201311 to 2022\u201323, and "
+            "its sugar beet in 2013\u201314 under both crop ids (388 rows) double from "
+            "one district to the next in PBS\u2019s district order, reaching 80 million "
+            "thousand hectares in Gwadar: a running total dragged down a column, "
+            "with no value recoverable.",
             {"district_code": "PBS 2023 district code, joining to geography_keys",
              "district": "district name as PBS\u2019s 2023 layer gives it",
              "province": "province or area",
@@ -2426,8 +2437,10 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
              "crop": "crop name, or a placeholder where the portal gives none",
              "fy": "fiscal year, e.g. 2024-25",
              "area_000ha": "thousand hectares sown",
-             "production_000t": "thousand tonnes produced",
-             "yield_t_per_ha": "tonnes per hectare; production divided by area"},
+             "production_000t": "thousand tonnes produced; cotton in thousand "
+                                "bales of 170 kg",
+             "yield_t_per_ha": "tonnes per hectare, production divided by area; "
+                               "cotton in bales per hectare"},
             "PBS Agriculture Statistics via the national accounts portal, pull of "
             "2026-09-27",
             f"SELECT * FROM '{f.as_posix()}'",

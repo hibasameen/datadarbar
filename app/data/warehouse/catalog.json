@@ -1804,10 +1804,10 @@
   {
    "name": "crops_district_fy",
    "file": "crops_district_fy.parquet",
-   "bytes": 746807,
-   "rows": 78425,
+   "bytes": 743950,
+   "rows": 78023,
    "description": "Area, production and yield by crop, district and fiscal year, 1981–82 to 2024–25.",
-   "notes": "108 crops over 123 districts and 44 fiscal years. All 123 district codes join the PBS 2023 layer exactly, but the frame is older than that layer: 33 of the 156 districts Data Darbar draws have no crop rows at all — every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi’s seven, and the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari). Karachi appears once, under Karachi Central’s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS’s portal and are carried as ‘Unnamed crop (portal id 124/125)’ rather than dropped — 125 is not small, at 85,000 hectares in 2024–25. Coverage varies by crop: the majors run from 1981–82, most vegetables and fruit from 2008–09.",
+   "notes": "108 crops over 122 districts and 44 fiscal years. Every district code joins the PBS 2023 layer exactly, but the frame is older than that layer: 34 of the 156 districts Data Darbar draws have no crop rows at all — every district of Azad Jammu & Kashmir and Gilgit-Baltistan, which have their own agricultural authorities, six of Karachi’s seven, the most recently created districts (Chaman, Duki, Surab, Sohbatpur, Upper Chitral, Upper and Lower Kohistan, Keamari), and Sujawal, whose only rows were the Sindh rice total (below). Karachi appears once, under Karachi Central’s code, and is vestigial rather than city-wide: six crops and nothing at all in recent years. Two crops are unlabelled on PBS’s portal and are carried as ‘Unnamed crop (portal id 124/125)’ rather than dropped — 125 is not small, at 85,000 hectares in 2024–25. Coverage varies by crop: the majors run from 1981–82, most vegetables and fruit from 2008–09. Cotton production is in thousand bales of 170 kg and its yield in bales per hectare, though the portal labels every crop in tonnes: the rows sum to the official bales series. 402 rows the portal publishes are left out because they are not figures. The Sindh rice total is filed under Sujawal in every year it has, 2004–05 to 2022–23 (14 rows), so Sindh and national sums would count the province twice. Balochistan’s Kinno, 2010–11 to 2022–23, and its sugar beet in 2013–14 under both crop ids (388 rows) double from one district to the next in PBS’s district order, reaching 80 million thousand hectares in Gwadar: a running total dragged down a column, with no value recoverable.",
    "unit": "thousand hectares, thousand tonnes, tonnes per hectare",
    "source": "PBS Agriculture Statistics via the national accounts portal, pull of 2026-09-27",
    "columns": [
@@ -1849,12 +1849,12 @@
     {
      "name": "production_000t",
      "type": "DOUBLE",
-     "description": "thousand tonnes produced"
+     "description": "thousand tonnes produced; cotton in thousand bales of 170 kg"
     },
     {
      "name": "yield_t_per_ha",
      "type": "DOUBLE",
-     "description": "tonnes per hectare; production divided by area"
+     "description": "tonnes per hectare, production divided by area; cotton in bales per hectare"
     }
    ],
    "kind": "places",
@@ -1874,7 +1874,7 @@
    "provenance": {
     "type": "published",
     "label": "As published",
-    "note": "",
+    "note": "Figures as PBS published them, less 402 rows that are not figures: Sujawal’s rice, which repeats the Sindh total, and Balochistan’s Kinno and 2013-14 sugar beet, which double from one district to the next. Cotton is in bales, as published.",
     "derived_columns": []
    },
    "span": {
