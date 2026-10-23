@@ -21,7 +21,10 @@
   var BY_GROUP = {
     // Issue 4: heat in reds, rain and water in blues, land in greens
     climateTmean: ['#fdf0e6', '#b8360f'], climateTmax: ['#fdf0e6', '#a3290a'],
-    climateTmin: ['#fdf0e6', '#c2511f'], climateTanom: ['#2f6fb0', '#f7f2ea', '#b8360f'],
+    // One warm ramp for the anomaly, not a diverging one: the scale runs from
+    // the year's lowest value to its highest, not around zero, so a blue end
+    // would paint districts warmer than normal as if they had cooled.
+    climateTmin: ['#fdf0e6', '#c2511f'], climateTanom: ['#f7f2ea', '#b8360f'],
     heatHotDays: ['#fdf0e6', '#a3290a'], heatWarmNights: ['#f6ecf4', '#6b2464'],
     heatSpells: ['#fdf0e6', '#b8360f'], climateRain: ['#eaf2fa', '#1d4f8a'],
     pm25: ['#f4efe6', '#5b3a1e'], landCover: ['#eef5e6', '#2f5d14'],
