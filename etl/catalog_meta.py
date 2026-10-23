@@ -210,6 +210,27 @@ LICENCES = {
         summary='Published by a Pakistani public body without an open licence. Reproduced '
                 'here unchanged and with attribution; ask the publisher before commercial '
                 'reuse.'),
+    'cc-by-sa-4.0': dict(
+        name='CC BY-SA', reuse='share-alike',
+        url='https://creativecommons.org/licenses/by-sa/4.0/',
+        summary='UNOSAT\u2019s flood analyses, as HDX publishes them: reuse with attribution, '
+                'and anything made from them is shared under the same terms.'),
+    'jrc-open': dict(
+        name='JRC open data', reuse='open',
+        url='https://global-surface-water.appspot.com/download',
+        summary='EC Joint Research Centre / Google Global Surface Water: free use with '
+                'attribution (\u201cSource: EC JRC/Google\u201d).'),
+    'nasa-open': dict(
+        name='NASA open data', reuse='open',
+        url='https://www.earthdata.nasa.gov/engage/open-data-services-software-policies',
+        summary='NASA Earth science data are available without restriction; NASA asks for '
+                'acknowledgement of FIRMS, and Global Forest Watch, which serves this copy, '
+                'for its own credit line.'),
+    'public-domain': dict(
+        name='Public domain', reuse='open',
+        url='https://www.chc.ucsb.edu/data/chirps',
+        summary='CHIRPS rainfall, from the Climate Hazards Center at UC Santa Barbara, is in '
+                'the public domain; cite Funk et al. (2015).'),
 }
 
 # Table -> (licences, note). The first licence is the one that governs most of
@@ -450,6 +471,17 @@ PROVENANCE = {
         ('trade_reconciliation', 'A comparison of PBS’s totals computed by Data Darbar.'),
     ]},
 }
+
+# ── Issue 4 (climate, energy and resources) ─────────────────────────────────
+# Filed, licensed and sourced in etl/issue4/tables.py, the one list the
+# pipeline and the warehouse also read, so a table cannot be published there
+# without being described here.
+from issue4.tables import TABLES as _ISSUE4                      # noqa: E402
+for _t in _ISSUE4:
+    KIND[_t['name']] = _t['kind']
+    LICENCE[_t['name']] = (_t['licences'], _t['licence_note'])
+    _p = _t['provenance']
+    PROVENANCE[_t['name']] = (_p[0], _p[1], list(_p[2]) if len(_p) > 2 else [])
 
 PROVENANCE_LABEL = {'published': 'As published', 'mixed': 'Includes derived',
                     'derived': 'Derived'}

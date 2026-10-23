@@ -280,7 +280,11 @@ def census_table_titles(repo: Path) -> dict:
 
 
 def build(src: Path, district_only: bool = False, schools_only: bool = False,
-          health_only: bool = False) -> None:
+          health_only: bool = False, issue4_only: bool = False) -> None:
+    if issue4_only:
+        from issue4.register import update_warehouse as update_issue4
+        update_issue4(OUT, src)
+        return
     if health_only:
         from health_facilities.register_health import update_warehouse as update_health
         update_health(OUT)
@@ -2161,6 +2165,11 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "period_end": "end of the period covered"},
         "NDMA (National Disaster Management Authority) monsoon situation reports, September 2026, tables read off the PDFs; each row carries its report and page", "people, assets")
 
+    # ── Issue 4: climate, energy and resources (etl/issue4) ──────────────────
+    print("issue 4\u2026")
+    from issue4.register import register_tables as register_issue4
+    register_issue4(register, src)
+
     # ── the national series: Economy and State ──────────────────────────────
     print("national accounts, trade and tax\u2026")
     PULL = REPO.parent / "raw_data" / "pbs_insight_explorer"
@@ -2904,10 +2913,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
-    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health"],
+    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health", "issue4"],
                     help="rebuild only one table family into the existing warehouse")
     a = ap.parse_args()
     if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
     build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk",
-          health_only=a.only == "health")
+          health_only=a.only == "health", issue4_only=a.only == "issue4")

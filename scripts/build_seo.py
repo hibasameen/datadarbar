@@ -131,6 +131,9 @@ DATASET_NAMES = {
     "climate_events": "Pakistan flood, drought and cyclone alerts since 2001",
     "climate_impacts": "Pakistan monsoon deaths, injuries and damage, NDMA reports",
 }
+# Issue 4's tables carry their titles in the list that defines them.
+from issue4.tables import TABLES as _ISSUE4
+DATASET_NAMES.update({t["name"]: t["title"] for t in _ISSUE4})
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
     "state.html": ("Pakistan Federal Tax Collection & Public Money \u2014 Data Darbar", "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish."),

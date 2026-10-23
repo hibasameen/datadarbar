@@ -1541,6 +1541,334 @@
    ]
   },
   {
+   "name": "climate_district_annual",
+   "file": "climate_district_annual.parquet",
+   "bytes": 495326,
+   "rows": 12320,
+   "description": "Annual mean temperature (and mean daily maximum and minimum) and rainfall for 160 districts, 1950 to 2025, with 1981–2010 normals and anomalies.",
+   "notes": "Temperature is ERA5-Land averaged over every 0.1° cell in the district; rainfall is CHIRPS from 1981 (a true polygon mean) with ERA5 as a cross-check. The editor’s rule: rainfall from CHIRPS, temperature from ERA5-Land. Annual and June–September means weight each month by its days. Karachi South and Korangi use a 0.2° ring because the 0.1° grid is mostly sea. A year is kept only when every day is present, so 2026 is absent. District means of a reanalysis, not station readings; trends are safest from 1981.",
+   "unit": "°C; mm",
+   "source": "ERA5-Land (Copernicus C3S) via Open-Meteo; CHIRPS (UCSB CHC); district means by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "tmax_mean_c",
+     "type": "DOUBLE",
+     "description": "mean daily maximum, °C"
+    },
+    {
+     "name": "tmin_mean_c",
+     "type": "DOUBLE",
+     "description": "mean daily minimum, °C"
+    },
+    {
+     "name": "tmean_c",
+     "type": "DOUBLE",
+     "description": "annual mean temperature, °C"
+    },
+    {
+     "name": "precip_mm_era5",
+     "type": "DOUBLE",
+     "description": "annual rainfall, ERA5, mm (cross-check)"
+    },
+    {
+     "name": "precip_mm_chirps",
+     "type": "DOUBLE",
+     "description": "annual rainfall, CHIRPS, mm (from 1981)"
+    },
+    {
+     "name": "jjas_precip_mm_era5",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "jjas_precip_mm_chirps",
+     "type": "DOUBLE",
+     "description": "June–September rainfall, CHIRPS, mm"
+    },
+    {
+     "name": "jjas_tmean_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_tmax_mean_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_tmin_mean_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_tmean_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_precip_mm_era5",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_precip_mm_chirps",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_jjas_precip_mm_era5",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_jjas_precip_mm_chirps",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "normal_jjas_tmean_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tmax_mean_anom_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tmin_mean_anom_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tmean_anom_c",
+     "type": "DOUBLE",
+     "description": "difference from the 1981–2010 normal, °C"
+    },
+    {
+     "name": "jjas_tmean_anom_c",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "precip_mm_era5_anom",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "precip_mm_era5_anom_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "precip_mm_chirps_anom",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "precip_mm_chirps_anom_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "jjas_precip_mm_era5_anom",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "jjas_precip_mm_era5_anom_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "jjas_precip_mm_chirps_anom",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "jjas_precip_mm_chirps_anom_pct",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "n_points_era5",
+     "type": "BIGINT",
+     "description": "ERA5-Land cells averaged"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Temperature: ERA5-Land, Copernicus C3S, via Open-Meteo (CC BY 4.0). Rainfall: CHIRPS, UCSB Climate Hazards Center (public domain).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "public-domain",
+      "name": "Public domain",
+      "url": "https://www.chc.ucsb.edu/data/chirps",
+      "summary": "CHIRPS rainfall, from the Climate Hazards Center at UC Santa Barbara, is in the public domain; cite Funk et al. (2015)."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "District means of gridded reanalysis and satellite rainfall, computed by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "1950",
+    "to": "2026"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "climate_district_monthly",
+   "file": "climate_district_monthly.parquet",
+   "bytes": 1218390,
+   "rows": 147360,
+   "description": "Monthly temperature and rainfall for 160 districts, January 1950 to September 2026.",
+   "notes": "The monthly series behind climate_district_annual, on the same sources and the same rule: a month is kept only when every day is present.",
+   "unit": "°C; mm",
+   "source": "ERA5-Land (Copernicus C3S) via Open-Meteo; CHIRPS (UCSB CHC); district means by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "BIGINT",
+     "description": "calendar month, 1–12"
+    },
+    {
+     "name": "tmax_mean_c",
+     "type": "DOUBLE",
+     "description": "mean daily maximum, °C"
+    },
+    {
+     "name": "tmin_mean_c",
+     "type": "DOUBLE",
+     "description": "mean daily minimum, °C"
+    },
+    {
+     "name": "tmean_c",
+     "type": "DOUBLE",
+     "description": "monthly mean temperature, °C"
+    },
+    {
+     "name": "precip_mm_era5",
+     "type": "DOUBLE",
+     "description": "rainfall, ERA5, mm"
+    },
+    {
+     "name": "precip_mm_chirps",
+     "type": "DOUBLE",
+     "description": "rainfall, CHIRPS, mm (from 1981)"
+    },
+    {
+     "name": "n_points_era5",
+     "type": "BIGINT",
+     "description": "ERA5-Land cells averaged"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "As climate_district_annual.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "public-domain",
+      "name": "Public domain",
+      "url": "https://www.chc.ucsb.edu/data/chirps",
+      "summary": "CHIRPS rainfall, from the Climate Hazards Center at UC Santa Barbara, is in the public domain; cite Funk et al. (2015)."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "District means of gridded reanalysis and satellite rainfall, computed by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "1950",
+    "to": "2026"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "climate_events",
    "file": "climate_events.parquet",
    "bytes": 7042,
@@ -1800,6 +2128,264 @@
     "to": "2026-06-26"
    },
    "keys": []
+  },
+  {
+   "name": "crop_prices_policy",
+   "file": "crop_prices_policy.parquet",
+   "bytes": 8546,
+   "rows": 368,
+   "description": "Government procurement, support, intervention and indicative prices, 2004-05 to 2024-25.",
+   "notes": "Nominal rupees per 40 kg. Every 2024-25 policy cell is a dash in the source, so the latest prices are for 2023-24.",
+   "unit": "Rs per 40 kg",
+   "source": "MNFSR, Agricultural Statistics of Pakistan 2024-25, tables 142–144; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "table",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fiscal_year_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_start_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "period_end_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "price_column",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "series_label",
+     "type": "VARCHAR",
+     "description": "which price"
+    },
+    {
+     "name": "commodity_form",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "variety",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "geography",
+     "type": "VARCHAR",
+     "description": "where it applies"
+    },
+    {
+     "name": "price_type",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "price_basis",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "price_pkr_per_40kg",
+     "type": "DOUBLE",
+     "description": "rupees per 40 kg, nominal"
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "cell_marker",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "row_marker",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "review_flags",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "source_url",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "economy",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Ministry of National Food Security and Research, Agricultural Statistics of Pakistan 2024-25.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "As printed, footnoted exceptions kept.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2004-05",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "crop_prices_wholesale",
+   "file": "crop_prices_wholesale.parquet",
+   "bytes": 12111,
+   "rows": 5400,
+   "description": "Monthly wholesale prices of wheat, Basmati and Irri-6 rice and maize in up to seven markets, July 2006 to June 2025.",
+   "notes": "Nominal rupees per 40 kg as printed; no inflation adjustment. 1,187 of 5,400 monthly slots are dashes in the source and stay empty.",
+   "unit": "Rs per 40 kg",
+   "source": "MNFSR, Agricultural Statistics of Pakistan 2024-25, tables 145–148; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "table",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "crop",
+     "type": "VARCHAR",
+     "description": "crop"
+    },
+    {
+     "name": "variety",
+     "type": "VARCHAR",
+     "description": "variety"
+    },
+    {
+     "name": "market",
+     "type": "VARCHAR",
+     "description": "market"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fiscal_year_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "date",
+     "type": "DATE",
+     "description": "first day of the month"
+    },
+    {
+     "name": "calendar_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "calendar_month",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "month",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "month_in_fiscal_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "price_pkr_per_40kg",
+     "type": "DOUBLE",
+     "description": "wholesale price, rupees per 40 kg, nominal"
+    },
+    {
+     "name": "value_status",
+     "type": "VARCHAR",
+     "description": "reported, or a gap in the source"
+    },
+    {
+     "name": "review_flags",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "BIGINT",
+     "description": ""
+    }
+   ],
+   "kind": "economy",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Ministry of National Food Security and Research, Agricultural Statistics of Pakistan 2024-25.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "As printed; source dashes kept as gaps.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2006-07",
+    "to": "2024-25"
+   },
+   "keys": [
+    "province"
+   ]
   },
   {
    "name": "crops_district_fy",
@@ -2392,6 +2978,106 @@
    ]
   },
   {
+   "name": "district_disco_crosswalk",
+   "file": "district_disco_crosswalk.parquet",
+   "bytes": 5533,
+   "rows": 160,
+   "description": "The electricity distribution company serving most of each district, with Census 2023 households.",
+   "notes": "One district, one company: districts with a known minority served by another company name it in split_with. Five rows are medium confidence (Naushahro Feroze, Dadu, Shaheed Benazirabad, Lasbela, Upper Chitral). AJK and GB are AJK-ED and GB-WPD, outside NEPRA’s tables. Do not paint a company’s figure onto its districts as if each district had it.",
+   "unit": "households",
+   "source": "Adaad, from NEPRA distribution licences; households from PBS Census 2023 Table 22",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company",
+     "derived": true
+    },
+    {
+     "name": "confidence",
+     "type": "VARCHAR",
+     "description": "high or medium",
+     "derived": true
+    },
+    {
+     "name": "split_with",
+     "type": "VARCHAR",
+     "description": "another company serving part of the district",
+     "derived": true
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "households",
+     "type": "DOUBLE",
+     "description": "households, Census 2023"
+    },
+    {
+     "name": "light_electricity",
+     "type": "DOUBLE",
+     "description": "households lighting by electricity"
+    },
+    {
+     "name": "light_solar_panel",
+     "type": "DOUBLE",
+     "description": "households lighting by solar panel"
+    }
+   ],
+   "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "The assignment is Adaad’s; household counts are Census 2023 Table 22 (PBS).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     },
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "District-to-company assignment by Adaad; census households as PBS published.",
+    "derived_columns": [
+     "disco",
+     "confidence",
+     "split_with"
+    ]
+   },
+   "keys": [
+    "district_code",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
    "bytes": 167488,
@@ -2505,6 +3191,194 @@
    ]
   },
   {
+   "name": "emissions_national_sector",
+   "file": "emissions_national_sector.parquet",
+   "bytes": 7256,
+   "rows": 110,
+   "description": "Greenhouse gas emissions by sector, FY2015-16 to FY2024-25, in CO2-equivalent on two warming metrics.",
+   "notes": "A research inventory, not Pakistan’s official submission. Agriculture is half of 445 Mt CO2e in FY2023-24 under the reference configuration. AR5 and AR6 are two sets of global-warming potentials; use one at a time.",
+   "unit": "Mt CO2e",
+   "source": "PakEmis (Pakistan Air Quality Initiative), release 1.0.0rc68",
+   "columns": [
+    {
+     "name": "row_kind",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_label",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "fiscal_end_year",
+     "type": "BIGINT",
+     "description": "year the fiscal year ends"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "sector"
+    },
+    {
+     "name": "sector_year_key",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "year_convention",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "co2e_Mt_AR5",
+     "type": "DOUBLE",
+     "description": "Mt CO2e, AR5 warming potentials"
+    },
+    {
+     "name": "co2e_Mt_AR6",
+     "type": "DOUBLE",
+     "description": "Mt CO2e, AR6 warming potentials"
+    },
+    {
+     "name": "activity_basis",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "held_constant",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PakEmis release 1.0.0rc68 (data CC BY 4.0); ODbL components excluded.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "PakEmis’s national series as released.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "period_start",
+    "from": "2015-07-01",
+    "to": "2024-07-01"
+   },
+   "keys": []
+  },
+  {
+   "name": "emissions_province_year",
+   "file": "emissions_province_year.parquet",
+   "bytes": 131149,
+   "rows": 8644,
+   "description": "Emissions by province, sector and gas, FY2015-16 to FY2024-25.",
+   "notes": "Three spatial views: physical (where emitted), origin and accounting. Use one at a time; they answer different questions and do not add.",
+   "unit": "Gg; Mt CO2e",
+   "source": "PakEmis (Pakistan Air Quality Initiative), release 1.0.0rc68",
+   "columns": [
+    {
+     "name": "period_id",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "source_stream_id",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "module",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "reporting_sector",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "sub_category",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "gas",
+     "type": "VARCHAR",
+     "description": "gas"
+    },
+    {
+     "name": "spatial_view",
+     "type": "VARCHAR",
+     "description": "physical, origin or accounting"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "emissions_Gg",
+     "type": "DOUBLE",
+     "description": "gigagrams of the gas"
+    },
+    {
+     "name": "co2e_Mt_AR5",
+     "type": "DOUBLE",
+     "description": "Mt CO2e, AR5"
+    }
+   ],
+   "kind": "economy",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PakEmis release 1.0.0rc68.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "PakEmis’s province tables as released.",
+    "derived_columns": []
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
    "name": "fbr_tax_collection",
    "file": "fbr_tax_collection.parquet",
    "bytes": 2871,
@@ -2574,6 +3448,109 @@
     "column": "fy",
     "from": "1991-92",
     "to": "2023-24"
+   },
+   "keys": []
+  },
+  {
+   "name": "feeder_outages_disco_fy",
+   "file": "feeder_outages_disco_fy.parquet",
+   "bytes": 30898,
+   "rows": 5277,
+   "description": "Planned and forced feeder trippings and outage minutes by voltage, by distribution company, FY2010-11 to FY2024-25.",
+   "notes": "Trippings and minutes by feeder voltage, not a load-shedding series: there is no denominator and no definition of scheduled shedding. Missing FY2011-12 to FY2013-14 and FY2018-19 (scanned reports). GEPCO’s FY2010-11 11 kV row is implausible. No grand-total row in any year.",
+   "unit": "trippings; minutes; hours",
+   "source": "NEPRA State of Industry Reports; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company, K-Electric spelled as the State page spells it; other names as NEPRA prints them, TOTAL rows being NEPRA’s own totals"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, July to June, e.g. 2024-25"
+    },
+    {
+     "name": "outage_type",
+     "type": "VARCHAR",
+     "description": "planned, forced or total"
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "voltage",
+     "type": "VARCHAR",
+     "description": "feeder voltage"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "value"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "unit"
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "report_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "table_no",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "page",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "relabelled",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA, State of Industry Reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "NEPRA’s tables; DISCO names normalised.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fy",
+    "from": "2010-11",
+    "to": "2024-25"
    },
    "keys": []
   },
@@ -2665,6 +3642,1097 @@
     "derived_columns": []
    },
    "keys": []
+  },
+  {
+   "name": "fires_district_month",
+   "file": "fires_district_month.parquet",
+   "bytes": 195774,
+   "rows": 28480,
+   "description": "VIIRS active-fire detections by district and month, January 2012 to October 2026.",
+   "notes": "Detections, not fires or emissions: one burning field can give several. Nominal and high confidence in n_detections, all in n_detections_all. Global Forest Watch’s copy misses 82 days, the whole of 27 July–23 August 2022 among them; days_missing_in_feed says how many fall in each month, so treat those months, and 2024–25, as floors.",
+   "unit": "detections",
+   "source": "NASA FIRMS VIIRS via Global Forest Watch; district counts by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "BIGINT",
+     "description": "calendar month"
+    },
+    {
+     "name": "sensor",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "n_detections",
+     "type": "BIGINT",
+     "description": "nominal and high-confidence detections"
+    },
+    {
+     "name": "n_detections_all",
+     "type": "BIGINT",
+     "description": "all detections"
+    },
+    {
+     "name": "n_day",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "n_night",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "sum_frp_mw",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "sum_frp_mw_all",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "days_missing_in_feed",
+     "type": "BIGINT",
+     "description": "days in the month absent from the feed"
+    },
+    {
+     "name": "partial_month",
+     "type": "BIGINT",
+     "description": "1 for months the series only partly covers"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "NASA FIRMS VIIRS 375 m, via Global Forest Watch; credit both.",
+    "terms": [
+     {
+      "key": "nasa-open",
+      "name": "NASA open data",
+      "url": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies",
+      "summary": "NASA Earth science data are available without restriction; NASA asks for acknowledgement of FIRMS, and Global Forest Watch, which serves this copy, for its own credit line."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Detections assigned to districts and counted by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "2012",
+    "to": "2026"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "fires_district_season",
+   "file": "fires_district_season.parquet",
+   "bytes": 31942,
+   "rows": 2400,
+   "description": "VIIRS detections in the rice-residue season (October–November) and the wheat season (April–May), by district and year.",
+   "notes": "Punjab is 70–89 per cent of October–November detections. The incomplete flags mark seasons with days missing from the feed; those are floors.",
+   "unit": "detections",
+   "source": "NASA FIRMS VIIRS via Global Forest Watch; district counts by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "sensor",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "rice_oct_nov_n",
+     "type": "BIGINT",
+     "description": "October–November detections"
+    },
+    {
+     "name": "rice_oct_nov_n_all",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "rice_oct_nov_frp_mw",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "rice_incomplete",
+     "type": "BIGINT",
+     "description": "1 where the season has days missing"
+    },
+    {
+     "name": "rice_days_missing",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "wheat_apr_may_n",
+     "type": "BIGINT",
+     "description": "April–May detections"
+    },
+    {
+     "name": "wheat_apr_may_n_all",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "wheat_apr_may_frp_mw",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wheat_incomplete",
+     "type": "BIGINT",
+     "description": "1 where the season has days missing"
+    },
+    {
+     "name": "wheat_days_missing",
+     "type": "BIGINT",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "NASA FIRMS VIIRS 375 m, via Global Forest Watch.",
+    "terms": [
+     {
+      "key": "nasa-open",
+      "name": "NASA open data",
+      "url": "https://www.earthdata.nasa.gov/engage/open-data-services-software-policies",
+      "summary": "NASA Earth science data are available without restriction; NASA asks for acknowledgement of FIRMS, and Global Forest Watch, which serves this copy, for its own credit line."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Detections assigned to districts and counted by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "2012",
+    "to": "2026"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "flood2022_district",
+   "file": "flood2022_district.parquet",
+   "bytes": 18246,
+   "rows": 160,
+   "description": "Peak flooded area and population exposed, and the number of weekly windows a district was at least 5 per cent under water, 25 August 2022 to 15 January 2023.",
+   "notes": "From UNOSAT’s seven-day NOAA-20 composites, 11 windows on one frame. The windows are not consecutive: nothing was observed 22–25 September, 18 October–13 November or 21 November–24 December 2022, so say “in every observed window”. Satellite detection under cloud cover is incomplete; low-coverage weeks are counted. Preliminary analyses, not field-validated. The rows are COD’s 2022 districts, not the 2023 frame: Keamari has no row (its area is in Karachi South and West), and Lehri (PK218), since split between Kachhi and Sibi, has a row but no district_code.",
+   "unit": "km²; people; weeks",
+   "source": "UNOSAT Pakistan 2022 flood products (HDX); persistence by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "cod_adm2_name",
+     "type": "VARCHAR",
+     "description": "district name as COD spells it"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "district_area_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "district_population",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "n_weeks",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "n_weeks_low_coverage",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "n_weeks_blank_in_source",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "peak_flooded_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "peak_week",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "peak_coverage",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "peak_share_of_district_area",
+     "type": "DOUBLE",
+     "description": "largest weekly share of the district under water"
+    },
+    {
+     "name": "peak_population_exposed",
+     "type": "DOUBLE",
+     "description": "largest weekly population in flooded cells (WorldPop 2020)"
+    },
+    {
+     "name": "peak_population_week",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "weeks_at_or_above_5pct",
+     "type": "BIGINT",
+     "description": "observed weeks with 5 per cent or more of the district flooded"
+    },
+    {
+     "name": "first_week_5pct",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "last_week_5pct",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "flooded_km2_first_week",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "flooded_km2_last_week",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "population_exposed_last_week",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "share_remaining_mid_jan",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "share-alike",
+    "label": "Share-alike",
+    "note": "UNOSAT analysis, published on HDX under CC BY-SA; share-alike carries to this table. “Analysis: United Nations Satellite Centre (UNOSAT)”; contains modified Copernicus Sentinel data [2022]; NOAA/Suomi NPP.",
+    "terms": [
+     {
+      "key": "cc-by-sa-4.0",
+      "name": "CC BY-SA",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "summary": "UNOSAT’s flood analyses, as HDX publishes them: reuse with attribution, and anything made from them is shared under the same terms."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Persistence and peaks computed by Adaad from UNOSAT’s weekly flood extents.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "flood2022_weekly",
+   "file": "flood2022_weekly.parquet",
+   "bytes": 48244,
+   "rows": 1760,
+   "description": "Flooded area, analysed area and population exposed by district for each of 11 seven-day windows, 25 August 2022 to 15 January 2023.",
+   "notes": "One product per window, one frame. coverage is the share of the district the satellite saw cloud-free; low_coverage flags weeks under half. 22 source cells were blank and are counted as zero, flagged in flooded_km2_blank_in_source. On COD’s 2022 districts, as flood2022_district.",
+   "unit": "km²; people",
+   "source": "UNOSAT Pakistan 2022 flood products (HDX); matched to districts by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "product_id",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "period_start",
+     "type": "DATE",
+     "description": "first day of the window"
+    },
+    {
+     "name": "period_end",
+     "type": "DATE",
+     "description": "last day"
+    },
+    {
+     "name": "week",
+     "type": "VARCHAR",
+     "description": "the seven-day window"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "cod_adm2_name",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "district_area_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "district_population",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "flooded_km2",
+     "type": "DOUBLE",
+     "description": "flooded area, km²"
+    },
+    {
+     "name": "flooded_km2_blank_in_source",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "analysed_km2",
+     "type": "DOUBLE",
+     "description": "area seen cloud-free, km²"
+    },
+    {
+     "name": "coverage",
+     "type": "DOUBLE",
+     "description": "share of the district analysed"
+    },
+    {
+     "name": "low_coverage",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "share_of_analysed_area",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "share_of_district_area",
+     "type": "DOUBLE",
+     "description": "flooded share of the whole district"
+    },
+    {
+     "name": "population_exposed",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "share-alike",
+    "label": "Share-alike",
+    "note": "UNOSAT analysis, CC BY-SA; share-alike carries to this table.",
+    "terms": [
+     {
+      "key": "cc-by-sa-4.0",
+      "name": "CC BY-SA",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "summary": "UNOSAT’s flood analyses, as HDX publishes them: reuse with attribution, and anything made from them is shared under the same terms."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "UNOSAT extents matched to districts by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "period_start",
+    "from": "2022-08-25",
+    "to": "2023-01-09"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "forest_extent_district",
+   "file": "forest_extent_district.parquet",
+   "bytes": 18904,
+   "rows": 320,
+   "description": "Tree cover in 2000 and 2010, gain 2000–2020 and loss 2001–2025, by district, at 10 and 30 per cent canopy.",
+   "notes": "With Gilgit-Baltistan and Azad Kashmir, 981,653 ha at 30 per cent canopy in 2000, 1.12 per cent of land. Tree cover 2010 is a separate product, not 2000 minus loss.",
+   "unit": "hectares",
+   "source": "Global Forest Watch (Hansen et al., UMD); district queries by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "district name on the frame"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "threshold",
+     "type": "BIGINT",
+     "description": "canopy threshold, per cent"
+    },
+    {
+     "name": "frame_area_sqkm",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "gfw_area_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "gfw_area_vs_frame",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tc2000_ha",
+     "type": "DOUBLE",
+     "description": "tree cover in 2000, ha"
+    },
+    {
+     "name": "tc2010_ha",
+     "type": "DOUBLE",
+     "description": "tree cover in 2010, ha"
+    },
+    {
+     "name": "tc2000_pct_of_area",
+     "type": "DOUBLE",
+     "description": "tree cover 2000, per cent of district area"
+    },
+    {
+     "name": "gain_2000_2020_ha",
+     "type": "DOUBLE",
+     "description": "tree cover gain 2000–2020, ha"
+    },
+    {
+     "name": "loss_ha_2001_2025",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_fire_ha_2001_2025",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "emissions_mg_co2e_2001_2025",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Hansen/UMD/Google/USGS/NASA tree cover; via Global Forest Watch.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Raster queries on the district polygons, run by Adaad.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "forest_loss_district_year",
+   "file": "forest_loss_district_year.parquet",
+   "bytes": 63043,
+   "rows": 8000,
+   "description": "Hectares of tree cover lost by district and year, 2001–2025, at 10 and 30 per cent canopy, with the driver of loss and the share associated with fire.",
+   "notes": "Tree cover is 1 per cent of Pakistan’s land, so these are small numbers: under 200 hectares a year nationally since 2013 at 30 per cent canopy. Use one threshold at a time; never add them. Loss is not net change: gain is separate and tree cover 2010 is a different product.",
+   "unit": "hectares; Mg CO2e",
+   "source": "Global Forest Watch (Hansen et al., UMD; WRI drivers); district queries by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "district name on the frame"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "threshold",
+     "type": "BIGINT",
+     "description": "canopy threshold, per cent (10 or 30)"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "loss_ha",
+     "type": "DOUBLE",
+     "description": "tree cover lost, ha"
+    },
+    {
+     "name": "loss_fire_ha",
+     "type": "DOUBLE",
+     "description": "of which associated with fire, ha"
+    },
+    {
+     "name": "emissions_mg_co2e",
+     "type": "DOUBLE",
+     "description": "gross emissions, Mg CO2e"
+    },
+    {
+     "name": "loss_permanent_agriculture_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_hard_commodities_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_shifting_cultivation_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_logging_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_wildfire_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_settlements_infrastructure_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_other_natural_disturbances_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "loss_unknown_ha",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Hansen/UMD/Google/USGS/NASA tree cover loss; WRI drivers; via Global Forest Watch.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Raster queries on the district polygons, run by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "2001",
+    "to": "2025"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "gas_consumption_province",
+   "file": "gas_consumption_province.parquet",
+   "bytes": 2186,
+   "rows": 46,
+   "description": "Gas consumed by province, FY2018-19 to FY2024-25.",
+   "notes": "The basis changes between editions (utility systems only, or with fertilizer and power plants fed from fields): Balochistan’s FY2022-23 is 115 or 408 MMCFD depending on the edition. Compare within one basis only.",
+   "unit": "MMCFD",
+   "source": "OGRA State of the Regulated Petroleum Industry; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "report",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "table",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "basis",
+     "type": "VARCHAR",
+     "description": "what the table covers"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "consuming province"
+    },
+    {
+     "name": "consumption_mmcfd",
+     "type": "DOUBLE",
+     "description": "million cubic feet a day"
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "OGRA, State of the Regulated Petroleum Industry.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "OGRA’s province tables as printed.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2018-19",
+    "to": "2024-25"
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
+   "name": "gas_consumption_sector",
+   "file": "gas_consumption_sector.parquet",
+   "bytes": 2386,
+   "rows": 49,
+   "description": "Gas consumed by sector and system for four fiscal years.",
+   "notes": "As printed. Sub-total and grand-total rows are OGRA’s own; do not add them to the sectors.",
+   "unit": "MMCFD",
+   "source": "OGRA State of the Regulated Petroleum Industry; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "report",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "table",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "sector",
+     "type": "VARCHAR",
+     "description": "consuming sector"
+    },
+    {
+     "name": "sngpl_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ssgcl_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "independent_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "total_mmcfd",
+     "type": "DOUBLE",
+     "description": "all systems, MMCFD"
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "OGRA, State of the Regulated Petroleum Industry.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "OGRA’s sector tables as printed.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2019-20",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "gas_supply_field",
+   "file": "gas_supply_field.parquet",
+   "bytes": 5747,
+   "rows": 766,
+   "description": "Gas supplied by each field to each system, FY2018-19 to FY2024-25.",
+   "notes": "As OGRA printed it, report by report. Use gas_supply_province for province totals.",
+   "unit": "MMCFD",
+   "source": "OGRA State of the Regulated Petroleum Industry; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "report",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "table",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "system",
+     "type": "VARCHAR",
+     "description": "utility or independent system"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province the field lies in"
+    },
+    {
+     "name": "field",
+     "type": "VARCHAR",
+     "description": "gas field"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "mmcfd",
+     "type": "DOUBLE",
+     "description": "million cubic feet a day"
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "OGRA, State of the Regulated Petroleum Industry.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "OGRA’s field tables as printed.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2018-19",
+    "to": "2024-25"
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
+   "name": "gas_supply_province",
+   "file": "gas_supply_province.parquet",
+   "bytes": 2591,
+   "rows": 35,
+   "description": "Indigenous natural gas supply by producing province, FY2018-19 to FY2024-25.",
+   "notes": "Field supplies summed to the province the field lies in; they reconcile to OGRA’s printed subtotals within 1.1 MMCFD. Sindh is about two thirds every year. Qadirpur LPL/EPQL is listed twice in FY21–23; the double listing is a column of its own.",
+   "unit": "MMCFD",
+   "source": "OGRA State of the Regulated Petroleum Industry; compiled by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "producing province"
+    },
+    {
+     "name": "supply_mmcfd",
+     "type": "DOUBLE",
+     "description": "gas supplied, million cubic feet a day",
+     "derived": true
+    },
+    {
+     "name": "share_of_indigenous_supply_pct",
+     "type": "DOUBLE",
+     "description": "share of all indigenous supply, per cent",
+     "derived": true
+    },
+    {
+     "name": "utility_systems_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "independent_systems_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "qadirpur_lpl_epql_listed_twice_mmcfd",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "source_table",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "OGRA, State of the Regulated Petroleum Industry.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Field supply as OGRA printed it, summed to provinces by Adaad.",
+    "derived_columns": [
+     "supply_mmcfd",
+     "share_of_indigenous_supply_pct"
+    ]
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2018-19",
+    "to": "2024-25"
+   },
+   "keys": [
+    "province"
+   ]
   },
   {
    "name": "gdp_growth",
@@ -2884,6 +4952,154 @@
     "derived_columns": []
    },
    "keys": []
+  },
+  {
+   "name": "grassland_district_year",
+   "file": "grassland_district_year.parquet",
+   "bytes": 136356,
+   "rows": 4000,
+   "description": "Cultivated and natural grassland and open shrubland by district, 2000–2024.",
+   "notes": "56.5 per cent of Pakistan (89 per cent of Balochistan) is never modelled and is counted as not_modelled_km2, so grassland is a floor. Use grassland_incl_shrub for rangeland; the class split between versions is not stable enough to quote.",
+   "unit": "km²; share",
+   "source": "Global Pasture Watch GGC-30m v2-beta; district statistics by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "cultivated_grassland_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "natural_grassland_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "open_shrubland_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "grassland_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "grassland_incl_shrub_km2",
+     "type": "DOUBLE",
+     "description": "grassland and open shrubland, km²"
+    },
+    {
+     "name": "other_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "not_modelled_km2",
+     "type": "DOUBLE",
+     "description": "area the model never predicts, km²"
+    },
+    {
+     "name": "district_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "pixel_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "pixel_to_frame_ratio",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cultivated_grassland_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "natural_grassland_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "open_shrubland_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "grassland_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "grassland_incl_shrub_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "not_modelled_share",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Global Pasture Watch GGC-30m v2-beta (Land & Carbon Lab / OpenGeoHub).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Zonal statistics of the Global Pasture Watch rasters, computed by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "2000",
+    "to": "2024"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
   },
   {
    "name": "gva_by_activity_annual",
@@ -3657,6 +5873,139 @@
    ]
   },
   {
+   "name": "heat_district_annual",
+   "file": "heat_district_annual.parquet",
+   "bytes": 193782,
+   "rows": 12160,
+   "description": "Hot days, warm nights, warm spells and the hottest day and night, by district and year, 1950 to 2025.",
+   "notes": "Computed from the district’s mean daily maximum and minimum, so a district reading of 40°C is an average over its cells, not a station or a person’s exposure. Percentile indices (TX90p, TN90p, warm-spell days) use a 1981–2010 base; use trends from 1981, because the reanalysis is less constrained before 1979. Days of 40°C are flat since 1981; warm nights and warm spells are not. No humidity: these are temperature alone.",
+   "unit": "days; °C",
+   "source": "ERA5-Land (Copernicus C3S) via Open-Meteo; indices by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "days_tmax_ge40",
+     "type": "BIGINT",
+     "description": "days with a district-mean maximum of 40°C or more"
+    },
+    {
+     "name": "days_tmax_ge45",
+     "type": "BIGINT",
+     "description": "days of 45°C or more"
+    },
+    {
+     "name": "nights_tmin_ge25",
+     "type": "BIGINT",
+     "description": "nights with a minimum of 25°C or more"
+    },
+    {
+     "name": "nights_tmin_ge30",
+     "type": "BIGINT",
+     "description": "nights of 30°C or more"
+    },
+    {
+     "name": "tx90p_days",
+     "type": "BIGINT",
+     "description": "days hotter than the 1981–2010 90th percentile for the date"
+    },
+    {
+     "name": "tn90p_days",
+     "type": "BIGINT",
+     "description": "nights warmer than the 90th percentile"
+    },
+    {
+     "name": "wsdi_days",
+     "type": "BIGINT",
+     "description": "warm-spell days (six or more TX90p days in a row)"
+    },
+    {
+     "name": "longest_run_tmax_ge40",
+     "type": "BIGINT",
+     "description": "longest run of 40°C days"
+    },
+    {
+     "name": "txx",
+     "type": "DOUBLE",
+     "description": "hottest day, °C"
+    },
+    {
+     "name": "tnx",
+     "type": "DOUBLE",
+     "description": "warmest night, °C"
+    },
+    {
+     "name": "tnn",
+     "type": "DOUBLE",
+     "description": "coldest night, °C"
+    },
+    {
+     "name": "tmean_annual",
+     "type": "DOUBLE",
+     "description": "annual mean, °C"
+    },
+    {
+     "name": "ring_fallback",
+     "type": "BOOLEAN",
+     "description": "true where a coastal district uses the 0.2° ring"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "ERA5-Land, Copernicus C3S, via Open-Meteo.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Heat indices computed by Adaad from district-mean daily ERA5-Land.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "1950",
+    "to": "2025"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "imf_pakistan_fiscal",
    "file": "imf_pakistan_fiscal.parquet",
    "bytes": 8099,
@@ -3736,6 +6085,382 @@
     "to": "2031"
    },
    "keys": []
+  },
+  {
+   "name": "landcover_change_district",
+   "file": "landcover_change_district.parquet",
+   "bytes": 34228,
+   "rows": 160,
+   "description": "Cropland, built-up, tree and water gains and losses by district, 2000 to 2020, from GLAD’s change map.",
+   "notes": "From the 2000–2020 change layer, which labels the 2020 state with its transition. It has no built-up loss class.",
+   "unit": "hectares",
+   "source": "GLAD/UMD GLCLU 2000–2020 v2; district statistics by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "cropland_stable_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_gain_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_gain_from_trees_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_gain_from_wetland_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_loss_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_loss_to_tree_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_net_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_stable_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_gain_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_gain_from_cropland_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_stable_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_disturbed_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_height_gain_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_loss_to_short_veg_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_permanent_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_loss_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_gain_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_variable_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "snow_ice_gain_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "snow_ice_loss_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropland_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "built_up_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_cover_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_cover_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tree_cover_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "short_vegetation_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "short_vegetation_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "short_vegetation_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "bare_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "bare_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "bare_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wetland_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wetland_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wetland_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "snow_ice_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "snow_ice_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "snow_ice_net_epoch_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "land_2000_ha",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "land_2020_ha",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "GLAD/UMD GLCLU 2000–2020 v2.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Zonal statistics of the GLAD change layer, computed by Adaad.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
+   "name": "landcover_district_epoch",
+   "file": "landcover_district_epoch.parquet",
+   "bytes": 412374,
+   "rows": 62587,
+   "description": "Area and share of each land-cover class by district at five epochs, 2000 to 2020.",
+   "notes": "GLAD v2 throughout: its built-up layer is about half of the v1 figure Global Forest Watch serves, so never mix the two. Built-up growth is cleaner than rural built-up levels.",
+   "unit": "hectares; share of land",
+   "source": "GLAD/UMD GLCLU 2000–2020 v2; district statistics by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "epoch",
+     "type": "BIGINT",
+     "description": "year of the map"
+    },
+    {
+     "name": "class_code",
+     "type": "BIGINT",
+     "description": "GLAD class value"
+    },
+    {
+     "name": "group",
+     "type": "VARCHAR",
+     "description": "class group (e.g. cropland, built-up, trees, water)"
+    },
+    {
+     "name": "subgroup",
+     "type": "VARCHAR",
+     "description": "class detail"
+    },
+    {
+     "name": "area_ha",
+     "type": "DOUBLE",
+     "description": "area, ha"
+    },
+    {
+     "name": "share_of_land",
+     "type": "DOUBLE",
+     "description": "share of the district’s land"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "GLAD/UMD Global Land Cover and Land Use 2000–2020, v2 (Potapov et al. 2022).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Zonal statistics of the GLAD v2 rasters, computed by Adaad.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
   },
   {
    "name": "ljcp_case_flows",
@@ -4328,6 +7053,172 @@
    ]
   },
   {
+   "name": "loadshedding_disco_fy",
+   "file": "loadshedding_disco_fy.parquet",
+   "bytes": 4433,
+   "rows": 154,
+   "description": "Average daily hours of load shedding each distribution company reported to NEPRA, FY2010-11 to FY2024-25.",
+   "notes": "These are the companies’ own claims, which NEPRA calls “fudged” (FY16, FY20), “not based on ground realities” (FY21, FY22) and “significant underreporting” (FY25). What NEPRA says it observed is in loadshedding_nepra_monitored, a different quantity. The ranking is consistent: QESCO, HESCO and PESCO report the most. FY24 comes from the FY25 report’s comparison table only.",
+   "unit": "hours a day",
+   "source": "NEPRA Performance Evaluation Reports FY2012-13 to FY2024-25; transcribed by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company, K-Electric spelled as the State page spells it; other names as NEPRA prints them, TOTAL rows being NEPRA’s own totals"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, July to June, e.g. 2024-25"
+    },
+    {
+     "name": "hours_reported",
+     "type": "DOUBLE",
+     "description": "average daily hours of load shedding the company reported"
+    },
+    {
+     "name": "report",
+     "type": "VARCHAR",
+     "description": "report the figure is from"
+    },
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "BIGINT",
+     "description": "page in that report"
+    },
+    {
+     "name": "table",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "basis",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "report_year",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "rank",
+     "type": "BIGINT",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA, Performance Evaluation Reports of Distribution Companies.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "The hours each company reported to NEPRA, as NEPRA printed them.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fy",
+    "from": "2010-11",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "loadshedding_nepra_monitored",
+   "file": "loadshedding_nepra_monitored.parquet",
+   "bytes": 3142,
+   "rows": 31,
+   "description": "The hours of load shedding NEPRA says it observed, against what the companies reported, FY2012-13 to FY2024-25.",
+   "notes": "A statement in a report, not a measured series: from FY15 to FY18 the same sentence, 8 to 10 hours in towns and 10 to 12 in villages on certain feeders. FY2022-23 is the only year with a figure per company. hours_low without hours_high means “more than”. ALL marks a statement about every company.",
+   "unit": "hours a day",
+   "source": "NEPRA Performance Evaluation Reports; transcribed by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, July to June, e.g. 2024-25"
+    },
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company, K-Electric spelled as the State page spells it; other names as NEPRA prints them, TOTAL rows being NEPRA’s own totals"
+    },
+    {
+     "name": "hours_low",
+     "type": "DOUBLE",
+     "description": "lower end of the hours NEPRA gives"
+    },
+    {
+     "name": "hours_high",
+     "type": "DOUBLE",
+     "description": "upper end"
+    },
+    {
+     "name": "statement",
+     "type": "VARCHAR",
+     "description": "what NEPRA wrote"
+    },
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "pdf_page",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA, Performance Evaluation Reports of Distribution Companies.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "NEPRA’s own statements, with the hours they give.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fy",
+    "from": "2012-13",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
    "name": "lsm_qim",
    "file": "lsm_qim.parquet",
    "bytes": 3354,
@@ -4465,6 +7356,155 @@
     "column": "fy",
     "from": "2005-06",
     "to": "2025-26"
+   },
+   "keys": []
+  },
+  {
+   "name": "mangroves_national",
+   "file": "mangroves_national.parquet",
+   "bytes": 1290,
+   "rows": 7,
+   "description": "Mangrove area every five years from two independent satellite classifications, side by side.",
+   "notes": "They disagree by nearly a factor of two by 2020 (Gilani 1,337 km², GMW 738 km²), and on how much the area grew. Both are model classifications. Report both; never average them. The published Gilani totals overstate the Indus delta by about 9 per cent because its raster treats each degree-pixel as 30 m square; gilani_total_km2 corrects that, gilani_total_km2_as_published does not.",
+   "unit": "km²",
+   "source": "Gilani et al. (2024); Global Mangrove Watch v4.1.12; compiled by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "year"
+    },
+    {
+     "name": "gilani_total_km2",
+     "type": "DOUBLE",
+     "description": "Gilani et al., area corrected for pixel size, km²",
+     "derived": true
+    },
+    {
+     "name": "gilani_total_km2_as_published",
+     "type": "DOUBLE",
+     "description": "Gilani et al., as published"
+    },
+    {
+     "name": "gilani_sindh_km2",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "gilani_balochistan_km2",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "gmw_km2",
+     "type": "DOUBLE",
+     "description": "Global Mangrove Watch v4.1.12, km²"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Gilani et al. (2024), Zenodo 10.5281/zenodo.10732690; Global Mangrove Watch v4.1 (Bunting et al. 2026).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Gilani areas recomputed by Adaad from the rasters’ true pixel size; GMW as published.",
+    "derived_columns": [
+     "gilani_total_km2",
+     "gilani_sindh_km2",
+     "gilani_balochistan_km2"
+    ]
+   },
+   "span": {
+    "column": "year",
+    "from": "1990",
+    "to": "2020"
+   },
+   "keys": []
+  },
+  {
+   "name": "mineral_extraction",
+   "file": "mineral_extraction.parquet",
+   "bytes": 6021,
+   "rows": 1430,
+   "description": "Extraction of 22 principal minerals, coal, crude oil and natural gas, FY1960-61 to FY2024-25.",
+   "notes": "Units differ by mineral and are kept as printed; never add across minerals. Natural gas, “000 m.cu.mtr.” in the source, is billion cubic metres. National only: no province split.",
+   "unit": "see unit",
+   "source": "PBS, via the Pakistan Economic Survey Statistical Supplement 2008-09 and 2024-25; compiled by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "mineral",
+     "type": "VARCHAR",
+     "description": "mineral"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "unit as printed"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "quantity extracted"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "provisional or final"
+    },
+    {
+     "name": "source_table",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "economy",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "PBS figures, as printed in the Finance Division’s Economic Survey statistical supplement.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "Spliced from two editions of the statistical supplement; overlap years agree bar two one-unit revisions.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "1960-61",
+    "to": "2024-25"
    },
    "keys": []
   },
@@ -6222,6 +9262,179 @@
    "keys": []
   },
   {
+   "name": "netmetering_disco_fy",
+   "file": "netmetering_disco_fy.parquet",
+   "bytes": 5605,
+   "rows": 292,
+   "description": "Net-metering licences, capacity, connections, pending applications and units bought through net metering, by distribution company and fiscal year, FY2019-20 to FY2024-25.",
+   "notes": "No company-level net-metering figure exists before NEPRA’s 2022 report. Licences and concurrences are in-year flows, not connections; never add them to connections. cumulative_or_flow says which each measure is. The latest report’s figure is kept.",
+   "unit": "see unit",
+   "source": "NEPRA State of Industry Reports 2022–2025; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "disco",
+     "type": "VARCHAR",
+     "description": "distribution company, K-Electric spelled as the State page spells it; other names as NEPRA prints them, TOTAL rows being NEPRA’s own totals"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, July to June, e.g. 2024-25"
+    },
+    {
+     "name": "measure",
+     "type": "VARCHAR",
+     "description": "what is counted"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "value"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "unit of value"
+    },
+    {
+     "name": "cumulative_or_flow",
+     "type": "VARCHAR",
+     "description": "stock at a date, or flow in the year"
+    },
+    {
+     "name": "report_year",
+     "type": "BIGINT",
+     "description": "the State of Industry report the figure is from"
+    },
+    {
+     "name": "table_no",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "page",
+     "type": "BIGINT",
+     "description": "page in that report"
+    },
+    {
+     "name": "relabelled",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "NEPRA, State of Industry Reports.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "NEPRA’s figures; DISCO names normalised.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fy",
+    "from": "2019-20",
+    "to": "2024-25"
+   },
+   "keys": []
+  },
+  {
+   "name": "oil_gas_transfers_province",
+   "file": "oil_gas_transfers_province.parquet",
+   "bytes": 10626,
+   "rows": 1890,
+   "description": "Royalty on crude oil and on natural gas, gas development surcharge and excise duty on gas paid to each province, FY2008-09 to FY2026-27, budget and revised estimates.",
+   "notes": "Every estimate as printed. For one figure a year, take the revised estimate from the following year’s budget, as Adaad’s best estimate does. Before FY2011-12 the straight-transfer total includes provincial GST; use the four oil and gas items for a consistent series. Sindh receives about half, Punjab under a tenth.",
+   "unit": "Rs million",
+   "source": "Finance Division, Explanatory Memorandum on Federal Receipts; extracted by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "budget_document",
+     "type": "VARCHAR",
+     "description": "the budget the figure is from"
+    },
+    {
+     "name": "fiscal_year",
+     "type": "VARCHAR",
+     "description": "fiscal year"
+    },
+    {
+     "name": "estimate",
+     "type": "VARCHAR",
+     "description": "budget or revised estimate"
+    },
+    {
+     "name": "item",
+     "type": "VARCHAR",
+     "description": "what is transferred"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province"
+    },
+    {
+     "name": "rs_million",
+     "type": "DOUBLE",
+     "description": "Rs million"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": ""
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "Finance Division, Explanatory Memorandum on Federal Receipts.",
+    "terms": [
+     {
+      "key": "gov-unlicensed",
+      "name": "No licence stated",
+      "url": "",
+      "summary": "Published by a Pakistani public body without an open licence. Reproduced here unchanged and with attribution; ask the publisher before commercial reuse."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "Budget and revised estimates as printed.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fiscal_year",
+    "from": "2008-09",
+    "to": "2026-27"
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
    "name": "place_indicator_index",
    "file": "place_indicator_index.parquet",
    "bytes": 117344,
@@ -6488,6 +9701,124 @@
    },
    "keys": [
     "map_key"
+   ]
+  },
+  {
+   "name": "pm25_district_annual",
+   "file": "pm25_district_annual.parquet",
+   "bytes": 8608,
+   "rows": 320,
+   "description": "Annual mean fine particulate matter by district, area- and population-weighted, 2024 and 2025.",
+   "notes": "A model (gradient boosting on satellite aerosol, TROPOMI, ERA5 and GEOS-CF) at 0.1°, mean absolute error 14–23 µg/m³ against 2025 ground monitors. Two years: a map, not a trend, and not an independent check on the monitors it was trained against. Population weights are WorldPop 2020.",
+   "unit": "µg/m³",
+   "source": "Pakistan Air Quality Initiative, pak-quality-estimation; district aggregates by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "VARCHAR",
+     "description": ""
+    },
+    {
+     "name": "pm25_area_mean",
+     "type": "DOUBLE",
+     "description": "area-weighted mean, µg/m³"
+    },
+    {
+     "name": "pm25_pop_mean",
+     "type": "DOUBLE",
+     "description": "population-weighted mean, µg/m³"
+    },
+    {
+     "name": "n_cells",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "days_covered",
+     "type": "BIGINT",
+     "description": "days with a model value"
+    },
+    {
+     "name": "days_covered_pop",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "days_in_period",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "share_area_in_model_mask",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "share_pop_in_model_mask",
+     "type": "DOUBLE",
+     "description": "share of the district’s people inside the model’s mask"
+    },
+    {
+     "name": "worldpop2020",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Pakistan Air Quality Initiative model fields (CC BY 4.0); WorldPop 2020 weights (CC BY 4.0).",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "District aggregates of a modelled PM2.5 surface, computed by Adaad.",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "year",
+    "from": "2024",
+    "to": "2025"
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
    ]
   },
   {
@@ -6793,6 +10124,160 @@
     "column": "year",
     "from": "2019",
     "to": "2024"
+   },
+   "keys": []
+  },
+  {
+   "name": "reservoir_monthly_observed",
+   "file": "reservoir_monthly_observed.parquet",
+   "bytes": 668776,
+   "rows": 23168,
+   "description": "Water surface area of 96 Pakistani reservoirs, by month, from satellite observations, 1986/87 to September 2026.",
+   "notes": "Months with an observation only. Global Water Watch’s own monthly series carries values into unobserved months and disagrees with the observations in 1,074 reservoir-months; gww_disagrees_20pct flags them. Surface area, not storage. Validated against Tarbela’s hydel generation, r of about 0.6.",
+   "unit": "km²",
+   "source": "Global Water Watch (Deltares, WRI) via Global Forest Watch; monthly summary by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "id",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "reservoir",
+     "type": "VARCHAR",
+     "description": "reservoir"
+    },
+    {
+     "name": "priority",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "ym",
+     "type": "VARCHAR",
+     "description": "year and month"
+    },
+    {
+     "name": "year",
+     "type": "BIGINT",
+     "description": "calendar year"
+    },
+    {
+     "name": "month",
+     "type": "BIGINT",
+     "description": "calendar month"
+    },
+    {
+     "name": "n_obs",
+     "type": "BIGINT",
+     "description": "satellite observations in the month"
+    },
+    {
+     "name": "single_obs",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "first_obs",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "last_obs",
+     "type": "DATE",
+     "description": ""
+    },
+    {
+     "name": "obs_mean_km2",
+     "type": "DOUBLE",
+     "description": "mean observed surface, km²",
+     "derived": true
+    },
+    {
+     "name": "obs_median_km2",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "obs_min_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "obs_max_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "gww_monthly_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "gww_rel_diff",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "gww_disagrees_20pct",
+     "type": "BOOLEAN",
+     "description": ""
+    },
+    {
+     "name": "clim_mean_km2",
+     "type": "DOUBLE",
+     "description": "mean for the calendar month across years, km²",
+     "derived": true
+    },
+    {
+     "name": "clim_n_years",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "anomaly_obs_vs_clim_km2",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "anomaly_obs_vs_clim_pct",
+     "type": "DOUBLE",
+     "description": "difference from that month’s mean, per cent",
+     "derived": true
+    }
+   ],
+   "kind": "state",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "Global Water Watch (Deltares, WRI), as stated on Global Forest Watch’s copy.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Satellite observations of each reservoir’s surface, summarised by month by Adaad.",
+    "derived_columns": [
+     "obs_mean_km2",
+     "obs_median_km2",
+     "clim_mean_km2",
+     "anomaly_obs_vs_clim_km2",
+     "anomaly_obs_vs_clim_pct"
+    ]
+   },
+   "span": {
+    "column": "year",
+    "from": "1986",
+    "to": "2026"
    },
    "keys": []
   },
@@ -9455,6 +12940,164 @@
    "keys": []
   },
   {
+   "name": "surface_water_district",
+   "file": "surface_water_district.parquet",
+   "bytes": 25733,
+   "rows": 160,
+   "description": "Permanent and seasonal surface water gained and lost by district, 1984–1999 against 2000–2020.",
+   "notes": "From JRC’s transitions layer at 30 m. Seasonal water is water present for part of the year.",
+   "unit": "km²",
+   "source": "EC JRC / Google Global Surface Water; district statistics by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "frame_area_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "query_area_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "query_tiles",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "not_water_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "permanent_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "new_permanent_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "lost_permanent_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "seasonal_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "new_seasonal_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "lost_seasonal_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "seasonal_to_permanent_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "permanent_to_seasonal_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ephemeral_permanent_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ephemeral_seasonal_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_1984_99_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "water_2000_20_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "permanent_1984_99_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "permanent_2000_20_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "net_permanent_change_km2",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "net_water_change_km2",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "EC JRC / Google Global Surface Water (Pekel et al. 2016).",
+    "terms": [
+     {
+      "key": "jrc-open",
+      "name": "JRC open data",
+      "url": "https://global-surface-water.appspot.com/download",
+      "summary": "EC Joint Research Centre / Google Global Surface Water: free use with attribution (“Source: EC JRC/Google”)."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Raster queries on the district polygons, run by Adaad.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "tehsil_nightlights",
    "file": "tehsil_nightlights.parquet",
    "bytes": 16840,
@@ -10095,6 +13738,224 @@
     "to": "2025-26"
    },
    "keys": []
+  },
+  {
+   "name": "water_stress_district",
+   "file": "water_stress_district.parquet",
+   "bytes": 23199,
+   "rows": 160,
+   "description": "Baseline water stress and 2020–2040 projections under three scenarios, by district.",
+   "notes": "Aqueduct 2.1 scores basins, not districts; a district’s figure is the mean over the basins it covers. Scores are capped at 5. Projections are scenario outputs, not forecasts.",
+   "unit": "score 0–5; share",
+   "source": "WRI Aqueduct 2.1; district means by Adaad, Issue 4 (November 2026)",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; blank for Keamari and Surab"
+    },
+    {
+     "name": "n_basins",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "basin_cover_share",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "dominant_basinid",
+     "type": "BIGINT",
+     "description": ""
+    },
+    {
+     "name": "ws_baseline_capped_mean",
+     "type": "DOUBLE",
+     "description": "baseline water stress, 0–5"
+    },
+    {
+     "name": "ws_baseline_share_extremely_high",
+     "type": "DOUBLE",
+     "description": "share of the district in extremely high stress"
+    },
+    {
+     "name": "ws_2020_opt_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_opt_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_opt_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_bau_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_bau_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_bau_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_pes_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_pes_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2020_pes_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_opt_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_opt_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_opt_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_bau_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_bau_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_bau_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_pes_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_pes_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2030_pes_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_opt_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_opt_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_opt_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_bau_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_bau_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_bau_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_pes_capped_mean",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_pes_share_extremely_high",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "ws_2040_pes_share_arid_low_use",
+     "type": "DOUBLE",
+     "description": ""
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "WRI Aqueduct 2.1.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Basin scores averaged over districts by Adaad.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
   },
   {
    "name": "wdi_comparators",
