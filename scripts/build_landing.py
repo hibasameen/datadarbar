@@ -123,7 +123,7 @@ def main():
     explorers = '\n'.join([
         card('places.html', 'places', 'Places',
              'Every district and tehsil: people, schooling, work, housing, '
-             'health, poverty, crops and night-time lights.',
+             'health, poverty, crops, climate and the land.',
              f'156 districts · 649 tehsils · {n(f["placesInd"])} indicators',
              [('places.html', 'The map'),
               (P + 'g=literacy&i=literacy_ratio_all', 'Literacy'),
@@ -132,8 +132,9 @@ def main():
               (P + 'g=crops&i=crop%7C4%7Cproduction_000t', 'Crops')]),
         card('finance.html', 'economy', 'Economy',
              'Output and growth since 1951, industry, trade by product and '
-             'partner, prices, the rupee and the external balance.',
-             '15 topics · PBS and SBP series',
+             'partner, prices, the rupee, the external balance, mining, crop '
+             'prices and emissions.',
+             '16 topics · PBS, SBP and other series',
              [('finance.html#t=structure', 'GDP & growth'),
               ('finance.html#t=industry', 'Industry'),
               ('finance.html#t=basket', 'Trade'),
@@ -141,13 +142,13 @@ def main():
               ('finance.html#t=rupee', 'The rupee')]),
         card('state.html', 'state', 'State',
              'What the state reports about itself: the budget and tax, courts '
-             'and judges, crime, electricity and disasters.',
+             'and judges, crime, power and gas, floods and reservoirs.',
              f'{f["stateInd"]} charts · {f["stateDs"]} datasets',
              [('state.html?t=tax', 'Budget & tax'),
               ('state.html?t=courts', 'Courts'),
               ('state.html?t=crime', 'Crime'),
-              ('state.html?t=discos', 'Energy'),
-              ('state.html?t=impacts', 'Disasters')]),
+              ('state.html?t=discos', 'Power & gas'),
+              ('state.html?t=floods', 'Floods')]),
     ])
 
     links = '\n'.join([
