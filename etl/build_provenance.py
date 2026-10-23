@@ -215,6 +215,21 @@ CHARTS = {
  'sec-peers': dict(table='wdi_comparators', publication='World Development Indicators',
     selection='one indicator at a time, Pakistan beside the countries and aggregates chosen, as '
               'published'),
+ # ---- land and resources (Issue 4) ----
+ 'sec-mining': dict(table='mineral_extraction',
+    publication='Economic Survey statistical supplement, extraction of principal minerals',
+    selection='eight minerals, fiscal years from 1960-61',
+    calc='each mineral as an index of its 2000-01 quantity',
+    note='The index is derived so minerals in different units can share an axis; the CSV '
+         'gives the quantities.'),
+ 'sec-cropprice': dict(table='crop_prices_wholesale',
+    publication='Agricultural Statistics of Pakistan 2024-25, wholesale prices',
+    selection='wheat and maize in Lahore, Basmati in Multan, Irri-6 in Sukkur, by month',
+    note='Nominal unless Real is chosen; Real deflates each month by the GDP deflator.'),
+ 'sec-emissions': dict(table='emissions_national_sector',
+    publication='PakEmis national series by sector',
+    selection='CO2-equivalent (AR5) by sector, fiscal years 2015-16 to 2024-25',
+    note='A research inventory, not an official submission.'),
  # ---- external ----
  # NOT diaspora_remittances_monthly, which the rail used to name. That table
  # is 236 rows of a NATIONAL series with no country dimension at all - the
@@ -606,6 +621,9 @@ PUBLISHER = {
     'budget_lines': 'Finance Division',
     'diaspora_destinations': 'Bureau of Emigration & Overseas Employment, via PBS',
     'diaspora_remittances_monthly': 'Pakistan Bureau of Statistics',
+    'mineral_extraction': 'Pakistan Bureau of Statistics, via the Finance Division',
+    'crop_prices_wholesale': 'Ministry of National Food Security and Research',
+    'emissions_national_sector': 'PakEmis (Pakistan Air Quality Initiative)',
 }
 
 

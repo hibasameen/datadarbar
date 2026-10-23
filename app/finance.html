@@ -392,6 +392,34 @@
   <div class="src">World Bank, World Development Indicators (CC BY 4.0), as published, calendar years from 1960.</div>
  </div>
 
+ <div class="card" data-topic="resources" id="sec-mining">
+  <button class="csvbtn" data-csv="mining">CSV</button>
+  <h2>What comes out of the ground <span class="unit">— extraction, index 2000-01 = 100</span></h2>
+  <div class="desc">Coal, gas, oil and the main minerals since the 1960s. Each is counted in its own unit, so they are drawn as an index of 2000-01; the CSV has the quantities. Gas extraction peaked in 2011-12 and has fallen since.</div>
+  <div class="chips" id="chips-mining"></div>
+  <div id="chMining"></div>
+  <div class="src">Pakistan Bureau of Statistics, extraction of principal minerals, via the Pakistan Economic Survey statistical supplement (2008-09 and 2024-25 editions, spliced; overlapping years agree). Fiscal years. National only. Compiled by Adaad.</div>
+ </div>
+
+ <div class="card" data-topic="resources" id="sec-cropprice">
+  <button class="csvbtn" data-csv="cropprice">CSV</button>
+  <h2>What crops fetch at market <span class="unit">— wholesale price, rupees per 40 kg</span></h2>
+  <div class="desc">Monthly wholesale prices of wheat, Basmati and Irri-6 rice and maize, each in the market with the longest record. A month the ministry left blank is a gap.</div>
+  <div class="controls"><div class="seg" id="cpPrice"><button data-cp="nom" class="on">Nominal</button><button data-cp="real">Real</button></div></div>
+  <div class="chips" id="chips-cropprice"></div>
+  <div id="chCropprice"></div>
+  <div class="src">Ministry of National Food Security and Research, Agricultural Statistics of Pakistan 2024-25, tables 145&ndash;148, as printed. <b>Real</b> deflates each month by the GDP deflator (PBS national accounts), interpolated between fiscal years, into the rupees of the latest complete fiscal year. Other markets are in the <a href="datasets/crop-prices-wholesale/">table</a>.</div>
+ </div>
+
+ <div class="card" data-topic="resources" id="sec-emissions">
+  <button class="csvbtn" data-csv="emissions">CSV</button>
+  <h2>Where the greenhouse gases come from <span class="unit">— Mt CO<sub>2</sub>e by sector</span></h2>
+  <div class="desc">Agriculture, mostly livestock, is about half of the total; power and road transport are the next largest. A research inventory, not Pakistan&rsquo;s official submission.</div>
+  <div class="chips" id="chips-emissions"></div>
+  <div id="chEmissions"></div>
+  <div class="src">PakEmis release 1.0.0rc68 (Pakistan Air Quality Initiative; data CC BY 4.0), national series by sector, AR5 warming potentials, fiscal years 2015-16 to 2024-25. The sectors add to PakEmis&rsquo;s own covered total in every year.</div>
+ </div>
+
  <div class="card" data-topic="basket" id="sec-drill">
   <button class="csvbtn" data-csv="drill" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
   <h2>What Pakistan trades <span class="unit">— every product, grouped by sector</span></h2>
@@ -475,6 +503,7 @@
 <script src="data/structure_data.js?v=1db87de3"></script>
 <script src="data/money_data.js?v=1db87de3"></script>
 <script src="data/history_data.js?v=1db87de3"></script>
+<script src="data/resources_data.js?v=1db87de3"></script>
 <script src="data/migration_data.js?v=1db87de3"></script>
 <script src="data/recon_data.js?v=1db87de3"></script>
 <script src="data/deflator_data.js?v=1db87de3"></script>

@@ -67,6 +67,7 @@
     partners: ['Trading partners', 'Trade'],
     longrun: ['The long run', 'The long view'],
     peers: ['Pakistan and its peers', 'The long view'],
+    resources: ['Land and resources', 'Land & resources'],
   };
 
   /* A card's <h2> reads as a headline with its units after a dash. The rail
@@ -138,6 +139,10 @@
       { t: 'rupee', label: 'The rupee' },
       { t: 'external', label: 'Reserves and the balance of payments' },
       { t: 'external', label: 'Remittances', card: 'sec-remit' } ] },
+    { group: 'Land & resources', items: [
+      { t: 'resources', label: 'Mining since 1960' },
+      { t: 'resources', label: 'Crop prices', card: 'sec-cropprice' },
+      { t: 'resources', label: 'Greenhouse gas emissions', card: 'sec-emissions' } ] },
     { group: 'The long view', items: [
       { t: 'longrun', label: 'Since 1950: GDP, money and the state' },
       { t: 'longrun', label: 'Public debt since 1951', card: 'sec-debt' },
