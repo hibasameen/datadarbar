@@ -2277,6 +2277,121 @@
    "keys": []
   },
   {
+   "name": "district_crosswalk_cod_2023",
+   "file": "district_crosswalk_cod_2023.parquet",
+   "bytes": 8638,
+   "rows": 160,
+   "description": "The 160 districts of OCHA’s COD-AB frame, each matched to the PBS 2023 district it belongs to.",
+   "notes": "Datasets drawn on COD-AB polygons — satellite zonal statistics, Adaad’s climate, fire, forest and flood tables — name their districts by an upper-case district_key on a 160-district frame: the 136 census districts rebuilt from COD tehsils, plus Azad Jammu & Kashmir and Gilgit-Baltistan as COD draws them. That key, cod_district_key here, is not Data Darbar’s district_key, and nothing on the map joins to it; district_code does. 127 districts are matched through their COD tehsil codes, which PBS’s tehsil layer carries; 29 by name, because no COD tehsil code survives there (all of AJK and GB, and districts created after 2022); and 4 by area. COD draws Gilgit-Baltistan in 14 districts and PBS in 10, so Darel and Tangir fold into Diamer, Gupis Yasin into Ghizer and Rondu into Skardu. Sum counts across a merged group; weight a mean by area_weight, or by population for anything about people. overlap_share measures each match: the two layers are different digitisations of the same borders, and the note says where they part — most in Karachi, Quetta, Killa Abdullah, Chaman and Batagram, and in Kharmang, which COD draws so much larger that 56 per cent of it lies inside PBS’s Skardu. A table keyed on COD p-codes joins on cod_adm2_pcode, except for COD’s Lehri (PK218): its two tehsils went to Kachhi and Sibi, so it has no single home.",
+   "unit": "districts",
+   "source": "OCHA COD-AB Pakistan v01 (HDX, World Food Programme SDI) and PBS Digital Census 2023 boundaries; matched by Data Darbar",
+   "columns": [
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district_key of tables drawn on the COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "district_2023",
+     "type": "VARCHAR",
+     "description": "the frame’s district name"
+    },
+    {
+     "name": "cod_adm2_pcode",
+     "type": "VARCHAR",
+     "description": "COD-AB district p-code; Surab carries PK233, COD’s Shaheed Sikandarabad renamed; blank for Keamari, built from Karachi towns"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the frame names it"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, joining to geography_keys"
+    },
+    {
+     "name": "pbs_district",
+     "type": "VARCHAR",
+     "description": "the PBS district’s name"
+    },
+    {
+     "name": "pbs_province",
+     "type": "VARCHAR",
+     "description": "the PBS district’s province or area"
+    },
+    {
+     "name": "relation",
+     "type": "VARCHAR",
+     "description": "same, renamed, or merged (one of several frame districts making up a PBS district)"
+    },
+    {
+     "name": "matched_by",
+     "type": "VARCHAR",
+     "description": "tehsil codes, name, or area overlap"
+    },
+    {
+     "name": "frame_area_km2",
+     "type": "DOUBLE",
+     "description": "area of the frame polygon, equal-area projection"
+    },
+    {
+     "name": "area_weight",
+     "type": "DOUBLE",
+     "description": "the frame district’s share of its PBS district’s area across the merged group; 1 where the match is one to one"
+    },
+    {
+     "name": "overlap_share",
+     "type": "DOUBLE",
+     "description": "share of the frame polygon lying inside the matched PBS polygon"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "where the two layers disagree, or the frame has a known flaw"
+    }
+   ],
+   "kind": "geography",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "COD-AB names, p-codes and polygons are OCHA’s (CC BY-IGO); the PBS codes are PBS’s; the matching is Data Darbar’s.",
+    "terms": [
+     {
+      "key": "cc-by-igo",
+      "name": "CC BY 3.0 IGO",
+      "url": "https://creativecommons.org/licenses/by/3.0/igo/",
+      "summary": "OCHA’s COD-AB boundaries for Pakistan, as HDX publishes them: any use, commercial included, with attribution to OCHA and the World Food Programme."
+     },
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     },
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Constructed crosswalk; areas and overlaps measured from the two boundary layers.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_adm2_pcode",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "district_indicators",
    "file": "district_indicators.parquet",
    "bytes": 167488,
@@ -2705,8 +2820,8 @@
   {
    "name": "geography_keys",
    "file": "geography_keys.parquet",
-   "bytes": 2790,
-   "rows": 6,
+   "bytes": 3305,
+   "rows": 7,
    "description": "Which identifier names a Pakistani place, and which of them can safely be joined on.",
    "notes": "Six identifiers name places in this warehouse and they are not interchangeable; unique_per_place is the column that decides whether a join is safe. dd_id is the trap: 591 census sub-districts share 471 of them, so joining on it and keeping one row per polygon returns a plausible answer with units missing. Every count here is measured from the boundary files rather than asserted.",
    "unit": "identifiers",
