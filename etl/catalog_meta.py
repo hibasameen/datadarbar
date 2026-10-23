@@ -38,6 +38,7 @@ KIND = {
     'census_unit_map': 'geography',
     'district_crosswalk_2017_2023': 'geography',
     'subdistrict_crosswalk_2017_2023': 'geography',
+    'district_crosswalk_cod_2023': 'geography',
     'mouza_crosswalk': 'geography',
 
     'census_panel_2017': 'census',
@@ -123,7 +124,8 @@ TIME_COLS = ['census_year', 'year', 'reporting_year', 'fy', 'fiscal_year',
 # Place identifiers, most specific first. The ones geography_keys measures
 # carry its verdict on whether they are safe to join on.
 KEY_COLS = ['dds_id', 'tehsil_code', 'dd_id', 'tehsil_id', 'adm3_pcode',
-            'district_code', 'map_key', 'district_key', 'dk', 'district', 'province']
+            'district_code', 'map_key', 'district_key', 'dk', 'cod_adm2_pcode',
+            'cod_district_key', 'district', 'province']
 # Named in the catalogue beside the key, from geography_keys: safe to join on
 # alone, or not. A name is never safe, so it is not listed as either.
 
@@ -160,6 +162,11 @@ LICENCES = {
         summary='Works of the US federal government, the Census Bureau\u2019s included, are '
                 'not subject to copyright in the US and may be reused freely; credit the '
                 'Census Bureau as the source.'),
+    'cc-by-igo': dict(
+        name='CC BY 3.0 IGO', reuse='open',
+        url='https://creativecommons.org/licenses/by/3.0/igo/',
+        summary='OCHA’s COD-AB boundaries for Pakistan, as HDX publishes them: any use, '
+                'commercial included, with attribution to OCHA and the World Food Programme.'),
     'cc0': dict(
         name='CC0 1.0', reuse='open',
         url='https://creativecommons.org/publicdomain/zero/1.0/',
@@ -229,6 +236,9 @@ LICENCE = {
     'diaspora_occupations': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_remittances_monthly': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'district_crosswalk_2017_2023': (['pbs-open', 'cc-by-4.0'], 'The crosswalk is Data Darbar’s work.'),
+    'district_crosswalk_cod_2023': (['cc-by-igo', 'pbs-open', 'cc-by-4.0'],
+                                    'COD-AB names, p-codes and polygons are OCHA’s (CC BY-IGO); '
+                                    'the PBS codes are PBS’s; the matching is Data Darbar’s.'),
     'district_indicators': (['pbs-open', 'survey-programmes'],
                             'PBS figures are open; the DHS and MICS estimates follow the survey '
                             'programmes’ terms.'),
@@ -420,6 +430,8 @@ PROVENANCE = {
         ('census_unit_map', 'Data Darbar’s mapping of census units onto the 2023 frame.'),
         ('district_crosswalk_2017_2023', 'Constructed crosswalk; the populations in it are PBS’s.'),
         ('subdistrict_crosswalk_2017_2023', 'Constructed crosswalk; the populations in it are PBS’s.'),
+        ('district_crosswalk_cod_2023', 'Constructed crosswalk; areas and overlaps measured from '
+                                        'the two boundary layers.'),
         ('geography_keys', 'Measured from the boundary layers and the tables.'),
         ('health_access_district', 'Population-weighted statistics of modelled travel-time surfaces.'),
         ('health_access_tehsil', 'Population-weighted statistics of modelled travel-time surfaces.'),

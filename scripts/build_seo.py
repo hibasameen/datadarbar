@@ -67,6 +67,7 @@ DATASET_NAMES = {
     # geography: the frames, the crosswalks, and which key joins what
     "district_crosswalk_2017_2023": "Pakistan district boundary changes, Census 2017 to 2023",
     "subdistrict_crosswalk_2017_2023": "Pakistan tehsil boundary changes, Census 2017 to 2023",
+    "district_crosswalk_cod_2023": "Pakistan COD-AB districts matched to Census 2023 districts",
     "census_unit_map": "Pakistan census units mapped to 2023 boundaries",
     "geography_keys": "Pakistan place identifiers and which ones join safely",
     "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
