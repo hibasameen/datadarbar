@@ -153,7 +153,10 @@ FEATURED = {
         'crops|crop|4|area_000ha', 'crops|crop|2|production_000t',
         'crops|crop|5|production_000t', 'crops|crop|3|production_000t',
         'crops|crop|1|production_000t'],
-    'Environment': ['nightlights|density', 'nightlights|growth'],
+    'Environment': ['climateTmean|tmean_c', 'heatWarmNights|nights_tmin_ge25',
+                    'climateRain|jjas_precip_mm_chirps', 'pm25|pm25_pop_mean',
+                    'landCover|lc_built_up', 'fires|rice_oct_nov_n',
+                    'flood2022|weeks_5pct', 'nightlights|density', 'nightlights|growth'],
 }
 
 # The list above was written for districts, where most of its series live.
@@ -559,6 +562,11 @@ def main():
         assert not has or topic in featured['district'], (
             f'{topic} has district measures but opens on nothing')
     P['featured'] = featured
+    # Groups whose average across places is a plain one: crop yields are per
+    # hectare, and a temperature or a share of land is about the ground, not
+    # the people on it, so weighting by census population would describe no one.
+    import issue4_groups
+    P['plain_average'] = ['crops'] + issue4_groups.PLAIN_AVERAGE
     print('  featured: ' + ', '.join(
         f"{t.split(' ')[0]} {len(v)}" for t, v in featured['district'].items()))
 

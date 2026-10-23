@@ -232,6 +232,12 @@ def main():
     raw = pathlib.Path(a.crosswalk).read_bytes()
     cw = json.loads(raw)
     mapping = cw['mapping']
+    # Series that arrived after the crosswalk was drawn declare their own place
+    # in it, in the crosswalk's shape, beside the code that builds them.
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import issue4_groups
+    SUM_OK.update(issue4_groups.SUM_OK)
+    mapping = mapping + issue4_groups.mapping(countable)
 
     # The modes the rail offers must be the modes the crosswalk recorded.
     wrong = [m for m in mapping
@@ -311,6 +317,7 @@ def main():
         'crosswalk_sha256': hashlib.sha256(raw).hexdigest(),
         'source_snapshot_sha256': cw['report']['source_sha256'],
         'entries': len(out),
+        'extra_entries': len(issue4_groups.mapping(countable)),
         'vocab': vocab,
         'unresolved_review': unresolved,
         'map': out,

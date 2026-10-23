@@ -107,3 +107,9 @@ GROUP_TOPIC['mouza_markets_credit'] = 'economic'
 # what the access topic is for.
 GROUP_TOPIC['mouza_schools'] = 'access'
 GROUP_TOPIC['mouza_health'] = 'access'
+
+# Issue 4's climate, land and water measures sit with the satellite measures:
+# the same method family and the same caveats about gridded data.
+from issue4_groups import GROUPS as _ISSUE4
+for _g in _ISSUE4:
+    GROUP_TOPIC[_g['group_key']] = 'satellite'

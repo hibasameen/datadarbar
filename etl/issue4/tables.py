@@ -217,9 +217,12 @@ TABLES = [
          title='Pakistan district baseline and projected water stress',
          desc='Baseline water stress and 2020–2040 projections under three scenarios, by district.',
          notes='Aqueduct 2.1 scores basins, not districts; a district’s figure is the mean over the '
-               'basins it covers. Scores are capped at 5. Projections are scenario outputs, not forecasts.',
-         source='WRI Aqueduct 2.1; district means by ' + ADAAD, unit='score 0–5; share',
-         cols={**DISTRICT, 'ws_baseline_capped_mean': 'baseline water stress, 0–5',
+               'basins it covers. The stress measure is withdrawals as a share of renewable supply, '
+               'capped at 1 (raw ratios reach 190 in hyper-arid basins). The baseline’s '
+               '“extremely high” class is a different scale from the projections’, so compare '
+               'capped means across them, not shares. Projections are scenario outputs, not forecasts.',
+         source='WRI Aqueduct 2.1; district means by ' + ADAAD, unit='ratio; share',
+         cols={**DISTRICT, 'ws_baseline_capped_mean': 'baseline withdrawals as a share of supply, capped at 1',
                'ws_baseline_share_extremely_high': 'share of the district in extremely high stress'}),
     dict(name='surface_water_district', src='pk-water/surface_water_transitions_district.csv',
          district=True, kind='places', licences=['jrc-open'],
