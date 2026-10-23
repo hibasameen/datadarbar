@@ -72,6 +72,11 @@
   var discos = asObjects(D.discos);
   var recovery = asObjects(D.recovery);
   var impacts = asObjects(D.impacts);
+  var loadshed = asObjects(D.loadshed), monitored = asObjects(D.monitored);
+  var netmeter = asObjects(D.netmeter);
+  var gasSupply = asObjects(D.gasSupply), gasSector = asObjects(D.gasSector);
+  var transfers = asObjects(D.transfers), floods = asObjects(D.floods);
+  var reservoirs = asObjects(D.reservoirs);
 
   /* Derived denominators, carried with the payload. GDP at current market
      prices by fiscal-year end, with a flag for the years spliced onto the
@@ -216,7 +221,7 @@
           + 'negative number of reports. Only the daily figure is drawn.',
     },
     discos: {
-      theme: 'Energy',
+      theme: 'Power & gas',
       title: 'Electricity lost and bills unpaid',
       dek: 'The share of the electricity entering each distribution '
          + 'company’s system that never reaches a billed meter, 2006-07 to '
@@ -242,7 +247,7 @@
           + 'crosswalked, and the totals rows are kept apart from the companies.',
     },
     plants: {
-      theme: 'Energy',
+      theme: 'Power & gas',
       title: 'Power plants and capacity',
       dek: 'The plants in NEPRA’s reports, what they burn, how much they '
          + 'were rated at and how much of that they ran, 2017-18 to 2024-25. '
@@ -265,8 +270,68 @@
           + 'technology and fuel strings into families; each plant keeps the '
           + 'original two, visible on hover.',
     },
+    transfers: {
+      theme: 'Public money',
+      title: 'Oil and gas money to provinces',
+      dek: 'Royalties, the gas development surcharge and excise on gas that the federal '
+         + 'government passes to the provinces where the oil and gas are produced: Rs 224 '
+         + 'billion in 2024-25, Rs 129 billion of it to Sindh.',
+      note: 'Budget documents give estimates, not audited releases. Sindh, Balochistan and '
+          + 'Khyber Pakhtunkhwa produce nearly all the gas; Punjab\u2019s share is small. The '
+          + 'figures are the federal government\u2019s, not the provinces\u2019 own accounts.',
+    },
+    loadshed: {
+      theme: 'Power & gas',
+      title: 'Load shedding',
+      dek: 'The hours a day of load shedding each distribution company reports to NEPRA, '
+         + 'and the hours NEPRA says it saw. They are not the same number, and NEPRA says '
+         + 'which one it believes.',
+      note: 'Two different quantities, never drawn as one series: what the companies report '
+          + 'in their annual returns, and what NEPRA states it observed. NEPRA\u2019s Performance '
+          + 'Evaluation Reports, 2012-13 to 2024-25; the 2023-24 report could not be read, so '
+          + 'that year comes from the following report\u2019s comparison table.',
+    },
+    netmeter: {
+      theme: 'Power & gas',
+      title: 'Rooftop solar on the grid',
+      dek: 'Electricity bought from net-metered rooftops rose from almost nothing in '
+         + '2019-20 to 3,250 GWh in 2024-25, nearly tripling in the last year alone; most '
+         + 'of it in the Punjab companies and Islamabad.',
+      note: 'From NEPRA\u2019s State of Industry reports, which give figures by company only from '
+          + '2022. Licences and concurrences are counted in the year they were issued and are '
+          + 'not connections. Most rooftop solar is not net-metered at all: these are only the '
+          + 'systems that sell back to the grid.',
+    },
+    gas: {
+      theme: 'Power & gas',
+      title: 'Natural gas',
+      dek: 'Where Pakistan\u2019s gas comes from and who burns it. Domestic supply fell by '
+         + 'over a quarter in six years; power stations, fertilizer and homes use most of it.',
+      note: 'OGRA\u2019s State of the Regulated Petroleum Industry, 2019-20 to 2024-25 editions. '
+          + 'Reports before 2020-21 are scanned and not yet read. Consumption by province is in '
+          + 'the table but not charted: its basis changes between editions.',
+    },
+    floods: {
+      theme: 'Water & weather',
+      title: 'The 2022 floods',
+      dek: 'How much of each province was under water, week by week, from the end of '
+         + 'August 2022 to mid-January 2023, as satellites saw it.',
+      note: 'UNOSAT\u2019s satellite flood extents, published under CC BY-SA; the share-alike '
+          + 'terms apply to anything made from them. For the flooding district by district '
+          + 'and how long it lasted, see the 2022 floods on the Places map.',
+    },
+    reservoirs: {
+      theme: 'Water & weather',
+      title: 'Reservoirs',
+      dek: 'Tarbela, Mangla and Chashma from space: their water surface, month by month, '
+         + 'since the late 1980s. The record IRSA and WAPDA do not publish.',
+      note: 'Global Water Watch (Deltares and WRI), via Global Forest Watch. Ninety-six '
+          + 'Pakistani reservoirs are in the table; three are drawn. Global Water Watch\u2019s '
+          + 'own monthly series fills unobserved months and disagrees with the observations in '
+          + '1,074 reservoir-months, so only observed months are used.',
+    },
     events: {
-      theme: 'Public services',
+      theme: 'Water & weather',
       title: 'Disaster alerts',
       dek: 'Every flood, drought and cyclone alert GDACS has issued for '
          + 'Pakistan since 2001, graded orange or red: 31 alerts, 25 of them '
@@ -282,7 +347,7 @@
           + 'was affected.',
     },
     impacts: {
-      theme: 'Public services',
+      theme: 'Water & weather',
       title: 'Monsoon impacts',
       dek: 'What the 2026 monsoon did, as NDMA’s situation reports counted '
          + 'it: 181 deaths, 515 injured and 1,729 houses damaged by 5 '
@@ -353,6 +418,32 @@
     eventsCount: renderEventsCount,
     impactsPanel: renderImpactsPanel,
     impactsMetric: renderImpacts,
+    transfersProvince: function () { renderTransfers('province'); },
+    transfersItem: function () { renderTransfers('item'); },
+    loadShedReported: renderLoadShedReported,
+    loadShedGap: renderLoadShedGap,
+    netMeterUnits: function () {
+      renderNetMeter('units_purchased_gwh', 'Units bought through net metering, GWh',
+        function (v) { return v >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1); },
+        'Electricity each company bought back from net-metered customers. The total '
+        + 'roughly tripled in 2024-25 alone, to 3,250 GWh.',
+        'Units purchased through net metering, from NEPRA\u2019s State of Industry reports; '
+        + 'the latest report\u2019s figure for each year. K-Electric reports its own '
+        + 'separately and is not in every year.');
+    },
+    netMeterCapacity: function () {
+      renderNetMeter('licensed_capacity_mw', 'Net-metering capacity licensed in the year, MW',
+        function (v) { return Math.round(v).toLocaleString() + ' MW'; },
+        'New net-metering capacity NEPRA licensed or concurred each year, by company: '
+        + '1,250 MW in 2024-25, five times 2021-22.',
+        'A flow, not a stock: capacity licensed in the year, not installed in total. Since '
+        + 'the 2026 Prosumer Regulations, systems up to 25 kW are approved by the company '
+        + 'rather than NEPRA, which changes what this counts.');
+    },
+    gasSupply: renderGasSupply,
+    gasSector: renderGasSector,
+    floodWeekly: renderFloodWeekly,
+    reservoirArea: renderReservoirs,
   };
 
   function render(row) {
@@ -2074,6 +2165,210 @@
       + 'add up to it to within 0.13 per cent.');
   }
 
+  /* ── Issue 4: load shedding, net metering, gas, oil and gas money,
+        the 2022 floods, reservoirs ───────────────────────────────────── */
+  function hrs(v) { return v.toFixed(v < 10 ? 1 : 0) + ' h'; }
+  function byLatest(rows) {
+    return Array.from(new Set(rows.map(function (d) { return d.k; }))).sort(function (a, b) {
+      var la = rows.filter(function (d) { return d.k === a; }).pop();
+      var lb = rows.filter(function (d) { return d.k === b; }).pop();
+      return (lb ? lb.value : 0) - (la ? la.value : 0);
+    });
+  }
+  function yearsOf(rows) {
+    return Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(function (a, b) { return a - b; });
+  }
+
+  function renderLoadShedReported() {
+    var rows = loadshed.filter(function (d) { return d.disco !== 'TESCO'; })
+      .map(function (d) { return { k: d.disco, year: d.fy_end, value: d.hours_reported }; });
+    var ys = yearsOf(rows);
+    cover(['FY' + ys[0] + ' to FY' + ys[ys.length - 1],
+           'the companies’ own figures', 'FY2024 from the FY2025 report only']);
+    lineChart(rows, byLatest(rows), ys, 'value', 'Average hours of load shedding a day, as reported',
+      hrs, { gaps: true,
+        lede: 'What each distribution company told NEPRA its average daily load shedding '
+            + 'was. The Punjab companies report almost none by 2024-25; QESCO, HESCO and '
+            + 'PESCO report the most every year since 2018-19.',
+        foot: 'These are the companies’ claims, and NEPRA prints them while saying they '
+            + 'are wrong: “fudged” (2015-16, 2019-20), “not based on ground realities” '
+            + '(2020-21, 2021-22), “significant underreporting” (2024-25). The next chart '
+            + 'sets them against the one year NEPRA gave its own figure for every company.' });
+  }
+
+  function renderLoadShedGap() {
+    var fy = '2022-23';
+    var rep = {}, seen = {};
+    loadshed.forEach(function (d) { if (d.fy === fy) rep[d.disco] = d.hours_reported; });
+    var rows = monitored.filter(function (d) { return d.fy === fy && d.disco !== 'ALL'; })
+      .map(function (d) {
+        seen[d.disco] = 1;
+        return { name: d.disco, a: rep[d.disco] == null ? null : rep[d.disco], b: d.hours_low,
+                 sub: 'NEPRA: ' + (d.hours_high ? d.hours_low + ' to ' + d.hours_high + ' hours'
+                                               : 'more than ' + d.hours_low + ' hours') };
+      });
+    cover(['2022-23 only', 'NEPRA’s figure is a lower bound where it wrote “more than”']);
+    dumbbell(rows, { aLabel: 'Company reported', bLabel: 'NEPRA observed', upIsBad: true,
+      fmt: hrs,
+      delta: function (r) { return r.a == null ? '' : '(' + signed(r.b - r.a, 1) + ' h)'; },
+      lede: 'In 2022-23, the only year NEPRA printed its own figure for every company, '
+          + 'it saw more load shedding than nine of the ten reported: nearly eight hours a '
+          + 'day more in SEPCO, three or more in PESCO. QESCO\u2019s own 10.25 hours already '
+          + 'met NEPRA\u2019s \u201cmore than 10\u201d.',
+      foot: 'NEPRA’s column is “actual load shedding being monitored by NEPRA”, given as '
+          + 'a range or as “more than” a figure; the dot is the lower end, so the gap is '
+          + 'if anything understated. In other years NEPRA’s statement covers every company '
+          + 'at once (8 to 12 hours on certain feeders, 2014-15 to 2017-18) and is in the '
+          + 'table, not on this chart. NEPRA attributes the gap to shedding by feeder loss '
+          + 'rate, which its rules do not allow.' });
+  }
+
+  function renderNetMeter(measure, label, fmt, lede, foot) {
+    var rows = netmeter.filter(function (d) { return d.measure === measure; })
+      .map(function (d) { return { k: d.disco, year: d.fy_end, value: d.value }; });
+    var ys = yearsOf(rows);
+    cover(['FY' + ys[0] + ' to FY' + ys[ys.length - 1], 'nothing by company before NEPRA’s 2022 report']);
+    lineChart(rows, byLatest(rows), ys, 'value', label, fmt, { gaps: true, lede: lede, foot: foot });
+  }
+
+  function renderGasSupply() {
+    var keys = ['Sindh', 'Balochistan', 'Khyber Pakhtunkhwa', 'Punjab', 'RLNG (imported)'];
+    var by = {};
+    gasSupply.forEach(function (d) {
+      var r = by[d.fiscal_year] || (by[d.fiscal_year] = { year: d.fiscal_year, total: 0 });
+      r[d.province] = d.supply_mmcfd; r.total += d.supply_mmcfd;
+    });
+    var data = Object.keys(by).sort().map(function (k) {
+      keys.forEach(function (p) { if (by[k][p] == null) by[k][p] = 0; });
+      return by[k];
+    });
+    cover(['FY2018-19 to FY2024-25', 'million cubic feet a day']);
+    stackedBars(data, keys, { fmt: function (v) { return Math.round(v).toLocaleString(); },
+      axis: 'Gas supplied, million cubic feet a day',
+      lede: 'Pakistan’s own gas comes mostly from Sindh, and there is less of it every '
+          + 'year: indigenous supply fell from 3,420 to 2,480 million cubic feet a day '
+          + 'between 2018-19 and 2024-25, while imported LNG held near 900.',
+      foot: 'Field supplies summed to the province the field lies in; they reconcile to '
+          + 'OGRA’s printed subtotals within 1.1 MMCFD. Imported regasified LNG is shown '
+          + 'beside the provinces because it enters the same systems. Where gas is produced, '
+          + 'not where it is used: see the sector chart for that.' });
+  }
+
+  function renderGasSector() {
+    var years = Array.from(new Set(gasSector.map(function (d) { return d.fiscal_year; }))).sort();
+    if (!gasYear || years.indexOf(gasYear) < 0) gasYear = years[years.length - 1];
+    seg(ctlRow(), 'Year', years.map(function (y) { return [y, y]; }), gasYear,
+        function (v) { gasYear = v; render(); });
+    var rows = gasSector.filter(function (d) { return d.fiscal_year === gasYear; })
+      .sort(function (a, b) { return b.total_mmcfd - a.total_mmcfd; });
+    cover([gasYear, 'all systems', 'OGRA’s totals left out']);
+    barChart(rows, function (d) { return d.sector; }, function (d) { return d.total_mmcfd; },
+      'Who used the gas in ' + gasYear + ', million cubic feet a day',
+      'Power stations, fertilizer plants and homes take most of it. Losses in transmission '
+      + 'and distribution are a line of their own, as OGRA prints them. Four years are '
+      + 'published by sector; OGRA’s sub-total and grand-total rows are not shown, so the '
+      + 'bars do not repeat what they sum to.');
+  }
+  var gasYear = null;
+
+  var TRANSFER_ITEM = { royalty_natural_gas: 'Royalty on gas', royalty_crude_oil: 'Royalty on crude oil',
+                        gas_development_surcharge: 'Gas development surcharge',
+                        excise_duty_natural_gas: 'Excise duty on gas' };
+  function renderTransfers(by) {
+    var keys = by === 'province' ? ['Sindh', 'Khyber Pakhtunkhwa', 'Balochistan', 'Punjab']
+      : ['royalty_natural_gas', 'royalty_crude_oil', 'gas_development_surcharge', 'excise_duty_natural_gas'];
+    priceControl(ctlRow());
+    var agg = {}, budgetOnly = {};
+    transfers.forEach(function (d) {
+      var r = agg[d.fiscal_year] || (agg[d.fiscal_year] = { year: d.fiscal_year, total: 0 });
+      var k = by === 'province' ? d.province : d.item;
+      var v = (d.rs_mn || 0) * priceFactor(d.fiscal_year) / 1000;
+      r[k] = (r[k] || 0) + v; r.total += v;
+      if (!d.revised) budgetOnly[d.fiscal_year] = 1;
+    });
+    var data = Object.keys(agg).sort().map(function (y) {
+      keys.forEach(function (k) { if (agg[y][k] == null) agg[y][k] = 0; });
+      return agg[y];
+    });
+    var years = data.map(function (d) { return d.year; });
+    cover([years[0] + ' to ' + years[years.length - 1],
+           'revised estimates; ' + Object.keys(budgetOnly).join(', ') + ' budget estimate',
+           realOn() ? priceNote(years) : 'Nominal rupees, not inflation-adjusted']);
+    stackedBars(data, keys, { fmt: function (v) { return Math.round(v).toLocaleString(); },
+      label: function (k) { return TRANSFER_ITEM[k] || k; },
+      axis: 'Rs billion' + (realOn() ? ', ' + DDDeflate.base + ' prices' : ''),
+      lede: by === 'province'
+        ? 'What the federal government passes to the provinces for the oil and gas taken '
+          + 'from them. Sindh receives over half every year; Punjab, which produces little, '
+          + 'under a tenth.'
+        : 'The same money by what it is. Royalty on gas and the gas development surcharge '
+          + 'are most of it; the surcharge swings, and is printed negative in two '
+          + 'provinces’ estimates for 2019-20 and 2020-21.',
+      foot: 'Straight transfers under the NFC award, from the Finance Division’s Explanatory '
+          + 'Memorandum on Federal Receipts: the revised estimate from the following year’s '
+          + 'budget, or the budget estimate where no revision is published yet. Estimates, '
+          + 'not audited releases. The four oil and gas items only; before 2011-12 the '
+          + 'memorandum’s straight-transfer total also includes provincial sales tax.' });
+  }
+
+  function renderFloodWeekly() {
+    var weeks = Array.from(new Set(floods.map(function (d) { return d.week; }))).sort();
+    var startOf = {};
+    floods.forEach(function (d) { startOf[d.week] = d.start; });
+    var rows = [], tot = {};
+    floods.forEach(function (d) {
+      var i = weeks.indexOf(d.week) + 1;
+      var prov = d.province.toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      rows.push({ k: prov, year: i, value: 100 * d.flooded_km2 / d.area_km2 });
+      var t = tot[i] || (tot[i] = { f: 0, a: 0 });
+      t.f += d.flooded_km2; t.a += d.area_km2;
+    });
+    Object.keys(tot).forEach(function (i) {
+      rows.push({ k: 'Pakistan', year: +i, value: 100 * tot[i].f / tot[i].a });
+    });
+    var keys = byLatest(rows.filter(function (d) { return d.year === 1; }));
+    var ys = weeks.map(function (w, i) { return i + 1; });
+    var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    cover(['11 seven-day windows, 25 Aug 2022 to 15 Jan 2023', 'not consecutive',
+           'UNOSAT, CC BY-SA']);
+    lineChart(rows, keys, ys, 'value', 'Share of the province under water (%)',
+      function (v) { return v.toFixed(1) + '%'; },
+      { width: function (k) { return k === 'Pakistan' ? 3 : 2; },
+        tick: function (i) { var s = startOf[weeks[i - 1]]; return s ? +s.slice(8, 10) + ' ' + mon[+s.slice(5, 7) - 1] : ''; },
+        lede: 'At the end of August 2022 almost a third of Sindh was under water, and the '
+            + 'water was slow to leave: in mid-January more than 7 per cent of the province '
+            + 'still was.',
+        foot: 'Flooded area detected by satellite (UNOSAT’s seven-day NOAA-20 composites) '
+            + 'as a share of each province’s whole area. The windows are evenly spaced on '
+            + 'this axis but not in time: nothing was observed from 22 to 25 September, 18 '
+            + 'October to 13 November, or 21 November to 24 December 2022. Cloud hides '
+            + 'water, so a week with low coverage understates it. Preliminary analyses, not '
+            + 'field-validated. Analysis: United Nations Satellite Centre (UNOSAT).' });
+  }
+
+  var resSpan = 'recent';
+  function renderReservoirs() {
+    seg(ctlRow(), 'Span', [['recent', 'Since 2016'], ['all', 'Since 1987']], resSpan,
+        function (v) { resSpan = v; render(); });
+    var rows = reservoirs.filter(function (d) { return resSpan === 'all' || d.year >= 2016; })
+      .map(function (d) {
+        return { k: d.reservoir, year: d.year + (d.month - 0.5) / 12, value: d.km2 };
+      });
+    var ys = yearsOf(rows);
+    cover([resSpan === 'all' ? '1987 to 2026' : '2016 to 2026',
+           'months with a satellite observation only', 'surface, not storage']);
+    lineChart(rows, ['Tarbela', 'Mangla', 'Chashma'], ys, 'value', 'Water surface, km²',
+      function (v) { return Math.round(v) + ' km²'; },
+      { lede: 'The water surface of Pakistan’s three largest reservoirs, seen from space each '
+            + 'month: they fill with the summer melt and monsoon and are drawn down through '
+            + 'the dry season.',
+        foot: 'Global Water Watch’s observed surface area (Deltares and WRI, from Landsat '
+            + 'and Sentinel), averaged by month over the observations in it. A month without '
+            + 'an observation has no point; the line bridges it. Surface area is not '
+            + 'storage, which would need each reservoir’s depth curve. IRSA and WAPDA do '
+            + 'not publish an archive of daily levels.' });
+  }
+
   /* ── disaster alerts ─────────────────────────────────────────────────── */
   function eventRows() {
     return events.map(function (e) {
@@ -2709,6 +3004,11 @@
     discoRecovery: 'recovery',
     discoChange: 'discos', discoLosses: 'discos', discoLatest: 'discos',
     discoUnits: 'discos',
+    loadShedReported: 'loadshed', loadShedGap: 'monitored',
+    netMeterUnits: 'netmeter', netMeterCapacity: 'netmeter',
+    gasSupply: 'gasSupply', gasSector: 'gasSector',
+    transfersProvince: 'transfers', transfersItem: 'transfers',
+    floodWeekly: 'floods', reservoirArea: 'reservoirs',
     /* The budget draws from its own payload, which is grouped rather than
        the warehouse rows; its CSV is the group totals per year. */
   };

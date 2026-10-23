@@ -365,6 +365,69 @@ def main():
     population.append(['Pakistan', 2023, sum(int(v) for _, v in pop)])
     assert abs(population[-1][2] - 241_499_431) < 1000, population[-1]
 
+    # ── Issue 4: power, gas, oil and gas money, floods, reservoirs ─────────
+    # From etl/issue4, published as they are; the charts take one figure per
+    # company or province and year from each.
+    def fy_end(col):
+        return f"CAST(substr({col}, 1, 4) AS INTEGER) + 1"
+
+    # What each company told NEPRA, and what NEPRA said it saw: two
+    # quantities, kept in two blocks so no chart can draw one as the other.
+    loadshed = rows(f"""
+        SELECT disco, fy, {fy_end('fy')}, hours_reported
+        FROM '{W_}/loadshedding_disco_fy.parquet'
+        WHERE hours_reported IS NOT NULL AND disco <> 'BTPL'
+        ORDER BY disco, fy""")
+    monitored = rows(f"""
+        SELECT fy, {fy_end('fy')}, disco, hours_low, hours_high, statement
+        FROM '{W_}/loadshedding_nepra_monitored.parquet'
+        ORDER BY fy, disco""")
+    # Net metering: the company rows only. NEPRA's TOTAL rows are its own
+    # sums over differing sets of companies, so they are left to the table.
+    netmeter = rows(f"""
+        SELECT disco, fy, {fy_end('fy')}, measure, value, unit
+        FROM '{W_}/netmetering_disco_fy.parquet'
+        WHERE value IS NOT NULL AND disco NOT LIKE 'TOTAL%'
+          AND measure IN ('units_purchased_gwh', 'licensed_capacity_mw',
+                          'connections_sanctioned', 'licences_issued')
+        ORDER BY measure, disco, fy""")
+    gas_supply = rows(f"""
+        SELECT fiscal_year, {fy_end('fiscal_year')}, province, supply_mmcfd
+        FROM '{W_}/gas_supply_province.parquet' ORDER BY fiscal_year, province""")
+    gas_sector = rows(f"""
+        SELECT fiscal_year, {fy_end('fiscal_year')}, sector, total_mmcfd
+        FROM '{W_}/gas_consumption_sector.parquet'
+        WHERE total_mmcfd IS NOT NULL
+          AND sector NOT IN ('Grand total', 'Sub-total (net of own use and losses)')
+        ORDER BY fiscal_year, total_mmcfd DESC""")
+    # One figure a year: the revised estimate, printed in the next year's
+    # budget, where there is one; the budget estimate where not (the latest
+    # year). The four items are what the provinces receive for oil and gas.
+    transfers = rows(f"""
+        SELECT fiscal_year, {fy_end('fiscal_year')}, item, province,
+               coalesce(any_value(rs_million) FILTER (WHERE estimate = 'revised'),
+                        any_value(rs_million) FILTER (WHERE estimate = 'budget')),
+               bool_or(estimate = 'revised')
+        FROM '{W_}/oil_gas_transfers_province.parquet'
+        WHERE item IN ('royalty_crude_oil', 'royalty_natural_gas',
+                       'gas_development_surcharge', 'excise_duty_natural_gas')
+          AND province NOT LIKE 'Total%'
+        GROUP BY ALL ORDER BY fiscal_year, item, province""")
+    # The 2022 floods, week by week: each province's flooded share of its
+    # whole area, from the same eleven seven-day composites.
+    floods = rows(f"""
+        SELECT week, min(period_start), province,
+               round(sum(flooded_km2), 1), round(sum(district_area_km2), 1),
+               round(sum(analysed_km2), 1), round(sum(population_exposed))
+        FROM '{W_}/flood2022_weekly.parquet'
+        GROUP BY week, province ORDER BY 2, province""")
+    reservoirs = rows(f"""
+        SELECT reservoir, ym, year, month, round(obs_mean_km2, 2), n_obs,
+               round(anomaly_obs_vs_clim_pct, 1)
+        FROM '{W_}/reservoir_monthly_observed.parquet'
+        WHERE reservoir IN ('Tarbela', 'Mangla', 'Chashma')
+        ORDER BY reservoir, ym""")
+
     # ── the indicator index ────────────────────────────────────────────────
     # One row per dataset x topic x indicator: what the three dropdowns offer
     # and what each one draws. Nothing here is a claim about the data - the
@@ -390,6 +453,12 @@ def main():
          'Eighteen budgets as a share of GDP', 'budgetGdp', None, None),
         ('budget_lines', 'budget', 'trend',
          'Eighteen budgets in nominal or real rupees', 'budgetTrend', None, None),
+        ('oil_gas_transfers_province', 'transfers', 'province',
+         'Oil and gas money paid to each province', 'transfersProvince',
+         'transfers', 'fy_end'),
+        ('oil_gas_transfers_province', 'transfers', 'item',
+         'Royalties, surcharge and excise: what the money is', 'transfersItem',
+         'transfers', 'fy_end'),
         # Justice. One panel per court with its own scale, because Punjab is
         # thirty times Balochistan and one axis flattened the other four.
         ('ljcp_case_flows', 'courts', 'pending',
@@ -479,6 +548,28 @@ def main():
         ('nepra_disco_annual', 'discos', 'units',
          'Units in, units billed, units never billed', 'discoUnits', 'discos',
          'fy_end'),
+        ('loadshedding_disco_fy', 'loadshed', 'reported',
+         'Hours a day each company reported', 'loadShedReported', 'loadshed',
+         'fy_end'),
+        ('loadshedding_nepra_monitored', 'loadshed', 'gap',
+         'What companies reported against what NEPRA saw, 2022-23',
+         'loadShedGap', 'monitored', 'fy_end'),
+        ('netmetering_disco_fy', 'netmeter', 'units',
+         'Units bought from rooftops, by company', 'netMeterUnits', 'netmeter',
+         'fy_end'),
+        ('netmetering_disco_fy', 'netmeter', 'capacity',
+         'Net-metering capacity licensed each year, by company',
+         'netMeterCapacity', 'netmeter', 'fy_end'),
+        ('gas_supply_province', 'gas', 'supply',
+         'Gas produced, by province', 'gasSupply', 'gasSupply', 'fy_end'),
+        ('gas_consumption_sector', 'gas', 'sector',
+         'Gas used, by sector', 'gasSector', 'gasSector', 'fy_end'),
+        ('flood2022_weekly', 'floods', 'weekly',
+         'The 2022 floods week by week, by province', 'floodWeekly', None,
+         None),
+        ('reservoir_monthly_observed', 'reservoirs', 'area',
+         'Tarbela, Mangla and Chashma: water surface month by month',
+         'reservoirArea', 'reservoirs', 'year'),
         ('climate_events', 'events', 'timeline', 'Alerts by hazard and year',
          'eventsTimeline', 'events', None),
         ('climate_events', 'events', 'count', 'Alerts per year, by hazard',
@@ -503,10 +594,16 @@ def main():
         'crime': ('Reported offences', 'Crime & policing'),
         'sindhCrime': ('Sindh crime tables', 'Crime & policing'),
         'firs': ('Sindh first information reports', 'Crime & policing'),
-        'plants': ('Power plants and capacity', 'Energy'),
-        'discos': ('Electricity distribution', 'Energy'),
-        'events': ('Disaster alerts', 'Public services'),
-        'impacts': ('Monsoon impacts', 'Public services'),
+        'transfers': ('Oil and gas money to provinces', 'Public money'),
+        'plants': ('Power plants and capacity', 'Power & gas'),
+        'discos': ('Electricity distribution', 'Power & gas'),
+        'loadshed': ('Load shedding', 'Power & gas'),
+        'netmeter': ('Rooftop solar on the grid', 'Power & gas'),
+        'gas': ('Natural gas', 'Power & gas'),
+        'floods': ('The 2022 floods', 'Water & weather'),
+        'reservoirs': ('Reservoirs', 'Water & weather'),
+        'events': ('Disaster alerts', 'Water & weather'),
+        'impacts': ('Monsoon impacts', 'Water & weather'),
     }
 
     payload = {
@@ -555,6 +652,23 @@ def main():
             'first': budget[2], 'last': budget[3], 'items': budget[4],
         },
         'recovery': {'rows': recovery_rows, 'cols': RECOVERY_COLS},
+        'loadshed': {'rows': loadshed, 'cols': ['disco', 'fy', 'fy_end', 'hours_reported']},
+        'monitored': {'rows': monitored,
+                      'cols': ['fy', 'fy_end', 'disco', 'hours_low', 'hours_high', 'statement']},
+        'netmeter': {'rows': netmeter,
+                     'cols': ['disco', 'fy', 'fy_end', 'measure', 'value', 'unit']},
+        'gasSupply': {'rows': gas_supply,
+                      'cols': ['fiscal_year', 'fy_end', 'province', 'supply_mmcfd']},
+        'gasSector': {'rows': gas_sector,
+                      'cols': ['fiscal_year', 'fy_end', 'sector', 'total_mmcfd']},
+        'transfers': {'rows': transfers,
+                      'cols': ['fiscal_year', 'fy_end', 'item', 'province', 'rs_mn', 'revised']},
+        'floods': {'rows': floods,
+                   'cols': ['week', 'start', 'province', 'flooded_km2', 'area_km2',
+                            'analysed_km2', 'population_exposed']},
+        'reservoirs': {'rows': reservoirs,
+                       'cols': ['reservoir', 'ym', 'year', 'month', 'km2', 'n_obs',
+                                'anomaly_pct']},
         'discos': {'rows': disco_rows, 'cols': DISCO_COLS, 'areas': DISCO_AREA,
                    'rejected': disco_dropped, 'disagreements': disco_disagree},
         'derived': {
@@ -598,10 +712,18 @@ def main():
         'window.DD_STATE=' + json.dumps(payload, separators=(',', ':')) + ';\n')
 
     for k in ('tax', 'courts', 'courtDistricts', 'judges', 'judgesProvince', 'crime', 'offences', 'crimeDistricts',
-              'sindhCrime', 'firs', 'plants', 'events', 'impacts'):
+              'sindhCrime', 'firs', 'plants', 'events', 'impacts', 'loadshed', 'monitored',
+              'netmeter', 'gasSupply', 'gasSector', 'transfers', 'floods', 'reservoirs'):
         print(f'  {k:15s} {len(payload[k]["rows"]):>6,} rows')
     print(f'  -> {out} ({out.stat().st_size/1e3:.1f} KB)')
 
+    # One figure per year, item and province, or a budget printed twice
+    # would be counted twice. Negative surcharge figures are adjustments the
+    # budgets print, and are reported rather than refused.
+    assert len({(r[0], r[2], r[3]) for r in transfers}) == len(transfers), 'duplicate transfer rows'
+    for r in transfers:
+        if r[4] is not None and r[4] < 0:
+            print(f'  transfers: {r[0]} {r[2]} {r[3]} {r[4]:,.1f} as printed')
     # Two checks that would have caught the join that was not a join.
     assert all(r[5] for r in events), 'an event lost its alert level'
     assert all(r[3] == r[4] + r[5] + r[6] for r in judges), \

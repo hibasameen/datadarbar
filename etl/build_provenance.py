@@ -508,6 +508,53 @@ STATE = {
  'impactsMetric': dict(publication='Monsoon impact returns',
     selection='the selected impact measure, by province',
     note='These records do not join to the alert records.'),
+ # ── Issue 4 ──
+ 'transfersProvince': dict(publication='Explanatory Memorandum on Federal Receipts, '
+                                       'straight transfers to provinces',
+    selection='royalty on crude oil and on gas, gas development surcharge and excise '
+              'duty on gas, summed by province and year',
+    calc='the revised estimate from the following year\u2019s budget, else the budget '
+         'estimate; Rs million to Rs billion; optionally deflated by the GDP deflator',
+    note='Estimates, not audited releases.'),
+ 'transfersItem': dict(publication='Explanatory Memorandum on Federal Receipts, '
+                                   'straight transfers to provinces',
+    selection='the four oil and gas items, summed over the provinces',
+    calc='as the province chart',
+    note='Some surcharge estimates are printed negative and are kept as printed.'),
+ 'loadShedReported': dict(publication='Performance Evaluation Report of Distribution '
+                                      'Companies, load shedding (hours)',
+    selection='average daily hours each company reported, latest report\u2019s figure per year',
+    note='The companies\u2019 own returns, which NEPRA disputes in the same reports.'),
+ 'loadShedGap': dict(publication='Performance Evaluation Report of Distribution '
+                                 'Companies 2022-23',
+    selection='hours reported against \u201cactual load shedding being monitored by '
+              'NEPRA\u201d, by company',
+    calc='where NEPRA gives a range or \u201cmore than\u201d, its lower figure',
+    note='The only year NEPRA printed a figure for every company.'),
+ 'netMeterUnits': dict(publication='State of Industry Report, net-metering tables',
+    selection='units purchased through net metering, by company and year',
+    note='No company-level figures before the 2022 report.'),
+ 'netMeterCapacity': dict(publication='State of Industry Report, licensing tables',
+    selection='net-metering capacity licensed or concurred in the year, by company',
+    note='A flow in the year, not installed capacity.'),
+ 'gasSupply': dict(publication='State of the Regulated Petroleum Industry, gas supply '
+                               'by field',
+    selection='supply by producing province, with imported RLNG',
+    calc='field supplies summed to the province the field lies in',
+    note='Reconciles to OGRA\u2019s printed subtotals within 1.1 MMCFD.'),
+ 'gasSector': dict(publication='State of the Regulated Petroleum Industry, gas '
+                               'consumption by sector',
+    selection='consumption by sector, all systems, in the selected year',
+    note='OGRA\u2019s sub-total and grand-total rows are left out.'),
+ 'floodWeekly': dict(publication='UNOSAT Pakistan 2022 flood extents, seven-day '
+                                 'NOAA-20 composites',
+    selection='flooded area by province in each of 11 windows',
+    calc='flooded km\u00b2 summed over a province\u2019s districts, divided by its area',
+    note='Windows are not consecutive; cloud cover understates water. CC BY-SA.'),
+ 'reservoirArea': dict(publication='Global Water Watch reservoir surface area',
+    selection='Tarbela, Mangla and Chashma, months with an observation',
+    calc='mean of the satellite observations in each month',
+    note='Surface area, not storage.'),
 }
 
 STATE_PUBLISHER = {
@@ -528,6 +575,14 @@ STATE_PUBLISHER = {
     'climate_events': 'Global Disaster Alert and Coordination System (GDACS), '
                       'European Commission Joint Research Centre',
     'climate_impacts': 'National Disaster Management Authority',
+    'oil_gas_transfers_province': 'Finance Division',
+    'loadshedding_disco_fy': 'NEPRA',
+    'loadshedding_nepra_monitored': 'NEPRA',
+    'netmetering_disco_fy': 'NEPRA',
+    'gas_supply_province': 'Oil and Gas Regulatory Authority',
+    'gas_consumption_sector': 'Oil and Gas Regulatory Authority',
+    'flood2022_weekly': 'United Nations Satellite Centre (UNOSAT)',
+    'reservoir_monthly_observed': 'Global Water Watch (Deltares, WRI)',
 }
 
 # The catalogue's `source` is one string mixing publisher and publication -
