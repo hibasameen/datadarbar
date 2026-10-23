@@ -111,7 +111,7 @@
     return t.split(/\s+[—–-]\s+/)[0].replace(/\s+[—–-]\s*$/, '').trim() || card.id;
   }
 
-  var index = [], byCard = {}, topicOf = {}, state = { topic: 'overview', ind: null };
+  var index = [], byCard = {}, topicOf = {}, state = { topic: 'overview', ind: null }, kick;
   var rail, cards, side, ctl;
 
   function build() {
@@ -217,6 +217,13 @@
     // Sources sit under each chart already (the provenance panel); the
     // coverage line stays empty here so the chart starts higher.
     $('coverage').innerHTML = '';
+    /* The modules draw on the hashchange before this runs - with the chart
+       still at the width it had before the linked view moved beside it, or
+       at their 900px fallback when the card was hidden - and every chart
+       reads clientWidth at draw time. A resize makes them draw again at the
+       widths the layout has now. */
+    clearTimeout(kick);
+    kick = setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
   }
 
   /* The partner profile is display:none until a partner is picked (trade.js
