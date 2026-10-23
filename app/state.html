@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="assets/css/shell.css?v=42c89fb7"/>
 <link rel="stylesheet" href="assets/css/explorer.css?v=42c89fb7"/>
 <!-- SEO:START -->
-<title>Pakistan Federal Tax Collection &amp; Public Money — Data Darbar</title>
+<title>Pakistan&#x27;s State in Numbers: Tax, Budget, Debt, Courts, Crime, Power, Water — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs.">
 <link rel="canonical" href="https://darbar.adaad.org/state.html">
 <meta property="og:title" content="Pakistan Federal Tax Collection &amp; Public Money — Data Darbar">
@@ -27,36 +27,41 @@
 <!-- /dd:header -->
 
 <div class="explorer">
-  <aside class="xside" aria-label="Topics and charts">
+  <aside class="xside" aria-label="Topics">
     <label class="xsearch">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>
       <input id="xFind" type="search" placeholder="Find a chart&hellip;" aria-label="Find a chart" autocomplete="off"/>
     </label>
     <div class="xrail" id="rail"></div>
-    <div class="xlist" id="chartList" aria-label="Charts in this topic"></div>
-    <p class="xside-note">District figures here (courts, KP and AJK crime) are not on the Places map yet.</p>
+    <p class="xside-note">District figures here (courts, KP and AJK crime) are also on the <a href="places.html">Places map</a>.</p>
   </aside>
 
   <main class="pane">
     <header class="pane-head">
       <div>
-        <div class="eyebrow" id="paneTheme">Public money</div>
-        <h1 id="paneTitle">What the state collects</h1>
+        <div class="eyebrow" id="paneTheme">State</div>
+        <h1 id="paneTitle">What the government collects, spends, owes, runs and regulates</h1>
         <p class="dek" id="paneDek"></p>
+        <button class="dek-more" id="dekMore" type="button" hidden>Read more</button>
       </div>
       <div class="pane-tools">
+        <button class="tool" id="shareBtn" type="button">Share</button>
         <button class="tool" id="csvBtn" type="button">CSV</button>
       </div>
     </header>
 
+    <div class="xtabs" id="tabs" hidden></div>
     <div class="coverage" id="coverage"></div>
 
-    <section class="card" id="card">
-      <div class="chart" id="chart"></div>
-      <p class="card-note" id="cardNote"></p>
-    </section>
+    <div class="ovgrid" id="overview" hidden></div>
 
-    <div class="xmore" id="more" hidden></div>
+    <div class="pane-body" id="paneBody">
+      <section class="card" id="card">
+        <div class="chart" id="chart"></div>
+        <p class="card-note" id="cardNote"></p>
+      </section>
+      <aside class="pane-side" id="paneSide" hidden></aside>
+    </div>
   </main>
 </div>
 
@@ -68,6 +73,7 @@
 <script src="assets/js/d3.v7.min.js?v=42c89fb7"></script>
 <script src="assets/js/palette.js?v=42c89fb7"></script>
 <script src="data/state_data.js?v=42c89fb7"></script>
+<script src="data/history_data.js?v=42c89fb7"></script>
 <script src="data/budget_data.js?v=42c89fb7"></script>
 <script src="data/deflator_data.js?v=42c89fb7"></script>
 <script src="assets/js/deflate.js?v=42c89fb7"></script>

@@ -94,70 +94,121 @@
   }
 
   /* ── navigation mode ──────────────────────────────────────────────────
-     A topic in a dropdown and its dataset in a second one made a reader open
-     two selects to learn what a page covered, and the dataset step was
-     usually a disabled select holding one table name - fbr_tax_collection -
-     which tells a reader nothing and takes a line. In this mode the topics are
-     a visible list grouped by theme, the topic on screen opens to show its
-     charts, and the dataset is not a step at all: which table a chart comes
-     from is in the source panel under it. Same state, same sync(), same
-     onChange, so the page drawing the charts does not change. */
+     The rail is a list of GROUPS, and only the group you are in is open.
+     The first version listed every topic on the page under its theme, with
+     the open topic's charts indented under it as a third level: 25 rows on
+     Economy, 21 on State, both taller than the screen, and the charts under
+     a topic meant one thing on State (swap the chart) and another on Economy
+     (scroll to it). Now a group is a heading you open, a topic is a place you
+     go, and a topic's charts are tabs above the chart (mountTabs), the same
+     on both pages and the same as Places: one view at a time.
+
+     Same state, same sync(), same onChange, so the page drawing the charts
+     does not change. state.topic === 'overview' is the page's opening view:
+     sync() then reports null and the page draws its overview instead. */
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function mountNav(cfg) {
     var index = cfg.index, state = cfg.state, el = cfg.el;
     var ALL = window.DDExplorer.ALL;
+    var OVERVIEW = 'overview';
     el.innerHTML = '';
     el.classList.add('xnav');
     if (cfg.listEl) cfg.listEl.hidden = true;
+    var opened = {};   // groups the reader opened by hand, beyond the current one
+    var tabs = cfg.tabsEl ? mountTabs(cfg.tabsEl) : null;
 
-    function esc(t) {
-      return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function themeOf(topic) {
+      var r = index.filter(function (x) { return x.topic === topic; })[0];
+      return r ? r.theme : null;
     }
 
     function sync(fire) {
       state.ds = ALL;
-      var inTopic = index.filter(function (r) { return r.topic === state.topic; });
-      if (!inTopic.length) { state.topic = index[0].topic; inTopic = index.filter(function (r) { return r.topic === state.topic; }); }
-      var chosen = inTopic.filter(function (r) { return r.ind === state.ind; })[0] || inTopic[0];
-      state.ind = chosen.ind;
-      var h = '', theme = null, seen = {};
-      index.forEach(function (r) {
-        if (seen[r.topic]) return;
-        seen[r.topic] = 1;
-        if (r.theme !== theme) {
-          if (theme !== null) h += '</ul></div>';
-          h += '<div class="xnav-group"><h2 class="xnav-h">' + esc(r.theme) + '</h2><ul>';
-          theme = r.theme;
+      var chosen = null, inTopic = [];
+      if (state.topic !== OVERVIEW || !cfg.overview) {
+        inTopic = index.filter(function (r) { return r.topic === state.topic; });
+        if (!inTopic.length) {
+          state.topic = index[0].topic;
+          inTopic = index.filter(function (r) { return r.topic === state.topic; });
         }
-        var on = r.topic === state.topic;
-        h += '<li><button type="button" class="topic-item xnav-topic' + (on ? ' on' : '')
-           + '" data-topic="' + esc(r.topic) + '"' + (on ? ' aria-current="page"' : '')
-           + '>' + esc(r.topicLabel) + '</button>';
-        if (on && inTopic.length > 1) {
-          h += '<ul class="xnav-charts">' + inTopic.map(function (c) {
-            var here = c.ind === state.ind;
-            return '<li><button type="button" class="xnav-chart' + (here ? ' is-on' : '')
-                 + '" data-ind="' + esc(c.ind) + '"' + (here ? ' aria-current="true"' : '')
-                 + '>' + esc(c.label) + '</button></li>';
+        chosen = inTopic.filter(function (r) { return r.ind === state.ind; })[0] || inTopic[0];
+        state.ind = chosen.ind;
+      }
+      var curTheme = chosen ? chosen.theme : null;
+
+      // Groups in index order, each with its topics in index order.
+      var groups = [], byTheme = {};
+      index.forEach(function (r) {
+        if (!byTheme[r.theme]) { byTheme[r.theme] = { theme: r.theme, topics: [], seen: {} }; groups.push(byTheme[r.theme]); }
+        var g = byTheme[r.theme];
+        if (!g.seen[r.topic]) { g.seen[r.topic] = 1; g.topics.push({ k: r.topic, label: r.topicLabel }); }
+      });
+
+      var h = '';
+      if (cfg.overview) {
+        var onOv = !chosen;
+        h += '<button type="button" class="xnav-overview' + (onOv ? ' on' : '') + '"'
+           + (onOv ? ' aria-current="page"' : '') + '>' + esc(cfg.overview.label || 'Overview') + '</button>';
+      }
+      groups.forEach(function (g) {
+        var open = g.theme === curTheme || !!opened[g.theme];
+        h += '<div class="xnav-group' + (open ? ' is-open' : '') + '">'
+           + '<button type="button" class="xnav-h" data-theme="' + esc(g.theme) + '" aria-expanded="'
+           + (open ? 'true' : 'false') + '"><span>' + esc(g.theme) + '</span><span class="xnav-n">'
+           + (open ? '' : g.topics.length + ' ') + '<i aria-hidden="true">' + (open ? '⌄' : '›') + '</i></span></button>';
+        if (open) {
+          h += '<ul>' + g.topics.map(function (t) {
+            var on = chosen && t.k === chosen.topic;
+            return '<li><button type="button" class="xnav-topic' + (on ? ' on' : '')
+                 + '" data-k="' + esc(t.k) + '"' + (on ? ' aria-current="page"' : '')
+                 + '>' + esc(t.label) + '</button></li>';
           }).join('') + '</ul>';
         }
-        h += '</li>';
+        h += '</div>';
       });
-      if (theme !== null) h += '</ul></div>';
+      (cfg.links || []).forEach(function (l) {
+        h += '<a class="xnav-link" href="' + esc(l.href) + '">' + esc(l.label)
+           + (l.note ? ' <span class="xnav-note">' + esc(l.note) + ' →</span>' : '') + '</a>';
+      });
       el.innerHTML = h;
-      el.querySelectorAll('.xnav-topic').forEach(function (b) {
+
+      el.querySelectorAll('.xnav-h').forEach(function (b) {
         b.onclick = function () {
-          if (state.topic === b.dataset.topic) return;
-          state.topic = b.dataset.topic; state.ind = null; sync(true);
+          var t = b.dataset.theme;
+          if (t === curTheme) return;   // the group you are in stays open
+          opened[t] = !opened[t];
+          sync(false);
         };
       });
-      el.querySelectorAll('.xnav-chart').forEach(function (b) {
-        b.onclick = function () { state.ind = b.dataset.ind; sync(true); };
+      el.querySelectorAll('.xnav-topic').forEach(function (b) {
+        b.onclick = function () {
+          if (chosen && state.topic === b.dataset.k) return;
+          opened = {};
+          state.topic = b.dataset.k; state.ind = null; sync(true);
+        };
       });
+      var ov = el.querySelector('.xnav-overview');
+      if (ov) ov.onclick = function () {
+        if (!chosen) return;
+        opened = {};
+        state.topic = OVERVIEW; state.ind = null; sync(true);
+      };
+
+      if (tabs) {
+        tabs.draw(chosen ? inTopic.map(function (c) {
+          return { id: c.ind, label: c.label, on: c.ind === chosen.ind };
+        }) : [], function (id) { state.ind = id; sync(true); });
+      }
       if (fire && cfg.onChange) cfg.onChange(chosen);
       return chosen;
     }
 
+    /* data-k, not data-topic: the Economy modules hide every [data-topic]
+       outside their topic, and took the rail's buttons with it. */
     // Type to find, across every topic.
     var box = cfg.searchEl;
     if (box) {
@@ -173,20 +224,85 @@
         });
         out.hidden = false;
         out.innerHTML = hits.length ? hits.map(function (r) {
-          return '<button type="button" class="xfind-item" data-topic="' + esc(r.topic)
+          return '<button type="button" class="xfind-item" data-k="' + esc(r.topic)
                + '" data-ind="' + esc(r.ind) + '"><span class="xfind-name">' + esc(r.label)
                + '</span><span class="xfind-meta">' + esc(r.topicLabel) + '</span></button>';
         }).join('') : '<p class="xfind-none">No chart matches.</p>';
         out.querySelectorAll('button').forEach(function (b) {
           b.onclick = function () {
-            state.topic = b.dataset.topic; state.ind = b.dataset.ind;
+            state.topic = b.dataset.k; state.ind = b.dataset.ind;
             box.value = ''; out.hidden = true; out.innerHTML = '';
+            opened = {};
             sync(true);
           };
         });
       });
     }
-    return { sync: sync, levels: cfg.levels || [], selects: {} };
+    return { sync: sync, levels: cfg.levels || [], selects: {}, themeOf: themeOf };
+  }
+
+  /* ── chart tabs ───────────────────────────────────────────────────────
+     A topic's charts, one row above the chart, one on screen at a time. The
+     row also carries a slot on the right (cfg: the page writes coverage or a
+     span into it) so the chart starts as high on the page as it can. */
+  function mountTabs(host) {
+    host.classList.add('xtabs');
+    host.setAttribute('role', 'tablist');
+    var row = document.createElement('div');
+    row.className = 'xtabs-row';
+    var aside = document.createElement('span');
+    aside.className = 'xtabs-aside';
+    host.appendChild(row);
+    host.appendChild(aside);
+    function draw(items, onPick) {
+      row.innerHTML = items.map(function (t) {
+        return '<button type="button" role="tab" class="xtab' + (t.on ? ' is-on' : '')
+             + '" aria-selected="' + (t.on ? 'true' : 'false') + '" data-id="' + esc(t.id) + '">'
+             + esc(t.label) + '</button>';
+      }).join('');
+      host.hidden = !items.length;
+      row.querySelectorAll('.xtab').forEach(function (b) {
+        b.onclick = function () { if (!b.classList.contains('is-on')) onPick(b.dataset.id); };
+      });
+      var on = row.querySelector('.xtab.is-on');
+      if (on && on.scrollIntoView) {
+        try { on.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
+      }
+    }
+    return { draw: draw, aside: aside };
+  }
+
+  /* ── the rail on a phone ──────────────────────────────────────────────
+     Below 1000px the rail is a block above the chart and filled the first
+     screen. A "Topic · <current>" bar keeps it collapsed until tapped, and
+     collapses it again once a topic is chosen. On desktop the bar is
+     display:none and nothing here has any effect. */
+  function mobileToggle(side, currentLabel) {
+    if (!side || side.querySelector('.mobile-topic-toggle')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mobile-topic-toggle';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="lbl">Topic</span><span class="cur"></span>'
+      + '<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+    side.insertBefore(btn, side.firstChild);
+    var isMobile = function () { return getComputedStyle(btn).display !== 'none'; };
+    var sync = function () { btn.querySelector('.cur').textContent = currentLabel() || ''; };
+    var set = function (open) {
+      side.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    btn.addEventListener('click', function () { set(!side.classList.contains('open')); });
+    side.addEventListener('click', function (e) {
+      if ((e.target.closest('.xnav-topic') || e.target.closest('.xnav-overview')
+           || e.target.closest('.xfind-item')) && isMobile()) {
+        setTimeout(function () { sync(); set(false); }, 0);
+      }
+    });
+    window.addEventListener('hashchange', function () { setTimeout(sync, 0); });
+    window.addEventListener('popstate', function () { setTimeout(sync, 0); });
+    sync();
+    return { sync: sync };
   }
 
   function mount(cfg) {
@@ -423,5 +539,5 @@
     };
   }
 
-  window.DDExplorer = { mount: mount, ALL: '\u0000all' };
+  window.DDExplorer = { mount: mount, tabs: mountTabs, mobileToggle: mobileToggle, ALL: '\u0000all' };
 })();

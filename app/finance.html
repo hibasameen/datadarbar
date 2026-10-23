@@ -29,10 +29,16 @@
 <nav id="mobileNav" class="mobile-nav hidden" aria-label="Sections"><a href="places.html" class="mobile-nav-link">Places</a><a href="finance.html" class="mobile-nav-link active" aria-current="page">Economy</a><a href="state.html" class="mobile-nav-link">State</a><div class="mobile-nav-label">For analysts</div><a href="datasets/" class="mobile-nav-link">Catalogue</a><a href="query.html" class="mobile-nav-link">Query</a><a href="methods.html" class="mobile-nav-link">Methods</a><a href="about.html" class="mobile-nav-link">About</a></nav>
 <!-- /dd:header -->
 
-<aside class="eco-side">
- <div class="eco-panel">
-  <div class="topic-desc" id="topicDesc"></div>
- </div>
+<div class="explorer">
+<aside class="eco-side xside" aria-label="Topics">
+ <label class="xsearch">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>
+  <input id="xFind" type="search" placeholder="Find a chart&hellip;" aria-label="Find a chart" autocomplete="off"/>
+ </label>
+ <div class="xrail" id="rail"></div>
+ <p class="xside-note">The budget, public debt and what the state collects are on <a href="state.html">State</a>.</p>
+ <div class="eco-panel" id="sidePanels" hidden>
+ <div class="topic-desc" id="topicDesc"></div>
  <div class="eco-panel" id="sideYear">
   <label for="yrSlider"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Year</label>
   <span class="yr-wrap"><input type="range" id="yrSlider"/><span class="yr-lbl" id="yrSliderLbl">—</span></span>
@@ -65,9 +71,28 @@
   <div class="select-wrap"><select id="tLevel"><option value="section">HS section (21 broad groups)</option><option value="chapter">HS chapter</option><option value="product">8-digit product</option></select><svg class="select-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></div>
  </div>
  <div class="eco-panel eco-meta" id="topicMeta"></div>
+ </div>
 </aside>
 
-<div class="wrap">
+<main class="wrap pane">
+ <header class="pane-head">
+  <div>
+   <div class="eyebrow" id="paneTheme">Economy</div>
+   <h1 id="paneTitle">What the economy produces, trades and prices</h1>
+   <p class="dek" id="paneDek"></p>
+   <button class="dek-more" id="dekMore" type="button" hidden>Read more</button>
+  </div>
+  <div class="pane-tools">
+   <button class="tool" id="shareBtn" type="button">Share</button>
+  </div>
+ </header>
+ <div class="xtabs" id="tabs" hidden></div>
+ <div class="coverage" id="coverage"></div>
+ <div class="ovgrid" id="overview" hidden></div>
+ <div class="pane-body" id="paneBody">
+  <div class="pane-main" id="paneMain">
+   <section class="topic-ctl" id="topicCtl" aria-label="Controls for this topic"></section>
+   <div class="xcards" id="cards">
  <!-- ===== structure ===== -->
  <div class="card" data-topic="structure" id="sec-arc">
   <h2>Seven decades of structural change <span class="unit">— sector shares of GDP, %</span></h2>
@@ -493,9 +518,12 @@
 
  <div class="foot" id="foot-finance"><b>Sources.</b> Sector shares, growth &amp; contributions: <a href="https://www.pbs.gov.pk/national-accounts-2/" target="_blank" rel="noopener">PBS National Accounts</a> (2015-16 base; Macro Economic Indicators 1951-52→, real growth Table 6, sectoral shares Table 7b). LSM &amp; QIM: <a href="https://www.pbs.gov.pk/industry-2/" target="_blank" rel="noopener">PBS Industry Statistics</a> — monthly QIM trend sheet and annual Table-2 production indices on the 2015-16 and 2005-06 bases, retrieved Aug 2026. Manufacturing censuses: PBS <b>CMI 2005-06 and 2015-16</b> reports. Input-output: PBS Supply-Use &amp; Input-Output Tables 2015-16. Budget: Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Budget in Brief &amp; Explanatory Memorandum on Federal Receipts</a> (FY2009-10→2026-27). Full detail lives in the project's DuckDB warehouse (<code>lsm_qim</code>, <code>lsm_sector_indices</code>, <code>national_accounts</code>, <code>budget_lines</code>).</div>
 <div class="foot" id="pageFoot"></div>
-</div>
 <div class="foot" id="foot-trade"><b>Sources.</b> Two different PBS series sit on this page, and they do not agree, so each chart says which it is on. <b>Trade over time</b> and <b>trading partners</b> are the <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">National Trade Database</a> totals as published (pull of 2026-09-27) — the grand total and the partner tables PBS reconciles against it. <b>Products, sections and movers</b> are the 8-digit "by commodities and countries" series, which is a sum of detail rather than a total: for FY2021-22 to FY2023-24 it was parsed from PBS PDFs and covers 93–100 per cent of the official grand total, so it runs up to 7 per cent below the published figure for the same year. Read a product share off the detail and a national total off the totals chart; do not mix them. The 8-digit series also has holes PBS did not publish and other sources fill: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, at HS-section level only, converted at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so no commodity breakdown exists for those two years. Values as-published, aggregated to Rs billion. Full data and a queryable DuckDB warehouse accompany this project.</div>
-</div>
+   </div>
+  </div>
+  <aside class="pane-side" id="paneSide" hidden></aside>
+ </div>
+</main>
 </div>
 <div class="tip" id="tip"></div>
 <script src="data/macro_data.js?v=42c89fb7"></script>
@@ -517,8 +545,7 @@
 <script type="module" src="assets/js/money.js?v=42c89fb7"></script>
 <script type="module" src="assets/js/trade.js?v=42c89fb7"></script>
 <script src="assets/js/explorer.js?v=42c89fb7"></script>
-<script src="assets/js/economy-rail.js?v=42c89fb7"></script>
-<script src="assets/js/sidebar-mobile.js?v=42c89fb7"></script>
+<script src="assets/js/economy-nav.js?v=42c89fb7"></script>
 <script src="assets/js/shell.js?v=42c89fb7"></script>
 <script src="assets/js/modals.js?v=42c89fb7"></script>
 <script src="assets/js/analytics.js?v=42c89fb7"></script>

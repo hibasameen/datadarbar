@@ -312,7 +312,7 @@
           + 'the table but not charted: its basis changes between editions.',
     },
     floods: {
-      theme: 'Water & weather',
+      theme: 'Water & disasters',
       title: 'The 2022 floods',
       dek: 'How much of each province was under water, week by week, from the end of '
          + 'August 2022 to mid-January 2023, as satellites saw it.',
@@ -321,7 +321,7 @@
           + 'and how long it lasted, see the 2022 floods on the Places map.',
     },
     reservoirs: {
-      theme: 'Water & weather',
+      theme: 'Water & disasters',
       title: 'Reservoirs',
       dek: 'Tarbela, Mangla and Chashma from space: their water surface, month by month, '
          + 'since the late 1980s. The record IRSA and WAPDA do not publish.',
@@ -331,7 +331,7 @@
           + '1,074 reservoir-months, so only observed months are used.',
     },
     events: {
-      theme: 'Water & weather',
+      theme: 'Water & disasters',
       title: 'Disaster alerts',
       dek: 'Every flood, drought and cyclone alert GDACS has issued for '
          + 'Pakistan since 2001, graded orange or red: 31 alerts, 25 of them '
@@ -347,7 +347,7 @@
           + 'was affected.',
     },
     impacts: {
-      theme: 'Water & weather',
+      theme: 'Water & disasters',
       title: 'Monsoon impacts',
       dek: 'What the 2026 monsoon did, as NDMA’s situation reports counted '
          + 'it: 181 deaths, 515 injured and 1,729 houses damaged by 5 '
@@ -361,12 +361,86 @@
           + 'with nothing to report. This is one season — the only one '
           + 'extracted — and is not a series.',
     },
+    debt: {
+      theme: 'Public money',
+      title: 'What the state owes',
+      dek: 'What the government raises, what it spends and the gap between them '
+         + 'since 1950, and the debt those gaps add up to: 12 per cent of GDP in '
+         + '1951, 70 per cent in 2024. The IMF\u2019s series reaches back to '
+         + 'independence; the State Bank\u2019s consolidated federal and provincial '
+         + 'budget, from FY76, is offered alongside as Pakistan\u2019s own count.',
+      note: 'International Monetary Fund, Public Finances in Modern History (Mauro et al. '
+          + '2015; December 2025 edition), 1950\u20132024, as published, years as the IMF '
+          + 'labels them. State Bank of Pakistan, Handbook of Statistics 2020, table 3.7, '
+          + 'FY76\u2013FY20. The two differ in coverage, so where both are shown they will '
+          + 'not match exactly. Moved here from the Economy page: the budget and the debt '
+          + 'are the state\u2019s ledger, not the economy\u2019s.',
+    },
+    sindh: {
+      theme: 'Crime & policing',
+      title: 'Sindh police records',
+      dek: 'What Sindh\u2019s own police tables and first information reports show, '
+         + 'beside the national count: offences by category group and by range, '
+         + 'then and now, and the FIRs registered day by day.',
+    },
+    floods: {
+      theme: 'Water & disasters',
+      title: 'Floods and monsoon',
+      dek: 'The 2022 floods as satellites saw them, province by province and week '
+         + 'by week; and what the 2026 monsoon did, as NDMA\u2019s situation reports '
+         + 'counted it. Two seasons, two sources, neither a series.',
+    },
   };
+
+  /* The payload files each chart under the topic its build gave it; the page
+     regroups them to the boundary agreed on 2026-10-23. A merged topic keeps
+     each chart\u2019s own note (ORIG_TOPIC), and the long-run fiscal series come
+     across from Economy with the DD_HISTORY payload. A topic the payload does
+     not know yet is added here; when the build catches up this is a no-op. */
+  var REMAP = {
+    sindhCrime: ['sindh', 'Sindh police records', 'Crime & policing'],
+    firs:       ['sindh', 'Sindh police records', 'Crime & policing'],
+    floods:     ['floods', 'Floods and monsoon', 'Water & disasters'],
+    impacts:    ['floods', 'Floods and monsoon', 'Water & disasters'],
+    reservoirs: ['reservoirs', 'Reservoirs', 'Water & disasters'],
+    events:     ['events', 'Disaster alerts', 'Water & disasters'],
+  };
+  var ORIG_TOPIC = { sindhGroup: 'sindhCrime', sindhCategory: 'sindhCrime', sindhRange: 'sindhCrime',
+                     firsDaily: 'firs', floodWeekly: 'floods', impactsPanel: 'impacts',
+                     impactsMetric: 'impacts' };
+  var THEME_ORDER = ['Public money', 'Justice', 'Crime & policing', 'Power & gas', 'Water & disasters'];
+  var TOPIC_ORDER = ['tax', 'budget', 'debt', 'transfers', 'courts', 'judges', 'crime', 'sindh',
+                     'plants', 'discos', 'loadshed', 'netmeter', 'gas', 'reservoirs', 'floods', 'events'];
+  var H = window.DD_HISTORY || null;
+  (function regroup() {
+    D.index.forEach(function (r) {
+      var m = REMAP[r.topic];
+      if (m) { r.topic = m[0]; r.topicLabel = m[1]; r.theme = m[2]; }
+    });
+    if (H && H.series && H.series.imf_debt && !D.index.some(function (r) { return r.topic === 'debt'; })) {
+      D.index.push(
+        { ds: 'imf_pakistan_fiscal', dsLabel: 'imf_pakistan_fiscal', topic: 'debt',
+          topicLabel: 'What the state owes', theme: 'Public money', ind: 'fiscal',
+          label: 'Revenue, spending and the balance since 1950', chart: 'fiscal',
+          years: '1950 to 2024', rows: '' },
+        { ds: 'imf_pakistan_fiscal', dsLabel: 'imf_pakistan_fiscal', topic: 'debt',
+          topicLabel: 'What the state owes', theme: 'Public money', ind: 'debt',
+          label: 'Public debt since 1951', chart: 'debt', years: '1951 to 2024', rows: '' });
+    }
+    var rank = function (r) {
+      var t = THEME_ORDER.indexOf(r.theme), k = TOPIC_ORDER.indexOf(r.topic);
+      return (t < 0 ? 99 : t) * 1000 + (k < 0 ? 99 : k);
+    };
+    // A stable sort: charts keep their order within a topic.
+    D.index = D.index.map(function (r, i) { return [rank(r), i, r]; })
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })
+      .map(function (x) { return x[2]; });
+  })();
 
   /* State is an index of 38 charts over 11 topics. The subject tree and the
      three dropdowns are two ways into the same row; whichever the reader
      uses, `current` is that row and `CHART[row.chart]` draws it. */
-  var state = { ds: 'fbr_tax_collection', topic: 'tax', ind: 'gdp' };
+  var state = { ds: 'fbr_tax_collection', topic: 'overview', ind: null };
   var current = D.index[0];
   var rail;
 
@@ -443,22 +517,185 @@
     gasSupply: renderGasSupply,
     gasSector: renderGasSector,
     floodWeekly: renderFloodWeekly,
+    fiscal: renderFiscal,
+    debt: renderDebt,
     reservoirArea: renderReservoirs,
   };
 
   function render(row) {
-    current = row || current;
+    if (!row) return renderOverview();
+    current = row;
     var t = TOPICS[current.topic] || {};
+    var orig = TOPICS[ORIG_TOPIC[current.chart]] || {};
+    $('overview').hidden = true;
+    $('paneBody').hidden = false;
+    $('tabs').hidden = false;
     $('paneTheme').textContent = current.theme;
     $('paneTitle').textContent = t.title || current.topicLabel;
-    $('paneDek').textContent = t.dek || '';
-    $('cardNote').textContent = t.note || '';
+    setDek(t.dek || '');
+    $('cardNote').textContent = orig.note || t.note || '';
+    $('csvBtn').hidden = false;
     renderSrc(current.chart);
     clearCtl();
     $('chart').className = 'chart';
     (CHART[current.chart] || renderTaxGdpFallback)();
   }
+
+  /* Two lines of the dek, the rest behind "Read more". The dek ran to seven
+     lines over a coverage strip, so the chart began 360px down. */
+  var dekOpen = false;
+  function setDek(text) {
+    var el = $('paneDek'), more = $('dekMore');
+    el.textContent = text;
+    dekOpen = false;
+    el.classList.add('is-clamped');
+    more.textContent = 'Read more';
+    // Only offer the button when the clamp actually hides something.
+    requestAnimationFrame(function () {
+      more.hidden = !(el.scrollHeight > el.clientHeight + 2);
+    });
+  }
+  $('dekMore').onclick = function () {
+    dekOpen = !dekOpen;
+    $('paneDek').classList.toggle('is-clamped', !dekOpen);
+    this.textContent = dekOpen ? 'Show less' : 'Read more';
+  };
+
+  /* ── the overview: one tile per group, a headline each ─────────────────
+     The page opens here rather than on FBR\u2019s tax table, as it used to. The
+     headlines are read off the payload so they cannot drift from the charts. */
+  function headlineTax() {
+    var T = taxTable(false), last = T.data[T.data.length - 1];
+    return last && last.gdp ? { n: pct(100 * last.total / last.gdp), u: 'of GDP',
+      p: 'Federal tax collected in ' + fyOf(last.year) + '. The ratio has moved less than two points since 1991-92; the mix is what changed.' } : null;
+  }
+  function headlineCourts() {
+    var all = courts.filter(function (d) { return d.category === 'all'; });
+    var y = d3.max(all, function (d) { return d.year; });
+    var tot = d3.sum(all.filter(function (d) { return d.year === y; }), function (d) { return d.pending_end; });
+    var pj = all.filter(function (d) { return d.year === y && d.province === 'Punjab'; })[0];
+    return tot ? { n: (tot / 1e6).toFixed(2) + 'm', u: 'cases pending',
+      p: 'At the end of ' + y + (pj ? ', ' + (pj.pending_end / 1e6).toFixed(1) + 'm of them in Punjab' : '') + '. Only Khyber Pakhtunkhwa and Islamabad ended the year with fewer than they began.' } : null;
+  }
+  function headlineCrime() {
+    var y = d3.max(crime, function (d) { return d.year; });
+    var tot = d3.sum(crime.filter(function (d) { return d.year === y && d.value != null; }), function (d) { return d.value; });
+    return tot ? { n: tot >= 1e6 ? (tot / 1e6).toFixed(1) + 'm' : Math.round(tot / 1e3) + 'k', u: 'offences reported',
+      p: 'Across eight forces in ' + y + ', on PBS\u2019s definition. Punjab is nearly all of the rise since 2020.' } : null;
+  }
+  function headlinePower() {
+    var fys = Array.from(new Set(plants.map(function (d) { return d.fy; }))).sort();
+    var fy = fys[fys.length - 1];
+    var mw = d3.sum(plants.filter(function (d) { return d.fy === fy && d.mw != null; }), function (d) { return d.mw; });
+    return mw ? { n: Math.round(mw / 1e3).toLocaleString(), u: 'GW installed',
+      p: 'Capacity on the grid in ' + fy + ', by plant and fuel; what the distribution companies sold and lost; load shedding; rooftop solar; gas.' } : null;
+  }
+  function headlineWater() {
+    var r = reservoirs.filter(function (d) { return d.reservoir === 'Tarbela'; }).pop();
+    return r ? { n: Math.round(r.km2) + ' km\u00b2', u: 'Tarbela, ' + d3.timeFormat('%B %Y')(new Date(r.year, r.month - 1, 1)),
+      p: 'Water surface seen from space' + (r.anomaly_pct != null ? ', ' + signed(r.anomaly_pct) + '% against the month\u2019s norm' : '') + '. Also the 2022 floods week by week, the 2026 monsoon and every GDACS alert since 2001.' } : null;
+  }
+  var HEADLINE = { 'Public money': headlineTax, 'Justice': headlineCourts, 'Crime & policing': headlineCrime,
+                   'Power & gas': headlinePower, 'Water & disasters': headlineWater };
+
+  function renderOverview() {
+    current = null;
+    $('paneTheme').textContent = 'State';
+    $('paneTitle').textContent = 'What the government collects, spends, owes, runs and regulates';
+    setDek(THEME_ORDER.length + ' groups, ' + TOPIC_ORDER.length + ' topics. Each opens on one chart; the rest of the topic sits in tabs above it.');
+    $('tabs').hidden = true;
+    $('coverage').innerHTML = '';
+    $('paneBody').hidden = true;
+    $('csvBtn').hidden = true;
+    var host = $('overview');
+    host.hidden = false;
+    host.innerHTML = '';
+    THEME_ORDER.forEach(function (theme) {
+      var topics = [], seen = {};
+      D.index.forEach(function (r) {
+        if (r.theme === theme && !seen[r.topic]) { seen[r.topic] = 1; topics.push(r); }
+      });
+      if (!topics.length) return;
+      var h = null;
+      try { h = HEADLINE[theme] ? HEADLINE[theme]() : null; } catch (e) { h = null; }
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ovtile';
+      b.innerHTML = '<span class="eyebrow"></span>'
+        + (h ? '<span class="ovtile-n"><span class="n"></span><small></small></span>' : '')
+        + '<p class="ovtile-p"></p><span class="ovtile-topics"></span>';
+      b.querySelector('.eyebrow').textContent = theme;
+      if (h) { b.querySelector('.n').textContent = h.n; b.querySelector('small').textContent = h.u; }
+      b.querySelector('.ovtile-p').textContent = h ? h.p : '';
+      var tl = b.querySelector('.ovtile-topics');
+      topics.forEach(function (t) {
+        var sp = document.createElement('span'); sp.textContent = t.topicLabel; tl.appendChild(sp);
+      });
+      b.onclick = function () {
+        state.topic = topics[0].topic; state.ind = null;
+        render(rail.sync(false)); writeUrl();
+      };
+      host.appendChild(b);
+    });
+  }
+
   function renderTaxGdpFallback() { renderTax('gdp'); }
+
+
+  /* ── what the state owes ───────────────────────────────────────────────
+     The long-run fiscal series, from the DD_HISTORY payload Economy built.
+     IMF revenue, expenditure, primary balance and interest from 1950; the
+     SBP\u2019s consolidated budget from FY76 as a second count. */
+  var FISCAL_KEYS = ['imf_rev', 'imf_exp', 'imf_pb', 'imf_ie', 'sbp_rev', 'sbp_exp', 'sbp_fb'];
+  var FISCAL_LABEL = { imf_rev: 'Revenue (IMF)', imf_exp: 'Expenditure (IMF)',
+                       imf_pb: 'Primary balance (IMF)', imf_ie: 'Interest (IMF)',
+                       sbp_rev: 'Revenue (SBP)', sbp_exp: 'Expenditure (SBP)', sbp_fb: 'Fiscal balance (SBP)' };
+  var FISCAL_COLOUR = { imf_rev: '#1e6b3e', imf_exp: '#b8860b', imf_pb: '#2f6fb0', imf_ie: '#b5402a',
+                        sbp_rev: '#1e6b3e', sbp_exp: '#b8860b', sbp_fb: '#7a4f9c' };
+  var fiscalSet = 'imf';
+  function historyRows(keys) {
+    var rows = [];
+    keys.forEach(function (k) {
+      (H.series[k] || []).forEach(function (p) {
+        rows.push({ k: FISCAL_LABEL[k] || k, key: k, year: +p[0].slice(0, 4), value: p[1] });
+      });
+    });
+    return rows;
+  }
+  function renderFiscal() {
+    if (!H) { $('chart').innerHTML = '<p class="nodata">The long-run series did not load.</p>'; return; }
+    seg(ctlRow(), 'Count', [['imf', 'IMF, from 1950'], ['sbp', 'State Bank, from FY76'], ['both', 'Both']],
+        fiscalSet, function (v) { fiscalSet = v; render(current); });
+    var keys = fiscalSet === 'imf' ? ['imf_rev', 'imf_exp', 'imf_pb', 'imf_ie']
+             : fiscalSet === 'sbp' ? ['sbp_rev', 'sbp_exp', 'sbp_fb'] : FISCAL_KEYS;
+    var rows = historyRows(keys).filter(function (d) { return d.value != null; });
+    var ys = yearsOf(rows);
+    var lo = d3.min(rows, function (d) { return d.value; });
+    cover([ys[0] + ' to ' + ys[ys.length - 1], 'per cent of GDP, fiscal years',
+           fiscalSet === 'both' ? 'the two counts differ in coverage and will not match'
+                                : 'as published; a dashed line is the State Bank\u2019s count']);
+    lineChart(rows, keys.map(function (k) { return FISCAL_LABEL[k]; }), ys, 'value',
+      'Per cent of GDP', function (v) { return v.toFixed(1) + '%'; },
+      { base: Math.min(0, Math.floor(lo)), ref: 0,
+        colour: function (name) { var k = keys.filter(function (x) { return FISCAL_LABEL[x] === name; })[0]; return FISCAL_COLOUR[k] || '#9aa39c'; },
+        dash: function (name) { return /SBP/.test(name) ? '5 4' : null; },
+        lede: 'What the government raises, what it spends, and the balance before interest. '
+            + 'Spending has run ahead of revenue in every year since the 1970s.',
+        foot: 'The primary balance leaves interest out; the fiscal balance includes it, which '
+            + 'is why the State Bank\u2019s gap is the wider one. Years as each source labels them.' });
+  }
+  function renderDebt() {
+    if (!H) { $('chart').innerHTML = '<p class="nodata">The long-run series did not load.</p>'; return; }
+    var rows = historyRows(['imf_debt']).filter(function (d) { return d.value != null; });
+    var ys = yearsOf(rows), last = rows[rows.length - 1];
+    cover([ys[0] + ' to ' + ys[ys.length - 1], 'gross public debt, per cent of GDP',
+           last.value.toFixed(0) + '% in ' + last.year]);
+    lineChart(rows, [rows[0].k], ys, 'value', 'Per cent of GDP',
+      function (v) { return v.toFixed(1) + '%'; },
+      { colour: function () { return '#0f6e78'; }, width: function () { return 2.4; },
+        lede: 'The stock the deficits add up to: gross public debt as a share of GDP since 1951.',
+        foot: 'International Monetary Fund, Public Finances in Modern History, gross public debt, as published.' });
+  }
 
   /* ── what the state collects ─────────────────────────────────────────── */
   function taxTable(real) {
@@ -1144,7 +1381,7 @@
     var y = d3.scaleBand().domain(rows.map(function (r) { return r.name; }))
       .range([m.top, H - m.bottom]).padding(.3);
     var x = d3.scaleLinear().domain([0, 100]).range([m.left, W - m.right]);
-    var cols = { civil: '#1b5e4a', criminal: '#d4a017' };
+    var cols = { civil: '#1e6b3e', criminal: '#b8860b' };
     rows.forEach(function (r) {
       var tot = r.civil + r.criminal, cs = 100 * r.civil / tot;
       svg.append('rect').attr('x', x(0)).attr('y', y(r.name)).attr('width', x(cs) - x(0))
@@ -1205,7 +1442,7 @@
     // collided with the longest bar's label.
     var m = fit({ top: 34, right: 84, bottom: 10, left: 196 }, W);
     var parts = [['working', 'Working', '#1e6b3e'],
-                 ['vacant', 'Vacant', '#d4a017'],
+                 ['vacant', 'Vacant', '#b8860b'],
                  ['unaccounted', 'Neither', '#b9bfc6']];
     var y = d3.scaleBand()
       .domain(rows.map(function (d) { return TIER_LABEL[d.tier] || d.tier; }))
@@ -1713,9 +1950,11 @@
 
   var FAMILY_ORDER = ['Hydro', 'Nuclear', 'Coal', 'Gas', 'Oil and mixed thermal',
                       'Wind', 'Solar', 'Bagasse and biogas'];
-  var FAMILY_COLOUR = { Hydro: '#2f5d7c', Nuclear: '#6b4c7a', Coal: '#7b5a3c',
-                        Gas: '#b5651d', 'Oil and mixed thermal': '#a8452f',
-                        Wind: '#3f9aa3', Solar: '#d4a017', 'Bagasse and biogas': '#5c6b3a' };
+  /* Eight families, the eight categorical slots (palette.js), in the order
+     the stack draws them so neighbours stay apart. */
+  var FAMILY_COLOUR = { Hydro: '#2f6fb0', Gas: '#b8860b', 'Oil and mixed thermal': '#d96a26',
+                        Coal: '#b5402a', Nuclear: '#7a4f9c', Wind: '#0f9aab',
+                        Solar: '#1e6b3e', 'Bagasse and biogas': '#8c4a7e' };
 
   /* Capacity by fuel family in every report year, stacked: the mix and its
      movement in one chart, which one year at a time cannot show. */
@@ -2393,7 +2632,7 @@
       .nice().range([m.left, W - m.right]);
     var y = d3.scalePoint().domain(hazards).range([m.top + 14, H - m.bottom - 14]).padding(.6);
     var alerts = ['Orange', 'Red'];
-    var colour = d3.scaleOrdinal().domain(alerts).range(['#d4a017', '#9a2c1f']);
+    var colour = d3.scaleOrdinal().domain(alerts).range(['#b8860b', '#9a2c1f']);
     var jitter = {};
     svg.selectAll('circle').data(rows).join('circle')
       .attr('cx', function (d) { return x(d.year); })
@@ -2438,7 +2677,7 @@
            'alert levels, not losses']);
     stackedBars(data, hazards, {
       fmt: function (v) { return String(v); }, axis: 'alerts issued', label: hazardLabel,
-      colour: d3.scaleOrdinal().domain(hazards).range(['#2f5d7c', '#c98b2e', '#3f9aa3']),
+      colour: d3.scaleOrdinal().domain(hazards).range(['#2f6fb0', '#b8860b', '#0f9aab']),
       integer: true,
       lede: 'Alerts GDACS issued for Pakistan in each year, by hazard.',
       foot: 'A year with no bar had no alert. Grades are on the timeline; this chart counts them.',
@@ -2541,7 +2780,7 @@
     var pick = window.DDPalette
       ? window.DDPalette.ordinal(domain)
       : d3.scaleOrdinal().domain(domain)
-          .range(['#0c3a1e', '#d4a017', '#0f6e78', '#9a2c1f', '#4d8a62']);
+          .range(['#1e6b3e', '#b8860b', '#2f6fb0', '#b5402a', '#7a4f9c']);
     return function (k) { return pick(k); };
   }
   function shortNum(v) {
@@ -2603,11 +2842,8 @@
   }
 
   function cover(bits) {
-    $('coverage').innerHTML = '<b>Coverage</b>'
-      + bits.map(function (b, i) {
-          return '<span' + (i === bits.length - 1 && bits.length > 2
-            ? ' style="margin-left:auto"' : '') + '>' + b + '</span>';
-        }).join('');
+    // One line under the tabs, not a boxed strip of its own.
+    $('coverage').innerHTML = bits.map(function (b) { return '<span>' + b + '</span>'; }).join('');
   }
   function axes(svg, x, y, m, W, H, fmt, label, log, tick) {
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
@@ -2727,7 +2963,8 @@
     });
     if (opt.base != null) {
       svg.append('line').attr('x1', m.left).attr('x2', W - m.right)
-        .attr('y1', y(100)).attr('y2', y(100)).attr('stroke', muted()).attr('stroke-dasharray', '3 3');
+        .attr('y1', y(opt.ref != null ? opt.ref : 100)).attr('y2', y(opt.ref != null ? opt.ref : 100))
+        .attr('stroke', muted()).attr('stroke-dasharray', '3 3');
     }
     axes(svg, x, y, m, W, H, fmt, opt.axis || label, opt.log, opt.tick);
     host.say(opt.lede || '', opt.foot || '');
@@ -2963,12 +3200,13 @@
     var el = card.querySelector('.src');
     if (!el) { el = document.createElement('div'); el.className = 'src';
                card.appendChild(el); }
-    var r = window.DDProv && window.DDProv.of('state:' + chart);
+    var PROV_ALIAS = { fiscal: 'sec-fiscal', debt: 'sec-debt' };
+    var r = window.DDProv && (window.DDProv.of('state:' + chart) || (PROV_ALIAS[chart] && window.DDProv.of(PROV_ALIAS[chart])));
     el.innerHTML = r ? window.DDProv.panel(r) : '';
     // The budget exports its own grouped payload through budgetCsv(), so it
     // has a table even though it is in no CSV_BLOCK; the button said
     // "Catalogue" and then downloaded a CSV.
-    var btn = $('csvBtn'), has = (current.topic === 'budget' && !!BUDGET)
+    var btn = $('csvBtn'), has = (current.topic === 'budget' && !!BUDGET) || current.topic === 'debt'
                              || !!(CSV_BLOCK[chart] && D[CSV_BLOCK[chart]]
                                     && D[CSV_BLOCK[chart]].cols);
     if (btn) {
@@ -3099,6 +3337,24 @@
     var csv = head.concat(rows.map(function (r) { return r.map(csvCell).join(','); })).join('\n');
     save(csv, 'data_darbar_budget_' + bSide + '.csv');
   }
+  function historyCsv() {
+    var keys = current.chart === 'debt' ? ['imf_debt'] : FISCAL_KEYS;
+    var years = {};
+    keys.forEach(function (k) { (H.series[k] || []).forEach(function (p) { years[p[0]] = 1; }); });
+    var ys = Object.keys(years).sort();
+    var rows = ys.map(function (d) {
+      return [d.slice(0, 4)].concat(keys.map(function (k) {
+        var p = (H.series[k] || []).filter(function (q) { return q[0] === d; })[0];
+        return p ? p[1] : '';
+      }));
+    });
+    var csv = ['# Data Darbar - ' + (current.chart === 'debt' ? 'gross public debt' : 'public finances')
+               + ', % of GDP; IMF Public Finances in Modern History (Dec 2025)'
+               + (current.chart === 'debt' ? '' : '; SBP Handbook 2020 table 3.7'), '#',
+               ['year'].concat(keys).join(',')]
+      .concat(rows.map(function (r) { return r.map(csvCell).join(','); })).join('\n');
+    save(csv, 'data_darbar_' + (current.chart === 'debt' ? 'public_debt' : 'public_finances') + '.csv');
+  }
   function save(csv, name) {
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
@@ -3109,6 +3365,7 @@
 
   function downloadCsv() {
     if (current.topic === 'budget' && BUDGET) return budgetCsv();
+    if (current.topic === 'debt' && H) return historyCsv();
     var name = CSV_BLOCK[current.chart];
     var block = name && D[name];
     if (!block || !block.cols) {
@@ -3134,18 +3391,22 @@
      the row it settled on, which is what gets drawn. The URL carries all
      three so a chart can be linked to. */
   function writeUrl() {
-    var q = new URLSearchParams({ t: state.topic, i: state.ind });
+    var q = new URLSearchParams({ t: state.topic });
+    if (state.ind) q.set('i', state.ind);
     if (priceMode === 'real') q.set('p', 'real');
-    history.replaceState(null, '', location.pathname + '?' + q);
+    history.pushState(null, '', location.pathname + '?' + q);
   }
 
   function readUrl() {
     var q = new URLSearchParams(location.search);
     var t = q.get('t'), i = q.get('i');
     if (q.get('p') === 'real') priceMode = 'real';
+    if (t === 'overview' || !t) { state.topic = 'overview'; state.ind = null; return; }
+    // Old links: the topics merged on 2026-10-23 and the budget\u2019s Economy hash.
+    if (REMAP[t]) t = REMAP[t][0];
     var row = D.index.filter(function (r) {
       return (!t || r.topic === t) && (!i || r.ind === i);
-    })[0];
+    })[0] || D.index.filter(function (r) { return r.topic === t; })[0];
     if (row) { state.ds = row.ds; state.topic = row.topic; state.ind = row.ind; }
   }
 
@@ -3154,16 +3415,27 @@
     rail = window.DDExplorer.mount({
       el: $('rail'), index: D.index, state: state,
       levels: ['topic', 'ds', 'ind'], nav: true,
-      listLevel: 'ind', listEl: $('chartList'), searchEl: $('xFind'),
-      labels: { ind: 'Chart' }, moreEl: $('more'),
+      tabsEl: $('tabs'), overview: { label: 'Overview' }, searchEl: $('xFind'),
+      links: [{ href: 'finance.html', label: 'Output, trade, prices and the rupee', note: 'on Economy' }],
+      labels: { ind: 'Chart' },
       onChange: function (row) { render(row); writeUrl(); },
     });
     render(rail.sync(false));
+    window.DDExplorer.mobileToggle(document.querySelector('.xside'), function () {
+      return current ? (TOPICS[current.topic] || {}).title || current.topicLabel : 'Overview';
+    });
+    window.addEventListener('popstate', function () { readUrl(); render(rail.sync(false)); });
     $('csvBtn').onclick = downloadCsv;
+    $('shareBtn').onclick = function () {
+      var btn = this, url = location.href;
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Share'; }, 1400); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+      else window.prompt('Copy this link:', url);
+    };
     var t;
     window.addEventListener('resize', function () {
       clearTimeout(t);
-      t = setTimeout(function () { render(current); }, 150);
+      t = setTimeout(function () { if (current) render(current); }, 150);
     });
   }
 

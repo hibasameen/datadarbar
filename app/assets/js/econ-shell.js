@@ -55,7 +55,7 @@
 
   window.DDEcon = {
     /* Which topic an empty hash means. One answer, for the reason above. */
-    defaultTopic: 'structure',
+    defaultTopic: 'overview',   // claimed by no module: the page opens on its overview (economy-nav.js)
 
     /* Modules announce their topics on boot. Nothing is drawn from it - it is
        what lets a module ask whether the topic on screen is one of its own. */
