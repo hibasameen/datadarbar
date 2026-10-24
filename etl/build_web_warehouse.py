@@ -2197,9 +2197,18 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
                  f"SELECT * FROM read_csv('{path.as_posix()}', {CSV})", unit=unit)
 
     csv_table(
-        "gdp_growth", NA / "gdp_growth_1952_2025.csv",
-        "Real GDP growth and its sectoral components, 1951\u201352 to 2024\u201325.",
-        "Seventy-four fiscal years, the longest series on the site. "
+        "gdp_growth", NA / "gdp_growth_1952_2026.csv",
+        "Real GDP growth and its sectoral components, 1951\u201352 to 2025\u201326.",
+        "Seventy-five fiscal years, the longest series on the site, from the "
+        "annual tables PBS published with the 118th NAC (19 October 2026): "
+        "Table 1 for GDP, agriculture, manufacturing and services, Table 6 for "
+        "industry and the commodity-producing sectors. GDP growth is growth of "
+        "GVA at constant basic prices, Pakistan\u2019s headline figure. "
+        "The national accounts portal\u2019s version of this table, used here until "
+        "October 2026, labelled manufacturing growth as industry_growth_pct; it "
+        "is manufacturing_growth_pct here, and industry_growth_pct is now the "
+        "industrial total, which PBS publishes only from 2000-01. "
+        "Commodity-producing growth before 2000-01 is the portal\u2019s. "
         "government_label names the government of the day, which PBS\u2019s own "
         "dashboard carries and which is useful for reading the series but is a "
         "political attribution rather than a statistical one \u2014 a growth rate in a "
@@ -2207,11 +2216,15 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         {"fy": "fiscal year, e.g. 2024-25", "fy_end": "calendar year it ends in",
          "gdp_growth_pct": "real GDP growth, per cent",
          "agriculture_growth_pct": "agriculture, per cent",
-         "industry_growth_pct": "industry, per cent",
+         "industry_growth_pct": "industry (mining, manufacturing, utilities, "
+                                "construction), per cent; from 2000-01",
+         "manufacturing_growth_pct": "manufacturing, per cent",
          "services_growth_pct": "services, per cent",
          "commodity_producing_sector_growth_pct": "agriculture and industry together",
-         "government_label": "the government in office that year, as PBS labels it"},
-        "PBS national accounts (na.data.gov.pk), pull of 2026-09-27", "per cent")
+         "government_label": "the government in office that year, as PBS\u2019s "
+                             "portal labels it; 2025-26 carried from 2024-25"},
+        "PBS National Accounts Annual Tables 2025-26, updated Sep 2026 (118th NAC, "
+        "19 October 2026)", "per cent")
 
     csv_table(
         "gdp_indicators", NA / "gdp_indicators_annual_2000_2026.csv",
@@ -2233,20 +2246,18 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "Gross value added by sector and sub-sector, annual, at constant prices.",
         "One row per leaf activity, 22 a year, with sector and subsector as "
         "the path to it rather than rows of their own. Summing the rows is "
-        "therefore correct and reproduces the published total. This file is "
-        "the national accounts portal\u2019s, pulled on 27 September 2026, "
-        "before the 118th NAC (19 October 2026) revised 2020-21 to 2025-26, "
-        "and the portal had not been updated by 24 October; national_accounts "
-        "holds the revised annual tables, so the two differ in those six years "
-        "(by up to Rs64bn in 2025-26) and agree to the rupee in the 21 before. "
-        "An earlier note here said the rows were three nested levels and that "
-        "adding them double-counts, which is not what the file contains.",
+        "therefore correct and reproduces the published total. Table 5 of the "
+        "annual tables PBS published with the 118th NAC (19 October 2026), "
+        "1999-00 to 2025-26, under the labels the national accounts portal "
+        "uses; the revision moved 2020-21 to 2025-26, and the 21 years before "
+        "are the portal\u2019s figures to the rupee.",
         {"fy": "fiscal year", "fy_end": "calendar year it ends in",
          "sector": "the broad sector", "subsector": "within the sector",
          "category": "within the sub-sector",
          "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
-         "status": "PBS\u2019s own flag"},
-        "PBS national accounts, pull of 2026-09-27", "million rupees")
+         "status": "PBS\u2019s own flag (1 throughout; the workbook carries none)"},
+        "PBS National Accounts Annual Tables 2025-26, updated Sep 2026 (118th NAC, "
+        "19 October 2026)", "million rupees")
 
     csv_table(
         "gva_by_activity_quarterly", NA / "gdp_by_activity_quarterly_constant_2016_2025.csv",

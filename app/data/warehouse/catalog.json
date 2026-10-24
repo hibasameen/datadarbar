@@ -4737,12 +4737,12 @@
   {
    "name": "gdp_growth",
    "file": "gdp_growth.parquet",
-   "bytes": 3900,
-   "rows": 74,
-   "description": "Real GDP growth and its sectoral components, 1951–52 to 2024–25.",
-   "notes": "Seventy-four fiscal years, the longest series on the site. government_label names the government of the day, which PBS’s own dashboard carries and which is useful for reading the series but is a political attribution rather than a statistical one — a growth rate in a government’s first months reflects decisions taken before it.",
+   "bytes": 4319,
+   "rows": 75,
+   "description": "Real GDP growth and its sectoral components, 1951–52 to 2025–26.",
+   "notes": "Seventy-five fiscal years, the longest series on the site, from the annual tables PBS published with the 118th NAC (19 October 2026): Table 1 for GDP, agriculture, manufacturing and services, Table 6 for industry and the commodity-producing sectors. GDP growth is growth of GVA at constant basic prices, Pakistan’s headline figure. The national accounts portal’s version of this table, used here until October 2026, labelled manufacturing growth as industry_growth_pct; it is manufacturing_growth_pct here, and industry_growth_pct is now the industrial total, which PBS publishes only from 2000-01. Commodity-producing growth before 2000-01 is the portal’s. government_label names the government of the day, which PBS’s own dashboard carries and which is useful for reading the series but is a political attribution rather than a statistical one — a growth rate in a government’s first months reflects decisions taken before it.",
    "unit": "per cent",
-   "source": "PBS national accounts (na.data.gov.pk), pull of 2026-09-27",
+   "source": "PBS National Accounts Annual Tables 2025-26, updated Sep 2026 (118th NAC, 19 October 2026)",
    "columns": [
     {
      "name": "fy",
@@ -4767,7 +4767,12 @@
     {
      "name": "industry_growth_pct",
      "type": "DOUBLE",
-     "description": "industry, per cent"
+     "description": "industry (mining, manufacturing, utilities, construction), per cent; from 2000-01"
+    },
+    {
+     "name": "manufacturing_growth_pct",
+     "type": "DOUBLE",
+     "description": "manufacturing, per cent"
     },
     {
      "name": "services_growth_pct",
@@ -4782,7 +4787,7 @@
     {
      "name": "government_label",
      "type": "VARCHAR",
-     "description": "the government in office that year, as PBS labels it"
+     "description": "the government in office that year, as PBS’s portal labels it; 2025-26 carried from 2024-25"
     }
    ],
    "kind": "economy",
@@ -4808,7 +4813,7 @@
    "span": {
     "column": "fy",
     "from": "1951-52",
-    "to": "2024-25"
+    "to": "2025-26"
    },
    "keys": []
   },
@@ -5104,12 +5109,12 @@
   {
    "name": "gva_by_activity_annual",
    "file": "gva_by_activity_annual.parquet",
-   "bytes": 6373,
+   "bytes": 6401,
    "rows": 594,
    "description": "Gross value added by sector and sub-sector, annual, at constant prices.",
-   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total. This file is the national accounts portal’s, pulled on 27 September 2026, before the 118th NAC (19 October 2026) revised 2020-21 to 2025-26, and the portal had not been updated by 24 October; national_accounts holds the revised annual tables, so the two differ in those six years (by up to Rs64bn in 2025-26) and agree to the rupee in the 21 before. An earlier note here said the rows were three nested levels and that adding them double-counts, which is not what the file contains.",
+   "notes": "One row per leaf activity, 22 a year, with sector and subsector as the path to it rather than rows of their own. Summing the rows is therefore correct and reproduces the published total. Table 5 of the annual tables PBS published with the 118th NAC (19 October 2026), 1999-00 to 2025-26, under the labels the national accounts portal uses; the revision moved 2020-21 to 2025-26, and the 21 years before are the portal’s figures to the rupee.",
    "unit": "million rupees",
-   "source": "PBS national accounts, pull of 2026-09-27",
+   "source": "PBS National Accounts Annual Tables 2025-26, updated Sep 2026 (118th NAC, 19 October 2026)",
    "columns": [
     {
      "name": "fy",
@@ -5144,7 +5149,7 @@
     {
      "name": "status",
      "type": "BIGINT",
-     "description": "PBS’s own flag"
+     "description": "PBS’s own flag (1 throughout; the workbook carries none)"
     }
    ],
    "kind": "economy",
