@@ -24,7 +24,12 @@
 
    The modules rewrite the hash without at= once they have applied it
    (replaceState, no event), so the card on screen is remembered here, not
-   read back from the URL; the Share button puts it back.
+   read back from the URL; the Share button puts it back. Which card a link
+   ASKS for is read from the hash as it arrived (`arrived` below): the
+   modules are deferred and start before this file mounts, and their
+   hashchange listeners were registered first, so by the time this file
+   looked, a shared #t=resources&at=sec-emissions had become #t=resources and
+   opened on the topic's first tab.
 
    The budget, the long-run fiscal series and public debt moved to State.
    Their cards stay in the document, always hidden, because finance.js and
@@ -32,6 +37,19 @@
 */
 (function () {
   'use strict';
+
+  /* The hash as the link or the click delivered it, before any module's
+     replaceState strips at=. This script is a classic one, so it runs during
+     parsing, ahead of the deferred modules, and its listeners are the first.
+     A hash change fires popstate before hashchange, and a module strips at=
+     on popstate, so the hash is caught there; hashchange only catches it when
+     no popstate came first. */
+  var arrived = location.hash, caught = false;
+  window.addEventListener('popstate', function () { arrived = location.hash; caught = true; });
+  window.addEventListener('hashchange', function () {
+    if (!caught) arrived = location.hash;
+    caught = false;
+  });
 
   var PAGE = [
     { theme: 'Output & growth', topics: [
@@ -141,9 +159,10 @@
   }
 
   /* ── the hash: read what the modules left, write what they understand ── */
-  function readHashObj() {
+  function readHashObj(raw) {
+    raw = raw == null ? location.hash : raw;
     var h = '';
-    try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch (e) { h = location.hash.replace(/^#/, ''); }
+    try { h = decodeURIComponent(raw.replace(/^#/, '')); } catch (e) { h = raw.replace(/^#/, ''); }
     if (!h) return {};
     if (h.indexOf('=') < 0) return { t: h };
     var o = {};
@@ -151,7 +170,7 @@
     return o;
   }
   function rowFromHash() {
-    var o = readHashObj();
+    var o = readHashObj(arrived);
     if (!o.t || o.t === 'overview') return null;
     if (o.at && GONE[o.at]) { location.replace(GONE[o.at]); return null; }
     if (o.t === 'budget') { location.replace(GONE['sec-budget']); return null; }
