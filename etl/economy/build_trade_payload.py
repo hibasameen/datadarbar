@@ -3,7 +3,9 @@
 TWO NUMBERS FOR THE SAME YEAR, and the page showed whichever it reached for.
 The old econ_data.js block put FY2023-24 imports at Rs14,382.6bn; the
 warehouse's published monthly totals put them at Rs15,488.4bn, 7.7 per cent
-higher, and FY2021-22 differs by 6.7 per cent.
+higher, and FY2021-22 differs by 6.7 per cent. (That was the 2026-09-27
+pull. PBS's rebuilt portal has since revised FY2023-24 imports to
+Rs16,924.1bn, so the gap to the detail tables is now wider still.)
 
 Neither is an arithmetic mistake. The old block was built by adding up D-10
 detail tables, and its own note says those cover "~93-100% of grand total".
@@ -17,18 +19,24 @@ all - so a chart of that year's largest partners is a chart of the partners
 PBS managed to name, and the number saying so is in the payload.
 
 Rebuilding also lengthens the series: the warehouse carries 2003-04 onward
+(and, since the 2026-10-24 pull, January-June 2003 as a flagged half-year)
 where the artefact began in 2015-16.
 
-WHAT THE SCREEN IS FOR. The pull of 2026-09-27 returns a Q1 for FY2025-26 of
-$33,973m of imports, against a range of $11,200m to $18,800m across the seven
-years before it, with Q2 reverting immediately to $17,526m. Imports do not
-double for one quarter and halve the next. Every endpoint agrees on it -
-months, quarters, country rows and group rows are all self-consistent - which
-means the defect is in the table they are all drawn from, and no amount of
-cross-checking between endpoints would have caught it. Only the shape of the
-series does. quarter_screen() is that check, run on every year rather than on
-the one somebody thought to look at, and the years it flags are marked in the
-payload so the page can refuse to draw them as fact.
+WHAT THE SCREEN IS FOR. The pull of 2026-09-27 returned a Q1 for FY2025-26
+of $33,973m of imports, against a range of $11,200m to $18,800m across the
+seven years before it, with Q2 reverting immediately to $17,526m. Imports do
+not double for one quarter and halve the next. Every endpoint agreed on it -
+months, quarters, country rows and group rows were all self-consistent -
+which meant the defect was in the table they were all drawn from, and no
+amount of cross-checking between endpoints would have caught it. Only the
+shape of the series did. PBS has since corrected it: the rebuilt portal
+(pull of 2026-10-24) serves $16,973m for the same quarter. quarter_screen()
+stays, run on every year rather than on the one somebody thought to look at,
+because the next defect will not announce itself either, and the years it
+flags are marked in the payload so the page can refuse to draw them as fact.
+It reads the partner table, whose quarters are now their months added; the
+group table is frozen at the 2026-09-27 pull and still carries the doubled
+quarter, so screening it would flag a defect PBS has already fixed.
 
 Usage: build_trade_payload.py --warehouse <dir> --out <js>
 """
@@ -146,7 +154,14 @@ def main():
     W = pathlib.Path(a.warehouse).as_posix()
     TOT = f"'{W}/trade_monthly_totals.parquet'"
     CTY = f"'{W}/trade_by_country.parquet'"
-    GRP = f"'{W}/trade_by_group.parquet'"
+
+    # The vintage is whatever the warehouse build says it loaded, so a new
+    # pull cannot ship under the old one's date.
+    cat = pathlib.Path(a.warehouse) / 'catalog.json'
+    vintage = next((t['source'] for t in json.loads(cat.read_text())['tables']
+                    if t['name'] == 'trade_monthly_totals'), None) \
+        if cat.exists() else None
+    assert vintage, f'no trade_monthly_totals source in {cat}'
 
     # ── the published totals ──────────────────────────────────────────────
     tot = con.sql(f"""
@@ -168,7 +183,7 @@ def main():
     for r in tot:
         assert r[1] > 0 and r[2] > 0, f'{r[0]} has a non-positive total'
 
-    flags = quarter_screen(con, GRP)
+    flags = quarter_screen(con, CTY)
     for fy, n in months.items():
         if n < 12:
             flags.setdefault(fy, []).insert(
@@ -192,11 +207,11 @@ def main():
                 {'country': COUNTRY_NAME.get(country, country), 'bn': bn})
         part[direction] = {y: v[:TOP_N] for y, v in by_year.items()}
 
-    # Assembled from quarters because the country endpoint's monthly rows
-    # have no June in any year - a year summed from them is an eleven-month
-    # year, short by about a month in twelve. The quarters are complete, at
-    # the cost of overshooting exports (3.3 per cent on average, most often
-    # in Q4), which is why this ratio can sit above 100.
+    # FY_from_quarters is the partner year built from its months (June
+    # included since the 2026-10-24 pull), so it adds to the published total:
+    # the rebuilt portal attributes every rupee to a partner, the old
+    # pre-2011-12 import residual to the United Arab Emirates. A ratio off
+    # 100 now means a month is missing from one table or the other.
     seen = {r[0] for r in con.sql(
         f'SELECT DISTINCT country FROM {CTY}').fetchall()}
     stale = sorted(set(COUNTRY_NAME) - seen)
@@ -225,18 +240,19 @@ def main():
                             'assembled from quarters (trade_by_country)',
             'units': 'Rs billion',
             'coverage_note': 'The partner year measured against the '
-                             'published total. Below 100 it is trade no '
-                             'country is named for: before 2011-12 that is '
-                             '85 to 91 per cent of imports, so a chart of '
-                             'those years shows the partners PBS managed to '
-                             'name, not all of them. Above 100 it is the '
-                             'quarterly assembly overshooting, which PBS '
-                             'does on exports by 3.3 per cent on average.',
+                             'published total. PBS’s rebuilt portal '
+                             'names a partner for every rupee, so this is '
+                             '100 in every year; before 2011-12 it does so '
+                             'by attributing to the United Arab Emirates '
+                             'imports that earlier vintages left with no '
+                             'country (9 to 15 per cent of the total), so '
+                             'the UAE’s share of those years is larger '
+                             'here than in any older chart.',
             'flags_note': 'Years whose quarterly shape breaks against the '
                           'three years before them, or which are incomplete. '
                           'Charts of the published series stop at '
                           f'{last_clean} unless the reader asks for more.',
-            'vintage': 'PBS National Trade Database, pull of 2026-09-27',
+            'vintage': vintage,
         },
     }
     out = pathlib.Path(a.out)

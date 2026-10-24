@@ -132,11 +132,13 @@
       theme: 'Justice',
       title: 'Case flows and pendency',
       dek: 'What was pending, what came in and what was decided, across four '
-         + 'provinces and Islamabad and district by district, 2020 to 2024. '
+         + 'provinces and Islamabad and district by district, 2020 to 2025. '
          + 'Lahore had 2,700 cases pending for every 100,000 people at the end '
-         + 'of 2024 and 1,291 for each judge in post. Punjab carries 1.5 million '
-         + 'of the 1.96 million cases pending; only Khyber Pakhtunkhwa and '
-         + 'Islamabad ended 2024 with fewer than they began it. A clearance rate above 100 per '
+         + 'of 2024 and 1,291 for each judge in post; the 2025 edition prints no '
+         + 'district tables for Punjab or Balochistan. Punjab carries 1.44 million '
+         + 'of the 1.91 million cases pending at the end of 2025, when Punjab, '
+         + 'Khyber Pakhtunkhwa and Balochistan ended the year with fewer than they '
+         + 'began it and Sindh and Islamabad with more. A clearance rate above 100 per '
          + 'cent means a court decided more cases than it received that year. '
          + 'It does not mean the backlog fell: in seven of these rows it rose '
          + 'anyway — Punjab cleared 100.5 per cent in 2022 and ended the '
@@ -151,13 +153,13 @@
       theme: 'Justice',
       title: 'Judges and vacancies',
       dek: 'Sanctioned posts against the judges actually sitting in them. '
-         + 'Punjab had 1,565 judges for 2,364 posts in 2024 — a third of its '
+         + 'Punjab had 1,556 judges for 2,364 posts in 2025 — a third of its '
          + 'district bench empty, every year since 2020 — while Sindh filled '
-         + 'nine in ten. In Balochistan, by rank, the shortfall sits almost '
+         + 'nearly nine in ten. In Balochistan, by rank, the shortfall sits almost '
          + 'entirely in the district and sessions ranks.',
       note: 'The province chart covers every province that printed a '
           + 'consolidated strength; the charts by rank are Balochistan only, '
-          + 'for 2023 and 2024, because only its rank tables were extracted. '
+          + 'for 2023 to 2025, because only its rank tables were extracted. '
           + 'Working and vacant do not '
           + 'add to sanctioned: the source counts as working only judges '
           + 'sitting in their own cadre, so a post filled by an officer on '
@@ -350,16 +352,16 @@
       theme: 'Water & disasters',
       title: 'Monsoon impacts',
       dek: 'What the 2026 monsoon did, as NDMA’s situation reports counted '
-         + 'it: 181 deaths, 515 injured and 1,729 houses damaged by 5 '
-         + 'September. Khyber Pakhtunkhwa and Punjab carry three-quarters of '
-         + 'the deaths.',
-      note: 'Cumulative for the season to the date of the latest report, not a '
-          + 'daily count, so these figures cannot be added to earlier ones or '
-          + 'to each other. The province rows add to the national row for every '
-          + 'measure except damaged roads, where NDMA rounds 34.56 km to 35. A '
-          + 'missing province is one no report covered rather than a province '
-          + 'with nothing to report. This is one season — the only one '
-          + 'extracted — and is not a series.',
+         + 'it over the whole season, 26 June to 30 September: 199 deaths, 556 '
+         + 'injured and 1,839 houses damaged. Khyber Pakhtunkhwa and Punjab '
+         + 'carry three-quarters of the deaths.',
+      note: 'Cumulative for the season, from NDMA’s final situation report of '
+          + 'the monsoon (No. 97, 30 September 2026), not a daily count, so these '
+          + 'figures cannot be added to earlier reports’ or to each other. The '
+          + 'province rows add to the national row for every measure. A missing '
+          + 'province is one no report covered rather than a province with '
+          + 'nothing to report. This is one season — the only one extracted — '
+          + 'and is not a series.',
     },
     debt: {
       theme: 'Public money',
@@ -574,8 +576,16 @@
     var y = d3.max(all, function (d) { return d.year; });
     var tot = d3.sum(all.filter(function (d) { return d.year === y; }), function (d) { return d.pending_end; });
     var pj = all.filter(function (d) { return d.year === y && d.province === 'Punjab'; })[0];
+    /* Which courts cut their backlog is read off the year, not written in:
+       it was KP and Islamabad in 2024 and Punjab, KP and Balochistan in 2025. */
+    var NAME = { 'Khyber Pakhtunkhwa': 'Khyber Pakhtunkhwa', ICT: 'Islamabad' };
+    var fell = all.filter(function (d) {
+      return d.year === y && d.pending_start != null && d.pending_end < d.pending_start;
+    }).map(function (d) { return NAME[d.province] || d.province; });
+    var list = fell.length < 2 ? fell.join('') : fell.slice(0, -1).join(', ') + ' and ' + fell[fell.length - 1];
     return tot ? { n: (tot / 1e6).toFixed(2) + 'm', u: 'cases pending',
-      p: 'At the end of ' + y + (pj ? ', ' + (pj.pending_end / 1e6).toFixed(1) + 'm of them in Punjab' : '') + '. Only Khyber Pakhtunkhwa and Islamabad ended the year with fewer than they began.' } : null;
+      p: 'At the end of ' + y + (pj ? ', ' + (pj.pending_end / 1e6).toFixed(1) + 'm of them in Punjab' : '') + '. '
+         + (fell.length ? list + ' ended the year with fewer than they began.' : 'Every court ended the year with more than it began.') } : null;
   }
   function headlineCrime() {
     var y = d3.max(crime, function (d) { return d.year; });
@@ -1162,7 +1172,16 @@
      province is as much the story as the gap between them, and 150 names do
      not fit a bar chart. The highest in each province is named. */
   var CD_YEARS = Array.from(new Set(courtDistricts.map(function (d) { return d.year; }))).sort();
-  var cdYear = CD_YEARS[CD_YEARS.length - 1], cdMetric = 'per_100k';
+  /* Open on the latest year every province reports. The 2025 edition prints
+     no district tables for Punjab or Balochistan, and a chart that opens on
+     three provinces reads as the country. 2025 stays one click away. */
+  function cdProvs(y) {
+    return new Set(courtDistricts.filter(function (d) { return d.year === y; })
+      .map(function (d) { return d.province; })).size;
+  }
+  var cdFull = d3.max(CD_YEARS, cdProvs);
+  var cdYear = CD_YEARS.filter(function (y) { return cdProvs(y) === cdFull; }).pop(),
+      cdMetric = 'per_100k';
   function titleCase(s) {
     return String(s).replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); });
   }

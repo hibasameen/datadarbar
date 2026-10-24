@@ -150,6 +150,16 @@ class PipelineTests(unittest.TestCase):
             "Punjab 1 2 3 6 1 2 3 6Cumulative House Damaged\n")
         self.assertEqual(len(p.ndma_impacts(pages)), 64)
 
+    def test_ndma_chart_title_touching_grand_total(self):
+        # 30 September 2026: "Grand T otal ... 556Deceased & Injured"
+        pages = self.ndma_fixture()
+        pages[1]["text"] = pages[1]["text"].replace("Grand T otal 7 14 21 42 7 14 21 42\n",
+            "Grand T otal 7 14 21 42 7 14 21 42Deceased & Injured\n")
+        rows = p.ndma_impacts(pages)
+        self.assertEqual(len(rows), 64)
+        national = [r for r in rows if r["metric"] == "injured_total" and r["location_name"] == "Pakistan"][0]
+        self.assertEqual(national["value"], 42)
+
     def test_no_event_response_is_explicit(self):
         class FakeStore:
             def get(self, *args):

@@ -6,21 +6,30 @@ every commodity group. It has been in the warehouse, unpublished, while
 trade.html drew the partner and group charts without saying how complete they
 are.
 
-They are not always complete, and the shortfall is large and dated. Before
-2011-12 the partner tables account for 85 to 91 per cent of imports: somewhere
-between a tenth and a seventh of everything Pakistan bought in the 2000s is not
-attributed to any country. From 2011-12 the gap closes to under 2 per cent and
-mostly under 1. The commodity groups add to the total in every year.
+Until the 2026-10-24 pull the answer was dated and large. Before 2011-12 the
+partner tables accounted for 85 to 91 per cent of imports: between a tenth and
+a seventh of everything Pakistan bought in the 2000s was attributed to no
+country. PBS's rebuilt portal closes that gap - in every month since January
+2003 the partner rows now add to the published total to the rupee - and it
+closes it by attributing the residual to the United Arab Emirates (Rs177bn of
+imports in July-December 2009 alone). That is a reattribution by PBS, not a
+revision of the total, and the chart is kept because it is now the evidence
+for it: a partner chart of the 2000s from this vintage and one from an older
+vintage are not the same chart, and the UAE is where they differ.
 
-That is the difference between a chart of Pakistan's trading partners and a
-chart of the partners PBS managed to name, and a reader working on the Musharraf
-years needs to know which one they are looking at. Hence a chart, not a
-footnote.
+The commodity groups cannot be fetched from the rebuilt portal without
+signing in. Their table is frozen at the 2026-09-27 pull, and it is compared
+only in periods whose monthly totals PBS has not revised since; a gap against
+a revised total would measure the revision (or the old doubling of July-
+September 2025) rather than the groups' coverage. PBS revised at least one
+month of every fiscal year but 2013-14, so the annual group series here is
+empty apart from that year's imports in rupees, and the chart's group lines
+go with it.
 
 Two quirks kept rather than smoothed:
-  - the USD columns are zero before 2015-16, because PBS only began publishing
-    the dollar series then. Zero here means not reported, so the rupee basis is
-    the default and the dollar view starts where the data does.
+  - the USD columns are empty for January-June 2003, the half of 2002-03
+    before PBS's dollar series starts in July 2003. Empty here means not
+    reported, so the rupee basis is the default.
   - 'FY_from_quarters' is not a period alongside the months and quarters; it is
     the fiscal-year row, assembled from them. It is kept as the annual series
     and never mixed into the monthly one.
@@ -90,16 +99,18 @@ def main():
         'window.DD_RECON=' + json.dumps(payload, separators=(',', ':')) + ';\n')
 
     pkr = payload['pkr']['rows']
-    early = [r for r in pkr if r[0] < '2011-12']
-    late = [r for r in pkr if r[0] >= '2011-12']
-    assert all(r[1] < 95 for r in early), 'the early import shortfall vanished'
-    assert all(r[1] > 95 for r in late), 'a late year lost its partner coverage'
+    # The partner rows add to the total in every month on the rebuilt portal;
+    # a year that drifts from 100 means the reattribution was undone or a
+    # partner went missing, and either is news.
+    off = [r for r in pkr if r[1] is None or abs(r[1] - 100) > 0.5
+           or r[3] is None or abs(r[3] - 100) > 0.5]
+    assert not off, f'partner coverage is no longer complete: {off}'
     for k in payload:
         print(f'  {k:<4} {len(payload[k]["rows"]):>3} rows')
     print(f'  partner coverage of imports: '
-          f'{min(r[1] for r in early):.1f}-{max(r[1] for r in early):.1f}% to '
-          f'{min(r[1] for r in late):.1f}-{max(r[1] for r in late):.1f}% '
-          f'from 2011-12')
+          f'{min(r[1] for r in pkr):.2f}-{max(r[1] for r in pkr):.2f}%, '
+          f'{pkr[0][0]} to {pkr[-1][0]}; groups compared through '
+          f'{max((r[0] for r in pkr if r[2] is not None), default=None)}')
     print(f'  -> {out} ({out.stat().st_size/1e3:.1f} KB)')
 
 

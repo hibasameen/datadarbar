@@ -9,6 +9,15 @@
     "role": "selected_halfyear"
   },
   {
+    "id": "annual_2025",
+    "source_url": "https://ljcp.gov.pk/SiteImage/Misc/files/809%20(26)%20LJCP%20Final%20Judicial%20Statistics%202025%20(11-8-26).pdf",
+    "archive_url": null,
+    "required_for_build": true,
+    "sha256": "d7689ba50c18e1b209bd4ffc935ecbcb5446c4709c4b464ae2ed4935d77b6766",
+    "role": "selected_annual",
+    "note": "Judicial Statistics of Pakistan 2025 (286 pages; PDF dated 2026-08-11, Word title '809 (26) LJCP Final Judicial Statistics 2025 (5-8-26)'). Retrieved live from ljcp.gov.pk on 2026-10-24; no Wayback capture existed then (CDX for ljcp.gov.pk/SiteImage/Misc/files/809* empty) — add archive_url/archive_timestamp once one is made. Punjab and Balochistan district chapters print no district all/civil/criminal case tables this edition; the Supreme Court transferred 21,570 cases to the new Federal Constitutional Court (table 1.5)."
+  },
+  {
     "id": "annual_2024",
     "source_url": "https://www.ljcp.gov.pk/SiteImage/Misc/files/6880(25)Judicial%20Statistics%202024%20(22-9-25).pdf",
     "archive_timestamp": "20251111123208",

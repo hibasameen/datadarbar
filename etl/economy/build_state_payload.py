@@ -7,7 +7,7 @@ level, which is why a search of app/data alone found nothing.
 
   Public money   FBR's collection by head, 1991-92 to 2023-24, totalling
                  9.3 trillion rupees in the last year - FBR's own figure.
-  Justice        case flows for five provinces, 2020 to 2024, and judicial
+  Justice        case flows for five provinces, 2020 to 2025, and judicial
                  posts for Balochistan.
   Crime          reported offences by force and year, 2019 to 2024, with the
                  eleven-offence breakdown PBS publishes for every force, and
@@ -108,7 +108,8 @@ def main():
         GROUP BY 1, 2, 3, 4 ORDER BY fy_end, tax_type, head""")
 
     # Courts: the stock and the flow. Categories nest, so they travel labelled
-    # rather than added; Balochistan is missing one of the five years.
+    # rather than added; Balochistan is missing one of the six years, and its
+    # 2025 is the national overview's all-cases row only.
     courts = rows(f"""
         SELECT year, province, category, pending_start, instituted, disposed,
                pending_end, round(clearance_rate_pct, 1)

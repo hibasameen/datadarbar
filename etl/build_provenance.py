@@ -119,8 +119,9 @@ CHARTS = {
  'sec-weights': dict(
     table='lsm_sector_indices', publication='QIM sector weights and indices',
     selection='each sector’s weight in the index, with its latest growth',
-    note='Growth is July-May 2025-26 against the same months a year earlier, '
-         'because the current year has eleven months published, not twelve.'),
+    note='Growth is the latest complete fiscal year, 2025-26, against 2024-25; '
+         'hovering a bar adds July-August 2026-27 against the same months a year '
+         'earlier.'),
  # ---- the two with no warehouse source ----
  'sec-cmi': dict(
     table=None, artefact=True,

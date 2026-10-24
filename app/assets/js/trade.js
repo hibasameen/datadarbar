@@ -498,10 +498,12 @@ function initCsv(){
 
 /* ================= trade coverage ================= */
 /* window.DD_RECON, from trade_reconciliation: what share of each published
-   total the detailed tables on this page actually account for. Drawn because
-   the answer is not always "all of it" - before 2011-12 a seventh of imports
-   belongs to no named country - and a reader comparing partners across 2009
-   and 2019 is comparing two different degrees of completeness. */
+   total the detailed tables on this page actually account for. Before the
+   2026-10-24 pull the answer was not always "all of it" - a seventh of
+   imports before 2011-12 belonged to no named country. The rebuilt portal
+   attributes that to the UAE, so the country lines are now 100 throughout
+   and the group lines appear only where the frozen groups can still be
+   compared with an unrevised total. */
 const RC_SERIES=[
  {k:'c_imp', lbl:'Imports, by partner country',  c:'var(--rust)',      dash:null},
  {k:'c_exp', lbl:'Exports, by partner country',  c:'var(--gold-600)',  dash:null},
@@ -517,9 +519,9 @@ function initRecon(){
 function reconRows(){
  const b=window.DD_RECON&&window.DD_RECON[rcBasis];
  if(!b)return [];
- /* The dollar columns are zero before 2015-16 because PBS did not publish
-    them, and a zero total divides into a null, not a nought. Those years are
-    dropped rather than drawn as a collapse in coverage that never happened. */
+ /* A year with no dollar total (2002-03 is rupees only) divides into a
+    null, not a nought, and is dropped rather than drawn as a collapse in
+    coverage that never happened. */
  return b.rows.map(r=>{const o={};b.cols.forEach((c,i)=>o[c]=r[i]);o.n=+o.fy.slice(0,4)+1;return o;})
    .filter(o=>RC_SERIES.some(s=>o[s.k]!=null));
 }
@@ -539,14 +541,6 @@ function drawRecon(){
   .attr('stroke','var(--ink)').attr('stroke-width',1.2);
  svg.append('text').attr('x',m.l+5).attr('y',y(100)-5).attr('font-size',10).attr('font-weight',700)
   .attr('fill','var(--muted)').text('100% — the parts add to the total');
- /* 2011-12 is where PBS's partner tables start naming almost everything. */
- const brk=2012;
- if(x(brk)>m.l&&x(brk)<W-m.r){
-  svg.append('line').attr('x1',x(brk)).attr('x2',x(brk)).attr('y1',m.t).attr('y2',H-m.b)
-   .attr('stroke','var(--muted)').attr('stroke-dasharray','2 3').attr('opacity',.8);
-  svg.append('text').attr('x',x(brk)+5).attr('y',H-m.b-7).attr('font-size',10).attr('font-style','italic')
-   .attr('fill','var(--muted)').text('partner tables close the gap');
- }
  RC_SERIES.forEach(s=>{
   const pts=rows.filter(r=>r[s.k]!=null);
   if(!pts.length)return;

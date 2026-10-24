@@ -338,8 +338,11 @@ def ndma_impacts(pages):
         observed, row_pages = {}, {}
         for page_number, line in lines:
             line = re.sub(r"Grand T\s*otal", "Grand Total", line.strip())
-            # In the 3 September PDF the next chart title touches Punjab's last cell.
-            line = line.removesuffix("Cumulative House Damaged").rstrip()
+            # A chart title can touch a row's last cell: "Cumulative House Damaged"
+            # after Punjab on 3 September, "Deceased & Injured" after the Grand
+            # Total and "Cumulative House Damaged" after 1559 on 30 September.
+            # Text glued to a number is never a cell; drop it.
+            line = re.sub(r"(\d)[A-Za-z][^\d]*$", r"\1", line).rstrip()
             match = re.fullmatch(r"(Punjab|KP|Sindh|Balochistan|GB|AJ&K|ICT|Grand Total)\s+([\d.,\s-]+)", line)
             if not match:
                 continue

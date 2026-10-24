@@ -46,7 +46,7 @@ const TOPICS=[
   title:'Inside industry: what Pakistan’s factories make',
   lede:'Large-scale manufacturing is a fifth of industry and the part measured monthly. Two decades of sector production indices, and the monthly quantum index that tracks them.',
   desc:'Large-scale manufacturing: annual sector production indices and the monthly quantum index.',
-  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: May 2026.'},
+  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: August 2026.'},
  {k:'censuses',label:'Manufacturing censuses',
   title:'What the manufacturing censuses show',
   lede:'Roughly once a decade PBS counts every registered factory. Comparing the 2005-06 and 2015-16 rounds shows which industries employ, produce and proliferate — and how much textiles receded.',
@@ -221,7 +221,8 @@ function prepData(){
    pts.push({fy,n:fyEnd(fy),v:OB[fy][oldName].annual*100/old15[oldName],linked:true});
   });
   Object.keys(NB).sort().forEach(fy=>{
-   const d=NB[fy][c];if(d&&d.annual!=null)pts.push({fy,n:fyEnd(fy),v:d.annual,linked:false});
+   // complete fiscal years only: a year-to-date average (e.g. Jul–Aug) is not comparable for seasonal sectors
+   const d=NB[fy][c];if(d&&d.annual!=null&&Object.keys(d.monthly).length===12)pts.push({fy,n:fyEnd(fy),v:d.annual,linked:false});
   });
   if(pts.length)lsmSeries[c]=pts;
  });
@@ -491,7 +492,7 @@ function drawMacroLevels(){
   });
   /* A "peak 2021-22" marker used to sit here. It was an artefact of an
      extract that stopped in 2023-24: on the 2017-Census basis the series
-     reaches 198,864 in 2024-25 and 203,118 in 2025-26, both above it. The
+     reaches 197,046 in 2024-25 and 199,917 in 2025-26, both above it. The
      chart states no turning point now; the reader can see the shape. */
   g.append('g').attr('transform',`translate(0,${ch-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(6,Math.floor(cw/110))).tickFormat(n=>fyLbl(n)));
   g.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')));
@@ -515,7 +516,7 @@ function initQtr(){
  drawQtr();
 }
 function qtrKey(r){return r.fy+' Q'+r.quarter;}
-/* One pass over the 880 rows produces the quarter list, the series names and
+/* One pass over the 968 rows produces the quarter list, the series names and
    the series-by-quarter totals for whichever level is showing. */
 function qtrShape(){
  const qs=[],seen=new Set(),by={},names=[];
@@ -937,7 +938,7 @@ function initLsm(){
  const chips=d3.select('#lsmChips');
  const canon=Object.keys(lsmSeries);
  // order: QIM first, then by weight desc
- const w=c=>c==='QIM'?999:(IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:0);
+ const F=lsmFys(),w=c=>c==='QIM'?999:(IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:0);
  canon.sort((a,b)=>w(b)-w(a));
  chips.selectAll('button').data(canon).join('button').attr('class','chip')
   .html(c=>LSM_SHORT[c])
@@ -972,7 +973,7 @@ function drawLsm(){
     .attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2).attr('stroke-dasharray','5 4').attr('d',line);
   svg.append('path').datum(newPts).attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2.5).attr('d',line);
   svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','var(--surface)').attr('stroke-width',1)
-   .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}${p.fy==='2025-26'?' (Jul–May)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
+   .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
   const lp=lastPt(pts);
   if(!narrow) svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
  });
@@ -1013,8 +1014,17 @@ function drawQim(){
 }
 
 /* ================= 3c. weights + FY growth ================= */
-function fyGrowth(c){
- const a=IND.new_base['2025-26'][c],b=IND.new_base['2024-25'][c];
+// latest complete fiscal year, and the year in progress (if any), read off the QIM row
+function lsmFys(){
+ const NB=IND.new_base,fys=Object.keys(NB).sort(),n=fy=>Object.keys((NB[fy].QIM||{}).monthly||{}).length;
+ const full=fys.filter(fy=>n(fy)===12),last=fys[fys.length-1],k=n(last);
+ const MO=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+ return {full:full[full.length-1],prevFull:full[full.length-2],
+  ytd:k<12?last:null,prevYtd:k<12?fys[fys.length-2]:null,ytdLbl:k<12?(k===1?'Jul':'Jul–'+MO[k-1]):null};
+}
+function fyGrowth(c,fy,prev){
+ if(!fy){const F=lsmFys();fy=F.full;prev=F.prevFull;}
+ const a=IND.new_base[fy][c],b=IND.new_base[prev][c];
  if(!a||!b)return null;
  const common=Object.keys(a.monthly).map(k=>k.slice(5)).filter(mm=>Object.keys(b.monthly).some(k2=>k2.slice(5)===mm));
  if(!common.length)return null;
@@ -1024,8 +1034,9 @@ function fyGrowth(c){
 }
 function drawWeights(){
  const el=d3.select('#lsmWeights');el.selectAll('*').remove();
+ const F=lsmFys();
  const rows=Object.keys(lsmSeries).filter(c=>c!=='QIM')
-  .map(c=>({c,w:IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:0,g:fyGrowth(c)}))
+  .map(c=>({c,w:IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:0,g:fyGrowth(c),gy:F.ytd?fyGrowth(c,F.ytd,F.prevYtd):null}))
   .sort((a,b)=>b.w-a.w);
  const W=el.node().clientWidth||520,rh=23,H=rows.length*rh+6;
  const lblW=Math.max(110,Math.min(160,W*0.32));
@@ -1033,7 +1044,7 @@ function drawWeights(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+3})`).style('cursor','pointer')
   .on('click',(e,d)=>{lsmSel.has(d.c)?lsmSel.delete(d.c):lsmSel.add(d.c);styleChips();drawLsm();drawWeights();})
-  .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>Jul–May 2025-26: ${fmtPct(d.g)}`,e)).on('mouseleave',hideTip);
+  .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>FY${F.full}: ${fmtPct(d.g)}${F.ytd?`<br>${F.ytdLbl} ${F.ytd}: ${fmtPct(d.gy)}`:''}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',d=>lsmSel.has(d.c)?800:600)
   .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);const t=LSM_SHORT[d.c];return t.length>max?t.slice(0,max-1)+'…':t;});
@@ -1523,7 +1534,11 @@ const CSV={
  qim:()=>['Pakistan_QIM_monthly.csv',
    IND.trend.map(p=>({month:p.month,qim_index:p.qim,mom_change_pct:p.mom,yoy_change_pct:p.yoy,fy_cumulative_index:p.cum_qim,fy_cumulative_change_pct:p.cum_chg}))],
  weights:()=>['Pakistan_LSM_weights.csv',
-   Object.keys(lsmSeries).filter(c=>c!=='QIM').map(c=>({sector:LSM_SHORT[c],weight_in_qim_pct:IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:null,jul_may_2025_26_growth_pct:round2(fyGrowth(c))})).sort((a,b)=>(b.weight_in_qim_pct||0)-(a.weight_in_qim_pct||0))],
+   (()=>{const F=lsmFys(),k=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+    return Object.keys(lsmSeries).filter(c=>c!=='QIM').map(c=>{const r={sector:LSM_SHORT[c],weight_in_qim_pct:IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:null};
+     r[`fy_${k(F.full)}_growth_pct`]=round2(fyGrowth(c));
+     if(F.ytd)r[`${k(F.ytdLbl)}_${k(F.ytd)}_growth_pct`]=round2(fyGrowth(c,F.ytd,F.prevYtd));
+     return r;}).sort((a,b)=>(b.weight_in_qim_pct||0)-(a.weight_in_qim_pct||0));})()],
  cmi:()=>{const C=IND.cmi,tot={emp:[1100814,2340966],est:[8680,42578]};
    let rows;
    if(cmiM==='gva')rows=Object.entries(C.gva_weights).filter(([d])=>d!=='OD').map(([d,v])=>({industry:v.label,share_2005_06_pct:v.w2005,share_2015_16_pct:v.w2015}));
@@ -1541,7 +1556,7 @@ const CSV={
     export now follows all three.
 
     deflator_estimated is not decoration. The deflator is published only to
-    2024-25; beyond that deflForYears extrapolates it, so a real value for a
+    2025-26; beyond that deflForYears extrapolates it, so a real value for a
     later year rests on an estimate, and a column that says which rows those
     are is the difference between a figure and a guess. */
  budget:()=>{

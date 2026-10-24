@@ -3,12 +3,12 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=d505f2f5"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=d505f2f5"/>
-<link rel="stylesheet" href="assets/css/charts.css?v=d505f2f5"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="assets/css/shell.css?v=6c1c51ce"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=6c1c51ce"/>
+<link rel="stylesheet" href="assets/css/charts.css?v=6c1c51ce"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script src="assets/js/d3.v7.min.js?v=d505f2f5"></script>
-<script src="assets/js/palette.js?v=d505f2f5"></script><!-- SEO:START -->
+<script src="assets/js/d3.v7.min.js?v=6c1c51ce"></script>
+<script src="assets/js/palette.js?v=6c1c51ce"></script><!-- SEO:START -->
 <title>Pakistan GDP, Trade, Inflation &amp; Budget Data — Data Darbar</title>
 <meta name="description" content="Pakistan&#x27;s economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, mining, crop prices and greenhouse gas emissions, and Pakistan beside its peers.">
 <link rel="canonical" href="https://darbar.adaad.org/finance.html">
@@ -119,7 +119,7 @@
   <div class="desc" id="macroDesc">The four numbers the rest of this page is measured against. <b>Indexed</b> puts them all at 100 in 1999-2000, so their paths can be compared; <b>Levels</b> gives each its own units and axis.</div>
   <div id="macro"></div>
   <div class="legend" id="macroLegend"></div>
-  <div class="note">Three aggregates, and they are not the same number. <b>GVA at basic prices</b> is what the sector charts on this page add up to; <b>GDP at market prices</b> is GVA plus taxes less subsidies; <b>GNI</b> is GDP plus net primary income from abroad, which is largely remittances and was negative until 2001-02. For 2025-26 they are Rs 42.6tn, Rs 45.8tn and Rs 49.8tn. All three are at constant 2015-16 prices, from PBS National Accounts Table 5, and both identities hold to the rupee in every year. <b>Income per person is shown on two population bases.</b> From 2023-24 PBS reprojects population on the 2023 Census, so the two series are not a continuation of one another &mdash; on the 2017-Census basis 2025-26 is Rs 203,118, on the 2023-Census basis Rs 195,484 &mdash; and joining them would draw a fall that is a change of denominator, not of income. The exchange rate is the annual average.</div>
+  <div class="note">Three aggregates, and they are not the same number. <b>GVA at basic prices</b> is what the sector charts on this page add up to; <b>GDP at market prices</b> is GVA plus taxes less subsidies; <b>GNI</b> is GDP plus net primary income from abroad, which is largely remittances and was negative until 2001-02. For 2025-26 they are Rs 42.6tn, Rs 45.8tn and Rs 49.8tn. All three are at constant 2015-16 prices, from PBS National Accounts Table 5, and both identities hold to the rupee in every year. <b>Income per person is shown on two population bases.</b> From 2023-24 PBS reprojects population on the 2023 Census, so the two series are not a continuation of one another &mdash; on the 2017-Census basis 2025-26 is Rs 199,917, on the 2023-Census basis Rs 192,404 &mdash; and joining them would draw a fall that is a change of denominator, not of income. The exchange rate is the annual average.</div>
  </div>
 
  <div class="card" data-topic="structure" id="sec-qtr">
@@ -129,7 +129,7 @@
    <div class="seg" id="qtrView"><button data-qv="stack" class="on">Stacked</button><button data-qv="lines">Indexed lines</button></div>
    <div class="seg" id="qtrLevel"><button data-ql="sector" class="on">3 sectors</button><button data-ql="subsector">18 sub-sectors</button><button data-ql="category">22 activities</button></div>
   </div>
-  <div class="desc" id="qtrDesc">Pakistan&rsquo;s only quarterly output series, 2015-16 to 2024-25. <b>Hover a quarter</b> for its composition.</div>
+  <div class="desc" id="qtrDesc">Pakistan&rsquo;s only quarterly output series, 2015-16 to 2025-26. <b>Hover a quarter</b> for its composition.</div>
   <div id="qtr"></div>
   <div class="legend" id="qtrLegend"></div>
   <div class="note">Pakistan&rsquo;s only quarterly output series. Between January&ndash;March and April&ndash;June 2020 industry fell from Rs 1.70tn to Rs 1.36tn and services from Rs 5.13tn to Rs 4.79tn, while agriculture rose from Rs 1.99tn to Rs 2.05tn. These are unadjusted sequential quarters and are not seasonally adjusted, so a quarter-on-quarter move is not on its own a measure of what any one event did. Quarters are fiscal: Q1 is July&ndash;September. <b>The four quarters sum to the annual GVA</b> &mdash; not to GDP, which adds taxes less subsidies &mdash; and they agree with Table 5 to within Rs 2 million in eight of the ten years. Two do not: 2023-24 by Rs 15.9bn and 2024-25 by Rs 72.0bn, where the quarterly release and the annual table are different vintages.</div>
@@ -148,7 +148,7 @@
   <div id="contrib"></div>
   <div id="cgrowth" style="display:none"></div>
   <span id="cgrowthLbl" style="display:none"></span>
-  <div class="note" id="compNote">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Each activity’s contribution is its own change in output over last year’s total, both at constant 2015-16 prices, so <b>the parts sum to the headline exactly</b> rather than approximately — to within a billionth of a percentage point, which the build checks and fails on. Eighteen activities, none of them inside another: the earlier version listed Crops beside Cotton Ginning, which is one of the three things Crops is made of, and multiplied real growth rates by current-price shares, so in 2022-23 its parts came to −0.93 points against a headline of −0.21. The headline here is growth in gross value added at basic prices, which is what these activities add up to; GDP adds taxes less subsidies on top and is a slightly different number. Available from 2000-01, the first year with a previous year to compare against.</div>
+  <div class="note" id="compNote">A decomposition, not a causal story: it says where growth <i>showed up</i>, not what caused it. Each activity’s contribution is its own change in output over last year’s total, both at constant 2015-16 prices, so <b>the parts sum to the headline exactly</b> rather than approximately — to within a billionth of a percentage point, which the build checks and fails on. Eighteen activities, none of them inside another: the earlier version listed Crops beside Cotton Ginning, which is one of the three things Crops is made of, and multiplied real growth rates by current-price shares, so in 2022-23 its parts came to −0.93 points against the headline then published, −0.21. The headline here is growth in gross value added at basic prices, which is what these activities add up to; GDP adds taxes less subsidies on top and is a slightly different number. Available from 2000-01, the first year with a previous year to compare against.</div>
  </div>
 
  <div class="grid2" data-topic="growth" id="sec-cyear">
@@ -188,9 +188,9 @@
   <div class="card" data-topic="industry" id="sec-weights">
    <h2>What weighs what in the index <span class="unit">— weight in QIM, %</span></h2>
   <button class="csvbtn" data-csv="weights" title="Download this chart’s data as CSV"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>CSV</button>
-   <div class="desc">Each sector's weight (from the 2015-16 manufacturing census) and its production change this fiscal year. <b>Click a bar</b> to toggle it in the chart above.</div>
+   <div class="desc">Each sector's weight (from the 2015-16 manufacturing census) and its production change in the latest complete fiscal year. <b>Click a bar</b> to toggle it in the chart above.</div>
    <div id="lsmWeights"></div>
-   <div class="src">Growth is Jul–May 2025-26 vs the same period last year.</div>
+   <div class="src">Growth is FY2025-26 vs FY2024-25. Hover for Jul–Aug 2026-27 vs the same months a year earlier.</div>
   </div>
  </div>
 
@@ -493,7 +493,7 @@
   </div>
   <div id="recon"></div>
   <div class="legend" id="reconLegend"></div>
-  <div class="note"><b>Read the partner charts for the 2000s with this in front of you.</b> Before 2011-12 the country tables account for only 85 to 91 per cent of imports: between a tenth and a seventh of everything Pakistan bought in those years is not attributed to any country, so a chart of its largest partners is really a chart of the partners PBS managed to name. From 2011-12 the gap closes to under two per cent. The commodity groups add to the total in every year, so the basket charts do not carry this problem. Exports run slightly <i>over</i> 100 per cent in 2020-21 and 2021-22, which is the same kind of failure in the other direction. Dollar figures were not published before 2015-16, so the dollar view starts there; 2025-26 covers eleven months.</div>
+  <div class="note"><b>The lines sit at 100 because PBS’s rebuilt trade portal now makes them.</b> Earlier pulls attributed only 85 to 91 per cent of imports before 2011-12 to a named country; the rebuilt portal gives that remainder to the United Arab Emirates, so partner rows now add to the published total in every month, and the UAE’s share of the 2000s is larger here than in any older chart. The commodity groups are frozen at the 27 September 2026 pull, because the rebuilt portal does not serve them, and are compared only where PBS has not since revised the total — which leaves almost nothing to draw. Dollar figures run from July 2003; 2002-03 is January to June 2003 only, in rupees.</div>
  </div>
 
  <!-- partners -->
@@ -516,9 +516,9 @@
   <div class="src" id="cMeta"></div>
  </div>
 
- <div class="foot" id="foot-finance"><b>Sources.</b> Sector shares, growth &amp; contributions: <a href="https://www.pbs.gov.pk/national-accounts-2/" target="_blank" rel="noopener">PBS National Accounts</a> (2015-16 base; Macro Economic Indicators 1951-52→, real growth Table 6, sectoral shares Table 7b). LSM &amp; QIM: <a href="https://www.pbs.gov.pk/industry-2/" target="_blank" rel="noopener">PBS Industry Statistics</a> — monthly QIM trend sheet and annual Table-2 production indices on the 2015-16 and 2005-06 bases, retrieved Aug 2026. Manufacturing censuses: PBS <b>CMI 2005-06 and 2015-16</b> reports. Input-output: PBS Supply-Use &amp; Input-Output Tables 2015-16. Budget: Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Budget in Brief &amp; Explanatory Memorandum on Federal Receipts</a> (FY2009-10→2026-27). Full detail lives in the project's DuckDB warehouse (<code>lsm_qim</code>, <code>lsm_sector_indices</code>, <code>national_accounts</code>, <code>budget_lines</code>).</div>
+ <div class="foot" id="foot-finance"><b>Sources.</b> Sector shares, growth &amp; contributions: <a href="https://www.pbs.gov.pk/national-accounts-2/" target="_blank" rel="noopener">PBS National Accounts</a> (2015-16 base; Macro Economic Indicators 1951-52→, real growth Table 6, sectoral shares Table 7b). LSM &amp; QIM: <a href="https://www.pbs.gov.pk/industry-2/" target="_blank" rel="noopener">PBS Industry Statistics</a> — monthly QIM trend sheet and annual Table-2 production indices on the 2015-16 and 2005-06 bases, retrieved Oct 2026. Manufacturing censuses: PBS <b>CMI 2005-06 and 2015-16</b> reports. Input-output: PBS Supply-Use &amp; Input-Output Tables 2015-16. Budget: Finance Division — <a href="https://www.finance.gov.pk/" target="_blank" rel="noopener">Budget in Brief &amp; Explanatory Memorandum on Federal Receipts</a> (FY2009-10→2026-27). Full detail lives in the project's DuckDB warehouse (<code>lsm_qim</code>, <code>lsm_sector_indices</code>, <code>national_accounts</code>, <code>budget_lines</code>).</div>
 <div class="foot" id="pageFoot"></div>
-<div class="foot" id="foot-trade"><b>Sources.</b> Two different PBS series sit on this page, and they do not agree, so each chart says which it is on. <b>Trade over time</b> and <b>trading partners</b> are the <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">National Trade Database</a> totals as published (pull of 2026-09-27) — the grand total and the partner tables PBS reconciles against it. <b>Products, sections and movers</b> are the 8-digit "by commodities and countries" series, which is a sum of detail rather than a total: for FY2021-22 to FY2023-24 it was parsed from PBS PDFs and covers 93–100 per cent of the official grand total, so it runs up to 7 per cent below the published figure for the same year. Read a product share off the detail and a national total off the totals chart; do not mix them. The 8-digit series also has holes PBS did not publish and other sources fill: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, at HS-section level only, converted at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so no commodity breakdown exists for those two years. Values as-published, aggregated to Rs billion. Full data and a queryable DuckDB warehouse accompany this project.</div>
+<div class="foot" id="foot-trade"><b>Sources.</b> Two different PBS series sit on this page, and they do not agree, so each chart says which it is on. <b>Trade over time</b> and <b>trading partners</b> are the <a href="https://www.pbs.gov.pk/external-trade-statistics/" target="_blank" rel="noopener">National Trade Database</a> totals as published (Pakistan Trade Pulse, pull of 2026-10-24, to August 2026) — the grand total and the partner tables PBS reconciles against it. <b>Products, sections and movers</b> are the 8-digit "by commodities and countries" series, which is a sum of detail rather than a total: for FY2021-22 to FY2023-24 it was parsed from PBS PDFs and covers 93–100 per cent of the official grand total, so it runs up to 7 per cent below the published figure for the same year. Read a product share off the detail and a national total off the totals chart; do not mix them. The 8-digit series also has holes PBS did not publish and other sources fill: <b>exports 2017-18</b> from <a href="https://comtradeplus.un.org/" target="_blank" rel="noopener">UN Comtrade</a> (calendar-2018, Pakistan-reported, at HS-section level only, converted at the FY2017-18 average rate); <b>imports 2018-19 and 2019-20</b> as totals only, from Pakistan Economic Survey goods-import figures ($54.8bn and $44.5bn, at the SBP fiscal-year average rate) — Pakistan stopped reporting to Comtrade after 2018, so no commodity breakdown exists for those two years. Values as-published, aggregated to Rs billion. Full data and a queryable DuckDB warehouse accompany this project.</div>
    </div>
   </div>
   <aside class="pane-side" id="paneSide" hidden></aside>
@@ -526,29 +526,29 @@
 </main>
 </div>
 <div class="tip" id="tip"></div>
-<script src="data/macro_data.js?v=d505f2f5"></script>
-<script src="data/growth_data.js?v=d505f2f5"></script>
-<script src="data/structure_data.js?v=d505f2f5"></script>
-<script src="data/money_data.js?v=d505f2f5"></script>
-<script src="data/history_data.js?v=d505f2f5"></script>
-<script src="data/resources_data.js?v=d505f2f5"></script>
-<script src="data/migration_data.js?v=d505f2f5"></script>
-<script src="data/recon_data.js?v=d505f2f5"></script>
-<script src="data/deflator_data.js?v=d505f2f5"></script>
-<script src="assets/js/deflate.js?v=d505f2f5"></script>
-<script src="data/provenance.js?v=d505f2f5"></script>
-<script src="data/trade_data.js?v=d505f2f5"></script>
-<script src="assets/js/provenance.js?v=d505f2f5"></script>
-<script src="assets/js/econ_data.js?v=d505f2f5"></script>
-<script src="assets/js/econ-shell.js?v=d505f2f5"></script>
-<script type="module" src="assets/js/finance.js?v=d505f2f5"></script>
-<script type="module" src="assets/js/money.js?v=d505f2f5"></script>
-<script type="module" src="assets/js/trade.js?v=d505f2f5"></script>
-<script src="assets/js/explorer.js?v=d505f2f5"></script>
-<script src="assets/js/economy-nav.js?v=d505f2f5"></script>
-<script src="assets/js/shell.js?v=d505f2f5"></script>
-<script src="assets/js/modals.js?v=d505f2f5"></script>
-<script src="assets/js/analytics.js?v=d505f2f5"></script>
+<script src="data/macro_data.js?v=6c1c51ce"></script>
+<script src="data/growth_data.js?v=6c1c51ce"></script>
+<script src="data/structure_data.js?v=6c1c51ce"></script>
+<script src="data/money_data.js?v=6c1c51ce"></script>
+<script src="data/history_data.js?v=6c1c51ce"></script>
+<script src="data/resources_data.js?v=6c1c51ce"></script>
+<script src="data/migration_data.js?v=6c1c51ce"></script>
+<script src="data/recon_data.js?v=6c1c51ce"></script>
+<script src="data/deflator_data.js?v=6c1c51ce"></script>
+<script src="assets/js/deflate.js?v=6c1c51ce"></script>
+<script src="data/provenance.js?v=6c1c51ce"></script>
+<script src="data/trade_data.js?v=6c1c51ce"></script>
+<script src="assets/js/provenance.js?v=6c1c51ce"></script>
+<script src="assets/js/econ_data.js?v=6c1c51ce"></script>
+<script src="assets/js/econ-shell.js?v=6c1c51ce"></script>
+<script type="module" src="assets/js/finance.js?v=6c1c51ce"></script>
+<script type="module" src="assets/js/money.js?v=6c1c51ce"></script>
+<script type="module" src="assets/js/trade.js?v=6c1c51ce"></script>
+<script src="assets/js/explorer.js?v=6c1c51ce"></script>
+<script src="assets/js/economy-nav.js?v=6c1c51ce"></script>
+<script src="assets/js/shell.js?v=6c1c51ce"></script>
+<script src="assets/js/modals.js?v=6c1c51ce"></script>
+<script src="assets/js/analytics.js?v=6c1c51ce"></script>
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> unless <a href="datasets/#licences">stated otherwise</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>

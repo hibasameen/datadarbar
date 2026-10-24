@@ -1860,7 +1860,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     # were in fact collected.
     print("courts, policing, energy and disasters\u2026")
 
-    def src_table(name, rel, desc, notes, cols, source, unit):
+    def src_table(name, rel, desc, notes, cols, source, unit, exclude=()):
         f = src / rel
         if not f.exists():
             print(f"  {name:<28} skipped (no {rel})")
@@ -1875,13 +1875,20 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             f"SELECT count(*) FROM '{f.as_posix()}' WHERE \"{c}\" LIKE '%/Users/%'").fetchone()[0]]
         scrub = ("" if not leaky else " REPLACE (" + ", ".join(
             f"regexp_replace(\"{c}\", '{LOCAL_PATH}', '', 'g') AS \"{c}\"" for c in leaky) + ")")
+        # A nested audit column is for the desktop warehouse; the console and
+        # the CSV download want flat rows.
+        drop = "" if not exclude else " EXCLUDE (" + ", ".join(f'"{c}"' for c in exclude) + ")"
         register(name, desc, notes, cols, source,
-                 f"SELECT *{scrub} FROM '{f.as_posix()}'", unit=unit)
+                 f"SELECT *{drop}{scrub} FROM '{f.as_posix()}'", unit=unit)
 
     src_table(
         "ljcp_case_flows", "ljcp/annual_provinces.parquet",
         "Cases pending, instituted and disposed by province, court tier and "
-        "category, 2020 to 2024.",
+        "category, 2020 to 2025.",
+        "2025 is thinner than the years before: the edition prints no district "
+        "case tables for Punjab or Balochistan, so Punjab 2025 is the sum of its "
+        "court-tier totals and Balochistan 2025 is the national overview\u2019s "
+        "row alone, all cases only (method says which). "
         "The stock and the flow together: pending at the start, what came in, "
         "what was decided, and what was left. clearance_rate_pct is disposals "
         "over institutions. Above 100 means more cases were decided than "
@@ -1903,16 +1910,17 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "backlog_change": "pending at the end minus pending at the start",
          "stock_flow_check": "whether the stock and flow figures reconcile"},
         "Law & Justice Commission of Pakistan, annual judicial statistics",
-        "cases")
+        "cases", exclude=("components",))
 
     src_table(
         "ljcp_judicial_strength", "ljcp/judicial_strength_by_rank.parquet",
         "Sanctioned, working and vacant judicial posts by rank and session "
         "division.",
-        "Balochistan only, for 2023 and 2024 \u2014 the other provinces\u2019 strength "
+        "Balochistan only, for 2023 to 2025 \u2014 the other provinces\u2019 strength "
         "tables have not been extracted, so this is not a national picture and "
         "should not be read as one. Within Balochistan it is complete: 337 posts "
-        "sanctioned in 2024 against 235 working.",
+        "sanctioned in 2024 against 235 working; 318 against 206 in 2025, across "
+        "six rank tables.",
         {"year": "calendar year", "province": "province",
          "session_division": "the session division",
          "sanctioned_judges": "posts on the establishment",
@@ -1928,15 +1936,17 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         register(
             "ljcp_court_districts",
             "Cases pending in each district's courts at year end, with the "
-            "population and the working judges beside them, 2020 to 2024.",
+            "population and the working judges beside them, 2020 to 2025.",
             "One all-cases row per year and map district. Rates use the 2023 "
             "census count for every year, not a population estimate for the "
             "year. Sessions divisions are keyed to districts by name, "
             "provisionally; two-seat Balochistan districts and Islamabad are "
             "summed first, and a district with no court seat of its own is "
             "added to its host's population (hosted_districts). Working judges "
-            "are matched in 384 of 585 rows: none in 2021, none for KP in 2024, "
-            "and Punjab 2022 is withheld because its staffing is dated 2021. A "
+            "are matched in 450 of 646 rows: none in 2021, none for KP in 2024, "
+            "and Punjab 2022 is withheld because its staffing is dated 2021. 2025 "
+            "covers Sindh, Khyber Pakhtunkhwa and Islamabad only: the edition "
+            "prints no district case tables for Punjab or Balochistan. A "
             "low rate in a district with few courts can mean cases are not "
             "filed there, not that they are decided quickly; the staffing "
             "comparison is descriptive, not causal.",
@@ -1977,10 +1987,12 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         register(
             "ljcp_judges_province",
             "Judicial posts sanctioned, filled and vacant in the district "
-            "judiciary, by province and session division, 2020 to 2024.",
+            "judiciary, by province and session division, 2020 to 2025.",
             "Consolidated strength, all ranks together, as each report prints "
             "it. Not every year is there: no 2021 edition table, KP 2024 not "
-            "found, and Islamabad prints working judges only. Punjab's 2022 "
+            "found, and Islamabad prints working judges only (in 2025 only as "
+            "notes inside merged cells, checked against the printed totals). "
+            "Punjab's 2022 "
             "edition is dated 31 December 2021 (strength_date_status). "
             "Balochistan's figures sum four rank tables and, from 2022, exclude "
             "ex-cadre posts, so its 2020 total is not strictly comparable.",
@@ -2173,8 +2185,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     # ── the national series: Economy and State ──────────────────────────────
     print("national accounts, trade and tax\u2026")
     PULL = REPO.parent / "raw_data" / "pbs_insight_explorer"
-    NA = PULL / "national_accounts_2026-09-27"
-    TR = PULL / "trade_2026-09-27"
+    NA = PULL / "national_accounts_2026-10-24"
+    TR = PULL / "trade_2026-10-24"
     CSV = "header=true, quote='\"', escape='\"'"
 
     def csv_table(name, path, desc, notes, cols, source, unit):
@@ -2221,12 +2233,14 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "Gross value added by sector and sub-sector, annual, at constant prices.",
         "One row per leaf activity, 22 a year, with sector and subsector as "
         "the path to it rather than rows of their own. Summing the rows is "
-        "therefore correct and reproduces the published total: it equals "
-        "Table 5\u2019s GVA at basic prices to the rupee in 26 of the 27 years, "
-        "the exception being 2023-24, where the activity file and the annual "
-        "table are different vintages and differ by Rs15.9bn. An earlier note "
-        "here said the rows were three nested levels and that adding them "
-        "double-counts, which is not what the file contains.",
+        "therefore correct and reproduces the published total. This file is "
+        "the national accounts portal\u2019s, pulled on 27 September 2026, "
+        "before the 118th NAC (19 October 2026) revised 2020-21 to 2025-26, "
+        "and the portal had not been updated by 24 October; national_accounts "
+        "holds the revised annual tables, so the two differ in those six years "
+        "(by up to Rs64bn in 2025-26) and agree to the rupee in the 21 before. "
+        "An earlier note here said the rows were three nested levels and that "
+        "adding them double-counts, which is not what the file contains.",
         {"fy": "fiscal year", "fy_end": "calendar year it ends in",
          "sector": "the broad sector", "subsector": "within the sector",
          "category": "within the sub-sector",
@@ -2240,13 +2254,18 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "Quarterly national accounts are newer and thinner than the annual "
         "series and are revised more. The grain is the same as the annual "
         "file: one row per leaf activity, with sector and subsector as the "
-        "path, so the rows of one quarter add up rather than double-count.",
+        "path, so the rows of one quarter add up rather than double-count. "
+        "From PBS\u2019s quarterly tables of the 118th NAC (19 October 2026), "
+        "through 2025-26 Q4, read from the Excel workbook because the portal "
+        "had not been updated; the four quarters of each year add to the "
+        "revised annual GVA in national_accounts within Rs4mn.",
         {"fy": "fiscal year", "fy_end": "calendar year it ends in",
          "quarter": "Q1 is July\u2013September", "sector": "the broad sector",
          "subsector": "within the sector", "category": "within the sub-sector",
          "gva_constant_pkr_mn": "gross value added, million rupees, constant prices",
-         "status": "PBS\u2019s own flag"},
-        "PBS national accounts, pull of 2026-09-27", "million rupees")
+         "status": "PBS\u2019s own flag (1 throughout; the workbook carries none)"},
+        "PBS Quarterly National Accounts, QNA Excel tables Q4 2025-26 (118th NAC, "
+        "Sep 2026 release of 19 October 2026)", "million rupees")
 
     csv_table(
         "fbr_tax_collection", NA / "fbr_tax_collection_by_head_1992_2024.csv",
@@ -2263,24 +2282,25 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     csv_table(
         "trade_by_country", TR / "trade_by_country_fy_period.csv",
         "Imports and exports by trading partner, fiscal year and period, "
-        "2003\u201304 onwards.",
-        "231 partners. Read the period column before using a total: "
-        "FY_from_quarters is the four quarters added, and is what to use for a "
-        "year \u2014 the portal\u2019s own whole-year rows are excluded because they "
-        "overstate badly, 38.3 against a published 32.1 US dollars billion of "
-        "exports for 2024-25. The quarterly rows still run a little over the "
-        "totals endpoint, about 3 per cent on Q4 and 2 per cent on Q2; "
-        "trade_reconciliation puts every period beside the totals so the gap can "
-        "be seen. The dollar columns are zero before 2013-14 on every endpoint. "
-        "This is aggregate trade and does not replace trade_hs8, which has the "
-        "8-digit product detail.",
+        "January 2003 onwards.",
+        "253 partners, from PBS\u2019s rebuilt trade portal (Pakistan Trade Pulse), "
+        "one month at a time. Quarters (Q1\u2013Q4) and years (FY_from_quarters) are "
+        "the months added by Data Darbar, and partner rows add up to the totals "
+        "exactly in every month. 2002-03 is January\u2013June 2003 only and in rupees; "
+        "dollars run from July 2003. The rebuilt portal also corrects the earlier "
+        "pull: July\u2013September 2025 had been doubled, as had 2007-08 exports and "
+        "January\u2013June 2012 imports, and imports that the old portal left "
+        "unattributed before 2011-12 are now the UAE\u2019s. Imports from 2020-21 "
+        "are revised up, by 10.5 per cent in 2024-25, without an explanation from "
+        "PBS. This is aggregate trade and does not replace trade_hs8, which has "
+        "the 8-digit product detail.",
         {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
          "country": "partner as the portal names it", "iso2": "ISO 3166 alpha-2",
          "iso3": "ISO 3166 alpha-3", "continent": "continent",
          "pbs_country_code": "PBS\u2019s own code",
          "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
          "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
-        "PBS National Trade Database (trade.data.gov.pk), pull of 2026-09-27",
+        "PBS Pakistan Trade Pulse (trade.data.gov.pk), pull of 2026-10-24",
         "rupees and US dollars")
 
     csv_table(
@@ -2289,33 +2309,40 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         "Ten groups, numbered 0 to 9. The portal does not label them; by their "
         "values they are the one-digit SITC sections, but PBS does not say so and "
         "they are carried as numbers rather than given names they may not have. "
-        "The period caution for trade_by_country applies here too.",
+        "FROZEN at the 27 September 2026 pull: the rebuilt portal does not serve "
+        "commodity groups publicly. It therefore still carries what that pull "
+        "had wrong, including the doubled July\u2013September 2025 and the other "
+        "periods the portal has since revised (see trade_by_country); "
+        "trade_reconciliation compares groups only where the totals are "
+        "unrevised.",
         {"fy": "fiscal year", "period": "Q1\u2013Q4, M01\u2013M12, or FY_from_quarters",
          "group": "commodity group 0\u20139, unlabelled by the portal",
          "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
          "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
-        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+        "PBS National Trade Database, pull of 2026-09-27 (frozen; groups are not "
+        "served publicly by the rebuilt portal)", "rupees and US dollars")
 
     csv_table(
         "trade_monthly_totals", TR / "trade_monthly_totals_2003_2026.csv",
-        "Total imports and exports by calendar month, 2003\u201304 onwards.",
-        "The totals endpoint, which the country and group tables are reconciled "
-        "against. The portal\u2019s month list has no June, so June appears only "
-        "inside Q4.",
+        "Total imports and exports by calendar month, January 2003 onwards.",
+        "The monthly totals, which the country and group tables are reconciled "
+        "against: every month including June (the old portal\u2019s month list "
+        "had none). Revised by PBS since the 27 September pull \u2014 see "
+        "trade_by_country for what changed.",
         {"fy": "fiscal year", "year": "calendar year", "month": "calendar month",
          "imports_pkr": "imports, rupees", "exports_pkr": "exports, rupees",
          "imports_usd": "imports, US dollars", "exports_usd": "exports, US dollars"},
-        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+        "PBS Pakistan Trade Pulse (trade.data.gov.pk), pull of 2026-10-24", "rupees and US dollars")
 
     csv_table(
         "trade_reconciliation", TR / "trade_reconciliation_fy_period.csv",
         "Each period\u2019s totals beside the sum of its country rows and its group "
         "rows.",
-        "Read this before quoting a trade total. Monthly country and group rows "
-        "match the totals endpoint to within 0.01 US dollars billion in every "
-        "month except April 2021. Quarterly rows overshoot on exports, most often "
-        "in Q4 \u2014 3.3 per cent on average \u2014 so a year built from quarters is "
-        "close but not exact.",
+        "Country rows equal the totals in every period. The group columns are "
+        "filled only where the totals are unrevised since the 27 September 2026 "
+        "pull, because the groups are frozen at that pull; elsewhere they are "
+        "empty rather than compared with figures PBS has since corrected. "
+        "months_in_totals is the number of months each period actually has.",
         {"fy": "fiscal year", "period": "the period compared",
          "totals_imports_pkr": "from the totals endpoint",
          "totals_exports_pkr": "from the totals endpoint",
@@ -2323,7 +2350,7 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "countries_exports_pkr": "the country rows added",
          "groups_imports_pkr": "the group rows added",
          "groups_exports_pkr": "the group rows added"},
-        "PBS National Trade Database, pull of 2026-09-27", "rupees and US dollars")
+        "PBS Pakistan Trade Pulse (trade.data.gov.pk), pull of 2026-10-24", "rupees and US dollars")
 
     # ── the diaspora country files ──────────────────────────────────────────
     DIA_NOTE = ("The portal serves this keyed by country and it is not country "

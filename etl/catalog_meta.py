@@ -443,8 +443,8 @@ PROVENANCE = {
                     'functional', 'district_key_boundary', 'coord_method', 'coord_precision',
                     'coord_tier', 'coord_resid_m', 'pin_vs_solved_m', 'in_analysis',
                     'analysis_sex', 'analysis_note', 'analysis_district_key_boundary']),
-    'trade_by_country': ('mixed', 'Rows with period FY_from_quarters are the quarters summed by '
-                         'Data Darbar; every other row is as published.', []),
+    'trade_by_country': ('mixed', 'Monthly rows are as published; Q1–Q4 and FY_from_quarters '
+                         'are the months summed by Data Darbar.', []),
     # ── constructed by Data Darbar ──
     **{t: ('derived', n, []) for t, n in [
         ('census_series_index', 'A coverage index computed from the census panels.'),

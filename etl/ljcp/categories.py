@@ -86,6 +86,20 @@ OVERRIDES = {
     ('annual_2024', 'Sindh', '4.28'): ('civil_revisions', 'Printed title repeats 4.27 (seven-years-plus). Every district pending_start equals 2023 table 4.24 civil revisions pending_end, so this is the 2024 civil revisions table.'),
     ('annual_2024', 'Khyber Pakhtunkhwa', '5.22'): ('criminal_appeals', 'First title line missing from the PDF text layer; the remaining text "(... Sessions Judges and Additional Sessions Judges)" and the position between 5.21 criminal cases and 5.23 murder match the criminal appeals table in every other edition.'),
 }
+# Court tier missing from a printed Punjab title, resolved by recorded evidence.
+TIER_OVERRIDES = {
+    ('annual_2025', 'Punjab', '3.19'): ('sessions_courts', 'Title names no court tier. It is the sessions-court rent table: its printed total (512 / 1,593 / 1,507 / 604) equals the "(Rent) Appeals" row of the sessions-courts table 3.12, and 3.20 is the labelled civil-courts rent table.'),
+}
+# Scope notes that apply to every category row of an edition/province.
+EDITION_NOTES = {
+    ('annual_2025', 'Punjab'): 'Punjab 2025 prints narcotics, bail, rent and family separately for sessions courts (3.15, 3.17, 3.19, 3.21: sessions narcotics and bail, rent and family appeals) and civil courts (3.16, 3.18, 3.20, 3.22). Both tiers are summed once, so these categories are broader than the single 2024 tables (2024 family = civil-court suits only; 2024 bail = sessions courts only). 2025 tables have no transfer columns.',
+}
+# Tables that stack several categories in one grid with a merged block-label column
+# (ICT 2025 7.14). Each block is read separately; its label is checked before use.
+STACKED = {
+    ('annual_2025', 'Islamabad'): dict(section='7.14', page=282, blocks=['all', 'civil', 'criminal', 'murder', 'narcotics', 'bail', 'rent', 'family'],
+                                       labels=[r'all\s*cas+es', r'civil', r'crimin', r'murde', r'narcot', r'bail', r'rent', r'family']),
+}
 
 
 def has_header(rows):
@@ -204,11 +218,38 @@ def choose_order(rows, header):
     return STANDARD, f'magnitude_column5_{c5}_ge_column4_{c4}'
 
 
+def stacked_blocks(pdf, sid, year, province, catalog, digest):
+    cfg = STACKED[(sid, province)]
+    page = pdf.pages[cfg['page'] - 1]
+    tables = [t for t in page.find_tables() if t.bbox[2] - t.bbox[0] > 300]
+    out = []
+    for i, (cat, label) in enumerate(zip(cfg['blocks'], cfg['labels'])):
+        first = ' '.join(clean(c) for row in tables[i].extract() for c in row[:1] if c)
+        if not re.search(label, first, re.I):
+            raise ValueError(f'{sid} {province} {cfg["section"]} block {i} label {first!r} is not {cat}')
+        rows = read_table(page, i, FOUR, serial=False, skip_cols=1)
+        for r in rows:
+            r.update(source_id=sid, year=year, province=province, category=cat, court_tier='all_courts', section=cfg['section'],
+                     heading=f'{cfg["section"]} consolidated district-wise table, {cat} block', kind='category_cases', fields=FOUR,
+                     column_order_evidence='four_or_five_columns', serial=False,
+                     scope_note='Read from one block of a stacked table whose merged first column labels the case category.',
+                     source_url=catalog[sid]['source_url'], source_sha256=digest,
+                     record_id=f"{sid}:{province}:{cfg['section']}:{cat}:{r['pdf_page']}:{r['table_index']}:{r['row_index']}")
+        out += rows
+    return out
+
+
 def extract_edition(pdf, sid, year, catalog, digest):
     records, notes = [], []
     for province, (lo, hi) in windows(year).items():
         seen = defaultdict(int)
+        first_of = {}
+        stacked = STACKED.get((sid, province))
+        if stacked:
+            records += stacked_blocks(pdf, sid, year, province, catalog, digest)
         for spec in locate(pdf, year, province, lo, hi):
+            if stacked and spec['page_first'] == stacked['page']:
+                continue  # read block by block above
             cat = classify(spec['heading'])
             override = OVERRIDES.get((sid, province, spec['section']))
             if override:
@@ -216,12 +257,25 @@ def extract_edition(pdf, sid, year, catalog, digest):
             if cat is None:
                 notes.append(dict(source_id=sid, province=province, page=spec['page_first'], heading=spec['heading'], issue='unclassified_heading'))
                 continue
-            seen[(cat, tier(spec["heading"], province))] += 1
-            if seen[(cat, tier(spec["heading"], province))] > 1:
+            tier_override = TIER_OVERRIDES.get((sid, province, spec['section']))
+            spec_tier = tier_override[0] if tier_override else tier(spec['heading'], province)
+            if tier_override:
+                spec['override_note'] = tier_override[1]
+            seen[(cat, spec_tier)] += 1
+            if seen[(cat, spec_tier)] > 1:
                 # Two tables printed under the same title (e.g. Sindh 2024 4.27/4.28). Keep the
                 # second under a suffixed category so nothing is pooled or silently dropped.
-                notes.append(dict(source_id=sid, province=province, page=spec['page_first'], heading=spec['heading'], issue=f'duplicate_title_kept_as_{cat}__dup{seen[(cat, tier(spec["heading"], province))]}'))
-                cat = f'{cat}__dup{seen[(cat, tier(spec["heading"], province))]}'
+                # An exact reprint of an earlier table (KP 2025 5.14 = 5.13) is skipped, not kept.
+                try:
+                    again = [r for p, t in spec['refs'] for r in read_table(pdf.pages[p - 1], t, {6: STANDARD, 4: FOUR, 5: FIVE}.get(spec['width'], FOUR), serial=spec['serial'], ignore_names=HEADER_FRAGMENTS)]
+                except Exception:
+                    again = None
+                key = lambda rows: [(r['name'], r['raw_values']) for r in rows]
+                if again is not None and (cat, spec_tier) in first_of and key(again) == key(first_of[(cat, spec_tier)]):
+                    notes.append(dict(source_id=sid, province=province, page=spec['page_first'], heading=spec['heading'], issue='identical_reprint_skipped'))
+                    continue
+                notes.append(dict(source_id=sid, province=province, page=spec['page_first'], heading=spec['heading'], issue=f'duplicate_title_kept_as_{cat}__dup{seen[(cat, spec_tier)]}'))
+                cat = f'{cat}__dup{seen[(cat, spec_tier)]}'
             width = spec['width']
             fields = {6: STANDARD, 4: FOUR, 5: FIVE}.get(width)
             if fields is None:
@@ -237,6 +291,7 @@ def extract_edition(pdf, sid, year, catalog, digest):
             names = {r['name'].lower() for r in parsed if not r['is_total']}
             if names <= {'civil cases', 'criminal cases'}:
                 continue  # a province-level civil/criminal summary, not a district table
+            first_of.setdefault((cat, spec_tier), parsed)
             evidence = 'four_or_five_columns'
             if width == 6:
                 detail = [r for r in parsed if not r['is_total']]
@@ -250,9 +305,10 @@ def extract_edition(pdf, sid, year, catalog, digest):
                         r.update(dict(zip(RECEIVED, vals)))
             section = spec['section'] or f'unnumbered p{spec["page_first"]}'
             for r in parsed:
-                r.update(source_id=sid, year=year, province=province, category=cat, court_tier=tier(spec["heading"], province),
+                r.update(source_id=sid, year=year, province=province, category=cat, court_tier=spec_tier,
                          section=section, heading=re.sub(r'\s+', ' ', spec['heading'])[:200], kind='category_cases',
-                         fields=fields, column_order_evidence=evidence, serial=spec['serial'], scope_note=spec.get('override_note', ''),
+                         fields=fields, column_order_evidence=evidence, serial=spec['serial'],
+                         scope_note='; '.join(x for x in (spec.get('override_note', ''), EDITION_NOTES.get((sid, province), '')) if x),
                          source_url=catalog[sid]['source_url'], source_sha256=digest,
                          record_id=f"{sid}:{province}:{section}:{cat}:{r['pdf_page']}:{r['table_index']}:{r['row_index']}")
             records += parsed
@@ -263,7 +319,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--raw', type=Path, default=WORKSPACE / 'raw_data/ljcp')
     ap.add_argument('--out', type=Path, default=WORKSPACE / 'data_darbar_warehouse/ljcp')
-    ap.add_argument('--years', type=int, nargs='*', default=[2020, 2022, 2023, 2024])
+    ap.add_argument('--years', type=int, nargs='*', default=[2020, 2022, 2023, 2024, 2025])
     a = ap.parse_args()
     catalog = {s['id']: s for s in json.loads((HERE / 'sources.json').read_text())}
     records, notes = [], []
