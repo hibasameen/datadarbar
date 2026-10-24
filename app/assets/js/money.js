@@ -2,8 +2,7 @@
    Charts SBP monetary and external series. Payload: data/money_data.js (window.DD_MONEY).
 
    Conventions follow finance.js: full redraw on every change (no D3 update pattern),
-   one global #tip tooltip, sidebar topics with #hash deep links, and 'all' present in
-   TOPICS but deliberately absent from TOPIC_DRAWS.
+   one global #tip tooltip, and sidebar topics with #hash deep links.
 
    Two things specific to this page:
    - every multi-series chart has a chips row (series selection), and its end labels go
@@ -151,9 +150,6 @@ let topic = 'rupee', applyingHash = false, _lastNavHash = '';
 
 /* ---------------- topics ---------------- */
 const TOPICS = [
- {k:'all', label:'Everything',
-  desc:'Every topic on one page, top to bottom.',
-  meta:'All series come from the State Bank of Pakistan’s EasyData portal. Full sources are listed at the foot of the page.'},
  {k:'rupee', label:'The rupee',
   desc:'The exchange rate since 1947, and how the rupee has moved against its trading partners in real terms.',
   meta:'SBP bank floating average exchange rates (monthly, from Aug-1947) and the nominal/real effective exchange rate indices, base 2010 (from Jul-2001).'},
@@ -190,21 +186,18 @@ const TOPIC_DRAWS = {
   resources: () => { drawMining(); drawCropPrices(); drawEmissions(); }
 };
 const TOPIC_GROUPS = [
- {label:null, keys:['all']},
  {label:'Prices & the rupee', keys:['rupee','prices']},
  {label:'Rates & money', keys:['rates','money']},
  {label:'The outside world', keys:['external']},
  {label:'The long view', keys:['longrun','peers']},
  {label:'Land and resources', keys:['resources']}];
-const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
-
 /* An ES module since Economy became one page. Nothing here was renamed:
    module scope keeps this file's TOPICS, start, writeHash, toCSV and the
    rest to itself, including the ones that genuinely differ from finance.js
    and trade.js - toCSV takes rows of arrays here and rows of objects there.
    MINE is what this module answers for; when the hash names another
    module's topic it hides its own cards, panels and KPI strip. */
-const MINE = TOPICS.map(t => t.k).filter(k => k !== 'all');
+const MINE = TOPICS.map(t => t.k);
 const MY_PANELS = ['sideScale', 'sideFy', 'kpis', 'pageFoot'];
 function standDown() {
   /* Forget the last hash we wrote - see finance.js. Leaving these topics and
@@ -1086,16 +1079,17 @@ function applyTopic(k, push) {
   d3.selectAll('#topicList .topic-item').classed('on', function () { return this.dataset.k === k; });
   d3.select('#topicDesc').text(t.desc);
   d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
-  const all = k === 'all';
-  /* per-topic sidebar controls — every test needs the ||all branch */
-  d3.select('#sideScale').style('display', (k === 'rupee' || all) ? null : 'none');
-  d3.select('#sideFy').style('display', (k === 'external' || all) ? null : 'none');
+  /* per-topic sidebar controls */
+  d3.select('#sideScale').style('display', k === 'rupee' ? null : 'none');
+  d3.select('#sideFy').style('display', k === 'external' ? null : 'none');
+  /* data-topic="all" is the KPI strip, shown whatever the topic - not the
+     retired Everything view */
   d3.selectAll('[data-topic]').classed('topic-hidden', function () {
-    return !all && this.dataset.topic !== k && this.dataset.topic !== 'all';
+    return this.dataset.topic !== k && this.dataset.topic !== 'all';
   });
   if (!applyingHash) writeHash(push);
   drawKpis();
-  if (all) drawAll(); else if (TOPIC_DRAWS[k]) TOPIC_DRAWS[k]();
+  if (TOPIC_DRAWS[k]) TOPIC_DRAWS[k]();
   if (push) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function setScale(v) { scale = v;
@@ -1121,15 +1115,14 @@ function setBopView(v) { bopView = v; drawBop(); writeHash(false); }
 function writeHash(push) {
   if (applyingHash) return;
   const p = new URLSearchParams(); p.set('t', topic);
-  const all = topic === 'all';
-  if ((topic === 'rupee' || all) && scale !== 'log') p.set('sc', scale);
-  if ((topic === 'external' || all) && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
-  if ((topic === 'external' || all) && bopView !== 'tree') p.set('bv', bopView);
-  if ((topic === 'external' || all) && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
+  if (topic === 'rupee' && scale !== 'log') p.set('sc', scale);
+  if (topic === 'external' && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
+  if (topic === 'external' && bopView !== 'tree') p.set('bv', bopView);
+  if (topic === 'external' && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
   if (topic === 'peers' && peerInd !== 'NY.GDP.PCAP.PP.KD') p.set('pi', peerInd);
   if (topic === 'longrun' && gdpView !== 'level') p.set('gv', gdpView);
-  if ((topic === 'money' || all) && moneyPrice === 'real') p.set('mp', 'real');
-  const charts = all ? Object.values(TOPIC_CHARTS).flat() : (TOPIC_CHARTS[topic] || []);
+  if (topic === 'money' && moneyPrice === 'real') p.set('mp', 'real');
+  const charts = TOPIC_CHARTS[topic] || [];
   charts.forEach(c => { if (!isDefault(c)) p.set('c_' + c, [...SEL[c]].join('.')); });
   const hv = '#' + p.toString(); _lastNavHash = hv;
   try { if (push && history.pushState) history.pushState(null, '', hv);

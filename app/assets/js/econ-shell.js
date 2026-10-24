@@ -48,8 +48,9 @@
     if (h) k = h.indexOf('=') < 0 ? h : (new URLSearchParams(h).get('t') || k);
     /* Each page used to offer "Everything", meaning everything on that page.
        Across all three it would mean 33 cards drawn at once, and a link to it
-       would be claimed by all three modules at the same time. Old links still
-       work; they open the default topic rather than nothing. */
+       would be claimed by all three modules at the same time, so it is
+       retired: no module has an 'all' topic now. Old #t=all links still
+       work; they open the default topic, the overview, rather than nothing. */
     return k === 'all' ? window.DDEcon.defaultTopic : k;
   }
 

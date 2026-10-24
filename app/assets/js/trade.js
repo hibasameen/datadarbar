@@ -12,9 +12,6 @@ let E,D={},TX;
 
 /* ---- topics (sidebar navigation; #hash deep links) ---- */
 const TOPICS=[
- {k:'all',label:'Everything',
-  desc:'Every trade chart on one page, top to bottom.',
-  meta:'PBS National Trade Database for totals and partners (2003–04 on); 8-digit External Trade Statistics for the product charts (2015–16 on). The two do not agree — see the source note below.'},
  {k:'basket',label:'What we trade',
   desc:'The full export/import basket as a drill-down treemap, plus the largest single products.',
   meta:'PBS External Trade Statistics — 8-digit imports & exports by commodity.'},
@@ -28,18 +25,15 @@ const TOPICS=[
   desc:'The largest countries Pakistan trades with — pick one for its own profile.',
   meta:'PBS National Trade Database, trade by partner country, 2003–04 on. Partner tables do not always account for the whole published total — how much they name is charted below.'}];
 const TOPIC_GROUPS=[
- {label:null,keys:['all']},
  {label:'What & how much',keys:['basket','movers','overtime']},
  {label:'With whom',keys:['partners']}];
 const TOPIC_DRAWS={basket:()=>{drawDrill();drawProducts();},movers:()=>drawMovers(),overtime:()=>{drawTotals();drawRecon();},partners:()=>{drawPartners();drawCountry();}};
-const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
-
 /* An ES module since Economy became one page. Module scope keeps this file's
    TOPICS, start, writeHash, fmtBn and the rest to itself - fmtBn here prints
    sub-billion values to one decimal where finance.js rounds them, which is a
    difference worth keeping rather than reconciling. MINE is what this module
    answers for; on another module's topic it hides its own cards and panels. */
-const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+const MINE=TOPICS.map(t=>t.k);
 const MY_PANELS=['sideCountry','sideLevel','foot-trade'];
 function standDown(){
  MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
@@ -79,8 +73,8 @@ function writeHash(push){
  const p=new URLSearchParams();p.set('t',topic);
  if(tCountry!=='all')p.set('c',tCountry);
  if(tPrice==='real')p.set('tp','real');
- if(topic==='movers'||topic==='partners'||topic==='all'){if(tLevel!=='section')p.set('lvl',tLevel);}
- if(topic==='movers'||topic==='all'){if(mDir!=='export')p.set('md',mDir);if(mMeasure!=='abs')p.set('mm',mMeasure);if(mMode!=='span')p.set('mw',(moverWindows()[mWinIdx]||{}).key||'');}
+ if(topic==='movers'||topic==='partners'){if(tLevel!=='section')p.set('lvl',tLevel);}
+ if(topic==='movers'){if(mDir!=='export')p.set('md',mDir);if(mMeasure!=='abs')p.set('mm',mMeasure);if(mMode!=='span')p.set('mw',(moverWindows()[mWinIdx]||{}).key||'');}
  const hv='#'+p.toString();
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
 }
@@ -101,7 +95,7 @@ function applyStateFromHash(){
  tPrice=o.tp==='real'&&window.DDDeflate&&DDDeflate.available?'real':'nom';
  d3.selectAll('.tPrice button').classed('on',function(){return this.dataset.tp===tPrice;});
  applyingHash=false;
- if(TOPIC_DRAWS[k]&&k!=='all')TOPIC_DRAWS[k]();else if(k==='all')drawAll();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  drawCountry();
  writeHash(false);
  if(o.at){const el=document.getElementById(o.at);if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),140);}
@@ -131,13 +125,12 @@ function applyTopic(k,push){
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
  d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
- const all=k==='all';
- d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
+ d3.selectAll('[data-topic]').classed('topic-hidden',function(){return this.dataset.topic!==k;});
  // topic-relevant sidebar controls
- d3.select('#sideCountry').style('display',(k==='partners'||all)?null:'none');
- d3.select('#sideLevel').style('display',(k==='movers'||k==='partners'||all)?null:'none');
+ d3.select('#sideCountry').style('display',k==='partners'?null:'none');
+ d3.select('#sideLevel').style('display',(k==='movers'||k==='partners')?null:'none');
  if(!applyingHash)writeHash(push);
- if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  if(push)window.scrollTo({top:0,behavior:'smooth'});
 }
 
