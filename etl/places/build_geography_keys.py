@@ -33,6 +33,8 @@ def main():
     con = duckdb.connect()
     con.execute('SET threads TO 1')
     W = pathlib.Path(a.app) / 'data' / 'warehouse'
+    xw = (pathlib.Path(a.app).parent / 'etl' / 'geography'
+          / 'district_crosswalk_cod_2023.csv').as_posix()
 
     d, t = feats(a.pbs_d), feats(a.pbs_t)
     br = con.sql(f"""SELECT dds_id, dd_id, adm3_pcode FROM
@@ -81,7 +83,21 @@ def main():
          True, 'Data Darbar, on a 2015 boundary set',
          'A 2015 frame of 147 districts. Maps to district_code through '
          'etl/places/place_map.py, which handles nine spellings and seven real '
-         'splits. Called dk in the tehsil payloads.'),
+         'splits. Called dk in the tehsil payloads. Not the upper-case '
+         'district_key of the COD-AB frame, which is a different key under the '
+         'same name: see cod_adm2_pcode.'),
+        ('cod_adm2_pcode', 'district',
+         'COD-AB / OCHA district p-code, PKnnn.',
+         con.sql(f"""SELECT count(DISTINCT cod_adm2_pcode) FROM read_csv('{xw}',
+             header=true)""").fetchone()[0],
+         True, 'COD-AB v01, rebuilt as a 160-district 2023 frame',
+         'Tables drawn on COD polygons carry it beside an upper-case district_key '
+         "(ABBOTTABAD), which is not Data Darbar's and which the crosswalk calls "
+         'cod_district_key. Both join to district_code '
+         'through district_crosswalk_cod_2023, which folds four Gilgit-Baltistan '
+         'districts into their PBS parents. Keamari has no p-code; join it on the '
+         "upper-case district_key. COD's Lehri (PK218) was split between "
+         'Kachhi and Sibi and has no single district_code.'),
     ]
 
     con.execute("""CREATE TABLE geography_keys(

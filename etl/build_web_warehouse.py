@@ -280,7 +280,11 @@ def census_table_titles(repo: Path) -> dict:
 
 
 def build(src: Path, district_only: bool = False, schools_only: bool = False,
-          health_only: bool = False) -> None:
+          health_only: bool = False, issue4_only: bool = False) -> None:
+    if issue4_only:
+        from issue4.register import update_warehouse as update_issue4
+        update_issue4(OUT, src)
+        return
     if health_only:
         from health_facilities.register_health import update_warehouse as update_health
         update_health(OUT)
@@ -1768,6 +1772,56 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             f"SELECT * FROM read_csv('{(XW / 'subdistrict_crosswalk_2017_2023.csv').as_posix()}', {CSV_OPTS})",
             unit="sub-districts and people",
         )
+    GEO = REPO / "etl" / "geography"
+    if (GEO / "district_crosswalk_cod_2023.csv").exists():
+        register(
+            "district_crosswalk_cod_2023",
+            "The 160 districts of OCHA\u2019s COD-AB frame, each matched to the PBS 2023 "
+            "district it belongs to.",
+            "Datasets drawn on COD-AB polygons \u2014 satellite zonal statistics, Adaad\u2019s "
+            "climate, fire, forest and flood tables \u2014 name their districts by an "
+            "upper-case district_key on a 160-district frame: the 136 census districts "
+            "rebuilt from COD tehsils, plus Azad Jammu & Kashmir and Gilgit-Baltistan as "
+            "COD draws them. That key, cod_district_key here, is not Data Darbar\u2019s "
+            "district_key, and nothing on the map joins to it; district_code does. 127 districts are matched "
+            "through their COD tehsil codes, which PBS\u2019s tehsil layer carries; 29 by "
+            "name, because no COD tehsil code survives there (all of AJK and GB, and "
+            "districts created after 2022); and 4 by area. COD draws Gilgit-Baltistan in "
+            "14 districts and PBS in 10, so Darel and Tangir fold into Diamer, Gupis "
+            "Yasin into Ghizer and Rondu into Skardu. Sum counts across a merged group; "
+            "weight a mean by area_weight, or by population for anything about people. "
+            "overlap_share measures each match: the two layers are different "
+            "digitisations of the same borders, and the note says where they part "
+            "\u2014 most in Karachi, Quetta, Killa Abdullah, Chaman and Batagram, and in "
+            "Kharmang, which COD draws so much larger that 56 per cent of it lies "
+            "inside PBS\u2019s Skardu. A table keyed on COD p-codes joins on "
+            "cod_adm2_pcode, except for COD\u2019s Lehri (PK218): its two tehsils went "
+            "to Kachhi and Sibi, so it has no single home.",
+            {"cod_district_key": "the district_key of tables drawn on the COD frame, an "
+                                 "upper-case name; not Data Darbar\u2019s district_key",
+             "district_2023": "the frame\u2019s district name",
+             "cod_adm2_pcode": "COD-AB district p-code; Surab carries PK233, COD\u2019s "
+                               "Shaheed Sikandarabad renamed; blank for Keamari, built "
+                               "from Karachi towns",
+             "province": "province or area, as the frame names it",
+             "district_code": "PBS 2023 district code, joining to geography_keys",
+             "pbs_district": "the PBS district\u2019s name",
+             "pbs_province": "the PBS district\u2019s province or area",
+             "relation": "same, renamed, or merged (one of several frame districts "
+                         "making up a PBS district)",
+             "matched_by": "tehsil codes, name, or area overlap",
+             "frame_area_km2": "area of the frame polygon, equal-area projection",
+             "area_weight": "the frame district\u2019s share of its PBS district\u2019s "
+                            "area across the merged group; 1 where the match is one to one",
+             "overlap_share": "share of the frame polygon lying inside the matched PBS "
+                              "polygon",
+             "note": "where the two layers disagree, or the frame has a known flaw"},
+            "OCHA COD-AB Pakistan v01 (HDX, World Food Programme SDI) and PBS Digital "
+            "Census 2023 boundaries; matched by Data Darbar",
+            f"SELECT * FROM read_csv('{(GEO / 'district_crosswalk_cod_2023.csv').as_posix()}', "
+            f"{CSV_OPTS}, types={{'district_code': 'VARCHAR'}})",
+            unit="districts",
+        )
     if (XW / "census_unit_map.csv").exists():
         register(
             "census_unit_map",
@@ -2110,6 +2164,11 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
          "value": "the figure", "period_start": "start of the period covered",
          "period_end": "end of the period covered"},
         "NDMA (National Disaster Management Authority) monsoon situation reports, September 2026, tables read off the PDFs; each row carries its report and page", "people, assets")
+
+    # ── Issue 4: climate, energy and resources (etl/issue4) ──────────────────
+    print("issue 4\u2026")
+    from issue4.register import register_tables as register_issue4
+    register_issue4(register, src)
 
     # ── the national series: Economy and State ──────────────────────────────
     print("national accounts, trade and tax\u2026")
@@ -2854,10 +2913,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC,
                     help="folder holding the desktop warehouse Parquet files")
-    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health"],
+    ap.add_argument("--only", choices=["district_indicators", "schools_pk", "health", "issue4"],
                     help="rebuild only one table family into the existing warehouse")
     a = ap.parse_args()
     if not a.only and not (a.src / "trade_hs8.parquet").exists():
         sys.exit(f"desktop warehouse not found at {a.src} — pass --src")
     build(a.src, district_only=a.only == "district_indicators", schools_only=a.only == "schools_pk",
-          health_only=a.only == "health")
+          health_only=a.only == "health", issue4_only=a.only == "issue4")

@@ -1548,7 +1548,8 @@
          is out of those aged ten and over, an unemployment rate out of the
          labour force - weighting by population is close to the national rate
          but not identical, and the hover says so. Crop yields are per
-         hectare, not per person, and stay a plain average. */
+         hectare, not per person, and a temperature or a share of land is
+         about the ground: those stay a plain average (IX.plain_average). */
       var vals = keep.map(function (u) { return u.v; })
         .filter(function (v) { return v != null && isFinite(v); })
         .sort(function (a, b) { return a - b; });
@@ -1559,7 +1560,7 @@
         rangeTitle = 'Range across the ' + vals.length + ' ' + g.noun
           + 's shown: ' + fmt(vals[0], dp) + ' to ' + fmt(vals[vals.length - 1], dp)
           + '. Unweighted average ' + fmt(mean, dp) + '.';
-        if (col('group_key', state.row) === 'crops') {
+        if ((IX.plain_average || []).indexOf(col('group_key', state.row)) >= 0) {
           figure = fmt(mean, dp);
           caption = 'Average ' + g.noun + ' \u00b7 unweighted';
         } else {

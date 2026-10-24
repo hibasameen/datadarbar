@@ -3,18 +3,18 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=1db87de3"/>
-<link rel="stylesheet" href="assets/css/explorer.css?v=1db87de3"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=d505f2f5"/>
+<link rel="stylesheet" href="assets/css/explorer.css?v=d505f2f5"/>
 <!-- SEO:START -->
 <title>Pakistan Federal Tax Collection &amp; Public Money — Data Darbar</title>
-<meta name="description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish.">
+<meta name="description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs.">
 <link rel="canonical" href="https://darbar.adaad.org/state.html">
 <meta property="og:title" content="Pakistan Federal Tax Collection &amp; Public Money — Data Darbar">
-<meta property="og:description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish.">
+<meta property="og:description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs.">
 <meta property="og:url" content="https://darbar.adaad.org/state.html">
 <meta name="twitter:title" content="Pakistan Federal Tax Collection &amp; Public Money — Data Darbar">
-<meta name="twitter:description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish.">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Data Darbar"><meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/state.html#page", "url": "https://darbar.adaad.org/state.html", "name": "Pakistan Federal Tax Collection & Public Money — Data Darbar", "description": "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
+<meta name="twitter:description" content="Pakistan&#x27;s federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Data Darbar"><meta property="og:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://darbar.adaad.org/assets/img/og-preview.png?v=1e85937573"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://darbar.adaad.org/state.html#page", "url": "https://darbar.adaad.org/state.html", "name": "Pakistan Federal Tax Collection & Public Money — Data Darbar", "description": "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs.", "inLanguage": "en", "isPartOf": {"@id": "https://darbar.adaad.org/#website"}}]}</script>
 <!-- SEO:END -->
 </head><body>
 <!-- dd:header -->
@@ -27,36 +27,41 @@
 <!-- /dd:header -->
 
 <div class="explorer">
-  <aside class="xside" aria-label="Topics and charts">
+  <aside class="xside" aria-label="Topics">
     <label class="xsearch">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14"/></svg>
       <input id="xFind" type="search" placeholder="Find a chart&hellip;" aria-label="Find a chart" autocomplete="off"/>
     </label>
     <div class="xrail" id="rail"></div>
-    <div class="xlist" id="chartList" aria-label="Charts in this topic"></div>
-    <p class="xside-note">District figures here (courts, KP and AJK crime) are not on the Places map yet.</p>
+    <p class="xside-note">District figures here (courts, KP and AJK crime) are also on the <a href="places.html">Places map</a>.</p>
   </aside>
 
   <main class="pane">
     <header class="pane-head">
       <div>
-        <div class="eyebrow" id="paneTheme">Public money</div>
-        <h1 id="paneTitle">What the state collects</h1>
+        <div class="eyebrow" id="paneTheme">State</div>
+        <h1 id="paneTitle">What the government collects, spends, owes, runs and regulates</h1>
         <p class="dek" id="paneDek"></p>
+        <button class="dek-more" id="dekMore" type="button" hidden>Read more</button>
       </div>
       <div class="pane-tools">
+        <button class="tool" id="shareBtn" type="button">Share</button>
         <button class="tool" id="csvBtn" type="button">CSV</button>
       </div>
     </header>
 
+    <div class="xtabs" id="tabs" hidden></div>
     <div class="coverage" id="coverage"></div>
 
-    <section class="card" id="card">
-      <div class="chart" id="chart"></div>
-      <p class="card-note" id="cardNote"></p>
-    </section>
+    <div class="ovgrid" id="overview" hidden></div>
 
-    <div class="xmore" id="more" hidden></div>
+    <div class="pane-body" id="paneBody">
+      <section class="card" id="card">
+        <div class="chart" id="chart"></div>
+        <p class="card-note" id="cardNote"></p>
+      </section>
+      <aside class="pane-side" id="paneSide" hidden></aside>
+    </div>
   </main>
 </div>
 
@@ -65,16 +70,17 @@
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> unless <a href="datasets/#licences">stated otherwise</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
 </footer>
 <!-- /dd:footer -->
-<script src="assets/js/d3.v7.min.js?v=1db87de3"></script>
-<script src="assets/js/palette.js?v=1db87de3"></script>
-<script src="data/state_data.js?v=1db87de3"></script>
-<script src="data/budget_data.js?v=1db87de3"></script>
-<script src="data/deflator_data.js?v=1db87de3"></script>
-<script src="assets/js/deflate.js?v=1db87de3"></script>
-<script src="data/provenance.js?v=1db87de3"></script>
-<script src="assets/js/provenance.js?v=1db87de3"></script>
-<script src="assets/js/explorer.js?v=1db87de3"></script>
-<script src="assets/js/state.js?v=1db87de3"></script>
-<script src="assets/js/analytics.js?v=1db87de3"></script>
-<script src="assets/js/shell.js?v=1db87de3"></script>
+<script src="assets/js/d3.v7.min.js?v=d505f2f5"></script>
+<script src="assets/js/palette.js?v=d505f2f5"></script>
+<script src="data/state_data.js?v=d505f2f5"></script>
+<script src="data/history_data.js?v=d505f2f5"></script>
+<script src="data/budget_data.js?v=d505f2f5"></script>
+<script src="data/deflator_data.js?v=d505f2f5"></script>
+<script src="assets/js/deflate.js?v=d505f2f5"></script>
+<script src="data/provenance.js?v=d505f2f5"></script>
+<script src="assets/js/provenance.js?v=d505f2f5"></script>
+<script src="assets/js/explorer.js?v=d505f2f5"></script>
+<script src="assets/js/state.js?v=d505f2f5"></script>
+<script src="assets/js/analytics.js?v=d505f2f5"></script>
+<script src="assets/js/shell.js?v=d505f2f5"></script>
 </body></html>

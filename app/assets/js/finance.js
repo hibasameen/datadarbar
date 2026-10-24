@@ -32,9 +32,6 @@ const LSM_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)',
 
 /* ---- topics (sidebar navigation, one topic at a time; #hash deep links) ---- */
 const TOPICS=[
- {k:'all',label:'Everything',
-  desc:'Every topic on one page, top to bottom — the full picture.',
-  meta:'All sources are listed at the foot of the page and under About → Sources.'},
  {k:'structure',label:'Structural change',
   title:"The structure of Pakistan's economy",
   lede:'In 1952 agriculture produced roughly half of everything Pakistan made; today it is under a quarter, and services produce more than half. Trace that shift, then read off the economy’s mix in any single year.',
@@ -66,19 +63,19 @@ const TOPICS=[
   desc:'The federal budget as a treemap: receipts and current expenditure.',
   meta:'Finance Division: Budget in Brief & Explanatory Memorandum on Federal Receipts, FY2009-10→2026-27.'}];
 const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();drawMacro();drawQtr();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
-// meaningful groupings for the sidebar (plus an "Everything" shortcut at the top)
+// meaningful groupings for the sidebar
 const TOPIC_GROUPS=[
- {label:null,keys:['all']},
  {label:'Growth & structure',keys:['structure','growth']},
  {label:'Manufacturing',keys:['industry','censuses']},
  {label:'Linkages & the state',keys:['linkages','budget']}];
-const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
 let topic='structure',applyingHash=false,_lastNavHash='';
 
-/* The topics this module answers for. "all" is not among them: Everything
-   meant everything on this page, and across the merged section it would be
-   27 charts and three modules each believing they owned the view. */
-const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+/* The topics this module answers for. There is no "Everything" any more:
+   across the merged section it would be 27 charts and three modules each
+   believing they owned the view, and since the chart tabs (economy-nav.js)
+   a topic shows one chart at a time. econ-shell.js sends an old #t=all link
+   to the overview. */
+const MINE=TOPICS.map(t=>t.k);
 /* Sidebar panels this module owns. Another module's applyTopic cannot know
    to hide them, so they are hidden here when the topic is not ours. */
 const MY_PANELS=['sideYear','sideSector','foot-finance'];
@@ -132,7 +129,6 @@ function writeHash(push){
  else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
  else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
  else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
- else if(topic==='all'){if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
  else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bView==='trend'&&bTrendMode!=='stack')p.set('tm',bTrendMode);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
  const hv='#'+p.toString();_lastNavHash=hv;
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
@@ -151,7 +147,7 @@ function applyStateFromHash(){
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
- if(k==='structure'||k==='all'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
+ if(k==='structure'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
  if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
  if(k==='censuses'&&o.m)setCmiMode(o.m);
  if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
@@ -188,13 +184,12 @@ function applyTopic(k,push){
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
  d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
- const all=k==='all';
- d3.select('#sideYear').style('display',(k==='structure'||k==='growth'||all)?null:'none');
+ d3.select('#sideYear').style('display',(k==='structure'||k==='growth')?null:'none');
  setupYearSlider();
- d3.select('#sideSector').style('display',(k==='structure'||k==='growth'||all)?null:'none');
- d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
+ d3.select('#sideSector').style('display',(k==='structure'||k==='growth')?null:'none');
+ d3.selectAll('[data-topic]').classed('topic-hidden',function(){return this.dataset.topic!==k;});
  if(!applyingHash)writeHash(push);
- if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  if(push)window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -289,15 +284,7 @@ function buildSectorSelect(){
  });
  sel.property('value',selSector);
 }
-function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();if(topic==='all')syncCYearToYear(y);writeHash();}
-// On the 'Everything' topic there is ONE year slider (arcYears, 1951-52→) but the growth panels
-// live on a shorter series (contribYears, 2000-01→). Keep them in step; outside the contrib span
-// cYear is null and the breakdown renders an explicit 'no data' note rather than a stale chart.
-function syncCYearToYear(y){
- const ys=contribYears();cYear=ys.indexOf(y)>=0?y:null;
- d3.select('#cYearLbl').text(cYear||y);
- drawComposition();drawCYear();
-}
+function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();writeHash();}
 function drawArc(){arcView==='lines'?drawArcLines():drawArcStack();}
 function drawArcStack(){
  const el=d3.select('#arc');el.selectAll('*').remove();
@@ -797,7 +784,6 @@ function setCView(v){cView=v;d3.selectAll('#cView button').classed('on',function
 function setCGroup(g){cGroup=g;d3.selectAll('#cGroup button').classed('on',function(){return this.dataset.g===g;});drawComposition();drawCYear();drawCEras();writeHash();}
 function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);
  if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}
- else if(topic==='all'&&arcYears.indexOf(y)>=0){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();}
  drawComposition();drawCYear();writeHash();}
 function drawComposition(){
  const growth=cView==='growth';

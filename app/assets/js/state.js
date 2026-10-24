@@ -72,6 +72,11 @@
   var discos = asObjects(D.discos);
   var recovery = asObjects(D.recovery);
   var impacts = asObjects(D.impacts);
+  var loadshed = asObjects(D.loadshed), monitored = asObjects(D.monitored);
+  var netmeter = asObjects(D.netmeter);
+  var gasSupply = asObjects(D.gasSupply), gasSector = asObjects(D.gasSector);
+  var transfers = asObjects(D.transfers), floods = asObjects(D.floods);
+  var reservoirs = asObjects(D.reservoirs);
 
   /* Derived denominators, carried with the payload. GDP at current market
      prices by fiscal-year end, with a flag for the years spliced onto the
@@ -216,7 +221,7 @@
           + 'negative number of reports. Only the daily figure is drawn.',
     },
     discos: {
-      theme: 'Energy',
+      theme: 'Power & gas',
       title: 'Electricity lost and bills unpaid',
       dek: 'The share of the electricity entering each distribution '
          + 'company’s system that never reaches a billed meter, 2006-07 to '
@@ -242,7 +247,7 @@
           + 'crosswalked, and the totals rows are kept apart from the companies.',
     },
     plants: {
-      theme: 'Energy',
+      theme: 'Power & gas',
       title: 'Power plants and capacity',
       dek: 'The plants in NEPRA’s reports, what they burn, how much they '
          + 'were rated at and how much of that they ran, 2017-18 to 2024-25. '
@@ -265,8 +270,68 @@
           + 'technology and fuel strings into families; each plant keeps the '
           + 'original two, visible on hover.',
     },
+    transfers: {
+      theme: 'Public money',
+      title: 'Oil and gas money to provinces',
+      dek: 'Royalties, the gas development surcharge and excise on gas that the federal '
+         + 'government passes to the provinces where the oil and gas are produced: Rs 224 '
+         + 'billion in 2024-25, Rs 129 billion of it to Sindh.',
+      note: 'Budget documents give estimates, not audited releases. Sindh, Balochistan and '
+          + 'Khyber Pakhtunkhwa produce nearly all the gas; Punjab\u2019s share is small. The '
+          + 'figures are the federal government\u2019s, not the provinces\u2019 own accounts.',
+    },
+    loadshed: {
+      theme: 'Power & gas',
+      title: 'Load shedding',
+      dek: 'The hours a day of load shedding each distribution company reports to NEPRA, '
+         + 'and the hours NEPRA says it saw. They are not the same number, and NEPRA says '
+         + 'which one it believes.',
+      note: 'Two different quantities, never drawn as one series: what the companies report '
+          + 'in their annual returns, and what NEPRA states it observed. NEPRA\u2019s Performance '
+          + 'Evaluation Reports, 2012-13 to 2024-25; the 2023-24 report could not be read, so '
+          + 'that year comes from the following report\u2019s comparison table.',
+    },
+    netmeter: {
+      theme: 'Power & gas',
+      title: 'Rooftop solar on the grid',
+      dek: 'Electricity bought from net-metered rooftops rose from almost nothing in '
+         + '2019-20 to 3,250 GWh in 2024-25, nearly tripling in the last year alone; most '
+         + 'of it in the Punjab companies and Islamabad.',
+      note: 'From NEPRA\u2019s State of Industry reports, which give figures by company only from '
+          + '2022. Licences and concurrences are counted in the year they were issued and are '
+          + 'not connections. Most rooftop solar is not net-metered at all: these are only the '
+          + 'systems that sell back to the grid.',
+    },
+    gas: {
+      theme: 'Power & gas',
+      title: 'Natural gas',
+      dek: 'Where Pakistan\u2019s gas comes from and who burns it. Domestic supply fell by '
+         + 'over a quarter in six years; power stations, fertilizer and homes use most of it.',
+      note: 'OGRA\u2019s State of the Regulated Petroleum Industry, 2019-20 to 2024-25 editions. '
+          + 'Reports before 2020-21 are scanned and not yet read. Consumption by province is in '
+          + 'the table but not charted: its basis changes between editions.',
+    },
+    floods: {
+      theme: 'Water & disasters',
+      title: 'The 2022 floods',
+      dek: 'How much of each province was under water, week by week, from the end of '
+         + 'August 2022 to mid-January 2023, as satellites saw it.',
+      note: 'UNOSAT\u2019s satellite flood extents, published under CC BY-SA; the share-alike '
+          + 'terms apply to anything made from them. For the flooding district by district '
+          + 'and how long it lasted, see the 2022 floods on the Places map.',
+    },
+    reservoirs: {
+      theme: 'Water & disasters',
+      title: 'Reservoirs',
+      dek: 'Tarbela, Mangla and Chashma from space: their water surface, month by month, '
+         + 'since the late 1980s. The record IRSA and WAPDA do not publish.',
+      note: 'Global Water Watch (Deltares and WRI), via Global Forest Watch. Ninety-six '
+          + 'Pakistani reservoirs are in the table; three are drawn. Global Water Watch\u2019s '
+          + 'own monthly series fills unobserved months and disagrees with the observations in '
+          + '1,074 reservoir-months, so only observed months are used.',
+    },
     events: {
-      theme: 'Public services',
+      theme: 'Water & disasters',
       title: 'Disaster alerts',
       dek: 'Every flood, drought and cyclone alert GDACS has issued for '
          + 'Pakistan since 2001, graded orange or red: 31 alerts, 25 of them '
@@ -282,7 +347,7 @@
           + 'was affected.',
     },
     impacts: {
-      theme: 'Public services',
+      theme: 'Water & disasters',
       title: 'Monsoon impacts',
       dek: 'What the 2026 monsoon did, as NDMA’s situation reports counted '
          + 'it: 181 deaths, 515 injured and 1,729 houses damaged by 5 '
@@ -296,12 +361,86 @@
           + 'with nothing to report. This is one season — the only one '
           + 'extracted — and is not a series.',
     },
+    debt: {
+      theme: 'Public money',
+      title: 'What the state owes',
+      dek: 'What the government raises, what it spends and the gap between them '
+         + 'since 1950, and the debt those gaps add up to: 12 per cent of GDP in '
+         + '1951, 70 per cent in 2024. The IMF\u2019s series reaches back to '
+         + 'independence; the State Bank\u2019s consolidated federal and provincial '
+         + 'budget, from FY76, is offered alongside as Pakistan\u2019s own count.',
+      note: 'International Monetary Fund, Public Finances in Modern History (Mauro et al. '
+          + '2015; December 2025 edition), 1950\u20132024, as published, years as the IMF '
+          + 'labels them. State Bank of Pakistan, Handbook of Statistics 2020, table 3.7, '
+          + 'FY76\u2013FY20. The two differ in coverage, so where both are shown they will '
+          + 'not match exactly. Moved here from the Economy page: the budget and the debt '
+          + 'are the state\u2019s ledger, not the economy\u2019s.',
+    },
+    sindh: {
+      theme: 'Crime & policing',
+      title: 'Sindh police records',
+      dek: 'What Sindh\u2019s own police tables and first information reports show, '
+         + 'beside the national count: offences by category group and by range, '
+         + 'then and now, and the FIRs registered day by day.',
+    },
+    floods: {
+      theme: 'Water & disasters',
+      title: 'Floods and monsoon',
+      dek: 'The 2022 floods as satellites saw them, province by province and week '
+         + 'by week; and what the 2026 monsoon did, as NDMA\u2019s situation reports '
+         + 'counted it. Two seasons, two sources, neither a series.',
+    },
   };
+
+  /* The payload files each chart under the topic its build gave it; the page
+     regroups them to the boundary agreed on 2026-10-23. A merged topic keeps
+     each chart\u2019s own note (ORIG_TOPIC), and the long-run fiscal series come
+     across from Economy with the DD_HISTORY payload. A topic the payload does
+     not know yet is added here; when the build catches up this is a no-op. */
+  var REMAP = {
+    sindhCrime: ['sindh', 'Sindh police records', 'Crime & policing'],
+    firs:       ['sindh', 'Sindh police records', 'Crime & policing'],
+    floods:     ['floods', 'Floods and monsoon', 'Water & disasters'],
+    impacts:    ['floods', 'Floods and monsoon', 'Water & disasters'],
+    reservoirs: ['reservoirs', 'Reservoirs', 'Water & disasters'],
+    events:     ['events', 'Disaster alerts', 'Water & disasters'],
+  };
+  var ORIG_TOPIC = { sindhGroup: 'sindhCrime', sindhCategory: 'sindhCrime', sindhRange: 'sindhCrime',
+                     firsDaily: 'firs', floodWeekly: 'floods', impactsPanel: 'impacts',
+                     impactsMetric: 'impacts' };
+  var THEME_ORDER = ['Public money', 'Justice', 'Crime & policing', 'Power & gas', 'Water & disasters'];
+  var TOPIC_ORDER = ['tax', 'budget', 'debt', 'transfers', 'courts', 'judges', 'crime', 'sindh',
+                     'plants', 'discos', 'loadshed', 'netmeter', 'gas', 'reservoirs', 'floods', 'events'];
+  var H = window.DD_HISTORY || null;
+  (function regroup() {
+    D.index.forEach(function (r) {
+      var m = REMAP[r.topic];
+      if (m) { r.topic = m[0]; r.topicLabel = m[1]; r.theme = m[2]; }
+    });
+    if (H && H.series && H.series.imf_debt && !D.index.some(function (r) { return r.topic === 'debt'; })) {
+      D.index.push(
+        { ds: 'imf_pakistan_fiscal', dsLabel: 'imf_pakistan_fiscal', topic: 'debt',
+          topicLabel: 'What the state owes', theme: 'Public money', ind: 'fiscal',
+          label: 'Revenue, spending and the balance since 1950', chart: 'fiscal',
+          years: '1950 to 2024', rows: '' },
+        { ds: 'imf_pakistan_fiscal', dsLabel: 'imf_pakistan_fiscal', topic: 'debt',
+          topicLabel: 'What the state owes', theme: 'Public money', ind: 'debt',
+          label: 'Public debt since 1951', chart: 'debt', years: '1951 to 2024', rows: '' });
+    }
+    var rank = function (r) {
+      var t = THEME_ORDER.indexOf(r.theme), k = TOPIC_ORDER.indexOf(r.topic);
+      return (t < 0 ? 99 : t) * 1000 + (k < 0 ? 99 : k);
+    };
+    // A stable sort: charts keep their order within a topic.
+    D.index = D.index.map(function (r, i) { return [rank(r), i, r]; })
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; })
+      .map(function (x) { return x[2]; });
+  })();
 
   /* State is an index of 38 charts over 11 topics. The subject tree and the
      three dropdowns are two ways into the same row; whichever the reader
      uses, `current` is that row and `CHART[row.chart]` draws it. */
-  var state = { ds: 'fbr_tax_collection', topic: 'tax', ind: 'gdp' };
+  var state = { ds: 'fbr_tax_collection', topic: 'overview', ind: null };
   var current = D.index[0];
   var rail;
 
@@ -353,21 +492,210 @@
     eventsCount: renderEventsCount,
     impactsPanel: renderImpactsPanel,
     impactsMetric: renderImpacts,
+    transfersProvince: function () { renderTransfers('province'); },
+    transfersItem: function () { renderTransfers('item'); },
+    loadShedReported: renderLoadShedReported,
+    loadShedGap: renderLoadShedGap,
+    netMeterUnits: function () {
+      renderNetMeter('units_purchased_gwh', 'Units bought through net metering, GWh',
+        function (v) { return v >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1); },
+        'Electricity each company bought back from net-metered customers. The total '
+        + 'roughly tripled in 2024-25 alone, to 3,250 GWh.',
+        'Units purchased through net metering, from NEPRA\u2019s State of Industry reports; '
+        + 'the latest report\u2019s figure for each year. K-Electric reports its own '
+        + 'separately and is not in every year.');
+    },
+    netMeterCapacity: function () {
+      renderNetMeter('licensed_capacity_mw', 'Net-metering capacity licensed in the year, MW',
+        function (v) { return Math.round(v).toLocaleString() + ' MW'; },
+        'New net-metering capacity NEPRA licensed or concurred each year, by company: '
+        + '1,250 MW in 2024-25, five times 2021-22.',
+        'A flow, not a stock: capacity licensed in the year, not installed in total. Since '
+        + 'the 2026 Prosumer Regulations, systems up to 25 kW are approved by the company '
+        + 'rather than NEPRA, which changes what this counts.');
+    },
+    gasSupply: renderGasSupply,
+    gasSector: renderGasSector,
+    floodWeekly: renderFloodWeekly,
+    fiscal: renderFiscal,
+    debt: renderDebt,
+    reservoirArea: renderReservoirs,
   };
 
   function render(row) {
-    current = row || current;
+    if (!row) return renderOverview();
+    current = row;
     var t = TOPICS[current.topic] || {};
+    var orig = TOPICS[ORIG_TOPIC[current.chart]] || {};
+    $('overview').hidden = true;
+    $('paneBody').hidden = false;
+    $('tabs').hidden = false;
     $('paneTheme').textContent = current.theme;
     $('paneTitle').textContent = t.title || current.topicLabel;
-    $('paneDek').textContent = t.dek || '';
-    $('cardNote').textContent = t.note || '';
+    setDek(t.dek || '');
+    $('cardNote').textContent = orig.note || t.note || '';
+    $('csvBtn').hidden = false;
     renderSrc(current.chart);
     clearCtl();
     $('chart').className = 'chart';
     (CHART[current.chart] || renderTaxGdpFallback)();
   }
+
+  /* Two lines of the dek, the rest behind "Read more". The dek ran to seven
+     lines over a coverage strip, so the chart began 360px down. */
+  var dekOpen = false;
+  function setDek(text) {
+    var el = $('paneDek'), more = $('dekMore');
+    el.textContent = text;
+    dekOpen = false;
+    el.classList.add('is-clamped');
+    more.textContent = 'Read more';
+    // Only offer the button when the clamp actually hides something.
+    requestAnimationFrame(function () {
+      more.hidden = !(el.scrollHeight > el.clientHeight + 2);
+    });
+  }
+  $('dekMore').onclick = function () {
+    dekOpen = !dekOpen;
+    $('paneDek').classList.toggle('is-clamped', !dekOpen);
+    this.textContent = dekOpen ? 'Show less' : 'Read more';
+  };
+
+  /* ── the overview: one tile per group, a headline each ─────────────────
+     The page opens here rather than on FBR\u2019s tax table, as it used to. The
+     headlines are read off the payload so they cannot drift from the charts. */
+  function headlineTax() {
+    var T = taxTable(false), last = T.data[T.data.length - 1];
+    return last && last.gdp ? { n: pct(100 * last.total / last.gdp), u: 'of GDP',
+      p: 'Federal tax collected in ' + fyOf(last.year) + '. The ratio has moved less than two points since 1991-92; the mix is what changed.' } : null;
+  }
+  function headlineCourts() {
+    var all = courts.filter(function (d) { return d.category === 'all'; });
+    var y = d3.max(all, function (d) { return d.year; });
+    var tot = d3.sum(all.filter(function (d) { return d.year === y; }), function (d) { return d.pending_end; });
+    var pj = all.filter(function (d) { return d.year === y && d.province === 'Punjab'; })[0];
+    return tot ? { n: (tot / 1e6).toFixed(2) + 'm', u: 'cases pending',
+      p: 'At the end of ' + y + (pj ? ', ' + (pj.pending_end / 1e6).toFixed(1) + 'm of them in Punjab' : '') + '. Only Khyber Pakhtunkhwa and Islamabad ended the year with fewer than they began.' } : null;
+  }
+  function headlineCrime() {
+    var y = d3.max(crime, function (d) { return d.year; });
+    var tot = d3.sum(crime.filter(function (d) { return d.year === y && d.value != null; }), function (d) { return d.value; });
+    return tot ? { n: tot >= 1e6 ? (tot / 1e6).toFixed(1) + 'm' : Math.round(tot / 1e3) + 'k', u: 'offences reported',
+      p: 'Across eight forces in ' + y + ', on PBS\u2019s definition. Punjab is nearly all of the rise since 2020.' } : null;
+  }
+  function headlinePower() {
+    var fys = Array.from(new Set(plants.map(function (d) { return d.fy; }))).sort();
+    var fy = fys[fys.length - 1];
+    var mw = d3.sum(plants.filter(function (d) { return d.fy === fy && d.mw != null; }), function (d) { return d.mw; });
+    return mw ? { n: Math.round(mw / 1e3).toLocaleString(), u: 'GW installed',
+      p: 'Capacity on the grid in ' + fy + ', by plant and fuel; what the distribution companies sold and lost; load shedding; rooftop solar; gas.' } : null;
+  }
+  function headlineWater() {
+    var r = reservoirs.filter(function (d) { return d.reservoir === 'Tarbela'; }).pop();
+    return r ? { n: Math.round(r.km2) + ' km\u00b2', u: 'Tarbela, ' + d3.timeFormat('%B %Y')(new Date(r.year, r.month - 1, 1)),
+      p: 'Water surface seen from space' + (r.anomaly_pct != null ? ', ' + signed(r.anomaly_pct) + '% against the month\u2019s norm' : '') + '. Also the 2022 floods week by week, the 2026 monsoon and every GDACS alert since 2001.' } : null;
+  }
+  var HEADLINE = { 'Public money': headlineTax, 'Justice': headlineCourts, 'Crime & policing': headlineCrime,
+                   'Power & gas': headlinePower, 'Water & disasters': headlineWater };
+
+  function renderOverview() {
+    current = null;
+    $('paneTheme').textContent = 'State';
+    $('paneTitle').textContent = 'What the government collects, spends, owes, runs and regulates';
+    setDek(THEME_ORDER.length + ' groups, ' + TOPIC_ORDER.length + ' topics. Each opens on one chart; the rest of the topic sits in tabs above it.');
+    $('tabs').hidden = true;
+    $('coverage').innerHTML = '';
+    $('paneBody').hidden = true;
+    $('csvBtn').hidden = true;
+    var host = $('overview');
+    host.hidden = false;
+    host.innerHTML = '';
+    THEME_ORDER.forEach(function (theme) {
+      var topics = [], seen = {};
+      D.index.forEach(function (r) {
+        if (r.theme === theme && !seen[r.topic]) { seen[r.topic] = 1; topics.push(r); }
+      });
+      if (!topics.length) return;
+      var h = null;
+      try { h = HEADLINE[theme] ? HEADLINE[theme]() : null; } catch (e) { h = null; }
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ovtile';
+      b.innerHTML = '<span class="eyebrow"></span>'
+        + (h ? '<span class="ovtile-n"><span class="n"></span><small></small></span>' : '')
+        + '<p class="ovtile-p"></p><span class="ovtile-topics"></span>';
+      b.querySelector('.eyebrow').textContent = theme;
+      if (h) { b.querySelector('.n').textContent = h.n; b.querySelector('small').textContent = h.u; }
+      b.querySelector('.ovtile-p').textContent = h ? h.p : '';
+      var tl = b.querySelector('.ovtile-topics');
+      topics.forEach(function (t) {
+        var sp = document.createElement('span'); sp.textContent = t.topicLabel; tl.appendChild(sp);
+      });
+      b.onclick = function () {
+        state.topic = topics[0].topic; state.ind = null;
+        render(rail.sync(false)); writeUrl();
+      };
+      host.appendChild(b);
+    });
+  }
+
   function renderTaxGdpFallback() { renderTax('gdp'); }
+
+
+  /* ── what the state owes ───────────────────────────────────────────────
+     The long-run fiscal series, from the DD_HISTORY payload Economy built.
+     IMF revenue, expenditure, primary balance and interest from 1950; the
+     SBP\u2019s consolidated budget from FY76 as a second count. */
+  var FISCAL_KEYS = ['imf_rev', 'imf_exp', 'imf_pb', 'imf_ie', 'sbp_rev', 'sbp_exp', 'sbp_fb'];
+  var FISCAL_LABEL = { imf_rev: 'Revenue (IMF)', imf_exp: 'Expenditure (IMF)',
+                       imf_pb: 'Primary balance (IMF)', imf_ie: 'Interest (IMF)',
+                       sbp_rev: 'Revenue (SBP)', sbp_exp: 'Expenditure (SBP)', sbp_fb: 'Fiscal balance (SBP)' };
+  var FISCAL_COLOUR = { imf_rev: '#1e6b3e', imf_exp: '#b8860b', imf_pb: '#2f6fb0', imf_ie: '#b5402a',
+                        sbp_rev: '#1e6b3e', sbp_exp: '#b8860b', sbp_fb: '#7a4f9c' };
+  var fiscalSet = 'imf';
+  function historyRows(keys) {
+    var rows = [];
+    keys.forEach(function (k) {
+      (H.series[k] || []).forEach(function (p) {
+        rows.push({ k: FISCAL_LABEL[k] || k, key: k, year: +p[0].slice(0, 4), value: p[1] });
+      });
+    });
+    return rows;
+  }
+  function renderFiscal() {
+    if (!H) { $('chart').innerHTML = '<p class="nodata">The long-run series did not load.</p>'; return; }
+    seg(ctlRow(), 'Count', [['imf', 'IMF, from 1950'], ['sbp', 'State Bank, from FY76'], ['both', 'Both']],
+        fiscalSet, function (v) { fiscalSet = v; render(current); });
+    var keys = fiscalSet === 'imf' ? ['imf_rev', 'imf_exp', 'imf_pb', 'imf_ie']
+             : fiscalSet === 'sbp' ? ['sbp_rev', 'sbp_exp', 'sbp_fb'] : FISCAL_KEYS;
+    var rows = historyRows(keys).filter(function (d) { return d.value != null; });
+    var ys = yearsOf(rows);
+    var lo = d3.min(rows, function (d) { return d.value; });
+    cover([ys[0] + ' to ' + ys[ys.length - 1], 'per cent of GDP, fiscal years',
+           fiscalSet === 'both' ? 'the two counts differ in coverage and will not match'
+                                : 'as published; a dashed line is the State Bank\u2019s count']);
+    lineChart(rows, keys.map(function (k) { return FISCAL_LABEL[k]; }), ys, 'value',
+      'Per cent of GDP', function (v) { return v.toFixed(1) + '%'; },
+      { base: Math.min(0, Math.floor(lo)), ref: 0,
+        colour: function (name) { var k = keys.filter(function (x) { return FISCAL_LABEL[x] === name; })[0]; return FISCAL_COLOUR[k] || '#9aa39c'; },
+        dash: function (name) { return /SBP/.test(name) ? '5 4' : null; },
+        lede: 'What the government raises, what it spends, and the balance before interest. '
+            + 'Spending has run ahead of revenue in every year since the 1970s.',
+        foot: 'The primary balance leaves interest out; the fiscal balance includes it, which '
+            + 'is why the State Bank\u2019s gap is the wider one. Years as each source labels them.' });
+  }
+  function renderDebt() {
+    if (!H) { $('chart').innerHTML = '<p class="nodata">The long-run series did not load.</p>'; return; }
+    var rows = historyRows(['imf_debt']).filter(function (d) { return d.value != null; });
+    var ys = yearsOf(rows), last = rows[rows.length - 1];
+    cover([ys[0] + ' to ' + ys[ys.length - 1], 'gross public debt, per cent of GDP',
+           last.value.toFixed(0) + '% in ' + last.year]);
+    lineChart(rows, [rows[0].k], ys, 'value', 'Per cent of GDP',
+      function (v) { return v.toFixed(1) + '%'; },
+      { colour: function () { return '#0f6e78'; }, width: function () { return 2.4; },
+        lede: 'The stock the deficits add up to: gross public debt as a share of GDP since 1951.',
+        foot: 'International Monetary Fund, Public Finances in Modern History, gross public debt, as published.' });
+  }
 
   /* ── what the state collects ─────────────────────────────────────────── */
   function taxTable(real) {
@@ -1053,7 +1381,7 @@
     var y = d3.scaleBand().domain(rows.map(function (r) { return r.name; }))
       .range([m.top, H - m.bottom]).padding(.3);
     var x = d3.scaleLinear().domain([0, 100]).range([m.left, W - m.right]);
-    var cols = { civil: '#1b5e4a', criminal: '#d4a017' };
+    var cols = { civil: '#1e6b3e', criminal: '#b8860b' };
     rows.forEach(function (r) {
       var tot = r.civil + r.criminal, cs = 100 * r.civil / tot;
       svg.append('rect').attr('x', x(0)).attr('y', y(r.name)).attr('width', x(cs) - x(0))
@@ -1114,7 +1442,7 @@
     // collided with the longest bar's label.
     var m = fit({ top: 34, right: 84, bottom: 10, left: 196 }, W);
     var parts = [['working', 'Working', '#1e6b3e'],
-                 ['vacant', 'Vacant', '#d4a017'],
+                 ['vacant', 'Vacant', '#b8860b'],
                  ['unaccounted', 'Neither', '#b9bfc6']];
     var y = d3.scaleBand()
       .domain(rows.map(function (d) { return TIER_LABEL[d.tier] || d.tier; }))
@@ -1622,9 +1950,11 @@
 
   var FAMILY_ORDER = ['Hydro', 'Nuclear', 'Coal', 'Gas', 'Oil and mixed thermal',
                       'Wind', 'Solar', 'Bagasse and biogas'];
-  var FAMILY_COLOUR = { Hydro: '#2f5d7c', Nuclear: '#6b4c7a', Coal: '#7b5a3c',
-                        Gas: '#b5651d', 'Oil and mixed thermal': '#a8452f',
-                        Wind: '#3f9aa3', Solar: '#d4a017', 'Bagasse and biogas': '#5c6b3a' };
+  /* Eight families, the eight categorical slots (palette.js), in the order
+     the stack draws them so neighbours stay apart. */
+  var FAMILY_COLOUR = { Hydro: '#2f6fb0', Gas: '#b8860b', 'Oil and mixed thermal': '#d96a26',
+                        Coal: '#b5402a', Nuclear: '#7a4f9c', Wind: '#0f9aab',
+                        Solar: '#1e6b3e', 'Bagasse and biogas': '#8c4a7e' };
 
   /* Capacity by fuel family in every report year, stacked: the mix and its
      movement in one chart, which one year at a time cannot show. */
@@ -2074,6 +2404,210 @@
       + 'add up to it to within 0.13 per cent.');
   }
 
+  /* ── Issue 4: load shedding, net metering, gas, oil and gas money,
+        the 2022 floods, reservoirs ───────────────────────────────────── */
+  function hrs(v) { return v.toFixed(v < 10 ? 1 : 0) + ' h'; }
+  function byLatest(rows) {
+    return Array.from(new Set(rows.map(function (d) { return d.k; }))).sort(function (a, b) {
+      var la = rows.filter(function (d) { return d.k === a; }).pop();
+      var lb = rows.filter(function (d) { return d.k === b; }).pop();
+      return (lb ? lb.value : 0) - (la ? la.value : 0);
+    });
+  }
+  function yearsOf(rows) {
+    return Array.from(new Set(rows.map(function (d) { return d.year; }))).sort(function (a, b) { return a - b; });
+  }
+
+  function renderLoadShedReported() {
+    var rows = loadshed.filter(function (d) { return d.disco !== 'TESCO'; })
+      .map(function (d) { return { k: d.disco, year: d.fy_end, value: d.hours_reported }; });
+    var ys = yearsOf(rows);
+    cover(['FY' + ys[0] + ' to FY' + ys[ys.length - 1],
+           'the companies’ own figures', 'FY2024 from the FY2025 report only']);
+    lineChart(rows, byLatest(rows), ys, 'value', 'Average hours of load shedding a day, as reported',
+      hrs, { gaps: true,
+        lede: 'What each distribution company told NEPRA its average daily load shedding '
+            + 'was. The Punjab companies report almost none by 2024-25; QESCO, HESCO and '
+            + 'PESCO report the most every year since 2018-19.',
+        foot: 'These are the companies’ claims, and NEPRA prints them while saying they '
+            + 'are wrong: “fudged” (2015-16, 2019-20), “not based on ground realities” '
+            + '(2020-21, 2021-22), “significant underreporting” (2024-25). The next chart '
+            + 'sets them against the one year NEPRA gave its own figure for every company.' });
+  }
+
+  function renderLoadShedGap() {
+    var fy = '2022-23';
+    var rep = {}, seen = {};
+    loadshed.forEach(function (d) { if (d.fy === fy) rep[d.disco] = d.hours_reported; });
+    var rows = monitored.filter(function (d) { return d.fy === fy && d.disco !== 'ALL'; })
+      .map(function (d) {
+        seen[d.disco] = 1;
+        return { name: d.disco, a: rep[d.disco] == null ? null : rep[d.disco], b: d.hours_low,
+                 sub: 'NEPRA: ' + (d.hours_high ? d.hours_low + ' to ' + d.hours_high + ' hours'
+                                               : 'more than ' + d.hours_low + ' hours') };
+      });
+    cover(['2022-23 only', 'NEPRA’s figure is a lower bound where it wrote “more than”']);
+    dumbbell(rows, { aLabel: 'Company reported', bLabel: 'NEPRA observed', upIsBad: true,
+      fmt: hrs,
+      delta: function (r) { return r.a == null ? '' : '(' + signed(r.b - r.a, 1) + ' h)'; },
+      lede: 'In 2022-23, the only year NEPRA printed its own figure for every company, '
+          + 'it saw more load shedding than nine of the ten reported: nearly eight hours a '
+          + 'day more in SEPCO, three or more in PESCO. QESCO\u2019s own 10.25 hours already '
+          + 'met NEPRA\u2019s \u201cmore than 10\u201d.',
+      foot: 'NEPRA’s column is “actual load shedding being monitored by NEPRA”, given as '
+          + 'a range or as “more than” a figure; the dot is the lower end, so the gap is '
+          + 'if anything understated. In other years NEPRA’s statement covers every company '
+          + 'at once (8 to 12 hours on certain feeders, 2014-15 to 2017-18) and is in the '
+          + 'table, not on this chart. NEPRA attributes the gap to shedding by feeder loss '
+          + 'rate, which its rules do not allow.' });
+  }
+
+  function renderNetMeter(measure, label, fmt, lede, foot) {
+    var rows = netmeter.filter(function (d) { return d.measure === measure; })
+      .map(function (d) { return { k: d.disco, year: d.fy_end, value: d.value }; });
+    var ys = yearsOf(rows);
+    cover(['FY' + ys[0] + ' to FY' + ys[ys.length - 1], 'nothing by company before NEPRA’s 2022 report']);
+    lineChart(rows, byLatest(rows), ys, 'value', label, fmt, { gaps: true, lede: lede, foot: foot });
+  }
+
+  function renderGasSupply() {
+    var keys = ['Sindh', 'Balochistan', 'Khyber Pakhtunkhwa', 'Punjab', 'RLNG (imported)'];
+    var by = {};
+    gasSupply.forEach(function (d) {
+      var r = by[d.fiscal_year] || (by[d.fiscal_year] = { year: d.fiscal_year, total: 0 });
+      r[d.province] = d.supply_mmcfd; r.total += d.supply_mmcfd;
+    });
+    var data = Object.keys(by).sort().map(function (k) {
+      keys.forEach(function (p) { if (by[k][p] == null) by[k][p] = 0; });
+      return by[k];
+    });
+    cover(['FY2018-19 to FY2024-25', 'million cubic feet a day']);
+    stackedBars(data, keys, { fmt: function (v) { return Math.round(v).toLocaleString(); },
+      axis: 'Gas supplied, million cubic feet a day',
+      lede: 'Pakistan’s own gas comes mostly from Sindh, and there is less of it every '
+          + 'year: indigenous supply fell from 3,420 to 2,480 million cubic feet a day '
+          + 'between 2018-19 and 2024-25, while imported LNG held near 900.',
+      foot: 'Field supplies summed to the province the field lies in; they reconcile to '
+          + 'OGRA’s printed subtotals within 1.1 MMCFD. Imported regasified LNG is shown '
+          + 'beside the provinces because it enters the same systems. Where gas is produced, '
+          + 'not where it is used: see the sector chart for that.' });
+  }
+
+  function renderGasSector() {
+    var years = Array.from(new Set(gasSector.map(function (d) { return d.fiscal_year; }))).sort();
+    if (!gasYear || years.indexOf(gasYear) < 0) gasYear = years[years.length - 1];
+    seg(ctlRow(), 'Year', years.map(function (y) { return [y, y]; }), gasYear,
+        function (v) { gasYear = v; render(); });
+    var rows = gasSector.filter(function (d) { return d.fiscal_year === gasYear; })
+      .sort(function (a, b) { return b.total_mmcfd - a.total_mmcfd; });
+    cover([gasYear, 'all systems', 'OGRA’s totals left out']);
+    barChart(rows, function (d) { return d.sector; }, function (d) { return d.total_mmcfd; },
+      'Who used the gas in ' + gasYear + ', million cubic feet a day',
+      'Power stations, fertilizer plants and homes take most of it. Losses in transmission '
+      + 'and distribution are a line of their own, as OGRA prints them. Four years are '
+      + 'published by sector; OGRA’s sub-total and grand-total rows are not shown, so the '
+      + 'bars do not repeat what they sum to.');
+  }
+  var gasYear = null;
+
+  var TRANSFER_ITEM = { royalty_natural_gas: 'Royalty on gas', royalty_crude_oil: 'Royalty on crude oil',
+                        gas_development_surcharge: 'Gas development surcharge',
+                        excise_duty_natural_gas: 'Excise duty on gas' };
+  function renderTransfers(by) {
+    var keys = by === 'province' ? ['Sindh', 'Khyber Pakhtunkhwa', 'Balochistan', 'Punjab']
+      : ['royalty_natural_gas', 'royalty_crude_oil', 'gas_development_surcharge', 'excise_duty_natural_gas'];
+    priceControl(ctlRow());
+    var agg = {}, budgetOnly = {};
+    transfers.forEach(function (d) {
+      var r = agg[d.fiscal_year] || (agg[d.fiscal_year] = { year: d.fiscal_year, total: 0 });
+      var k = by === 'province' ? d.province : d.item;
+      var v = (d.rs_mn || 0) * priceFactor(d.fiscal_year) / 1000;
+      r[k] = (r[k] || 0) + v; r.total += v;
+      if (!d.revised) budgetOnly[d.fiscal_year] = 1;
+    });
+    var data = Object.keys(agg).sort().map(function (y) {
+      keys.forEach(function (k) { if (agg[y][k] == null) agg[y][k] = 0; });
+      return agg[y];
+    });
+    var years = data.map(function (d) { return d.year; });
+    cover([years[0] + ' to ' + years[years.length - 1],
+           'revised estimates; ' + Object.keys(budgetOnly).join(', ') + ' budget estimate',
+           realOn() ? priceNote(years) : 'Nominal rupees, not inflation-adjusted']);
+    stackedBars(data, keys, { fmt: function (v) { return Math.round(v).toLocaleString(); },
+      label: function (k) { return TRANSFER_ITEM[k] || k; },
+      axis: 'Rs billion' + (realOn() ? ', ' + DDDeflate.base + ' prices' : ''),
+      lede: by === 'province'
+        ? 'What the federal government passes to the provinces for the oil and gas taken '
+          + 'from them. Sindh receives over half every year; Punjab, which produces little, '
+          + 'under a tenth.'
+        : 'The same money by what it is. Royalty on gas and the gas development surcharge '
+          + 'are most of it; the surcharge swings, and is printed negative in two '
+          + 'provinces’ estimates for 2019-20 and 2020-21.',
+      foot: 'Straight transfers under the NFC award, from the Finance Division’s Explanatory '
+          + 'Memorandum on Federal Receipts: the revised estimate from the following year’s '
+          + 'budget, or the budget estimate where no revision is published yet. Estimates, '
+          + 'not audited releases. The four oil and gas items only; before 2011-12 the '
+          + 'memorandum’s straight-transfer total also includes provincial sales tax.' });
+  }
+
+  function renderFloodWeekly() {
+    var weeks = Array.from(new Set(floods.map(function (d) { return d.week; }))).sort();
+    var startOf = {};
+    floods.forEach(function (d) { startOf[d.week] = d.start; });
+    var rows = [], tot = {};
+    floods.forEach(function (d) {
+      var i = weeks.indexOf(d.week) + 1;
+      var prov = d.province.toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      rows.push({ k: prov, year: i, value: 100 * d.flooded_km2 / d.area_km2 });
+      var t = tot[i] || (tot[i] = { f: 0, a: 0 });
+      t.f += d.flooded_km2; t.a += d.area_km2;
+    });
+    Object.keys(tot).forEach(function (i) {
+      rows.push({ k: 'Pakistan', year: +i, value: 100 * tot[i].f / tot[i].a });
+    });
+    var keys = byLatest(rows.filter(function (d) { return d.year === 1; }));
+    var ys = weeks.map(function (w, i) { return i + 1; });
+    var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    cover(['11 seven-day windows, 25 Aug 2022 to 15 Jan 2023', 'not consecutive',
+           'UNOSAT, CC BY-SA']);
+    lineChart(rows, keys, ys, 'value', 'Share of the province under water (%)',
+      function (v) { return v.toFixed(1) + '%'; },
+      { width: function (k) { return k === 'Pakistan' ? 3 : 2; },
+        tick: function (i) { var s = startOf[weeks[i - 1]]; return s ? +s.slice(8, 10) + ' ' + mon[+s.slice(5, 7) - 1] : ''; },
+        lede: 'At the end of August 2022 almost a third of Sindh was under water, and the '
+            + 'water was slow to leave: in mid-January more than 7 per cent of the province '
+            + 'still was.',
+        foot: 'Flooded area detected by satellite (UNOSAT’s seven-day NOAA-20 composites) '
+            + 'as a share of each province’s whole area. The windows are evenly spaced on '
+            + 'this axis but not in time: nothing was observed from 22 to 25 September, 18 '
+            + 'October to 13 November, or 21 November to 24 December 2022. Cloud hides '
+            + 'water, so a week with low coverage understates it. Preliminary analyses, not '
+            + 'field-validated. Analysis: United Nations Satellite Centre (UNOSAT).' });
+  }
+
+  var resSpan = 'recent';
+  function renderReservoirs() {
+    seg(ctlRow(), 'Span', [['recent', 'Since 2016'], ['all', 'Since 1987']], resSpan,
+        function (v) { resSpan = v; render(); });
+    var rows = reservoirs.filter(function (d) { return resSpan === 'all' || d.year >= 2016; })
+      .map(function (d) {
+        return { k: d.reservoir, year: d.year + (d.month - 0.5) / 12, value: d.km2 };
+      });
+    var ys = yearsOf(rows);
+    cover([resSpan === 'all' ? '1987 to 2026' : '2016 to 2026',
+           'months with a satellite observation only', 'surface, not storage']);
+    lineChart(rows, ['Tarbela', 'Mangla', 'Chashma'], ys, 'value', 'Water surface, km²',
+      function (v) { return Math.round(v) + ' km²'; },
+      { lede: 'The water surface of Pakistan’s three largest reservoirs, seen from space each '
+            + 'month: they fill with the summer melt and monsoon and are drawn down through '
+            + 'the dry season.',
+        foot: 'Global Water Watch’s observed surface area (Deltares and WRI, from Landsat '
+            + 'and Sentinel), averaged by month over the observations in it. A month without '
+            + 'an observation has no point; the line bridges it. Surface area is not '
+            + 'storage, which would need each reservoir’s depth curve. IRSA and WAPDA do '
+            + 'not publish an archive of daily levels.' });
+  }
+
   /* ── disaster alerts ─────────────────────────────────────────────────── */
   function eventRows() {
     return events.map(function (e) {
@@ -2098,7 +2632,7 @@
       .nice().range([m.left, W - m.right]);
     var y = d3.scalePoint().domain(hazards).range([m.top + 14, H - m.bottom - 14]).padding(.6);
     var alerts = ['Orange', 'Red'];
-    var colour = d3.scaleOrdinal().domain(alerts).range(['#d4a017', '#9a2c1f']);
+    var colour = d3.scaleOrdinal().domain(alerts).range(['#b8860b', '#9a2c1f']);
     var jitter = {};
     svg.selectAll('circle').data(rows).join('circle')
       .attr('cx', function (d) { return x(d.year); })
@@ -2143,7 +2677,7 @@
            'alert levels, not losses']);
     stackedBars(data, hazards, {
       fmt: function (v) { return String(v); }, axis: 'alerts issued', label: hazardLabel,
-      colour: d3.scaleOrdinal().domain(hazards).range(['#2f5d7c', '#c98b2e', '#3f9aa3']),
+      colour: d3.scaleOrdinal().domain(hazards).range(['#2f6fb0', '#b8860b', '#0f9aab']),
       integer: true,
       lede: 'Alerts GDACS issued for Pakistan in each year, by hazard.',
       foot: 'A year with no bar had no alert. Grades are on the timeline; this chart counts them.',
@@ -2246,7 +2780,7 @@
     var pick = window.DDPalette
       ? window.DDPalette.ordinal(domain)
       : d3.scaleOrdinal().domain(domain)
-          .range(['#0c3a1e', '#d4a017', '#0f6e78', '#9a2c1f', '#4d8a62']);
+          .range(['#1e6b3e', '#b8860b', '#2f6fb0', '#b5402a', '#7a4f9c']);
     return function (k) { return pick(k); };
   }
   function shortNum(v) {
@@ -2308,11 +2842,8 @@
   }
 
   function cover(bits) {
-    $('coverage').innerHTML = '<b>Coverage</b>'
-      + bits.map(function (b, i) {
-          return '<span' + (i === bits.length - 1 && bits.length > 2
-            ? ' style="margin-left:auto"' : '') + '>' + b + '</span>';
-        }).join('');
+    // One line under the tabs, not a boxed strip of its own.
+    $('coverage').innerHTML = bits.map(function (b) { return '<span>' + b + '</span>'; }).join('');
   }
   function axes(svg, x, y, m, W, H, fmt, label, log, tick) {
     svg.append('g').attr('transform', 'translate(0,' + (H - m.bottom) + ')')
@@ -2432,7 +2963,8 @@
     });
     if (opt.base != null) {
       svg.append('line').attr('x1', m.left).attr('x2', W - m.right)
-        .attr('y1', y(100)).attr('y2', y(100)).attr('stroke', muted()).attr('stroke-dasharray', '3 3');
+        .attr('y1', y(opt.ref != null ? opt.ref : 100)).attr('y2', y(opt.ref != null ? opt.ref : 100))
+        .attr('stroke', muted()).attr('stroke-dasharray', '3 3');
     }
     axes(svg, x, y, m, W, H, fmt, opt.axis || label, opt.log, opt.tick);
     host.say(opt.lede || '', opt.foot || '');
@@ -2668,12 +3200,13 @@
     var el = card.querySelector('.src');
     if (!el) { el = document.createElement('div'); el.className = 'src';
                card.appendChild(el); }
-    var r = window.DDProv && window.DDProv.of('state:' + chart);
+    var PROV_ALIAS = { fiscal: 'sec-fiscal', debt: 'sec-debt' };
+    var r = window.DDProv && (window.DDProv.of('state:' + chart) || (PROV_ALIAS[chart] && window.DDProv.of(PROV_ALIAS[chart])));
     el.innerHTML = r ? window.DDProv.panel(r) : '';
     // The budget exports its own grouped payload through budgetCsv(), so it
     // has a table even though it is in no CSV_BLOCK; the button said
     // "Catalogue" and then downloaded a CSV.
-    var btn = $('csvBtn'), has = (current.topic === 'budget' && !!BUDGET)
+    var btn = $('csvBtn'), has = (current.topic === 'budget' && !!BUDGET) || current.topic === 'debt'
                              || !!(CSV_BLOCK[chart] && D[CSV_BLOCK[chart]]
                                     && D[CSV_BLOCK[chart]].cols);
     if (btn) {
@@ -2709,6 +3242,11 @@
     discoRecovery: 'recovery',
     discoChange: 'discos', discoLosses: 'discos', discoLatest: 'discos',
     discoUnits: 'discos',
+    loadShedReported: 'loadshed', loadShedGap: 'monitored',
+    netMeterUnits: 'netmeter', netMeterCapacity: 'netmeter',
+    gasSupply: 'gasSupply', gasSector: 'gasSector',
+    transfersProvince: 'transfers', transfersItem: 'transfers',
+    floodWeekly: 'floods', reservoirArea: 'reservoirs',
     /* The budget draws from its own payload, which is grouped rather than
        the warehouse rows; its CSV is the group totals per year. */
   };
@@ -2799,6 +3337,24 @@
     var csv = head.concat(rows.map(function (r) { return r.map(csvCell).join(','); })).join('\n');
     save(csv, 'data_darbar_budget_' + bSide + '.csv');
   }
+  function historyCsv() {
+    var keys = current.chart === 'debt' ? ['imf_debt'] : FISCAL_KEYS;
+    var years = {};
+    keys.forEach(function (k) { (H.series[k] || []).forEach(function (p) { years[p[0]] = 1; }); });
+    var ys = Object.keys(years).sort();
+    var rows = ys.map(function (d) {
+      return [d.slice(0, 4)].concat(keys.map(function (k) {
+        var p = (H.series[k] || []).filter(function (q) { return q[0] === d; })[0];
+        return p ? p[1] : '';
+      }));
+    });
+    var csv = ['# Data Darbar - ' + (current.chart === 'debt' ? 'gross public debt' : 'public finances')
+               + ', % of GDP; IMF Public Finances in Modern History (Dec 2025)'
+               + (current.chart === 'debt' ? '' : '; SBP Handbook 2020 table 3.7'), '#',
+               ['year'].concat(keys).join(',')]
+      .concat(rows.map(function (r) { return r.map(csvCell).join(','); })).join('\n');
+    save(csv, 'data_darbar_' + (current.chart === 'debt' ? 'public_debt' : 'public_finances') + '.csv');
+  }
   function save(csv, name) {
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
@@ -2809,6 +3365,7 @@
 
   function downloadCsv() {
     if (current.topic === 'budget' && BUDGET) return budgetCsv();
+    if (current.topic === 'debt' && H) return historyCsv();
     var name = CSV_BLOCK[current.chart];
     var block = name && D[name];
     if (!block || !block.cols) {
@@ -2834,18 +3391,22 @@
      the row it settled on, which is what gets drawn. The URL carries all
      three so a chart can be linked to. */
   function writeUrl() {
-    var q = new URLSearchParams({ t: state.topic, i: state.ind });
+    var q = new URLSearchParams({ t: state.topic });
+    if (state.ind) q.set('i', state.ind);
     if (priceMode === 'real') q.set('p', 'real');
-    history.replaceState(null, '', location.pathname + '?' + q);
+    history.pushState(null, '', location.pathname + '?' + q);
   }
 
   function readUrl() {
     var q = new URLSearchParams(location.search);
     var t = q.get('t'), i = q.get('i');
     if (q.get('p') === 'real') priceMode = 'real';
+    if (t === 'overview' || !t) { state.topic = 'overview'; state.ind = null; return; }
+    // Old links: the topics merged on 2026-10-23 and the budget\u2019s Economy hash.
+    if (REMAP[t]) t = REMAP[t][0];
     var row = D.index.filter(function (r) {
       return (!t || r.topic === t) && (!i || r.ind === i);
-    })[0];
+    })[0] || D.index.filter(function (r) { return r.topic === t; })[0];
     if (row) { state.ds = row.ds; state.topic = row.topic; state.ind = row.ind; }
   }
 
@@ -2854,16 +3415,27 @@
     rail = window.DDExplorer.mount({
       el: $('rail'), index: D.index, state: state,
       levels: ['topic', 'ds', 'ind'], nav: true,
-      listLevel: 'ind', listEl: $('chartList'), searchEl: $('xFind'),
-      labels: { ind: 'Chart' }, moreEl: $('more'),
+      tabsEl: $('tabs'), overview: { label: 'Overview' }, searchEl: $('xFind'),
+      links: [{ href: 'finance.html', label: 'Output, trade, prices and the rupee', note: 'on Economy' }],
+      labels: { ind: 'Chart' },
       onChange: function (row) { render(row); writeUrl(); },
     });
     render(rail.sync(false));
+    window.DDExplorer.mobileToggle(document.querySelector('.xside'), function () {
+      return current ? (TOPICS[current.topic] || {}).title || current.topicLabel : 'Overview';
+    });
+    window.addEventListener('popstate', function () { readUrl(); render(rail.sync(false)); });
     $('csvBtn').onclick = downloadCsv;
+    $('shareBtn').onclick = function () {
+      var btn = this, url = location.href;
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Share'; }, 1400); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+      else window.prompt('Copy this link:', url);
+    };
     var t;
     window.addEventListener('resize', function () {
       clearTimeout(t);
-      t = setTimeout(function () { render(current); }, 150);
+      t = setTimeout(function () { if (current) render(current); }, 150);
     });
   }
 

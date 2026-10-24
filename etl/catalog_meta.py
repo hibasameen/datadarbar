@@ -38,6 +38,7 @@ KIND = {
     'census_unit_map': 'geography',
     'district_crosswalk_2017_2023': 'geography',
     'subdistrict_crosswalk_2017_2023': 'geography',
+    'district_crosswalk_cod_2023': 'geography',
     'mouza_crosswalk': 'geography',
 
     'census_panel_2017': 'census',
@@ -123,7 +124,8 @@ TIME_COLS = ['census_year', 'year', 'reporting_year', 'fy', 'fiscal_year',
 # Place identifiers, most specific first. The ones geography_keys measures
 # carry its verdict on whether they are safe to join on.
 KEY_COLS = ['dds_id', 'tehsil_code', 'dd_id', 'tehsil_id', 'adm3_pcode',
-            'district_code', 'map_key', 'district_key', 'dk', 'district', 'province']
+            'district_code', 'map_key', 'district_key', 'dk', 'cod_adm2_pcode',
+            'cod_district_key', 'district', 'province']
 # Named in the catalogue beside the key, from geography_keys: safe to join on
 # alone, or not. A name is never safe, so it is not listed as either.
 
@@ -160,6 +162,11 @@ LICENCES = {
         summary='Works of the US federal government, the Census Bureau\u2019s included, are '
                 'not subject to copyright in the US and may be reused freely; credit the '
                 'Census Bureau as the source.'),
+    'cc-by-igo': dict(
+        name='CC BY 3.0 IGO', reuse='open',
+        url='https://creativecommons.org/licenses/by/3.0/igo/',
+        summary='OCHA’s COD-AB boundaries for Pakistan, as HDX publishes them: any use, '
+                'commercial included, with attribution to OCHA and the World Food Programme.'),
     'cc0': dict(
         name='CC0 1.0', reuse='open',
         url='https://creativecommons.org/publicdomain/zero/1.0/',
@@ -203,6 +210,27 @@ LICENCES = {
         summary='Published by a Pakistani public body without an open licence. Reproduced '
                 'here unchanged and with attribution; ask the publisher before commercial '
                 'reuse.'),
+    'cc-by-sa-4.0': dict(
+        name='CC BY-SA', reuse='share-alike',
+        url='https://creativecommons.org/licenses/by-sa/4.0/',
+        summary='UNOSAT\u2019s flood analyses, as HDX publishes them: reuse with attribution, '
+                'and anything made from them is shared under the same terms.'),
+    'jrc-open': dict(
+        name='JRC open data', reuse='open',
+        url='https://global-surface-water.appspot.com/download',
+        summary='EC Joint Research Centre / Google Global Surface Water: free use with '
+                'attribution (\u201cSource: EC JRC/Google\u201d).'),
+    'nasa-open': dict(
+        name='NASA open data', reuse='open',
+        url='https://www.earthdata.nasa.gov/engage/open-data-services-software-policies',
+        summary='NASA Earth science data are available without restriction; NASA asks for '
+                'acknowledgement of FIRMS, and Global Forest Watch, which serves this copy, '
+                'for its own credit line.'),
+    'public-domain': dict(
+        name='Public domain', reuse='open',
+        url='https://www.chc.ucsb.edu/data/chirps',
+        summary='CHIRPS rainfall, from the Climate Hazards Center at UC Santa Barbara, is in '
+                'the public domain; cite Funk et al. (2015).'),
 }
 
 # Table -> (licences, note). The first licence is the one that governs most of
@@ -229,6 +257,9 @@ LICENCE = {
     'diaspora_occupations': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_remittances_monthly': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'district_crosswalk_2017_2023': (['pbs-open', 'cc-by-4.0'], 'The crosswalk is Data Darbar’s work.'),
+    'district_crosswalk_cod_2023': (['cc-by-igo', 'pbs-open', 'cc-by-4.0'],
+                                    'COD-AB names, p-codes and polygons are OCHA’s (CC BY-IGO); '
+                                    'the PBS codes are PBS’s; the matching is Data Darbar’s.'),
     'district_indicators': (['pbs-open', 'survey-programmes'],
                             'PBS figures are open; the DHS and MICS estimates follow the survey '
                             'programmes’ terms.'),
@@ -420,6 +451,8 @@ PROVENANCE = {
         ('census_unit_map', 'Data Darbar’s mapping of census units onto the 2023 frame.'),
         ('district_crosswalk_2017_2023', 'Constructed crosswalk; the populations in it are PBS’s.'),
         ('subdistrict_crosswalk_2017_2023', 'Constructed crosswalk; the populations in it are PBS’s.'),
+        ('district_crosswalk_cod_2023', 'Constructed crosswalk; areas and overlaps measured from '
+                                        'the two boundary layers.'),
         ('geography_keys', 'Measured from the boundary layers and the tables.'),
         ('health_access_district', 'Population-weighted statistics of modelled travel-time surfaces.'),
         ('health_access_tehsil', 'Population-weighted statistics of modelled travel-time surfaces.'),
@@ -438,6 +471,17 @@ PROVENANCE = {
         ('trade_reconciliation', 'A comparison of PBS’s totals computed by Data Darbar.'),
     ]},
 }
+
+# ── Issue 4 (climate, energy and resources) ─────────────────────────────────
+# Filed, licensed and sourced in etl/issue4/tables.py, the one list the
+# pipeline and the warehouse also read, so a table cannot be published there
+# without being described here.
+from issue4.tables import TABLES as _ISSUE4                      # noqa: E402
+for _t in _ISSUE4:
+    KIND[_t['name']] = _t['kind']
+    LICENCE[_t['name']] = (_t['licences'], _t['licence_note'])
+    _p = _t['provenance']
+    PROVENANCE[_t['name']] = (_p[0], _p[1], list(_p[2]) if len(_p) > 2 else [])
 
 PROVENANCE_LABEL = {'published': 'As published', 'mixed': 'Includes derived',
                     'derived': 'Derived'}

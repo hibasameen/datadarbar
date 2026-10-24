@@ -2,8 +2,7 @@
    Charts SBP monetary and external series. Payload: data/money_data.js (window.DD_MONEY).
 
    Conventions follow finance.js: full redraw on every change (no D3 update pattern),
-   one global #tip tooltip, sidebar topics with #hash deep links, and 'all' present in
-   TOPICS but deliberately absent from TOPIC_DRAWS.
+   one global #tip tooltip, and sidebar topics with #hash deep links.
 
    Two things specific to this page:
    - every multi-series chart has a chips row (series selection), and its end labels go
@@ -62,7 +61,19 @@ const SER = {
   imf_pb:['Primary balance, IMF','var(--teal-700)'], imf_ie:['Interest paid, IMF','var(--gold-600)'],
   sbp_rev:['Revenue, SBP','var(--green-300)'], sbp_exp:['Spending, SBP','var(--sienna-300)'],
   sbp_fb:['Fiscal balance, SBP','var(--teal-300)'],
-  imf_debt:['Public debt','var(--body)']
+  imf_debt:['Public debt','var(--body)'],
+  /* land and resources (data/resources_data.js) */
+  min_coal:['Coal','var(--body)'], min_natural_gas:['Natural gas','var(--teal-700)'],
+  min_crude_oil:['Crude oil','var(--negative)'], min_limestone:['Limestone','var(--muted-2)'],
+  min_rock_salt:['Rock salt','var(--gold-600)'], min_gypsum_anhydrite:['Gypsum','var(--sienna)'],
+  min_chromite:['Chromite','var(--plum)'], min_baryte:['Baryte','var(--olive)'],
+  cp_wheat:['Wheat, Lahore','var(--gold-600)'], cp_basmati:['Basmati, Multan','var(--green-800)'],
+  cp_irri6:['Irri-6, Sukkur','var(--green-400)'], cp_maize:['Maize, Lahore','var(--sienna)'],
+  em_agriculture:['Agriculture','var(--green-800)'], em_power:['Power','var(--negative)'],
+  em_industry:['Industry (energy)','var(--slate)'], em_transport:['Road transport','var(--gold-600)'],
+  em_waste:['Waste','var(--sienna)'], em_ippu:['Industrial processes','var(--plum)'],
+  em_fugitives:['Fugitive (oil and gas)','var(--teal-700)'], em_residential:['Homes and businesses','var(--olive)'],
+  em_aviation:['Aviation','var(--muted-2)'], em_railways:['Railways','var(--muted)']
 };
 /* Pakistan's comparators: each a chip on the peers chart. Pakistan is drawn
    heavier and in the house green; aggregates are dashed. */
@@ -90,7 +101,15 @@ const CH = {
   fiscal: { avail:['imf_rev','imf_exp','imf_pb','imf_ie','sbp_rev','sbp_exp','sbp_fb'],
             def:['imf_rev','imf_exp','imf_pb'] },
   peers:  { avail:['PAK','IND','BGD','LKA','NPL','AFG','IRN','EGY','IDN','NGA','TUR','SAS','XN','WLD'],
-            def:['PAK','IND','BGD','LKA','SAS'] }
+            def:['PAK','IND','BGD','LKA','SAS'] },
+  mining: { avail:['min_coal','min_natural_gas','min_crude_oil','min_limestone','min_rock_salt',
+                   'min_gypsum_anhydrite','min_chromite','min_baryte'],
+            def:['min_coal','min_natural_gas','min_crude_oil','min_limestone'] },
+  cropprice: { avail:['cp_wheat','cp_basmati','cp_irri6','cp_maize'],
+               def:['cp_wheat','cp_basmati','cp_irri6','cp_maize'] },
+  emissions: { avail:['em_agriculture','em_power','em_industry','em_transport','em_waste','em_ippu',
+                      'em_fugitives','em_residential','em_aviation','em_railways'],
+               def:['em_agriculture','em_power','em_industry','em_transport','em_waste'] }
 };
 const SEL = {}; Object.keys(CH).forEach(c => SEL[c] = new Set(CH[c].def));
 const isDefault = c => { const d = CH[c].def; return SEL[c].size === d.length && d.every(k => SEL[c].has(k)); };
@@ -101,8 +120,21 @@ let gdpView = 'level', peerInd = 'NY.GDP.PCAP.PP.KD';
    and the real ones derived from them on demand with the site's GDP
    deflator (assets/js/deflate.js), interpolated to each month-end so the
    line does not step every July. */
-let moneyPrice = 'nom';
+let moneyPrice = 'nom', cropPrice = 'nom';
 const NOM = {};
+/* The same for crop prices, which are rupees per 40 kg by month. */
+function setCropPrice(v) {
+  cropPrice = v === 'real' && window.DDDeflate && DDDeflate.available ? 'real' : 'nom';
+  CH.cropprice.avail.forEach(k => {
+    if (!S[k]) return;
+    if (!NOM[k]) NOM[k] = S[k];
+    S[k] = cropPrice === 'real'
+      ? NOM[k].map(([d, v]) => { const f = DDDeflate.factorDate(d); return [d, v == null || f == null ? null : v * f]; })
+      : NOM[k];
+  });
+  d3.selectAll('#cpPrice button').classed('on', function () { return this.dataset.cp === cropPrice; });
+  drawCropPrices();
+}
 function setMoneyPrice(v) {
   moneyPrice = v === 'real' && window.DDDeflate && DDDeflate.available ? 'real' : 'nom';
   CH.money.avail.forEach(k => {
@@ -118,9 +150,6 @@ let topic = 'rupee', applyingHash = false, _lastNavHash = '';
 
 /* ---------------- topics ---------------- */
 const TOPICS = [
- {k:'all', label:'Everything',
-  desc:'Every topic on one page, top to bottom.',
-  meta:'All series come from the State Bank of Pakistan’s EasyData portal. Full sources are listed at the foot of the page.'},
  {k:'rupee', label:'The rupee',
   desc:'The exchange rate since 1947, and how the rupee has moved against its trading partners in real terms.',
   meta:'SBP bank floating average exchange rates (monthly, from Aug-1947) and the nominal/real effective exchange rate indices, base 2010 (from Jul-2001).'},
@@ -141,7 +170,10 @@ const TOPICS = [
   meta:'SBP Handbook of Statistics on Pakistan Economy 2020 (real GDP and prices from FY50, money from 1950, the consolidated budget from FY76) and the IMF’s Public Finances in Modern History (from 1950).'},
  {k:'peers', label:'Pakistan and its peers',
   desc:'Pakistan beside its neighbours and comparable economies, on the World Bank’s figures.',
-  meta:'World Bank, World Development Indicators (CC BY 4.0), 1960 onwards.'}];
+  meta:'World Bank, World Development Indicators (CC BY 4.0), 1960 onwards.'},
+ {k:'resources', label:'Land and resources',
+  desc:'What comes out of the ground, what crops fetch at market, and where the greenhouse gases come from.',
+  meta:'PBS mineral extraction via the Economic Survey statistical supplement (from FY1960-61); MNFSR Agricultural Statistics of Pakistan 2024-25 wholesale prices (from July 2006); PakEmis research inventory (FY2015-16 to FY2024-25). Compiled by Adaad.'}];
 
 const TOPIC_DRAWS = {
   rupee:    () => { drawUsd(); drawReer(); },
@@ -150,23 +182,22 @@ const TOPIC_DRAWS = {
   external: () => { drawRes(); drawBop(); drawRemit(); drawEmig(); },
   money:    () => { drawMoney(); drawNpl(); },
   longrun:  () => { drawGdpLong(); drawMoneyLong(); drawFiscal(); drawDebt(); },
-  peers:    () => { drawPeers(); }
+  peers:    () => { drawPeers(); },
+  resources: () => { drawMining(); drawCropPrices(); drawEmissions(); }
 };
 const TOPIC_GROUPS = [
- {label:null, keys:['all']},
  {label:'Prices & the rupee', keys:['rupee','prices']},
  {label:'Rates & money', keys:['rates','money']},
  {label:'The outside world', keys:['external']},
- {label:'The long view', keys:['longrun','peers']}];
-const drawAll = () => Object.values(TOPIC_DRAWS).forEach(f => f());
-
+ {label:'The long view', keys:['longrun','peers']},
+ {label:'Land and resources', keys:['resources']}];
 /* An ES module since Economy became one page. Nothing here was renamed:
    module scope keeps this file's TOPICS, start, writeHash, toCSV and the
    rest to itself, including the ones that genuinely differ from finance.js
    and trade.js - toCSV takes rows of arrays here and rows of objects there.
    MINE is what this module answers for; when the hash names another
    module's topic it hides its own cards, panels and KPI strip. */
-const MINE = TOPICS.map(t => t.k).filter(k => k !== 'all');
+const MINE = TOPICS.map(t => t.k);
 const MY_PANELS = ['sideScale', 'sideFy', 'kpis', 'pageFoot'];
 function standDown() {
   /* Forget the last hash we wrote - see finance.js. Leaving these topics and
@@ -972,6 +1003,11 @@ const CSV = {
   moneylong: () => ['money-and-inflation-since-1950', pairTable(CH.moneylong.avail)],
   fiscal: () => ['public-finances-since-1950', pairTable(CH.fiscal.avail)],
   debt:   () => ['public-debt-since-1951', pairTable(['imf_debt'])],
+  /* The levels, in each mineral's own unit, rather than the index drawn. */
+  mining: () => ['mineral-extraction', [['mineral', 'unit', 'fiscal_year', 'quantity'],
+    ...CH.mining.avail.flatMap(k => ((M[k] || {}).levels || []).map(([fy, v]) => [lbl(k), M[k].unit, fy, v]))]],
+  cropprice: () => ['crop-wholesale-prices-' + cropPrice, pairTable(CH.cropprice.avail)],
+  emissions: () => ['emissions-by-sector', pairTable(CH.emissions.avail)],
   peers:  () => { const ind = peerSeries();
     return ['peers-' + ind.code.toLowerCase().replace(/\./g, '-'), pairTable(CH.peers.avail)]; },
   /* The emigration card shipped with a CSV button and no entry here, so the
@@ -1036,23 +1072,24 @@ function initShare() {
 /* ---------------- topics, hash, wiring ---------------- */
 const TOPIC_CHARTS = { rupee:['reer'], prices:['cpi','food'], rates:['policy','kibor','spread'],
                        external:['res','bop'], money:['money'], longrun:['moneylong','fiscal'],
-                       peers:['peers'] };
+                       peers:['peers'], resources:['mining','cropprice','emissions'] };
 function applyTopic(k, push) {
   topic = k;
   const t = TOPICS.find(x => x.k === k);
   d3.selectAll('#topicList .topic-item').classed('on', function () { return this.dataset.k === k; });
   d3.select('#topicDesc').text(t.desc);
   d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
-  const all = k === 'all';
-  /* per-topic sidebar controls — every test needs the ||all branch */
-  d3.select('#sideScale').style('display', (k === 'rupee' || all) ? null : 'none');
-  d3.select('#sideFy').style('display', (k === 'external' || all) ? null : 'none');
+  /* per-topic sidebar controls */
+  d3.select('#sideScale').style('display', k === 'rupee' ? null : 'none');
+  d3.select('#sideFy').style('display', k === 'external' ? null : 'none');
+  /* data-topic="all" is the KPI strip, shown whatever the topic - not the
+     retired Everything view */
   d3.selectAll('[data-topic]').classed('topic-hidden', function () {
-    return !all && this.dataset.topic !== k && this.dataset.topic !== 'all';
+    return this.dataset.topic !== k && this.dataset.topic !== 'all';
   });
   if (!applyingHash) writeHash(push);
   drawKpis();
-  if (all) drawAll(); else if (TOPIC_DRAWS[k]) TOPIC_DRAWS[k]();
+  if (TOPIC_DRAWS[k]) TOPIC_DRAWS[k]();
   if (push) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function setScale(v) { scale = v;
@@ -1078,15 +1115,14 @@ function setBopView(v) { bopView = v; drawBop(); writeHash(false); }
 function writeHash(push) {
   if (applyingHash) return;
   const p = new URLSearchParams(); p.set('t', topic);
-  const all = topic === 'all';
-  if ((topic === 'rupee' || all) && scale !== 'log') p.set('sc', scale);
-  if ((topic === 'external' || all) && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
-  if ((topic === 'external' || all) && bopView !== 'tree') p.set('bv', bopView);
-  if ((topic === 'external' || all) && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
+  if (topic === 'rupee' && scale !== 'log') p.set('sc', scale);
+  if (topic === 'external' && fy && fys.length && fy !== defaultFy()) p.set('fy', fy);
+  if (topic === 'external' && bopView !== 'tree') p.set('bv', bopView);
+  if (topic === 'external' && bopView === 'tree' && bopOpen.size) p.set('bz', [...bopOpen].sort().join('|'));
   if (topic === 'peers' && peerInd !== 'NY.GDP.PCAP.PP.KD') p.set('pi', peerInd);
   if (topic === 'longrun' && gdpView !== 'level') p.set('gv', gdpView);
-  if ((topic === 'money' || all) && moneyPrice === 'real') p.set('mp', 'real');
-  const charts = all ? Object.values(TOPIC_CHARTS).flat() : (TOPIC_CHARTS[topic] || []);
+  if (topic === 'money' && moneyPrice === 'real') p.set('mp', 'real');
+  const charts = TOPIC_CHARTS[topic] || [];
   charts.forEach(c => { if (!isDefault(c)) p.set('c_' + c, [...SEL[c]].join('.')); });
   const hv = '#' + p.toString(); _lastNavHash = hv;
   try { if (push && history.pushState) history.pushState(null, '', hv);
@@ -1138,6 +1174,8 @@ function initTopics() {
   d3.selectAll('#bopDepthSeg button').on('click', function () { openToDepth(+this.dataset.depth); });
   d3.selectAll('#gdpLongSeg button').on('click', function () { setGdpView(this.dataset.gv); });
   d3.selectAll('#mPrice button').on('click', function () { setMoneyPrice(this.dataset.mp); });
+  d3.selectAll('#cpPrice button').on('click', function () { setCropPrice(this.dataset.cp); });
+  if (window.DDDeflate) d3.select('#cpPrice button[data-cp="real"]').text(DDDeflate.label);
   if (window.DDDeflate) d3.select('#mPrice button[data-mp="real"]').text(DDDeflate.label);
   d3.select('#fySelect').on('change', function () { setFy(this.value); });
   d3.select(window).on('keydown.bop', e => { if (e.key === 'Escape' && bopOpen.size) { bopOpen.clear(); drawBop(); writeHash(true); } });
@@ -1172,12 +1210,31 @@ function buildFoot() {
     '<code>sbp_observations</code>) and can be queried from the <a href="query.html">SQL console</a>.');
 }
 
+/* ---------------- charts: land and resources ---------------- */
+function drawMining() {
+  chips('mining', drawMining);
+  multiLine('mining', '#chMining', { annual: true, zero: false, refLine: 100, refText: '2000-01 = 100',
+    fmt: v => num(v, 0), dLbl: d => fyOf(d.slice(0, 4) - 1 + '-07-01'),
+    m: { t: 16, r: 120, b: 28, l: 48 } });
+}
+function drawCropPrices() {
+  chips('cropprice', drawCropPrices);
+  multiLine('cropprice', '#chCropprice', { fmt: v => 'Rs ' + num(v, 0),
+    yFmt: d => d3.format('~s')(d), m: { t: 16, r: 120, b: 28, l: 48 } });
+}
+function drawEmissions() {
+  chips('emissions', drawEmissions);
+  multiLine('emissions', '#chEmissions', { annual: true, fmt: v => num(v, 1) + ' Mt',
+    dLbl: d => fyOf(d.slice(0, 4) - 1 + '-07-01'), m: { t: 16, r: 150, b: 28, l: 44 } });
+}
+
 /* ---------------- boot ---------------- */
 function start() {
   if (!window.DD_MONEY || !window.DD_HISTORY) { return setTimeout(start, 30); }
   D = window.DD_MONEY; H = window.DD_HISTORY;
-  S = Object.assign({}, D.series, H.series);
-  M = D.meta = Object.assign({}, D.meta, H.meta);
+  const R = window.DD_RESOURCES || { series: {}, meta: {} };
+  S = Object.assign({}, D.series, H.series, R.series);
+  M = D.meta = Object.assign({}, D.meta, H.meta, R.meta);
   buildFySelect(); buildFoot(); initCsv(); wireEmig();
   initTopics();          // last: it triggers the first render via applyStateFromHash()
   let rt;
