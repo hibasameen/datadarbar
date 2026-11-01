@@ -72,6 +72,8 @@ KIND = {
     'health_facilities_pk': 'places',
     'healthsites_osm_2019': 'places',
     'crops_district_fy': 'places',
+    'agri_census_2024_district': 'places',
+    'agri_census_2024_long': 'places',
     'diaspora_emigrants_district': 'places',
 
     'national_accounts': 'economy',
@@ -258,6 +260,8 @@ LICENCE = {
     'climate_events': (['ec-reuse'], ''),
     'climate_impacts': (['gov-unlicensed'], 'NDMA situation reports.'),
     'crops_district_fy': (['pbs-open'], ''),
+    'agri_census_2024_district': (['pbs-open'], 'PBS\u2019s weighted estimates; the shares and per-farm rates are Data Darbar\u2019s arithmetic on them.'),
+    'agri_census_2024_long': (['pbs-open'], ''),
     'diaspora_destinations': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_emigrants_by_skill': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_emigrants_district': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
@@ -376,6 +380,18 @@ PROVENANCE = {
         'sbp_handbook_series', 'sbp_observations', 'sbp_series_catalog',
         'sindh_crime_annual', 'sindh_fir_daily', 'trade_by_group', 'trade_hs8',
         'trade_monthly_totals', 'wdi_comparators']},
+    'agri_census_2024_long': ('published', 'Every cell of PBS\u2019s 357 published tables, as published, '
+                              'including the fractional weighted estimates.', []),
+    'agri_census_2024_district': ('mixed', 'Counts are PBS\u2019s weighted estimates; every share and rate '
+                                  'is computed from them. Washuk\u2019s farm count and area come from the '
+                                  'hectare table, which PBS published, where the acre table omits it.',
+                                  ['avg_farm_size_ac', 'share_farms_under_2_5ac', 'share_area_25ac_plus',
+                                   'share_farms_tenant', 'share_farms_owner', 'share_farms_female',
+                                   'share_farms_fragmented', 'share_cultivated', 'share_irrigated',
+                                   'share_irrig_tubewell_only', 'share_wheat_of_cropped',
+                                   'cattle_buffalo_per_farm', 'tractors_per_1000_farms',
+                                   'cultivated_ac_per_tractor', 'share_tubewells_solar',
+                                   'farms_implausible', 'farms_filled_from_hectare_table']),
     'crops_district_fy': ('published', 'Figures as PBS published them, less 402 rows that '
                           'are not figures: Sujawal’s rice, which repeats the Sindh total, '
                           'and Balochistan’s Kinno and 2013-14 sugar beet, which double from '

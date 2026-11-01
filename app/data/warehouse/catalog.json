@@ -37,6 +37,486 @@
  ],
  "tables": [
   {
+   "name": "agri_census_2024_district",
+   "file": "agri_census_2024_district.parquet",
+   "bytes": 113057,
+   "rows": 172,
+   "description": "Farms, land, tenure, irrigation, crops, livestock and machinery by district from the Agricultural Census 2024, with derived shares and rates.",
+   "notes": "The 7th Agricultural Census (fieldwork September 2024 to February 2025) is a weighted sample, not a count: PBS drew 11,083 mouzas and urban blocks, listed every household in them, took holdings of 100 acres or 50 cattle at 100 per cent and sub-sampled the rest, and raised the result to the frame. Every count is therefore a fraction, the design aims at a 15 per cent margin of error at district level, and no sampling errors are published. Treat shares and per-farm rates as the usable figures and the counts as approximate. Where the farm count is below 5,000 (farms_implausible), the weighting has plainly gone wrong — Umerkot at 2,098 farms on 210,000 acres, Kech, Nushki, Awaran, Duki, Chagai, Hyderabad and the Karachi districts — and per-farm rates should not be used; Khyber, Harnai and Mohmand, with more farms than one and a half times their rural households in the 2023 census (Khyber 756,000 farms averaging 0.4 acres), are the same problem in the other direction and carry the same flag. rural_hh is the Census 2023 denominator used for the test. The geography is PBS’s 2023 district frame, joining the geography layer on district_code; Cholistan Area and Malakand Protected Area are published as units of their own and carry no code; Gilgit-Baltistan and Azad Jammu & Kashmir were enumerated but are in none of the published tables, so Pakistan is the four provinces plus Islamabad. Crop areas here are what farmers reported and run well above the Crop Reporting Service series in crops_district_fy (wheat 14.4 against 9.1 million hectares nationally); the two are different instruments and should not be read against each other. PBS omits rows that would be zero, so a missing figure is usually a zero; Washuk’s row is missing from the acre table alone and is filled from the hectare table. Areas are in acres as PBS gives them.",
+   "unit": "farms, acres, head, machines; shares as fractions, intensity in per cent",
+   "source": "PBS Agricultural Census 2024, Excel tables for the national and four provincial volumes, pull of 2026-11-01",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, joining to geography_keys; empty for Cholistan Area and Malakand Protected Area"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the administrative unit as PBS names it"
+    },
+    {
+     "name": "unit_level",
+     "type": "VARCHAR",
+     "description": "country, province, division, district or other"
+    },
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": "which PBS workbook the row comes from"
+    },
+    {
+     "name": "farms_implausible",
+     "type": "BOOLEAN",
+     "description": "farms below 5,000 or above 1.5 times rural households: per-farm rates unreliable",
+     "derived": true
+    },
+    {
+     "name": "farms_filled_from_hectare_table",
+     "type": "BOOLEAN",
+     "description": "Washuk: farms and area taken from Table 1.2",
+     "derived": true
+    },
+    {
+     "name": "farms",
+     "type": "DOUBLE",
+     "description": "number of farms, weighted estimate"
+    },
+    {
+     "name": "farm_area_ac",
+     "type": "DOUBLE",
+     "description": "farm area, acres"
+    },
+    {
+     "name": "cultivated_area_ac",
+     "type": "DOUBLE",
+     "description": "cultivated area, acres"
+    },
+    {
+     "name": "farms_under1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_1_to_2_5",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farm_area_25_plus_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_owner",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_owner_cum_tenant",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_tenant",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farm_area_tenant_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_female",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "farms_fragmented",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "irrigated_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "irrig_canal_only_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "irrig_tubewell_only_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cropping_intensity_pct",
+     "type": "DOUBLE",
+     "description": "average cropping intensity, all farms, per cent"
+    },
+    {
+     "name": "cropped_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "kharif_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "rabi_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "orchard_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wheat_area_ac",
+     "type": "DOUBLE",
+     "description": "area under wheat as reported by farms, acres"
+    },
+    {
+     "name": "wheat_farms",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "paddy_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cotton_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "maize_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "sugarcane_area_ac",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tunnel_farms",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cattle",
+     "type": "DOUBLE",
+     "description": "head"
+    },
+    {
+     "name": "buffaloes",
+     "type": "DOUBLE",
+     "description": "head"
+    },
+    {
+     "name": "sheep",
+     "type": "DOUBLE",
+     "description": "head"
+    },
+    {
+     "name": "goats",
+     "type": "DOUBLE",
+     "description": "head"
+    },
+    {
+     "name": "camels",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "asses",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tractors",
+     "type": "DOUBLE",
+     "description": "tractors, all ownership"
+    },
+    {
+     "name": "tubewells_liftpumps",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tubewells",
+     "type": "DOUBLE",
+     "description": "tubewells"
+    },
+    {
+     "name": "tubewells_solar",
+     "type": "DOUBLE",
+     "description": "solar-powered tubewells"
+    },
+    {
+     "name": "tubewells_electric",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "tubewells_diesel",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "avg_farm_size_ac",
+     "type": "DOUBLE",
+     "description": "farm area divided by farms",
+     "derived": true
+    },
+    {
+     "name": "share_farms_under_2_5ac",
+     "type": "DOUBLE",
+     "description": "farms under 2.5 acres as a share of farms",
+     "derived": true
+    },
+    {
+     "name": "share_area_25ac_plus",
+     "type": "DOUBLE",
+     "description": "farm area in holdings of 25 acres and above, share",
+     "derived": true
+    },
+    {
+     "name": "share_farms_tenant",
+     "type": "DOUBLE",
+     "description": "tenant farms, share",
+     "derived": true
+    },
+    {
+     "name": "share_farms_owner",
+     "type": "DOUBLE",
+     "description": "owner farms, share",
+     "derived": true
+    },
+    {
+     "name": "share_farms_female",
+     "type": "DOUBLE",
+     "description": "farms operated by women, share",
+     "derived": true
+    },
+    {
+     "name": "share_farms_fragmented",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "share_cultivated",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "share_irrigated",
+     "type": "DOUBLE",
+     "description": "irrigated share of cultivated area",
+     "derived": true
+    },
+    {
+     "name": "share_irrig_tubewell_only",
+     "type": "DOUBLE",
+     "description": "tubewell-only share of irrigated area",
+     "derived": true
+    },
+    {
+     "name": "share_wheat_of_cropped",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "cattle_buffalo_per_farm",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "tractors_per_1000_farms",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "cultivated_ac_per_tractor",
+     "type": "DOUBLE",
+     "description": "",
+     "derived": true
+    },
+    {
+     "name": "share_tubewells_solar",
+     "type": "DOUBLE",
+     "description": "share of tubewells solar-powered",
+     "derived": true
+    },
+    {
+     "name": "rural_hh",
+     "type": "DOUBLE",
+     "description": "rural households, Census 2023 (table 20), the denominator for the test"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PBS’s weighted estimates; the shares and per-farm rates are Data Darbar’s arithmetic on them.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Counts are PBS’s weighted estimates; every share and rate is computed from them. Washuk’s farm count and area come from the hectare table, which PBS published, where the acre table omits it.",
+    "derived_columns": [
+     "avg_farm_size_ac",
+     "share_farms_under_2_5ac",
+     "share_area_25ac_plus",
+     "share_farms_tenant",
+     "share_farms_owner",
+     "share_farms_female",
+     "share_farms_fragmented",
+     "share_cultivated",
+     "share_irrigated",
+     "share_irrig_tubewell_only",
+     "share_wheat_of_cropped",
+     "cattle_buffalo_per_farm",
+     "tractors_per_1000_farms",
+     "cultivated_ac_per_tractor",
+     "share_tubewells_solar",
+     "farms_implausible",
+     "farms_filled_from_hectare_table"
+    ]
+   },
+   "keys": [
+    "district_code"
+   ]
+  },
+  {
+   "name": "agri_census_2024_long",
+   "file": "agri_census_2024_long.parquet",
+   "bytes": 4235641,
+   "rows": 992352,
+   "description": "Every cell of the Agricultural Census 2024 tables: 71 tables for each province and the country, by administrative unit, size class and column.",
+   "notes": "One row per figure in PBS’s 357 published Excel tables (Chapters 1–8: farms and tenure, fragmentation, land use, irrigation, intensities, crops, livestock, machinery). Block tables carry the farm-size, herd-size or tenure class in category and any nested sub-heading in group; flat tables (7.1 livestock, 8.x machinery) have one row per unit and no category. column is PBS’s own header, levels joined with a bar, spellings kept (TANENT, HOPUSEHOLD). The same caveats as agri_census_2024_district: weighted sample estimates, 15 per cent design margin at district level, zero rows omitted, a few districts with implausible farm counts. The national file repeats the provincial totals, so sum within one source_file. table_id is text (T6.10 is not T6.1).",
+   "unit": "as each table states: farms, acres or hectares, head, machines, per cent",
+   "source": "PBS Agricultural Census 2024, Excel tables, pull of 2026-11-01",
+   "columns": [
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": "national, punjab, sindh, kpk or balochistan workbook"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "T<chapter>.<table>, text"
+    },
+    {
+     "name": "chapter",
+     "type": "BIGINT",
+     "description": "1–8"
+    },
+    {
+     "name": "table_no",
+     "type": "BIGINT",
+     "description": "table within the chapter"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "PBS’s title"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "unit notes from the sheet head"
+    },
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code where the unit is a district or Islamabad"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "administrative unit as named"
+    },
+    {
+     "name": "unit_level",
+     "type": "VARCHAR",
+     "description": "country, province, division, district or other"
+    },
+    {
+     "name": "group",
+     "type": "VARCHAR",
+     "description": "nested sub-heading inside a block, if any"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "row label: size class, herd size, tenure, depth band; empty in flat tables"
+    },
+    {
+     "name": "col_index",
+     "type": "INTEGER",
+     "description": "1-based column number in the sheet"
+    },
+    {
+     "name": "column",
+     "type": "VARCHAR",
+     "description": "PBS header, levels joined with |"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure, weighted estimate"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "Every cell of PBS’s 357 published tables, as published, including the fractional weighted estimates.",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code"
+   ]
+  },
+  {
    "name": "budget_lines",
    "file": "budget_lines.parquet",
    "bytes": 118845,

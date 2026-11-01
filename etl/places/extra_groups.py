@@ -34,3 +34,8 @@ GROUPS = [
 # issue4_groups.py, which the hierarchy and the value builder also read.
 from issue4_groups import vocab as _issue4_vocab
 GROUPS += _issue4_vocab()
+
+# The Agricultural Census 2024: farm structure, and livestock and machinery.
+# Declared in build_agri_census.py, next to the expressions that make them.
+from build_agri_census import vocab as _agri_vocab
+GROUPS += _agri_vocab()

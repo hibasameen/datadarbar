@@ -113,3 +113,9 @@ GROUP_TOPIC['mouza_health'] = 'access'
 from issue4_groups import GROUPS as _ISSUE4
 for _g in _ISSUE4:
     GROUP_TOPIC[_g['group_key']] = _g.get('topic', 'satellite')
+
+# The Agricultural Census sits with the crop series: the same subject, a
+# different instrument (a weighted sample of holdings, not the Crop Reporting
+# Service's plot estimates), which the group labels say.
+GROUP_TOPIC['agriFarms'] = 'agriculture'
+GROUP_TOPIC['agriLivestock'] = 'agriculture'

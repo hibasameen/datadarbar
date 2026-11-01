@@ -2494,6 +2494,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
             unit="thousand hectares, thousand tonnes, tonnes per hectare",
         )
 
+    register_agri_census(register)
+
     f = OUT / "diaspora_emigrants_district.parquet"
     if f.exists():
         register(
@@ -2622,6 +2624,130 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
     else:
         print("census panels…  skipped (no panel release found under --src)")
 
+    samples = finalise_catalog(tables, con)
+    (OUT / "catalog_samples.json").write_text(
+        json.dumps(samples, ensure_ascii=False, separators=(",", ":")))
+
+    # ── catalog ──────────────────────────────────────────────────────────────
+    catalog = {
+        "name": "Data Darbar",
+        "version": 1,
+        "generated": _today(),
+        "license": "Data Darbar\u2019s derived data CC BY 4.0 unless a table states other "
+                   "terms (each table\u2019s licence field) · code MIT",
+        "kinds": [{"key": k, "label": l, "about": a} for k, l, a in KINDS],
+        "tables": sorted(tables, key=lambda t: t["name"]),
+        "examples": EXAMPLES,
+    }
+    # Written as the committed file is: characters as themselves, not escaped,
+    # so a rebuild's diff shows what changed rather than every dash and arrow.
+    (OUT / "catalog.json").write_text(json.dumps(catalog, indent=1, ensure_ascii=False))
+    total = sum(t["bytes"] for t in tables)
+    eager = sum(t["bytes"] for t in tables if t["bytes"] < 2_000_000)
+    print(f"\ncatalog.json written · {len(tables)} tables · {total/1e6:.1f} MB total "
+          f"({eager/1e6:.1f} MB loaded eagerly)")
+
+
+
+def register_agri_census(register):
+    """The Agricultural Census 2024 tables, built by etl/places/build_agri_census.py.
+    Kept apart so catalog_merge.py can add them without the full rebuild."""
+    f = OUT / "agri_census_2024_district.parquet"
+    if f.exists():
+        register(
+            "agri_census_2024_district",
+            "Farms, land, tenure, irrigation, crops, livestock and machinery by "
+            "district from the Agricultural Census 2024, with derived shares and rates.",
+            "The 7th Agricultural Census (fieldwork September 2024 to February 2025) "
+            "is a weighted sample, not a count: PBS drew 11,083 mouzas and urban blocks, "
+            "listed every household in them, took holdings of 100 acres or 50 cattle at "
+            "100 per cent and sub-sampled the rest, and raised the result to the frame. "
+            "Every count is therefore a fraction, the design aims at a 15 per cent "
+            "margin of error at district level, and no sampling errors are published. "
+            "Treat shares and per-farm rates as the usable figures and the counts as "
+            "approximate. Where the farm count is below 5,000 (farms_implausible), the "
+            "weighting has plainly gone wrong \u2014 Umerkot at 2,098 farms on 210,000 acres, "
+            "Kech, Nushki, Awaran, Duki, Chagai, Hyderabad and the Karachi districts \u2014 "
+            "and per-farm rates should not be used; Khyber, Harnai and Mohmand, with more "
+            "farms than one and a half times their rural households in the 2023 census "
+            "(Khyber 756,000 farms averaging 0.4 acres), are the same problem in the "
+            "other direction and carry the same flag. rural_hh is the Census 2023 "
+            "denominator used for the test. The geography is "
+            "PBS\u2019s 2023 district frame, joining the geography layer on district_code; "
+            "Cholistan Area and Malakand Protected Area are published as units of their "
+            "own and carry no code; Gilgit-Baltistan and Azad Jammu & Kashmir were "
+            "enumerated but are in none of the published tables, so Pakistan is the "
+            "four provinces plus Islamabad. Crop areas here are what farmers reported "
+            "and run well above the Crop Reporting Service series in crops_district_fy "
+            "(wheat 14.4 against 9.1 million hectares nationally); the two are different "
+            "instruments and should not be read against each other. PBS omits rows that "
+            "would be zero, so a missing figure is usually a zero; Washuk\u2019s row is "
+            "missing from the acre table alone and is filled from the hectare table. "
+            "Areas are in acres as PBS gives them.",
+            {"district_code": "PBS 2023 district code, joining to geography_keys; empty for "
+                              "Cholistan Area and Malakand Protected Area",
+             "unit": "the administrative unit as PBS names it",
+             "unit_level": "country, province, division, district or other",
+             "source_file": "which PBS workbook the row comes from",
+             "farms_implausible": "farms below 5,000 or above 1.5 times rural households: per-farm rates unreliable",
+             "rural_hh": "rural households, Census 2023 (table 20), the denominator for the test",
+             "farms_filled_from_hectare_table": "Washuk: farms and area taken from Table 1.2",
+             "farms": "number of farms, weighted estimate",
+             "farm_area_ac": "farm area, acres", "cultivated_area_ac": "cultivated area, acres",
+             "avg_farm_size_ac": "farm area divided by farms",
+             "share_farms_under_2_5ac": "farms under 2.5 acres as a share of farms",
+             "share_area_25ac_plus": "farm area in holdings of 25 acres and above, share",
+             "share_farms_tenant": "tenant farms, share", "share_farms_owner": "owner farms, share",
+             "share_farms_female": "farms operated by women, share",
+             "share_irrigated": "irrigated share of cultivated area",
+             "share_irrig_tubewell_only": "tubewell-only share of irrigated area",
+             "cropping_intensity_pct": "average cropping intensity, all farms, per cent",
+             "wheat_area_ac": "area under wheat as reported by farms, acres",
+             "cattle": "head", "buffaloes": "head", "sheep": "head", "goats": "head",
+             "tractors": "tractors, all ownership", "tubewells": "tubewells",
+             "tubewells_solar": "solar-powered tubewells", "share_tubewells_solar": "share of tubewells solar-powered"},
+            "PBS Agricultural Census 2024, Excel tables for the national and four provincial "
+            "volumes, pull of 2026-11-01",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="farms, acres, head, machines; shares as fractions, intensity in per cent",
+        )
+
+    f = OUT / "agri_census_2024_long.parquet"
+    if f.exists():
+        register(
+            "agri_census_2024_long",
+            "Every cell of the Agricultural Census 2024 tables: 71 tables for each province "
+            "and the country, by administrative unit, size class and column.",
+            "One row per figure in PBS\u2019s 357 published Excel tables (Chapters 1\u20138: "
+            "farms and tenure, fragmentation, land use, irrigation, intensities, crops, "
+            "livestock, machinery). Block tables carry the farm-size, herd-size or tenure "
+            "class in category and any nested sub-heading in group; flat tables (7.1 "
+            "livestock, 8.x machinery) have one row per unit and no category. column is "
+            "PBS\u2019s own header, levels joined with a bar, spellings kept (TANENT, "
+            "HOPUSEHOLD). The same caveats as agri_census_2024_district: weighted sample "
+            "estimates, 15 per cent design margin at district level, zero rows omitted, "
+            "a few districts with implausible farm counts. The national file repeats the "
+            "provincial totals, so sum within one source_file. table_id is text (T6.10 is "
+            "not T6.1).",
+            {"source_file": "national, punjab, sindh, kpk or balochistan workbook",
+             "table_id": "T<chapter>.<table>, text", "chapter": "1\u20138", "table_no": "table within the chapter",
+             "table_title": "PBS\u2019s title", "notes": "unit notes from the sheet head",
+             "district_code": "PBS 2023 district code where the unit is a district or Islamabad",
+             "unit": "administrative unit as named", "unit_level": "country, province, division, district or other",
+             "group": "nested sub-heading inside a block, if any",
+             "category": "row label: size class, herd size, tenure, depth band; empty in flat tables",
+             "col_index": "1-based column number in the sheet", "column": "PBS header, levels joined with |",
+             "value": "the figure, weighted estimate"},
+            "PBS Agricultural Census 2024, Excel tables, pull of 2026-11-01",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="as each table states: farms, acres or hectares, head, machines, per cent",
+        )
+
+
+def finalise_catalog(tables, con):
+    """Stamp shelf, licence, provenance, span, keys and sample rows onto each
+    table entry (in place) and return the samples dict. Fails on a table the
+    catalogue cannot file."""
     # ── catalogue metadata: shelf, period covered, place keys, sample rows ──
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from catalog_meta import (KIND, KINDS, TIME_COLS, KEY_COLS, LICENCE, licence_of,
@@ -2658,28 +2784,8 @@ def build(src: Path, district_only: bool = False, schools_only: bool = False,
         # Five rows, as text, so a reader sees the shape before downloading.
         rows = con.sql(f"SELECT * FROM '{path}' LIMIT 5").fetchall()
         samples[t["name"]] = [[None if v is None else str(v)[:80] for v in r] for r in rows]
-    (OUT / "catalog_samples.json").write_text(
-        json.dumps(samples, ensure_ascii=False, separators=(",", ":")))
 
-    # ── catalog ──────────────────────────────────────────────────────────────
-    catalog = {
-        "name": "Data Darbar",
-        "version": 1,
-        "generated": _today(),
-        "license": "Data Darbar\u2019s derived data CC BY 4.0 unless a table states other "
-                   "terms (each table\u2019s licence field) · code MIT",
-        "kinds": [{"key": k, "label": l, "about": a} for k, l, a in KINDS],
-        "tables": sorted(tables, key=lambda t: t["name"]),
-        "examples": EXAMPLES,
-    }
-    # Written as the committed file is: characters as themselves, not escaped,
-    # so a rebuild's diff shows what changed rather than every dash and arrow.
-    (OUT / "catalog.json").write_text(json.dumps(catalog, indent=1, ensure_ascii=False))
-    total = sum(t["bytes"] for t in tables)
-    eager = sum(t["bytes"] for t in tables if t["bytes"] < 2_000_000)
-    print(f"\ncatalog.json written · {len(tables)} tables · {total/1e6:.1f} MB total "
-          f"({eager/1e6:.1f} MB loaded eagerly)")
-
+    return samples
 
 EXAMPLES = [
     # Ten, deliberately: one or two per table family, each answering a question a
