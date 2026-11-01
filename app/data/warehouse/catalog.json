@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-10-24",
+ "generated": "2026-11-01",
  "license": "Data Darbar’s derived data CC BY 4.0 unless a table states other terms (each table’s licence field) · code MIT",
  "kinds": [
   {
@@ -10412,8 +10412,8 @@
   {
    "name": "sbp_observations",
    "file": "sbp_observations.parquet",
-   "bytes": 994032,
-   "rows": 306875,
+   "bytes": 1212290,
+   "rows": 350268,
    "description": "The macro time-series panel: every observation of every SBP series held here.",
    "notes": "One row per series × date. UNITS ARE PER-SERIES — join to sbp_series_catalog and read `unit` before summing anything, because this table mixes rupees, dollars, percentages and index levels in one `value` column. value IS NULL where SBP suppressed or has not published the figure and `status` says which ('Normal', 'Missing value', …) — a NULL is not a zero. Frequencies are mixed, so filter on the catalogue's `frequency` before resampling or averaging across series. DOUBLE-COUNTING TRAP (country-wise remittances, TS_GP_BOP_WR_M): the country series are hierarchical, so summing them all overstates the total by ~42% (FY2024-25: 54,384 vs the published 38,299 Mn USD). 'U.A.E.' already contains Dubai, Abu Dhabi, Sharjah and 'Other four U.A.E.'s States'; 'Other GCC Countries excluding Saudi Arabia & U.A.E.' already contains Bahrain, Kuwait, Oman and Qatar; 'ten European Countries' already contains Belgium, Denmark, France, Germany, Greece, Ireland, Italy, Netherland, Spain and Sweden — Norway and Switzerland are reported separately. The partition that reconciles exactly to the published total is: Saudi Arabia, U.A.E., U.K., U.S.A., Other GCC, ten European Countries, Norway, Switzerland, Australia, Canada, Japan, Malaysia, South Africa, South Korea, Other Countries. The same shape applies to province-wise banking (TS_GP_BAM_ADVDEP_HY), where 'all Pakistan' is the total of the regional series.",
    "unit": null,
@@ -10473,7 +10473,7 @@
    "span": {
     "column": "obs_date",
     "from": "1947-08-31",
-    "to": "2026-08-31"
+    "to": "2026-10-30"
    },
    "keys": []
   },
@@ -10555,12 +10555,28 @@
    ],
    "datasets": [
     {
+     "code": "TS_GP_BOP_XRECCG_M",
+     "name": "Export Receipts by Commodities and Groups",
+     "subject": "External Sector",
+     "series": 75,
+     "since": "2003-07",
+     "upto": "2026-09"
+    },
+    {
      "code": "TS_GP_BOP_BPM6SUM_M",
      "name": "Monthly Summary of Balance of Payments as per BPM6",
      "subject": "External Sector",
      "series": 74,
      "since": "2013-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
+    },
+    {
+     "code": "TS_GP_BOP_MRECCG_M",
+     "name": "Import Payments by Commodities and Groups",
+     "subject": "External Sector",
+     "series": 72,
+     "since": "2003-07",
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_ER_FAERPKR_M",
@@ -10568,7 +10584,7 @@
      "subject": "External Sector",
      "series": 48,
      "since": "1947-08",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_BOP_WR_M",
@@ -10576,7 +10592,7 @@
      "subject": "External Sector",
      "series": 36,
      "since": "1972-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_BOP_XMGS_M",
@@ -10584,7 +10600,7 @@
      "subject": "External Sector",
      "series": 32,
      "since": "2005-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_EXT_PAKRES_M",
@@ -10592,7 +10608,7 @@
      "subject": "External Sector",
      "series": 19,
      "since": "1948-06",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_ES_KSORDA_M",
@@ -10600,7 +10616,7 @@
      "subject": "External Sector",
      "series": 11,
      "since": "2020-09",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_ER_REERNEER_M",
@@ -10608,7 +10624,7 @@
      "subject": "External Sector",
      "series": 4,
      "since": "2001-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_ES_SWR_M",
@@ -10616,7 +10632,7 @@
      "subject": "External Sector",
      "series": 2,
      "since": "2005-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_IR_SIRPR_AH",
@@ -10624,7 +10640,7 @@
      "subject": "Interest Rates",
      "series": 3,
      "since": "1956-01",
-     "upto": "2026-04"
+     "upto": "2026-10"
     },
     {
      "code": "TS_GP_BAM_ADVDEP_HY",
@@ -10640,7 +10656,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 112,
      "since": "2007-03",
-     "upto": "2025-12"
+     "upto": "2026-06"
     },
     {
      "code": "TS_GP_BAM_WALDR_M",
@@ -10648,7 +10664,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 80,
      "since": "2004-01",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_MFS_SGADVNPL_Q",
@@ -10664,7 +10680,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 52,
      "since": "2010-06",
-     "upto": "2026-06"
+     "upto": "2026-08"
     },
     {
      "code": "TS_GP_BAM_DCS_M",
@@ -10672,7 +10688,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 50,
      "since": "2008-06",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_BAM_M2_Q",
@@ -10680,13 +10696,13 @@
      "subject": "Monetary and Financial Sector",
      "series": 47,
      "since": "2014-06",
-     "upto": "2026-06"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_BAM_PKDLP_Q",
      "name": "Pakistan Debt and Liabilities Summary",
      "subject": "Monetary and Financial Sector",
-     "series": 22,
+     "series": 24,
      "since": "2009-06",
      "upto": "2026-06"
     },
@@ -10696,7 +10712,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 18,
      "since": "2005-06",
-     "upto": "2026-08"
+     "upto": "2026-10"
     },
     {
      "code": "TS_GP_MFS_ASTQLTYB_Q",
@@ -10712,7 +10728,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 11,
      "since": "2006-06",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_MFS_EPUI_M",
@@ -10720,7 +10736,7 @@
      "subject": "Monetary and Financial Sector",
      "series": 2,
      "since": "2010-08",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_PDL_NSSOA_M",
@@ -10752,7 +10768,7 @@
      "subject": "Real Sector",
      "series": 118,
      "since": "2012-01",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_RL_BCSIND_M",
@@ -10760,7 +10776,7 @@
      "subject": "Real Sector",
      "series": 107,
      "since": "2017-10",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_PT_CPI_M",
@@ -10768,7 +10784,7 @@
      "subject": "Real Sector",
      "series": 60,
      "since": "2016-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_RLS_PSAUTO_M",
@@ -10776,7 +10792,7 @@
      "subject": "Real Sector",
      "series": 14,
      "since": "2004-07",
-     "upto": "2026-07"
+     "upto": "2026-09"
     },
     {
      "code": "TS_GP_RLS_ELECGEN_M",
@@ -10784,7 +10800,7 @@
      "subject": "Real Sector",
      "series": 13,
      "since": "2012-07",
-     "upto": "2026-07"
+     "upto": "2026-08"
     },
     {
      "code": "TS_GP_RL_LSM1516_M",
@@ -10792,7 +10808,7 @@
      "subject": "Real Sector",
      "series": 11,
      "since": "2016-07",
-     "upto": "2026-06"
+     "upto": "2026-08"
     },
     {
      "code": "TS_GP_RLS_POLSALE_M",
@@ -10800,7 +10816,7 @@
      "subject": "Real Sector",
      "series": 8,
      "since": "2013-07",
-     "upto": "2026-05"
+     "upto": "2026-08"
     },
     {
      "code": "TS_GP_RS_QGDP1516_Q",
@@ -10808,7 +10824,7 @@
      "subject": "Real Sector",
      "series": 8,
      "since": "2015-09",
-     "upto": "2026-03"
+     "upto": "2026-06"
     },
     {
      "code": "TS_GP_RLS_PAKGDP15_Y",

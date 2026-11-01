@@ -565,7 +565,7 @@ function sideTree(items, fi) {
       if (raw.length && sum > 0) {
         raw.sort((a, b) => b.val - a.val);
         node.children = raw.map((d, r) => build([...path, d.i], d.c.n, d.val, d.c.ch,
-          d3.interpolateRgb(colour, 'var(--surface)')(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
+          d3.interpolateRgb(colour, DDPalette.token('surface', '#ffffff'))(raw.length === 1 ? 0.15 : 0.15 + 0.5 * r / (raw.length - 1)), depth + 1));
         node.scale = v / sum;     // area factor applied to children
         node.children.forEach(c => c.area = c.v * node.scale);
         return node;
@@ -574,7 +574,9 @@ function sideTree(items, fi) {
     node.area = v;
     return node;
   };
-  return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, d.colour, 1)) };
+  // d3 cannot mix or darken a CSS variable, so resolve the token to its colour first
+  const resolve = c => { const m = /^var\(--([\w-]+)\)$/.exec(c || ''); return m ? DDPalette.token(m[1], '#5d6d7e') : c; };
+  return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, resolve(d.colour), 1)) };
 }
 
 /* depth toggle: open every box down to level n (0 = none, 9 = everything) */
@@ -624,7 +626,7 @@ function nestedPanel(svg, tree, x0, y0, w, h, title, total, subtitle, fi) {
     return h;
   };
   cell.append('rect').attr('width', d => d.x1 - d.x0).attr('height', d => d.y1 - d.y0).attr('rx', 3)
-    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, 'var(--surface)')(0.78) : d.data.colour)
+    .attr('fill', d => d.children ? d3.interpolateRgb(d.data.colour, DDPalette.token('surface', '#ffffff'))(0.78) : d.data.colour)
     .attr('stroke', d => d.children ? d.data.colour : 'var(--surface)').attr('stroke-width', d => d.children ? 1.2 : 1)
     .attr('class', d => d.data.has ? 'zoom' : null)
     .on('mousemove', (e, d) => showTip(tipHtml(d), e)).on('mouseleave', hideTip)
