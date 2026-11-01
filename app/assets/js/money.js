@@ -574,9 +574,7 @@ function sideTree(items, fi) {
     node.area = v;
     return node;
   };
-  // d3 cannot mix or darken a CSS variable, so resolve the token to its colour first
-  const resolve = c => { const m = /^var\(--([\w-]+)\)$/.exec(c || ''); return m ? DDPalette.token(m[1], '#5d6d7e') : c; };
-  return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, resolve(d.colour), 1)) };
+  return { children: items.map(d => build([d.k], d.n, d.v, (drillRoot(d.k) || {}).ch, DDPalette.resolve(d.colour), 1)) };
 }
 
 /* depth toggle: open every box down to level n (0 = none, 9 = everything) */

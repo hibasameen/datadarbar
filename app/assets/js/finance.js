@@ -667,7 +667,7 @@ function drawMix(){
  let svg=el.select('svg');
  if(svg.empty()||+svg.attr('data-n')!==rows.length||+svg.attr('width')!==W){el.selectAll('*').remove();svg=el.append('svg');}
  svg.attr('width',W).attr('height',H).attr('data-n',rows.length).style('display','block');
- const shade=d=>{const c=d3.hcl(MACRO[d.parent].c);const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
+ const shade=d=>{const c=d3.hcl(DDPalette.resolve(MACRO[d.parent].c));const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
  const g=svg.selectAll('g.row').data(rows,d=>d.k);
  const gE=g.enter().append('g').attr('class','row');
  gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)');

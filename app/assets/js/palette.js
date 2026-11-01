@@ -99,6 +99,14 @@
     return v || fallback;
   }
 
+  /* d3.color / d3.hcl / d3.interpolateRgb cannot read var(--x): a chart
+     that shades or mixes a token colour must resolve it first, or it gets
+     null (and throws) or black. Anything else passes through unchanged. */
+  function resolve(c, fallback) {
+    var m = /^var\(--([\w-]+)\)$/.exec(c || '');
+    return m ? token(m[1], fallback || '#5d6d7e') : c;
+  }
+
   window.DDPalette = {
     categorical: CATEGORICAL.slice(),
     /* d3.scaleOrdinal over the categorical ramp, cycling past ten rather than
@@ -121,5 +129,6 @@
     negative: '#9a2c1f',
     accent: accent,
     token: token,
+    resolve: resolve,
   };
 })();

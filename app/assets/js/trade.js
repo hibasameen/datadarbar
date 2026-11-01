@@ -151,7 +151,7 @@ function drawDrill(){
      children:s.chapters.flatMap(c=>c.products.map(p=>({hs8:p.hs8,name:p.name,bn:p.bn,section:s.section})))}));
  } else {
    const s=secs.find(x=>x.section===dPath[0]);
-   const base=d3.color(scolor(s.section));
+   const base=d3.color(DDPalette.resolve(scolor(s.section)));
    groups=s.chapters.map((c,i)=>({key:c.code,label:c.name,section:s.section,kind:'chapter',
      color:(i%2?base.brighter(0.5):base.darker(0.2)).formatHex(),
      children:c.products.map(p=>({hs8:p.hs8,name:p.name,bn:p.bn,section:s.section}))}));
@@ -174,11 +174,11 @@ function drawDrill(){
    .on('keydown',(e,d)=>{if(dPath.length===0&&(e.key==='Enter'||e.key===' ')){e.preventDefault();hideTip();dPath=[d.data.key];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%${dPath.length===0?'<br><span style=opacity:.7>click to zoom in</span>':''}`,e)).on('mouseleave',hideTip);
  grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
-   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
+   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(DDPalette.resolve(d.data.color)).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
     .text(d=>{const w=d.x1-d.x0,m=Math.floor((w-10)/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  if(overview)grp.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>36).append('text')
    .attr('x',d=>d.x0+5).attr('y',d=>d.y0+29).attr('font-size',12).attr('font-weight',700).attr('pointer-events','none')
-   .attr('fill',d=>d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
+   .attr('fill',d=>d3.hcl(DDPalette.resolve(d.data.color)).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
  // product leaves (depth 2)
  const leaf=svg.selectAll('g.lf').data(overview?[]:root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
  leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2)
@@ -187,7 +187,7 @@ function drawDrill(){
    .on('click',(e,d)=>{if(dPath.length===0){dPath=[d.data.section];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>HS ${d.data.hs8} · Sec ${d.data.section}<br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(2)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>52&&(d.y1-d.y0)>20).append('text').attr('class','cl').attr('x',4).attr('y',13)
-   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'var(--ink)':'var(--surface)';})
+   .style('fill',d=>{const c=d3.hcl(DDPalette.resolve(d.parent.data.color));return c.l>62?'var(--ink)':'var(--surface)';})
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/5.8);return d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name;});
  // breadcrumb
  const bc=d3.select('#crumb');bc.selectAll('*').remove();
