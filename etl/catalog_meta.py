@@ -204,6 +204,13 @@ LICENCES = {
         summary='District estimates computed from DHS and MICS survey microdata. Cite the '
                 'survey; the programmes’ terms govern the microdata, which is not '
                 'redistributed here. No licence is stated for estimates like these.'),
+    'fao-fam': dict(
+        name='FAO microdata terms (DIEM)', reuse='unstated',
+        url='https://microdata.fao.org/index.php/catalog/3032',
+        summary='District shares computed by Data Darbar from FAO’s Data in Emergencies '
+                'household microdata. FAO’s terms allow aggregate reporting and forbid '
+                'passing on the household records, which are not published here. No licence '
+                'is stated for estimates like these: cite FAO DIEM and the round.'),
     'gov-unlicensed': dict(
         name='No licence stated', reuse='unstated',
         url='',

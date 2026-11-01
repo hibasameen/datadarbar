@@ -2,8 +2,8 @@
  "generated_from": "places-metric-crosswalk.json",
  "crosswalk_sha256": "71304d2964dbef12ed4541a56fc15b294b52cb0794e6855eddfb466214126cbb",
  "source_snapshot_sha256": "6b884dce8d87178b94563bd8bd49d1a5e67591442a446bda473b3e9ebadf3ef7",
- "entries": 5226,
- "extra_entries": 25,
+ "entries": 5237,
+ "extra_entries": 36,
  "vocab": {
   "topic": [
    "Population & households",
@@ -73,7 +73,9 @@
    "Air quality",
    "Land cover & forests",
    "Fires",
-   "Floods & water"
+   "Floods & water",
+   "Emissions",
+   "Shocks & livelihoods"
   ],
   "family": [
    "Population growth",
@@ -161,7 +163,9 @@
    "Tree-cover loss",
    "Active-fire detections",
    "2022 floods",
-   "Water stress"
+   "Water stress",
+   "Greenhouse gas emissions",
+   "DIEM household surveys"
   ],
   "metric": [
    "Growth rate (%)",
@@ -194,7 +198,11 @@
    "Share of area (%)",
    "Area (hectares)",
    "Detection count",
-   "Week count"
+   "Week count",
+   "Emissions (kt CO2e)",
+   "Emissions per km² (t CO2e)",
+   "Share of emissions (%)",
+   "Share of households (%)"
   ],
   "controls": [
    "Start year; end year; source",
@@ -57781,6 +57789,127 @@
    85,
    27,
    75,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001femissions\u001fghg_kt_co2e": [
+   10,
+   55,
+   86,
+   31,
+   74,
+   0,
+   1,
+   0,
+   0
+  ],
+  "district\u001femissions\u001fghg_t_per_km2": [
+   10,
+   55,
+   86,
+   32,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001femissions\u001fagriculture_pct": [
+   10,
+   55,
+   86,
+   33,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemShocks\u001fshock_any_pct": [
+   8,
+   56,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemShocks\u001fshock_flood_pct": [
+   8,
+   56,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemShocks\u001fshock_food_prices_pct": [
+   8,
+   56,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemShocks\u001fincome_lower_pct": [
+   8,
+   56,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemFood\u001fskipped_meal_pct": [
+   8,
+   19,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemFood\u001fwhole_day_no_food_pct": [
+   8,
+   19,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemFood\u001fpoor_food_consumption_pct": [
+   8,
+   19,
+   87,
+   34,
+   74,
+   0,
+   0,
+   0,
+   0
+  ],
+  "district\u001fdiemFood\u001fcrisis_coping_pct": [
+   8,
+   19,
+   87,
+   34,
+   74,
    0,
    0,
    0,

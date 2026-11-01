@@ -112,4 +112,4 @@ GROUP_TOPIC['mouza_health'] = 'access'
 # the same method family and the same caveats about gridded data.
 from issue4_groups import GROUPS as _ISSUE4
 for _g in _ISSUE4:
-    GROUP_TOPIC[_g['group_key']] = 'satellite'
+    GROUP_TOPIC[_g['group_key']] = _g.get('topic', 'satellite')

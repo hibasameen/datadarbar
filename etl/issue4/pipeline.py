@@ -52,7 +52,8 @@ def main():
     ke = ', '.join(f"'{k}'" for k in sorted(KE))
 
     for t in TABLES:
-        f = a.adaad / t['src']
+        # derive.py's tables are built from Adaad's sources into derived/
+        f = (a.out / 'derived' if t.get('derived') else a.adaad) / t['src']
         if not f.exists():
             raise SystemExit(f'{t["name"]}: missing {f}')
         con.execute(f"""CREATE OR REPLACE VIEW raw AS SELECT * FROM read_csv('{f.as_posix()}',
@@ -80,7 +81,8 @@ def main():
             assert not lost, f'{t["name"]}: COD districts with no PBS district: {lost}'
             n_codes = con.sql('SELECT count(DISTINCT district_code) FROM body').fetchone()[0]
             want = t.get('codes', 156)
-            assert n_codes == want, f'{t["name"]}: reaches {n_codes} PBS districts, not {want}'
+            # codes=None: a sample of districts, so no fixed count to reach
+            assert want is None or n_codes == want, f'{t["name"]}: reaches {n_codes} PBS districts, not {want}'
 
         for c, cap in CEILING.items():
             if c in cols:

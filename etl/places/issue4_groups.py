@@ -1,4 +1,5 @@
-"""The Issue 4 measures on the Places map: climate, heat, air, land, fire, water.
+"""The Issue 4 measures on the Places map: climate, heat, air, land, fire, water,
+emissions, and FAO's DIEM household surveys.
 
 One list, read by four things so none can drift from the others:
 extra_groups.py (the picker's vocabulary), topics.py (which topic files them),
@@ -18,12 +19,19 @@ One group per long series, so no group file outgrows the largest the map
 already loads (about 15,000 values): 76 years of one temperature measure over
 156 districts is 11,856.
 
+  topic, htopic  the picker topic and hierarchy heading, where not Satellite &
+        environment / Environment (DIEM files with food security)
+  survey  a household survey: its province readout is averaged by population,
+        not plainly
   form  the metric form build_hierarchy classifies (SUM_OK / POP_OK)
   expr  the value, as SQL over the table; where filters it; year gives the
         year column (NULL for a single snapshot)
 """
 
 DEFAULT_REVIEW = 'Retain source definition; validate dimensions during implementation'
+DIEM_DS = 'FAO Data in Emergencies (DIEM) household surveys, rounds 2–6; district shares by Data Darbar'
+DIEM_NOTE = ("concat(households, ' households surveyed in ', round_label, "
+             "CASE WHEN note IS NOT NULL THEN '. ' || note END)")
 CLIMATE_DS = 'ERA5-Land (Copernicus C3S) and CHIRPS (UCSB), district means by Adaad'
 
 GROUPS = [
@@ -134,6 +142,46 @@ GROUPS = [
                           dp=2, form='Published rate / ratio', agg='mean', expr='ws_baseline_capped_mean'),
                      dict(ind='ws_extreme_pct', label='District in Aqueduct’s “extremely high” stress class (%)', dp=1,
                           form='Share of area (%)', agg='mean', expr='100 * ws_baseline_share_extremely_high')]),
+    # ── emissions ───────────────────────────────────────────────────────────
+    dict(group_key='emissions', group_label='Greenhouse gas emissions — PakEmis FY2015-16 to FY2024-25',
+         dataset='PakEmis (Pakistan Air Quality Initiative) release 1.0.0rc68, districts by Data Darbar',
+         sub='Emissions', family='Greenhouse gas emissions',
+         table='emissions_district_year', year='fy', note_expr='note',
+         indicators=[dict(ind='ghg_kt_co2e', label='Greenhouse gas emissions released here (kt CO2e)', dp=0,
+                          form='Emissions (kt CO2e)', agg='sum', expr='ghg_kt_co2e'),
+                     dict(ind='ghg_t_per_km2', label='Greenhouse gas emissions per km² (t CO2e)', dp=0,
+                          form='Emissions per km² (t CO2e)', agg='mean', expr='ghg_t_per_km2'),
+                     dict(ind='agriculture_pct', label='Share of emissions from agriculture (%)', dp=1,
+                          form='Share of emissions (%)', agg='mean', expr='agriculture_pct')]),
+    # ── FAO DIEM household surveys ──────────────────────────────────────────
+    # Household rates in the districts FAO surveyed, so filed with food security
+    # rather than the environment, and averaged by population like other surveys.
+    dict(group_key='diemShocks', group_label='Shocks and income — FAO DIEM surveys 2021–2024',
+         dataset=DIEM_DS, sub='Shocks & livelihoods', family='DIEM household surveys',
+         topic='welfare', htopic='Poverty & living standards', survey=True,
+         table='diem_district_round', year='round_label', note_expr=DIEM_NOTE,
+         indicators=[dict(ind='shock_any_pct', label='Households hit by a shock of any kind (%)', dp=0,
+                          form='Share of households (%)', agg='mean', expr='shock_any_pct'),
+                     dict(ind='shock_flood_pct', label='Households hit by a flood (%)', dp=0,
+                          form='Share of households (%)', agg='mean', expr='shock_flood_pct'),
+                     dict(ind='shock_food_prices_pct', label='Households hit by higher food prices (%)', dp=0,
+                          form='Share of households (%)', agg='mean', expr='shock_food_prices_pct'),
+                     dict(ind='income_lower_pct', label='Households whose main income was lower than usual (%)',
+                          dp=0, form='Share of households (%)', agg='mean', expr='income_lower_pct')]),
+    dict(group_key='diemFood', group_label='Hunger and coping — FAO DIEM surveys 2021–2024',
+         dataset=DIEM_DS, sub='Food security', family='DIEM household surveys',
+         topic='welfare', htopic='Poverty & living standards', survey=True,
+         table='diem_district_round', year='round_label', note_expr=DIEM_NOTE,
+         indicators=[dict(ind='skipped_meal_pct', label='Households where someone skipped a meal, last 30 days (%)',
+                          dp=0, form='Share of households (%)', agg='mean', expr='skipped_meal_pct'),
+                     dict(ind='whole_day_no_food_pct',
+                          label='Households where someone went a whole day without eating, last 30 days (%)',
+                          dp=0, form='Share of households (%)', agg='mean', expr='whole_day_no_food_pct'),
+                     dict(ind='poor_food_consumption_pct', label='Households with poor food consumption (%)',
+                          dp=0, form='Share of households (%)', agg='mean', expr='poor_food_consumption_pct'),
+                     dict(ind='crisis_coping_pct',
+                          label='Households using crisis or emergency coping strategies (%)', dp=0,
+                          form='Share of households (%)', agg='mean', expr='crisis_coping_pct')]),
 ]
 
 # New metric forms: may each be added across districts, and may it be read per
@@ -143,14 +191,16 @@ GROUPS = [
 SUM_OK = {'Temperature (°C)': False, 'Temperature difference (°C)': False,
           'Day count': False, 'Week count': False, 'Rainfall (mm)': False,
           'Concentration (µg/m³)': False, 'Share of area (%)': False,
-          'Area (hectares)': True, 'Detection count': True}
+          'Area (hectares)': True, 'Detection count': True,
+          'Emissions (kt CO2e)': True, 'Emissions per km² (t CO2e)': False,
+          'Share of emissions (%)': False, 'Share of households (%)': False}
 
 # Groups whose province and national readout is a plain average of districts
 # rather than a population-weighted one: a temperature or a share of land is
 # about the ground, not the people on it. PM2.5 is already weighted by where
 # people live, so it is averaged by population like the survey rates.
 PLAIN_AVERAGE = [g['group_key'] for g in GROUPS
-                 if g['group_key'] != 'pm25'
+                 if g['group_key'] != 'pm25' and not g.get('survey')
                  and not all(SUM_OK.get(i['form'], False) for i in g['indicators'])]
 
 FEATURED = ['climateTmean|tmean_c', 'heatWarmNights|nights_tmin_ge25',
@@ -160,8 +210,9 @@ FEATURED = ['climateTmean|tmean_c', 'heatWarmNights|nights_tmin_ge25',
 
 def vocab():
     """The groups as extra_groups.GROUPS declares them."""
-    return [dict(group_key=g['group_key'], topic='satellite',
-                 topic_label='Satellite & environment', group_label=g['group_label'],
+    from topics import TOPICS
+    return [dict(group_key=g['group_key'], topic=g.get('topic', 'satellite'),
+                 topic_label=TOPICS[g.get('topic', 'satellite')], group_label=g['group_label'],
                  dataset=g['dataset'], dp={i['ind']: i['dp'] for i in g['indicators']},
                  indicators={i['ind']: i['label'] for i in g['indicators']})
             for g in GROUPS]
@@ -175,7 +226,7 @@ def mapping(countable):
             o = dict(level='district', group_key=g['group_key'], indicator=i['ind'],
                      label=i['label'], measure=i['label'], metric='', dp=i['dp'], source='place')
             out.append(dict(
-                proposed_topic='Environment', proposed_subtopic=g['sub'],
+                proposed_topic=g.get('htopic', 'Environment'), proposed_subtopic=g['sub'],
                 indicator_family=g['family'], metric_form=i['form'],
                 suggested_controls='Year; district' if g['year'] else 'District',
                 definition_review=DEFAULT_REVIEW,

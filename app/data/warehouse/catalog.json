@@ -2784,6 +2784,168 @@
    "keys": []
   },
   {
+   "name": "diem_district_round",
+   "file": "diem_district_round.parquet",
+   "bytes": 12942,
+   "rows": 167,
+   "description": "Shocks, income, hunger, diet and coping among rural households in the districts FAO surveyed, five rounds from 2021 to 2024: weighted shares by district and round.",
+   "notes": "Selected rural districts of Balochistan, Khyber Pakhtunkhwa and Sindh, not a national sample, and a different set of districts each round: compare a district with itself only where it was surveyed in both rounds. Rounds 2–3 used FAO’s first questionnaire and rounds 4–6 its second. Round 3 was in the field in March–April 2022, before the floods; round 4 in 2023, after them. Hunger questions ask about the last 30 days. Shares count only households that answered (not don’t-know, refused or not asked) and are withheld where fewer than 30 did. Usta Muhammad’s round 6 sample sits under Jaffarabad, which the 2023 census counts it within.",
+   "unit": "% of households",
+   "source": "FAO, Data in Emergencies (DIEM) Pakistan household surveys, rounds 2–6 (FAM microdata); district shares by Data Darbar",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "survey_round",
+     "type": "BIGINT",
+     "description": "DIEM round"
+    },
+    {
+     "name": "survey_year",
+     "type": "BIGINT",
+     "description": "year of fieldwork"
+    },
+    {
+     "name": "round_label",
+     "type": "VARCHAR",
+     "description": "year and round, as the map labels it"
+    },
+    {
+     "name": "households",
+     "type": "BIGINT",
+     "description": "households surveyed in the district that round"
+    },
+    {
+     "name": "n_shock_any_pct",
+     "type": "BIGINT",
+     "description": "households answering, for shock_any_pct"
+    },
+    {
+     "name": "shock_any_pct",
+     "type": "DOUBLE",
+     "description": "reported a shock of any kind in the recall period, %"
+    },
+    {
+     "name": "n_shock_flood_pct",
+     "type": "BIGINT",
+     "description": "households answering, for shock_flood_pct"
+    },
+    {
+     "name": "shock_flood_pct",
+     "type": "DOUBLE",
+     "description": "reported a flood, %"
+    },
+    {
+     "name": "n_shock_food_prices_pct",
+     "type": "BIGINT",
+     "description": "households answering, for shock_food_prices_pct"
+    },
+    {
+     "name": "shock_food_prices_pct",
+     "type": "DOUBLE",
+     "description": "reported higher food prices as a shock, %"
+    },
+    {
+     "name": "n_income_lower_pct",
+     "type": "BIGINT",
+     "description": "households answering, for income_lower_pct"
+    },
+    {
+     "name": "income_lower_pct",
+     "type": "DOUBLE",
+     "description": "main income lower than usual, %"
+    },
+    {
+     "name": "n_skipped_meal_pct",
+     "type": "BIGINT",
+     "description": "households answering, for skipped_meal_pct"
+    },
+    {
+     "name": "skipped_meal_pct",
+     "type": "DOUBLE",
+     "description": "someone skipped a meal for lack of money or food, last 30 days, %"
+    },
+    {
+     "name": "n_whole_day_no_food_pct",
+     "type": "BIGINT",
+     "description": "households answering, for whole_day_no_food_pct"
+    },
+    {
+     "name": "whole_day_no_food_pct",
+     "type": "DOUBLE",
+     "description": "someone went a whole day without eating, last 30 days, %"
+    },
+    {
+     "name": "n_poor_food_consumption_pct",
+     "type": "BIGINT",
+     "description": "households answering, for poor_food_consumption_pct"
+    },
+    {
+     "name": "poor_food_consumption_pct",
+     "type": "DOUBLE",
+     "description": "poor food consumption score (WFP), %"
+    },
+    {
+     "name": "n_crisis_coping_pct",
+     "type": "BIGINT",
+     "description": "households answering, for crisis_coping_pct"
+    },
+    {
+     "name": "crisis_coping_pct",
+     "type": "DOUBLE",
+     "description": "used crisis or emergency livelihood coping strategies, %"
+    },
+    {
+     "name": "diem_district",
+     "type": "VARCHAR",
+     "description": "the district as DIEM names it"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "where the district differs from the one surveyed"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "unstated",
+    "label": "No licence stated",
+    "note": "FAO Data in Emergencies (DIEM) household surveys, rounds 2–6, FAM microdata. Aggregates only; the household records are not redistributed.",
+    "terms": [
+     {
+      "key": "fao-fam",
+      "name": "FAO microdata terms (DIEM)",
+      "url": "https://microdata.fao.org/index.php/catalog/3032",
+      "summary": "District shares computed by Data Darbar from FAO’s Data in Emergencies household microdata. FAO’s terms allow aggregate reporting and forbid passing on the household records, which are not published here. No licence is stated for estimates like these: cite FAO DIEM and the round."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "Weighted shares of households per surveyed district, computed by Data Darbar from FAO’s DIEM microdata (etl/issue4/derive.py).",
+    "derived_columns": []
+   },
+   "keys": [
+    "district_code",
+    "cod_district_key",
+    "province"
+   ]
+  },
+  {
    "name": "district_crosswalk_2017_2023",
    "file": "district_crosswalk_2017_2023.parquet",
    "bytes": 4739,
@@ -3187,6 +3349,113 @@
    "keys": [
     "district_key",
     "district",
+    "province"
+   ]
+  },
+  {
+   "name": "emissions_district_year",
+   "file": "emissions_district_year.parquet",
+   "bytes": 31650,
+   "rows": 1550,
+   "description": "Greenhouse gas emissions released in each district, FY2015-16 to FY2024-25, in CO2-equivalent (AR5): total, per km², and agriculture’s share.",
+   "notes": "A research inventory: PakEmis allocates national totals to districts with proxies (livestock, cropland, plants, population), so a district figure is an allocation, not a measurement. Physical view: where the gas is released. Transport, waste and railways are not allocated below the national level in this release, and power only partly, so the districts hold 364 of 445 Mt CO2e in FY2023-24. PakEmis draws districts on 2019 shapes; where one shape holds several of today’s districts (Karachi’s seven, Sujawal with Thatta, Azad Kashmir’s ten and eleven more), each carries the shape’s emissions per km² and agriculture’s share, and ghg_kt_co2e is blank because the total is not divided. Larkana has no shape in this release.",
+   "unit": "kt CO2e; t CO2e per km²; %",
+   "source": "PakEmis (Pakistan Air Quality Initiative), release 1.0.0rc68; districts by Data Darbar",
+   "columns": [
+    {
+     "name": "district_code",
+     "type": "VARCHAR",
+     "description": "PBS 2023 district code, from district_crosswalk_cod_2023; several rows share one where COD draws a Gilgit-Baltistan district PBS does not (sum counts across them, weight means by area)"
+    },
+    {
+     "name": "cod_district_key",
+     "type": "VARCHAR",
+     "description": "the district’s key on the 160-district COD frame, an upper-case name; not Data Darbar’s district_key"
+    },
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "province or area, as the COD frame names it"
+    },
+    {
+     "name": "fy",
+     "type": "VARCHAR",
+     "description": "fiscal year, July to June"
+    },
+    {
+     "name": "pakemis_shape_id",
+     "type": "VARCHAR",
+     "description": "the geoBoundaries 2019 shape PakEmis allocates to"
+    },
+    {
+     "name": "pakemis_units",
+     "type": "VARCHAR",
+     "description": "the districts PakEmis puts in that shape"
+    },
+    {
+     "name": "shape_districts",
+     "type": "BIGINT",
+     "description": "2023 districts the shape covers"
+    },
+    {
+     "name": "shape_area_km2",
+     "type": "DOUBLE",
+     "description": "area of those districts, km² (COD frame)"
+    },
+    {
+     "name": "shape_ghg_kt_co2e",
+     "type": "DOUBLE",
+     "description": "the shape’s emissions, kt CO2e (AR5): counted once per shape"
+    },
+    {
+     "name": "ghg_kt_co2e",
+     "type": "DOUBLE",
+     "description": "the district’s emissions, kt CO2e (AR5), where the shape is the district alone"
+    },
+    {
+     "name": "ghg_t_per_km2",
+     "type": "DOUBLE",
+     "description": "the shape’s emissions per km², t CO2e"
+    },
+    {
+     "name": "agriculture_pct",
+     "type": "DOUBLE",
+     "description": "agriculture’s share of the shape’s emissions, %"
+    },
+    {
+     "name": "note",
+     "type": "VARCHAR",
+     "description": "where the shape holds more than one district"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PakEmis release 1.0.0rc68 (data CC BY 4.0); ODbL components excluded.",
+    "terms": [
+     {
+      "key": "cc-by-4.0",
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "summary": "Any use, commercial included, with attribution."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "derived",
+    "label": "Derived",
+    "note": "PakEmis’s district sector table summed to all sectors, carried from geoBoundaries 2019 shapes onto 2023 districts by Data Darbar (etl/issue4/derive.py).",
+    "derived_columns": []
+   },
+   "span": {
+    "column": "fy",
+    "from": "2015-16",
+    "to": "2024-25"
+   },
+   "keys": [
+    "district_code",
+    "cod_district_key",
     "province"
    ]
   },

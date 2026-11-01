@@ -11,9 +11,10 @@ One list, read by three things: pipeline.py (which writes the Parquet into the
 desktop warehouse), register.py (which publishes it) and catalog_meta.py (which
 files, licenses and sources it). A table is added here or not at all.
 
-  src       path under Adaad/data
+  src       path under Adaad/data, or under the warehouse's issue4/derived/ with
+            derived=True (tables etl/issue4/derive.py builds from Adaad's sources)
   district  True where rows are COD-frame districts: district_code is added
-  codes     PBS districts the table must reach, if not all 156
+  codes     PBS districts the table must reach, if not all 156; None for a sample
   sql       optional SELECT over the CSV, as {src}; the default takes it whole
   kind, licences, licence_note, provenance  as catalog_meta defines them
   title     the dataset page's title (build_seo DATASET_NAMES)
@@ -481,6 +482,73 @@ TABLES = [
          unit='Rs per 40 kg',
          cols={'fiscal_year': 'fiscal year', 'series_label': 'which price', 'geography': 'where it applies',
                'price_pkr_per_40kg': 'rupees per 40 kg, nominal'}),
+    # ── built by derive.py, not copied ──────────────────────────────────────
+    dict(name='diem_district_round', src='diem_district_round.csv', derived=True,
+         district=True, codes=None, kind='places', licences=['fao-fam'],
+         licence_note='FAO Data in Emergencies (DIEM) household surveys, rounds 2–6, FAM microdata. '
+                      'Aggregates only; the household records are not redistributed.',
+         provenance=('derived', 'Weighted shares of households per surveyed district, computed by '
+                     'Data Darbar from FAO’s DIEM microdata (etl/issue4/derive.py).'),
+         title='Pakistan DIEM household surveys by district, 2021–2024',
+         desc='Shocks, income, hunger, diet and coping among rural households in the districts FAO '
+              'surveyed, five rounds from 2021 to 2024: weighted shares by district and round.',
+         notes='Selected rural districts of Balochistan, Khyber Pakhtunkhwa and Sindh, not a national '
+               'sample, and a different set of districts each round: compare a district with itself '
+               'only where it was surveyed in both rounds. Rounds 2–3 used FAO’s first questionnaire '
+               'and rounds 4–6 its second. Round 3 was in the field in March–April 2022, before the '
+               'floods; round 4 in 2023, after them. Hunger questions ask about the last 30 days. '
+               'Shares count only households that answered (not don’t-know, refused or not asked) and '
+               'are withheld where fewer than 30 did. Usta Muhammad’s round 6 sample sits under '
+               'Jaffarabad, which the 2023 census counts it within.',
+         source='FAO, Data in Emergencies (DIEM) Pakistan household surveys, rounds 2–6 (FAM microdata); '
+                'district shares by Data Darbar',
+         unit='% of households',
+         cols={**DISTRICT, 'survey_round': 'DIEM round', 'survey_year': 'year of fieldwork',
+               'round_label': 'year and round, as the map labels it',
+               'households': 'households surveyed in the district that round',
+               'shock_any_pct': 'reported a shock of any kind in the recall period, %',
+               'shock_flood_pct': 'reported a flood, %',
+               'shock_food_prices_pct': 'reported higher food prices as a shock, %',
+               'income_lower_pct': 'main income lower than usual, %',
+               'skipped_meal_pct': 'someone skipped a meal for lack of money or food, last 30 days, %',
+               'whole_day_no_food_pct': 'someone went a whole day without eating, last 30 days, %',
+               'poor_food_consumption_pct': 'poor food consumption score (WFP), %',
+               'crisis_coping_pct': 'used crisis or emergency livelihood coping strategies, %',
+               'diem_district': 'the district as DIEM names it',
+               'note': 'where the district differs from the one surveyed',
+               **{f'n_{k}': f'households answering, for {k}' for k in (
+                   'shock_any_pct', 'shock_flood_pct', 'shock_food_prices_pct', 'income_lower_pct',
+                   'skipped_meal_pct', 'whole_day_no_food_pct', 'poor_food_consumption_pct',
+                   'crisis_coping_pct')}}),
+    dict(name='emissions_district_year', src='emissions_district_year.csv', derived=True,
+         district=True, codes=None, kind='places', licences=['cc-by-4.0'],
+         licence_note='PakEmis release 1.0.0rc68 (data CC BY 4.0); ODbL components excluded.',
+         provenance=('derived', 'PakEmis’s district sector table summed to all sectors, carried from '
+                     'geoBoundaries 2019 shapes onto 2023 districts by Data Darbar (etl/issue4/derive.py).'),
+         title='Pakistan greenhouse gas emissions by district since FY2015-16',
+         desc='Greenhouse gas emissions released in each district, FY2015-16 to FY2024-25, in CO2-equivalent '
+              '(AR5): total, per km², and agriculture’s share.',
+         notes='A research inventory: PakEmis allocates national totals to districts with proxies '
+               '(livestock, cropland, plants, population), so a district figure is an allocation, not a '
+               'measurement. Physical view: where the gas is released. Transport, waste and railways are '
+               'not allocated below the national level in this release, and power only partly, so the '
+               'districts hold 364 of 445 Mt CO2e in FY2023-24. PakEmis draws districts on 2019 shapes; '
+               'where one shape holds several of today’s districts (Karachi’s seven, Sujawal with Thatta, '
+               'Azad Kashmir’s ten and eleven more), each carries the shape’s emissions per km² and '
+               'agriculture’s share, and ghg_kt_co2e is blank because the total is not divided. Larkana '
+               'has no shape in this release.',
+         source='PakEmis (Pakistan Air Quality Initiative), release 1.0.0rc68; districts by Data Darbar',
+         unit='kt CO2e; t CO2e per km²; %',
+         cols={**DISTRICT, 'fy': 'fiscal year, July to June',
+               'pakemis_shape_id': 'the geoBoundaries 2019 shape PakEmis allocates to',
+               'pakemis_units': 'the districts PakEmis puts in that shape',
+               'shape_districts': '2023 districts the shape covers',
+               'shape_area_km2': 'area of those districts, km² (COD frame)',
+               'shape_ghg_kt_co2e': 'the shape’s emissions, kt CO2e (AR5): counted once per shape',
+               'ghg_kt_co2e': 'the district’s emissions, kt CO2e (AR5), where the shape is the district alone',
+               'ghg_t_per_km2': 'the shape’s emissions per km², t CO2e',
+               'agriculture_pct': 'agriculture’s share of the shape’s emissions, %',
+               'note': 'where the shape holds more than one district'}),
     # ── emissions ───────────────────────────────────────────────────────────
     dict(name='emissions_national_sector', src='pk-emissions/pakemis-rc68/pakemis_national_series.csv',
          kind='economy', licences=['cc-by-4.0'],
