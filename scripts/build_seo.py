@@ -72,6 +72,8 @@ DATASET_NAMES = {
     "geography_keys": "Pakistan place identifiers and which ones join safely",
     "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
     "crops_district_fy": "Pakistan crop area, production and yield by district",
+    "agri_census_2024_district": "Pakistan farms, land, livestock and machinery by district (Agricultural Census 2024)",
+    "agri_census_2024_long": "Pakistan Agricultural Census 2024, every published table",
     "census_entities": "Pakistan buildings and facilities counted by Census 2023",
     "gdp_growth": "Pakistan GDP growth by sector since 1951",
     "gdp_indicators": "Pakistan GDP, per-capita income and exchange rate",
