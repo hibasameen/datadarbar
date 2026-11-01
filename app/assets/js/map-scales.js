@@ -19,6 +19,18 @@
   'use strict';
 
   var BY_GROUP = {
+    // Issue 4: heat in reds, rain and water in blues, land in greens
+    climateTmean: ['#fdf0e6', '#b8360f'], climateTmax: ['#fdf0e6', '#a3290a'],
+    // One warm ramp for the anomaly, not a diverging one: the scale runs from
+    // the year's lowest value to its highest, not around zero, so a blue end
+    // would paint districts warmer than normal as if they had cooled.
+    climateTmin: ['#fdf0e6', '#c2511f'], climateTanom: ['#f7f2ea', '#b8360f'],
+    heatHotDays: ['#fdf0e6', '#a3290a'], heatWarmNights: ['#f6ecf4', '#6b2464'],
+    heatSpells: ['#fdf0e6', '#b8360f'], climateRain: ['#eaf2fa', '#1d4f8a'],
+    pm25: ['#f4efe6', '#5b3a1e'], landCover: ['#eef5e6', '#2f5d14'],
+    grassland: ['#f3f6e3', '#5c7a14'], forestLoss: ['#eef5e6', '#1f4d0e'],
+    fires: ['#fdf0e6', '#b3260c'], flood2022: ['#eaf2fa', '#123d73'],
+    waterStress: ['#eaf2fa', '#7a1f0f'],
     demographics: ['#e6f4ec', '#145228'],
     urbanRural: ['#e6f4ec', '#1a5632'],
     literacy: ['#fef6dc', '#b8941a'],

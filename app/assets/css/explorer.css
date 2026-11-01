@@ -55,7 +55,7 @@ a.tree-item{color:var(--green-800)}
   border-radius:0 7px 7px 0;font-size:13px;line-height:1.55;color:var(--body)}
 :root[data-theme="dark"] .notice{background:rgba(212,160,23,.12)}
 
-@media(max-width:860px){
+@media(max-width:1000px){
   .explorer{flex-direction:column}
   .tree,.xside{width:auto;border-right:0;border-bottom:1px solid var(--line);
     max-height:none}
@@ -177,21 +177,155 @@ a.tree-item{color:var(--green-800)}
 .coverage .cov-derived{color:var(--teal-700,#0f6e78);font-weight:600}
 .ctl-row select.seg{appearance:auto;padding:0 8px;background:var(--surface)}
 
-/* ── navigation mode: topics as a visible list, the open one's charts under it ── */
-.xnav{display:flex;flex-direction:column;gap:8px;margin:4px 0 0}
-.xnav-group ul{list-style:none;margin:0;padding:0}
-.xnav-h{margin:6px 8px 3px;font-size:10px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--muted)}
-.xnav-topic{display:block;width:100%;text-align:left;padding:6px 9px;border:0;border-radius:6px;
-  background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;line-height:1.3}
+/* ── navigation mode: groups, one open; the topic's charts are tabs ───── */
+.xnav{display:flex;flex-direction:column;gap:2px;margin:2px 0 0}
+.xnav-group ul{list-style:none;margin:0 0 6px;padding:0 0 0 8px}
+.xnav-h{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  padding:8px 9px;border:0;border-radius:6px;background:none;font:inherit;font-size:13px;
+  font-weight:600;color:var(--ink);cursor:pointer;text-align:left;line-height:1.3}
+.xnav-h:hover{background:var(--green-100)}
+.xnav-group.is-open>.xnav-h{color:var(--green-900);font-weight:700}
+.xnav-n{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+.xnav-n i{font-style:normal;font-size:13px}
+.xnav-overview{display:block;width:100%;text-align:left;padding:8px 9px;margin:4px 0 6px;border:0;
+  border-radius:6px;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+.xnav-overview:hover{background:var(--green-100)}
+.xnav-overview.on{background:var(--green-100);color:var(--green-900);font-weight:700}
+.xnav-topic{display:block;width:100%;text-align:left;padding:7px 9px 7px 12px;border:0;border-radius:6px;
+  background:none;font:inherit;font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;line-height:1.3;
+  border-left:3px solid transparent}
 .xnav-topic:hover{background:var(--green-100)}
-.xnav-topic.on{background:var(--green-100);color:var(--green-900);font-weight:700}
-.xnav-charts{margin:2px 0 6px 10px !important;padding-left:9px !important;border-left:2px solid var(--line)}
-.xnav-chart{display:block;width:100%;text-align:left;padding:4px 8px;border:0;border-radius:5px;
-  background:none;font:inherit;font-size:12px;color:var(--body);cursor:pointer;line-height:1.3}
-.xnav-chart:hover{background:var(--green-100);color:var(--ink)}
-.xnav-chart.is-on{background:var(--gold-100);color:var(--green-800);font-weight:700}
+.xnav-topic.on{background:var(--gold-100);color:var(--green-800);font-weight:700;border-left-color:var(--gold-500)}
+.xnav-link{display:block;padding:8px 9px;margin-top:4px;border-top:1px solid var(--line);font-size:12.5px;
+  color:var(--ink);text-decoration:none}
+.xnav-link:hover{background:var(--green-100)}
+.xnav-note{font-size:11px;color:var(--muted)}
 .xside .xfind-none{margin:6px 8px;font-size:12px;color:var(--muted)}
-/* The old cascade's container right-aligned its children for a row of
-   selects; a list of topics has to fill the column. */
 .xside .xrail.xnav{align-items:stretch;flex-wrap:nowrap}
+
+/* ── the pane head: eyebrow, title, a two-line dek, the tools ─────────────
+   The dek used to run to seven lines over a coverage strip, so the chart
+   started 360px down and half of it showed on a laptop. Two lines now, the
+   rest behind "Read more", and coverage moves to the tab row. */
+.pane{padding:18px 28px 16px;gap:10px}
+.pane-head{align-items:flex-start}
+.pane-head h1{font-size:23px}
+.dek{max-width:86ch;line-height:1.45;margin-top:3px}
+.dek.is-clamped{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dek-more{background:none;border:0;padding:0;font:inherit;font-size:12.5px;font-weight:600;
+  color:var(--green-800);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+/* ── chart tabs ─────────────────────────────────────────────────────────── */
+.xtabs{display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--line-strong)}
+.xtabs[hidden]{display:none}
+.xtabs-row{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1 1 auto}
+.xtabs-row::-webkit-scrollbar{display:none}
+.xtab{height:36px;padding:0 13px;border:0;border-bottom:3px solid transparent;background:none;
+  font:inherit;font-size:13px;font-weight:600;color:var(--body);cursor:pointer;white-space:nowrap;
+  margin-bottom:-1px}
+.xtab:hover{color:var(--ink);background:var(--green-100);border-radius:6px 6px 0 0}
+.xtab.is-on{color:var(--green-900);font-weight:700;border-bottom-color:var(--green-900)}
+.xtabs-aside{font-size:11.5px;color:var(--muted);padding-bottom:9px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}
+.xtabs-aside:empty{display:none}
+.xtabs-aside .cov-gap{color:var(--rust,#b5502a);font-weight:600}
+.xtabs-aside .cov-derived{color:var(--teal-700,#0f6e78);font-weight:600}
+
+/* Coverage: one line under the tabs, not a strip of its own. */
+.coverage{padding:0;border:0;background:none;gap:6px 12px;font-size:11.5px;color:var(--muted)}
+.coverage:empty{display:none}
+
+/* ── the chart and, beside it, what a click on it opens ─────────────────── */
+.pane-body{display:flex;gap:14px;flex-grow:1;min-height:0;align-items:stretch}
+.pane-body>.card{flex:1 1 auto;min-width:0}
+.pane-side{width:320px;flex:0 0 320px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pane-side:empty,.pane-side[hidden]{display:none}
+.pane-side>.card{flex:1 1 auto;margin:0}
+.pane-side .card h2{font-size:14.5px}
+@media(max-width:1180px){
+  .pane-body{flex-direction:column}
+  .pane-side{width:auto;flex:0 0 auto}
+}
+
+/* ── overview: one tile per group ───────────────────────────────────────── */
+.ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-content:start}
+.ovtile{display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;color:var(--ink);text-align:left;font:inherit;cursor:pointer;
+  min-height:170px}
+.ovtile:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.ovtile .eyebrow{color:var(--gold-600)}
+.ovtile-n{font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--green-900);line-height:1}
+.ovtile-n small{font-size:14px;font-weight:600;color:var(--body);letter-spacing:0;margin-left:3px}
+.ovtile-p{font-size:12.5px;color:var(--body);line-height:1.45;margin:0}
+.ovtile-topics{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.ovtile-topics span{font-size:11.5px;padding:3px 8px;border:1px solid var(--line);border-radius:999px}
+.ovtile svg{width:100%;height:36px;display:block}
+
+/* ── the rail on a phone ────────────────────────────────────────────────── */
+.mobile-topic-toggle{display:none}
+@media(max-width:1000px){
+  .xside{padding:0 0 .6rem}
+  .xside.open{padding-bottom:.9rem}
+  .mobile-topic-toggle{display:flex;width:100%;align-items:center;gap:10px;padding:12px 16px;
+    background:var(--surface);border:0;border-bottom:1px solid var(--line);font:inherit;font-size:11px;
+    font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--green-900);cursor:pointer;text-align:left}
+  .mobile-topic-toggle .cur{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:13.5px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--green-700)}
+  .mobile-topic-toggle .chev{flex:none;color:var(--muted);transition:transform .15s}
+  .xside.open .mobile-topic-toggle .chev{transform:rotate(180deg)}
+  .xside>:not(.mobile-topic-toggle){display:none}
+  .xside.open>:not(.mobile-topic-toggle){display:flex}
+  .xside.open>.xsearch,.xside.open>.xnav{margin:0 .85rem}
+  .xside.open>.xside-note{display:block;margin:0 .85rem}
+  .pane{padding:14px 16px 16px}
+  .pane-head h1{font-size:20px}
+  .xtab{height:40px}
+}
+@media(max-width:640px){
+  .pane-head{flex-wrap:wrap}
+  .pane-tools{order:-1;width:100%;justify-content:flex-end}
+  .pane-tools .tool{height:30px;font-size:12px}
+  .ovgrid{grid-template-columns:1fr}
+}
+
+/* ── Economy on the same template ──────────────────────────────────────────
+   finance.html keeps its fixed sidebar and .wrap from charts.css; these rules
+   put the shared rail, head, tabs and one-chart view inside them. */
+html[data-explorer="economy"] .explorer{display:block;min-height:0}
+html[data-explorer="economy"] .eco-side{padding:.9rem .85rem;gap:.7rem;width:var(--sidebar-w)}
+html[data-explorer="economy"] #sidePanels{display:none}
+html[data-explorer="economy"] .wrap.pane{max-width:1480px;margin-left:var(--sidebar-w);padding:18px 28px 28px}
+html[data-explorer="economy"] .pane-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:12px}
+html[data-explorer="economy"] .xcards{display:flex;flex-direction:column;min-width:0}
+html[data-explorer="economy"] .xcards .card{margin-top:0}
+html[data-explorer="economy"] .xc-off{display:none !important}
+html[data-explorer="economy"] .grid2{display:block}
+html[data-explorer="economy"] .foot,html[data-explorer="economy"] .kpis{display:none}
+html[data-explorer="economy"] .pane-side .card{margin-top:0;padding:16px}
+html[data-explorer="economy"] .pane-side .card h2{font-size:14.5px;padding-right:0}
+html[data-explorer="economy"] .pane-side .card .csvbtn,html[data-explorer="economy"] .pane-side .card .sharebtn{display:none}
+html[data-explorer="economy"] .pane-side .card .desc{font-size:12px}
+html[data-explorer="economy"] .side-hint{margin:0;padding:14px 16px;border:1px dashed var(--line-strong);border-radius:12px;
+  font-size:12.5px;color:var(--muted);line-height:1.5;background:var(--surface)}
+html[data-explorer="economy"] .side-hint[hidden]{display:none}
+html[data-explorer="economy"] .coverage .cov-src{font-size:11.5px;color:var(--muted)}
+html[data-explorer="economy"] .coverage .cov-src b{color:var(--body);text-transform:none;letter-spacing:0;font-size:inherit}
+/* The topic's controls: one row above the chart. Each panel keeps its id. */
+.topic-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end}
+.topic-ctl:empty{display:none}
+.topic-ctl .eco-panel{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  flex:0 1 auto;min-width:200px}
+.topic-ctl .eco-panel label{margin-bottom:4px}
+.topic-ctl .eco-panel .topic-desc{display:none}
+.topic-ctl .eco-panel .yr-wrap{display:flex;align-items:center;gap:10px;min-width:260px}
+.topic-ctl .eco-panel .yr-wrap input{flex:1;min-width:120px}
+@media(max-width:1000px){
+  html[data-explorer="economy"] .eco-side{position:static;width:auto;padding:0 0 .6rem;box-shadow:none}
+  html[data-explorer="economy"] .eco-side.open{padding-bottom:.9rem}
+  html[data-explorer="economy"] .wrap.pane{margin-left:0;padding:14px 16px 24px}
+  .eco-side>:not(.mobile-topic-toggle){display:none}
+  .eco-side.open>:not(.mobile-topic-toggle){display:flex}
+  .eco-side.open>.xsearch,.eco-side.open>.xnav{margin:0 .85rem}
+  .eco-side.open>.xside-note{display:block;margin:0 .85rem}
+  .eco-side.open>#sidePanels{display:none}
+}

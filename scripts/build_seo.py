@@ -67,6 +67,7 @@ DATASET_NAMES = {
     # geography: the frames, the crosswalks, and which key joins what
     "district_crosswalk_2017_2023": "Pakistan district boundary changes, Census 2017 to 2023",
     "subdistrict_crosswalk_2017_2023": "Pakistan tehsil boundary changes, Census 2017 to 2023",
+    "district_crosswalk_cod_2023": "Pakistan COD-AB districts matched to Census 2023 districts",
     "census_unit_map": "Pakistan census units mapped to 2023 boundaries",
     "geography_keys": "Pakistan place identifiers and which ones join safely",
     "diaspora_emigrants_district": "Pakistan registered emigrants by district of origin",
@@ -130,15 +131,18 @@ DATASET_NAMES = {
     "climate_events": "Pakistan flood, drought and cyclone alerts since 2001",
     "climate_impacts": "Pakistan monsoon deaths, injuries and damage, NDMA reports",
 }
+# Issue 4's tables carry their titles in the list that defines them.
+from issue4.tables import TABLES as _ISSUE4
+DATASET_NAMES.update({t["name"]: t["title"] for t in _ISSUE4})
 BASE_PAGES = {
     "index.html": ("Data Darbar — Pakistan Census, Trade & Economic Data", "Data Darbar by Adaad brings Pakistan's official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes."),
-    "state.html": ("Pakistan Federal Tax Collection & Public Money \u2014 Data Darbar", "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish."),
-    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search {places_n} indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities and satellite data on one map."),
+    "state.html": ("Pakistan Federal Tax Collection & Public Money \u2014 Data Darbar", "Pakistan's federal tax collection by head since 1991-92, and what the courts, police and energy regulators publish: load shedding, rooftop solar, gas, oil and gas royalties, the 2022 floods and reservoirs."),
+    "places.html": ("Pakistan District & Tehsil Indicators Map \u2014 Data Darbar", "Search {places_n} indicators for Pakistan's 156 districts and 649 tehsils: census, survey, poverty, agriculture, facilities, climate and satellite data on one map."),
     # trade.html and money.html were their own pages and are redirects now:
     # Economy is one page, and _retired() keeps them out of the sitemap. The
     # title below has to cover all fifteen topics, because it is the only
     # page any of them has.
-    "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, and Pakistan beside its peers."),
+    "finance.html": ("Pakistan GDP, Trade, Inflation & Budget Data — Data Darbar", "Pakistan's economy in one place: GDP and sector shares since 1951, large-scale manufacturing, the federal budget, exports and imports by product and partner, the rupee, inflation, interest rates, remittances, the external balance, money and public finances since 1950, mining, crop prices and greenhouse gas emissions, and Pakistan beside its peers."),
     "query.html": ("Download & Query Pakistan Open Data — Data Darbar", "Query Pakistan census, trade, budget and State Bank data in your browser, or download the documented tables for your own analysis."),
     "about.html": ("About Data Darbar — Pakistan in Numbers", "What Data Darbar is, what it covers across Places, Economy and State, how it is built and who built it."),
     "methods.html": ("Methods and Sources — Data Darbar", "What Data Darbar is, where every figure comes from, how districts are matched across boundary changes, and what each source will and will not support."),

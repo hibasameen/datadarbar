@@ -12,9 +12,6 @@ let E,D={},TX;
 
 /* ---- topics (sidebar navigation; #hash deep links) ---- */
 const TOPICS=[
- {k:'all',label:'Everything',
-  desc:'Every trade chart on one page, top to bottom.',
-  meta:'PBS National Trade Database for totals and partners (2003–04 on); 8-digit External Trade Statistics for the product charts (2015–16 on). The two do not agree — see the source note below.'},
  {k:'basket',label:'What we trade',
   desc:'The full export/import basket as a drill-down treemap, plus the largest single products.',
   meta:'PBS External Trade Statistics — 8-digit imports & exports by commodity.'},
@@ -28,18 +25,15 @@ const TOPICS=[
   desc:'The largest countries Pakistan trades with — pick one for its own profile.',
   meta:'PBS National Trade Database, trade by partner country, 2003–04 on. Partner tables do not always account for the whole published total — how much they name is charted below.'}];
 const TOPIC_GROUPS=[
- {label:null,keys:['all']},
  {label:'What & how much',keys:['basket','movers','overtime']},
  {label:'With whom',keys:['partners']}];
 const TOPIC_DRAWS={basket:()=>{drawDrill();drawProducts();},movers:()=>drawMovers(),overtime:()=>{drawTotals();drawRecon();},partners:()=>{drawPartners();drawCountry();}};
-const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
-
 /* An ES module since Economy became one page. Module scope keeps this file's
    TOPICS, start, writeHash, fmtBn and the rest to itself - fmtBn here prints
    sub-billion values to one decimal where finance.js rounds them, which is a
    difference worth keeping rather than reconciling. MINE is what this module
    answers for; on another module's topic it hides its own cards and panels. */
-const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+const MINE=TOPICS.map(t=>t.k);
 const MY_PANELS=['sideCountry','sideLevel','foot-trade'];
 function standDown(){
  MY_PANELS.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
@@ -79,8 +73,8 @@ function writeHash(push){
  const p=new URLSearchParams();p.set('t',topic);
  if(tCountry!=='all')p.set('c',tCountry);
  if(tPrice==='real')p.set('tp','real');
- if(topic==='movers'||topic==='partners'||topic==='all'){if(tLevel!=='section')p.set('lvl',tLevel);}
- if(topic==='movers'||topic==='all'){if(mDir!=='export')p.set('md',mDir);if(mMeasure!=='abs')p.set('mm',mMeasure);if(mMode!=='span')p.set('mw',(moverWindows()[mWinIdx]||{}).key||'');}
+ if(topic==='movers'||topic==='partners'){if(tLevel!=='section')p.set('lvl',tLevel);}
+ if(topic==='movers'){if(mDir!=='export')p.set('md',mDir);if(mMeasure!=='abs')p.set('mm',mMeasure);if(mMode!=='span')p.set('mw',(moverWindows()[mWinIdx]||{}).key||'');}
  const hv='#'+p.toString();
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
 }
@@ -101,7 +95,7 @@ function applyStateFromHash(){
  tPrice=o.tp==='real'&&window.DDDeflate&&DDDeflate.available?'real':'nom';
  d3.selectAll('.tPrice button').classed('on',function(){return this.dataset.tp===tPrice;});
  applyingHash=false;
- if(TOPIC_DRAWS[k]&&k!=='all')TOPIC_DRAWS[k]();else if(k==='all')drawAll();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  drawCountry();
  writeHash(false);
  if(o.at){const el=document.getElementById(o.at);if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),140);}
@@ -131,13 +125,12 @@ function applyTopic(k,push){
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
  d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
- const all=k==='all';
- d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
+ d3.selectAll('[data-topic]').classed('topic-hidden',function(){return this.dataset.topic!==k;});
  // topic-relevant sidebar controls
- d3.select('#sideCountry').style('display',(k==='partners'||all)?null:'none');
- d3.select('#sideLevel').style('display',(k==='movers'||k==='partners'||all)?null:'none');
+ d3.select('#sideCountry').style('display',k==='partners'?null:'none');
+ d3.select('#sideLevel').style('display',(k==='movers'||k==='partners')?null:'none');
  if(!applyingHash)writeHash(push);
- if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  if(push)window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -158,7 +151,7 @@ function drawDrill(){
      children:s.chapters.flatMap(c=>c.products.map(p=>({hs8:p.hs8,name:p.name,bn:p.bn,section:s.section})))}));
  } else {
    const s=secs.find(x=>x.section===dPath[0]);
-   const base=d3.color(scolor(s.section));
+   const base=d3.color(DDPalette.resolve(scolor(s.section)));
    groups=s.chapters.map((c,i)=>({key:c.code,label:c.name,section:s.section,kind:'chapter',
      color:(i%2?base.brighter(0.5):base.darker(0.2)).formatHex(),
      children:c.products.map(p=>({hs8:p.hs8,name:p.name,bn:p.bn,section:s.section}))}));
@@ -181,11 +174,11 @@ function drawDrill(){
    .on('keydown',(e,d)=>{if(dPath.length===0&&(e.key==='Enter'||e.key===' ')){e.preventDefault();hideTip();dPath=[d.data.key];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.label}</b><br>${fmtRs(d.value)} · ${(100*d.value/total).toFixed(1)}%${dPath.length===0?'<br><span style=opacity:.7>click to zoom in</span>':''}`,e)).on('mouseleave',hideTip);
  grp.filter(d=>(d.x1-d.x0)>60).append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+12).attr('font-size',11).attr('font-weight',800).attr('fill','var(--ink)')
-   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
+   .attr('pointer-events','none').attr('fill',d=>overview?(d3.hcl(DDPalette.resolve(d.data.color)).l>62?'var(--ink)':'var(--surface)'):'var(--ink)')
     .text(d=>{const w=d.x1-d.x0,m=Math.floor((w-10)/6.6);return d.data.label.length>m?d.data.label.slice(0,m-1)+'…':d.data.label;});
  if(overview)grp.filter(d=>(d.x1-d.x0)>60&&(d.y1-d.y0)>36).append('text')
    .attr('x',d=>d.x0+5).attr('y',d=>d.y0+29).attr('font-size',12).attr('font-weight',700).attr('pointer-events','none')
-   .attr('fill',d=>d3.hcl(d.data.color).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
+   .attr('fill',d=>d3.hcl(DDPalette.resolve(d.data.color)).l>62?'var(--ink)':'var(--surface)').text(d=>(100*d.value/total).toFixed(1)+'%');
  // product leaves (depth 2)
  const leaf=svg.selectAll('g.lf').data(overview?[]:root.leaves()).join('g').attr('class','lf').attr('transform',d=>`translate(${d.x0},${d.y0})`);
  leaf.append('rect').attr('width',d=>Math.max(0,d.x1-d.x0)).attr('height',d=>Math.max(0,d.y1-d.y0)).attr('rx',2)
@@ -194,7 +187,7 @@ function drawDrill(){
    .on('click',(e,d)=>{if(dPath.length===0){dPath=[d.data.section];drawDrill();}})
    .on('mousemove',(e,d)=>showTip(`<b>${d.data.name}</b><br>HS ${d.data.hs8} · Sec ${d.data.section}<br>${fmtRs(d.data.bn)} · ${(100*d.value/total).toFixed(2)}%`,e)).on('mouseleave',hideTip);
  leaf.filter(d=>(d.x1-d.x0)>52&&(d.y1-d.y0)>20).append('text').attr('class','cl').attr('x',4).attr('y',13)
-   .style('fill',d=>{const c=d3.hcl(d.parent.data.color);return c.l>62?'var(--ink)':'var(--surface)';})
+   .style('fill',d=>{const c=d3.hcl(DDPalette.resolve(d.parent.data.color));return c.l>62?'var(--ink)':'var(--surface)';})
    .text(d=>{const w=d.x1-d.x0,m=Math.floor(w/5.8);return d.data.name.length>m?d.data.name.slice(0,m-1)+'…':d.data.name;});
  // breadcrumb
  const bc=d3.select('#crumb');bc.selectAll('*').remove();
@@ -505,10 +498,12 @@ function initCsv(){
 
 /* ================= trade coverage ================= */
 /* window.DD_RECON, from trade_reconciliation: what share of each published
-   total the detailed tables on this page actually account for. Drawn because
-   the answer is not always "all of it" - before 2011-12 a seventh of imports
-   belongs to no named country - and a reader comparing partners across 2009
-   and 2019 is comparing two different degrees of completeness. */
+   total the detailed tables on this page actually account for. Before the
+   2026-10-24 pull the answer was not always "all of it" - a seventh of
+   imports before 2011-12 belonged to no named country. The rebuilt portal
+   attributes that to the UAE, so the country lines are now 100 throughout
+   and the group lines appear only where the frozen groups can still be
+   compared with an unrevised total. */
 const RC_SERIES=[
  {k:'c_imp', lbl:'Imports, by partner country',  c:'var(--rust)',      dash:null},
  {k:'c_exp', lbl:'Exports, by partner country',  c:'var(--gold-600)',  dash:null},
@@ -524,9 +519,9 @@ function initRecon(){
 function reconRows(){
  const b=window.DD_RECON&&window.DD_RECON[rcBasis];
  if(!b)return [];
- /* The dollar columns are zero before 2015-16 because PBS did not publish
-    them, and a zero total divides into a null, not a nought. Those years are
-    dropped rather than drawn as a collapse in coverage that never happened. */
+ /* A year with no dollar total (2002-03 is rupees only) divides into a
+    null, not a nought, and is dropped rather than drawn as a collapse in
+    coverage that never happened. */
  return b.rows.map(r=>{const o={};b.cols.forEach((c,i)=>o[c]=r[i]);o.n=+o.fy.slice(0,4)+1;return o;})
    .filter(o=>RC_SERIES.some(s=>o[s.k]!=null));
 }
@@ -546,14 +541,6 @@ function drawRecon(){
   .attr('stroke','var(--ink)').attr('stroke-width',1.2);
  svg.append('text').attr('x',m.l+5).attr('y',y(100)-5).attr('font-size',10).attr('font-weight',700)
   .attr('fill','var(--muted)').text('100% — the parts add to the total');
- /* 2011-12 is where PBS's partner tables start naming almost everything. */
- const brk=2012;
- if(x(brk)>m.l&&x(brk)<W-m.r){
-  svg.append('line').attr('x1',x(brk)).attr('x2',x(brk)).attr('y1',m.t).attr('y2',H-m.b)
-   .attr('stroke','var(--muted)').attr('stroke-dasharray','2 3').attr('opacity',.8);
-  svg.append('text').attr('x',x(brk)+5).attr('y',H-m.b-7).attr('font-size',10).attr('font-style','italic')
-   .attr('fill','var(--muted)').text('partner tables close the gap');
- }
  RC_SERIES.forEach(s=>{
   const pts=rows.filter(r=>r[s.k]!=null);
   if(!pts.length)return;

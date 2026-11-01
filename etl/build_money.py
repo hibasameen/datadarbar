@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -162,7 +163,8 @@ def fy_totals(con, dataset: str, fys: list, scale: float = 1.0) -> dict:
                CASE WHEN month(o.obs_date) >= 7 THEN year(o.obs_date) ELSE year(o.obs_date) - 1 END AS fy0,
                sum(o.value)
         FROM sbp_observations o JOIN sbp_series_catalog c USING (series_key)
-        WHERE c.dataset_code = ? AND o.value IS NOT NULL GROUP BY 1, 2, 3""", [dataset]).fetchall()
+        WHERE c.dataset_code = ? AND o.value IS NOT NULL GROUP BY 1, 2, 3
+        ORDER BY 1, 3""", [dataset]).fetchall()  # series-key order is SBP's document order, which infer_tree needs
     out = {}
     for key, name, fy0, v in rows:
         suf = key.split(".")[1]
@@ -260,6 +262,8 @@ def tidy(name: str) -> str:
              "Rubber Crude Incl. Synth/Reclaim": "Crude rubber", "Paper & Paper Board & Manf.": "Paper & paperboard",
              "Milk and Cream including for Infants": "Milk & cream", "Office Machinery Incl. Data Pros. Equipment": "Office & data-processing equipment",
              "Completely Built Unit (CBU)": "Built-up vehicles (CBU)", "Completely Knock Down (CKD)": "Kits for local assembly (CKD)"}
+    # the API's series names carry the table's prefix; the browser export did not
+    name = re.sub(r"^(Export receipts|Import payments) of ", "", name)
     for a, b in fixes.items():
         name = name.replace(a, b)
     return name.replace(";", ",").strip()

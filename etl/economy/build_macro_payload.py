@@ -27,8 +27,8 @@ missing and the chart leaves a gap.
 AND THE INCOME SERIES WAS NOT MISSING EITHER. The page said per-person income
 was not published for 2024-25 or 2025-26 and called 2021-22 the peak. PBS
 publishes both years, on two population bases, and on the 2017-Census basis
-they are 198,864 and 203,118 - above the 192,848 that was being called a
-peak. The peak claim was an artefact of an incomplete extract. Both bases are
+they are 197,046 and 199,917 (118th NAC, October 2026) - above the 192,906
+that was being called a peak. The peak claim was an artefact of an incomplete extract. Both bases are
 carried here, because from 2023-24 PBS reprojects on the 2023 Census and the
 two series are not continuations of each other.
 
@@ -82,7 +82,7 @@ def main():
         FROM t LEFT JOIN '{W}/gdp_indicators.parquet' g ON g.fy = t.year
         ORDER BY fy_end""")
 
-    # Every activity, every quarter. 880 rows is small enough to ship whole and
+    # Every activity, every quarter. 968 rows is small enough to ship whole and
     # aggregate in the browser, which keeps the sector / subsector / activity
     # views one dataset rather than three pre-baked ones that could disagree.
     qtr = rows(f"""

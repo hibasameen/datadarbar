@@ -1,8 +1,52 @@
 """Extract separately dated provincial mid-year tables, never annualize them."""
 import hashlib
 import json
+import re
 import pdfplumber
 from extract import HERE, FOUR, clean, integer
+
+# Punjab 2025 prints no district all/civil/criminal tables. Its provincial totals exist only
+# as the court-tier category tables 3.12 (sessions courts: criminal, then civil) and 3.13
+# (civil courts: civil, then criminal). Each part's category rows are summed against its
+# printed total; the four printed totals are then added once per category.
+PUNJAB_2025_PARTS=[('3.12','sessions_courts','criminal',[(74,0)]),('3.12','sessions_courts','civil',[(74,1),(75,0)]),
+                   ('3.13','civil_courts','civil',[(75,1),(76,0)]),('3.13','civil_courts','criminal',[(76,1)])]
+PUNJAB_TOTAL_NAMES={'Grand Total','Total','Total of All Civil Categories'}
+
+def punjab_2025(raw,catalog):
+    sid='annual_2025';path=raw/'pdfs'/f'{sid}.pdf';sha=hashlib.sha256(path.read_bytes()).hexdigest()
+    if sha!=json.loads(path.with_suffix('.metadata.json').read_text())['sha256']:raise ValueError(f'Checksum mismatch: {sid}')
+    parts,checks=[],[]
+    with pdfplumber.open(path) as pdf:
+        for section,court_tier,category,refs in PUNJAB_2025_PARTS:
+            detail,total,pages=[],None,[]
+            for p,t in refs:
+                tables=[x for x in pdf.pages[p-1].find_tables() if x.bbox[2]-x.bbox[0]>300]
+                for cells in tables[t].extract():
+                    row=[clean(v) for v in cells if clean(v)]
+                    if len(row)!=5 or not re.search('[A-Za-z]',row[0]) or not all(re.fullmatch(r'[\d,]+',v) for v in row[1:]):continue
+                    nums=[integer(v) for v in row[1:]]
+                    if row[0] in PUNJAB_TOTAL_NAMES:
+                        if total is not None:raise ValueError(f'Two totals in Punjab 2025 {section} {category}')
+                        total=dict(zip(FOUR,nums));total_cells=cells;total_page=p
+                    else:detail.append(nums)
+                pages.append(p)
+            if total is None:raise ValueError(f'No printed total in Punjab 2025 {section} {category}')
+            for i,f in enumerate(FOUR):
+                s=sum(n[i] for n in detail)
+                checks.append(dict(source_id=sid,province='Punjab',section=f'{section} {court_tier} {category}',metric=f,detail_sum=s,reported_total=total[f],
+                                   difference=s-total[f],status='pass' if s==total[f] else 'source_mismatch',total_source_record_id=f'{sid}:Punjab:{section}:{court_tier}:{category}:total'))
+            parts.append(dict(section=section,court_tier=court_tier,category=category,**total,category_rows=len(detail),pdf_pages=pages,total_pdf_page=total_page,raw_cells=total_cells))
+    rows=[]
+    for category in ['civil','criminal','all']:
+        ps=[x for x in parts if category=='all' or x['category']==category]
+        rows.append(dict(source_id=sid,year=2025,period_type='annual',period_start='2025-01-01',period_end='2025-12-31',province='Punjab',geography_level='province',
+                         category=category,court_tier='all_courts',**{f:sum(x[f] for x in ps) for f in FOUR},transfers_in=None,transfers_out=None,
+                         method='sum_court_tier_category_totals',components=[{k:x[k] for k in ('section','court_tier','category',*FOUR,'total_pdf_page')} for x in ps],
+                         raw_values=None,raw_cells=None,pdf_page=None,table_index=None,row_index=None,
+                         source_url=catalog[sid]['source_url'],source_sha256=sha,source_record_id=f'{sid}:Punjab:3.12+3.13:{category}',
+                         scope_note='Punjab 2025 prints no district all/civil/criminal tables; provincial totals are the printed totals of the court-tier category tables 3.12 (sessions courts) and 3.13 (civil courts), added once. Several 3.12/3.13 categories print zero opening pendency beside a positive balance (new categories), so these totals do not satisfy the stock-flow identity and differ from the overview row (1,501,119 opening; 1,434,397 balance).'))
+    return rows,checks
 
 def extract_aggregates(raw):
     catalog={s['id']:s for s in json.loads((HERE/'sources.json').read_text())}

@@ -32,9 +32,6 @@ const LSM_PALETTE=['var(--pine)','var(--gold-500)','var(--slate)','var(--rust)',
 
 /* ---- topics (sidebar navigation, one topic at a time; #hash deep links) ---- */
 const TOPICS=[
- {k:'all',label:'Everything',
-  desc:'Every topic on one page, top to bottom — the full picture.',
-  meta:'All sources are listed at the foot of the page and under About → Sources.'},
  {k:'structure',label:'Structural change',
   title:"The structure of Pakistan's economy",
   lede:'In 1952 agriculture produced roughly half of everything Pakistan made; today it is under a quarter, and services produce more than half. Trace that shift, then read off the economy’s mix in any single year.',
@@ -49,7 +46,7 @@ const TOPICS=[
   title:'Inside industry: what Pakistan’s factories make',
   lede:'Large-scale manufacturing is a fifth of industry and the part measured monthly. Two decades of sector production indices, and the monthly quantum index that tracks them.',
   desc:'Large-scale manufacturing: annual sector production indices and the monthly quantum index.',
-  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: May 2026.'},
+  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: August 2026.'},
  {k:'censuses',label:'Manufacturing censuses',
   title:'What the manufacturing censuses show',
   lede:'Roughly once a decade PBS counts every registered factory. Comparing the 2005-06 and 2015-16 rounds shows which industries employ, produce and proliferate — and how much textiles receded.',
@@ -66,19 +63,19 @@ const TOPICS=[
   desc:'The federal budget as a treemap: receipts and current expenditure.',
   meta:'Finance Division: Budget in Brief & Explanatory Memorandum on Federal Receipts, FY2009-10→2026-27.'}];
 const TOPIC_DRAWS={structure:()=>{drawArc();drawMix();drawMacro();drawQtr();},growth:()=>{drawComposition();drawCYear();drawCEras();},industry:()=>{drawLsm();drawQim();drawWeights();},censuses:()=>drawCmi(),linkages:()=>drawIO(),budget:()=>redraw()};
-// meaningful groupings for the sidebar (plus an "Everything" shortcut at the top)
+// meaningful groupings for the sidebar
 const TOPIC_GROUPS=[
- {label:null,keys:['all']},
  {label:'Growth & structure',keys:['structure','growth']},
  {label:'Manufacturing',keys:['industry','censuses']},
  {label:'Linkages & the state',keys:['linkages','budget']}];
-const drawAll=()=>Object.values(TOPIC_DRAWS).forEach(f=>f());
 let topic='structure',applyingHash=false,_lastNavHash='';
 
-/* The topics this module answers for. "all" is not among them: Everything
-   meant everything on this page, and across the merged section it would be
-   27 charts and three modules each believing they owned the view. */
-const MINE=TOPICS.map(t=>t.k).filter(k=>k!=='all');
+/* The topics this module answers for. There is no "Everything" any more:
+   across the merged section it would be 27 charts and three modules each
+   believing they owned the view, and since the chart tabs (economy-nav.js)
+   a topic shows one chart at a time. econ-shell.js sends an old #t=all link
+   to the overview. */
+const MINE=TOPICS.map(t=>t.k);
 /* Sidebar panels this module owns. Another module's applyTopic cannot know
    to hide them, so they are hidden here when the topic is not ours. */
 const MY_PANELS=['sideYear','sideSector','foot-finance'];
@@ -132,7 +129,6 @@ function writeHash(push){
  else if(topic==='growth'){p.set('v',cView);if(cGroup!=='broad')p.set('g',cGroup);if(selSector!=='all')p.set('s',selSector);if(cYear)p.set('cy',cYear);}
  else if(topic==='censuses'){if(typeof cmiM!=='undefined'&&cmiM!=='emp')p.set('m',cmiM);}
  else if(topic==='linkages'){if(typeof ioView!=='undefined'&&ioView!=='grid')p.set('io',ioView);if(ioView==='focus'&&ioSec)p.set('sec',ioSec);}
- else if(topic==='all'){if(selYear)p.set('y',selYear);if(selSector!=='all')p.set('s',selSector);}
  else if(topic==='budget'){p.set('bs',bSide);if(bView!=='tree')p.set('bv',bView);if(bView==='trend'&&bTrendMode!=='stack')p.set('tm',bTrendMode);if(bPrice!=='nom')p.set('bp',bPrice);if(bYears&&bYears[bYi])p.set('by',bYears[bYi]);}
  const hv='#'+p.toString();_lastNavHash=hv;
  try{if(push&&history.pushState)history.pushState(null,'',hv);else if(history.replaceState)history.replaceState(null,'',hv);else location.hash=hv;}catch(e){location.hash=hv;}
@@ -151,7 +147,7 @@ function applyStateFromHash(){
  applyingHash=true;
  applyTopic(k,false);
  if(o.s)setSector(o.s);
- if(k==='structure'||k==='all'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
+ if(k==='structure'){if(o.av)setArcView(o.av);if(o.y)setYear(o.y);}
  if(k==='growth'){if(o.v)setCView(o.v);if(o.g)setCGroup(o.g);if(o.cy)setCYear(o.cy);}
  if(k==='censuses'&&o.m)setCmiMode(o.m);
  if(k==='linkages'){if(o.io)setIOView(o.io);if(o.sec!=null&&o.sec!=='')setIOSector(+o.sec);}
@@ -188,13 +184,12 @@ function applyTopic(k,push){
  d3.selectAll('#topicList .topic-item').classed('on',function(){return this.dataset.k===k;});
  d3.select('#topicDesc').text(t.desc);
  d3.select('#topicMeta').html('<b>Sources.</b> '+((window.DDProv&&window.DDProv.topicMeta(topic))||t.meta));
- const all=k==='all';
- d3.select('#sideYear').style('display',(k==='structure'||k==='growth'||all)?null:'none');
+ d3.select('#sideYear').style('display',(k==='structure'||k==='growth')?null:'none');
  setupYearSlider();
- d3.select('#sideSector').style('display',(k==='structure'||k==='growth'||all)?null:'none');
- d3.selectAll('[data-topic]').classed('topic-hidden',function(){return !all&&this.dataset.topic!==k;});
+ d3.select('#sideSector').style('display',(k==='structure'||k==='growth')?null:'none');
+ d3.selectAll('[data-topic]').classed('topic-hidden',function(){return this.dataset.topic!==k;});
  if(!applyingHash)writeHash(push);
- if(all)drawAll();else if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
+ if(TOPIC_DRAWS[k])TOPIC_DRAWS[k]();
  if(push)window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -226,7 +221,8 @@ function prepData(){
    pts.push({fy,n:fyEnd(fy),v:OB[fy][oldName].annual*100/old15[oldName],linked:true});
   });
   Object.keys(NB).sort().forEach(fy=>{
-   const d=NB[fy][c];if(d&&d.annual!=null)pts.push({fy,n:fyEnd(fy),v:d.annual,linked:false});
+   // complete fiscal years only: a year-to-date average (e.g. Jul–Aug) is not comparable for seasonal sectors
+   const d=NB[fy][c];if(d&&d.annual!=null&&Object.keys(d.monthly).length===12)pts.push({fy,n:fyEnd(fy),v:d.annual,linked:false});
   });
   if(pts.length)lsmSeries[c]=pts;
  });
@@ -289,15 +285,7 @@ function buildSectorSelect(){
  });
  sel.property('value',selSector);
 }
-function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();if(topic==='all')syncCYearToYear(y);writeHash();}
-// On the 'Everything' topic there is ONE year slider (arcYears, 1951-52→) but the growth panels
-// live on a shorter series (contribYears, 2000-01→). Keep them in step; outside the contrib span
-// cYear is null and the breakdown renders an explicit 'no data' note rather than a stale chart.
-function syncCYearToYear(y){
- const ys=contribYears();cYear=ys.indexOf(y)>=0?y:null;
- d3.select('#cYearLbl').text(cYear||y);
- drawComposition();drawCYear();
-}
+function setYear(y){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();writeHash();}
 function drawArc(){arcView==='lines'?drawArcLines():drawArcStack();}
 function drawArcStack(){
  const el=d3.select('#arc');el.selectAll('*').remove();
@@ -504,7 +492,7 @@ function drawMacroLevels(){
   });
   /* A "peak 2021-22" marker used to sit here. It was an artefact of an
      extract that stopped in 2023-24: on the 2017-Census basis the series
-     reaches 198,864 in 2024-25 and 203,118 in 2025-26, both above it. The
+     reaches 197,046 in 2024-25 and 199,917 in 2025-26, both above it. The
      chart states no turning point now; the reader can see the shape. */
   g.append('g').attr('transform',`translate(0,${ch-m.b})`).attr('class','axis').call(d3.axisBottom(x).ticks(Math.min(6,Math.floor(cw/110))).tickFormat(n=>fyLbl(n)));
   g.append('g').attr('transform',`translate(${m.l},0)`).attr('class','axis').call(d3.axisLeft(y).ticks(4).tickFormat(d3.format('~s')));
@@ -528,7 +516,7 @@ function initQtr(){
  drawQtr();
 }
 function qtrKey(r){return r.fy+' Q'+r.quarter;}
-/* One pass over the 880 rows produces the quarter list, the series names and
+/* One pass over the 968 rows produces the quarter list, the series names and
    the series-by-quarter totals for whichever level is showing. */
 function qtrShape(){
  const qs=[],seen=new Set(),by={},names=[];
@@ -679,7 +667,7 @@ function drawMix(){
  let svg=el.select('svg');
  if(svg.empty()||+svg.attr('data-n')!==rows.length||+svg.attr('width')!==W){el.selectAll('*').remove();svg=el.append('svg');}
  svg.attr('width',W).attr('height',H).attr('data-n',rows.length).style('display','block');
- const shade=d=>{const c=d3.hcl(MACRO[d.parent].c);const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
+ const shade=d=>{const c=d3.hcl(DDPalette.resolve(MACRO[d.parent].c));const rank=rows.filter(r=>r.parent===d.parent).indexOf(d);c.l=Math.min(88,c.l+rank*4.5);return c.formatHex();};
  const g=svg.selectAll('g.row').data(rows,d=>d.k);
  const gE=g.enter().append('g').attr('class','row');
  gE.append('text').attr('class','rl').attr('text-anchor','end').attr('font-size',11).attr('font-weight',600).attr('fill','var(--body)');
@@ -797,7 +785,6 @@ function setCView(v){cView=v;d3.selectAll('#cView button').classed('on',function
 function setCGroup(g){cGroup=g;d3.selectAll('#cGroup button').classed('on',function(){return this.dataset.g===g;});drawComposition();drawCYear();drawCEras();writeHash();}
 function setCYear(y){cYear=y;d3.select('#cYearLbl').text(y);
  if(topic==='growth'){const ys=contribYears();d3.select('#yrSlider').property('value',ys.indexOf(y));d3.select('#yrSliderLbl').text(y);}
- else if(topic==='all'&&arcYears.indexOf(y)>=0){selYear=y;d3.select('#selYearLbl').text(y);syncSlider();drawArc();drawMix();}
  drawComposition();drawCYear();writeHash();}
 function drawComposition(){
  const growth=cView==='growth';
@@ -951,7 +938,7 @@ function initLsm(){
  const chips=d3.select('#lsmChips');
  const canon=Object.keys(lsmSeries);
  // order: QIM first, then by weight desc
- const w=c=>c==='QIM'?999:(IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:0);
+ const F=lsmFys(),w=c=>c==='QIM'?999:(IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:0);
  canon.sort((a,b)=>w(b)-w(a));
  chips.selectAll('button').data(canon).join('button').attr('class','chip')
   .html(c=>LSM_SHORT[c])
@@ -986,7 +973,7 @@ function drawLsm(){
     .attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2).attr('stroke-dasharray','5 4').attr('d',line);
   svg.append('path').datum(newPts).attr('fill','none').attr('stroke',lsmColors[c]).attr('stroke-width',2.5).attr('d',line);
   svg.selectAll(null).data(pts).join('circle').attr('cx',p=>x(p.n)).attr('cy',p=>y(p.v)).attr('r',3).attr('fill',lsmColors[c]).attr('stroke','var(--surface)').attr('stroke-width',1)
-   .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}${p.fy==='2025-26'?' (Jul–May)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
+   .on('mousemove',(e,p)=>showTip(`<b>${LSM_SHORT[c]}</b> ${p.fy}${p.linked?' (old base, linked)':''}<br>index ${p.v.toFixed(1)} (2015-16 = 100)`,e)).on('mouseleave',hideTip);
   const lp=lastPt(pts);
   if(!narrow) svg.append('text').attr('x',x(lp.n)+7).attr('y',y(lp.v)+4).attr('font-size',11).attr('font-weight',700).attr('fill',lsmColors[c]).text(LSM_SHORT[c]);
  });
@@ -1027,8 +1014,17 @@ function drawQim(){
 }
 
 /* ================= 3c. weights + FY growth ================= */
-function fyGrowth(c){
- const a=IND.new_base['2025-26'][c],b=IND.new_base['2024-25'][c];
+// latest complete fiscal year, and the year in progress (if any), read off the QIM row
+function lsmFys(){
+ const NB=IND.new_base,fys=Object.keys(NB).sort(),n=fy=>Object.keys((NB[fy].QIM||{}).monthly||{}).length;
+ const full=fys.filter(fy=>n(fy)===12),last=fys[fys.length-1],k=n(last);
+ const MO=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+ return {full:full[full.length-1],prevFull:full[full.length-2],
+  ytd:k<12?last:null,prevYtd:k<12?fys[fys.length-2]:null,ytdLbl:k<12?(k===1?'Jul':'Jul–'+MO[k-1]):null};
+}
+function fyGrowth(c,fy,prev){
+ if(!fy){const F=lsmFys();fy=F.full;prev=F.prevFull;}
+ const a=IND.new_base[fy][c],b=IND.new_base[prev][c];
  if(!a||!b)return null;
  const common=Object.keys(a.monthly).map(k=>k.slice(5)).filter(mm=>Object.keys(b.monthly).some(k2=>k2.slice(5)===mm));
  if(!common.length)return null;
@@ -1038,8 +1034,9 @@ function fyGrowth(c){
 }
 function drawWeights(){
  const el=d3.select('#lsmWeights');el.selectAll('*').remove();
+ const F=lsmFys();
  const rows=Object.keys(lsmSeries).filter(c=>c!=='QIM')
-  .map(c=>({c,w:IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:0,g:fyGrowth(c)}))
+  .map(c=>({c,w:IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:0,g:fyGrowth(c),gy:F.ytd?fyGrowth(c,F.ytd,F.prevYtd):null}))
   .sort((a,b)=>b.w-a.w);
  const W=el.node().clientWidth||520,rh=23,H=rows.length*rh+6;
  const lblW=Math.max(110,Math.min(160,W*0.32));
@@ -1047,7 +1044,7 @@ function drawWeights(){
  const svg=el.append('svg').attr('width',W).attr('height',H).style('display','block');
  const g=svg.selectAll('g').data(rows).join('g').attr('transform',(d,i)=>`translate(0,${i*rh+3})`).style('cursor','pointer')
   .on('click',(e,d)=>{lsmSel.has(d.c)?lsmSel.delete(d.c):lsmSel.add(d.c);styleChips();drawLsm();drawWeights();})
-  .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>Jul–May 2025-26: ${fmtPct(d.g)}`,e)).on('mouseleave',hideTip);
+  .on('mousemove',(e,d)=>showTip(`<b>${LSM_SHORT[d.c]}</b><br>weight ${d.w.toFixed(2)}% of QIM<br>FY${F.full}: ${fmtPct(d.g)}${F.ytd?`<br>${F.ytdLbl} ${F.ytd}: ${fmtPct(d.gy)}`:''}`,e)).on('mouseleave',hideTip);
  g.append('text').attr('x',lblW).attr('y',rh/2).attr('dy','.32em').attr('text-anchor','end').attr('font-size',11).attr('font-weight',d=>lsmSel.has(d.c)?800:600)
   .attr('fill',d=>lsmSel.has(d.c)?lsmColors[d.c]:'var(--body)')
   .text(d=>{const max=Math.floor(lblW/6.2);const t=LSM_SHORT[d.c];return t.length>max?t.slice(0,max-1)+'…':t;});
@@ -1537,7 +1534,11 @@ const CSV={
  qim:()=>['Pakistan_QIM_monthly.csv',
    IND.trend.map(p=>({month:p.month,qim_index:p.qim,mom_change_pct:p.mom,yoy_change_pct:p.yoy,fy_cumulative_index:p.cum_qim,fy_cumulative_change_pct:p.cum_chg}))],
  weights:()=>['Pakistan_LSM_weights.csv',
-   Object.keys(lsmSeries).filter(c=>c!=='QIM').map(c=>({sector:LSM_SHORT[c],weight_in_qim_pct:IND.new_base['2025-26'][c]?IND.new_base['2025-26'][c].weight:null,jul_may_2025_26_growth_pct:round2(fyGrowth(c))})).sort((a,b)=>(b.weight_in_qim_pct||0)-(a.weight_in_qim_pct||0))],
+   (()=>{const F=lsmFys(),k=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+    return Object.keys(lsmSeries).filter(c=>c!=='QIM').map(c=>{const r={sector:LSM_SHORT[c],weight_in_qim_pct:IND.new_base[F.full][c]?IND.new_base[F.full][c].weight:null};
+     r[`fy_${k(F.full)}_growth_pct`]=round2(fyGrowth(c));
+     if(F.ytd)r[`${k(F.ytdLbl)}_${k(F.ytd)}_growth_pct`]=round2(fyGrowth(c,F.ytd,F.prevYtd));
+     return r;}).sort((a,b)=>(b.weight_in_qim_pct||0)-(a.weight_in_qim_pct||0));})()],
  cmi:()=>{const C=IND.cmi,tot={emp:[1100814,2340966],est:[8680,42578]};
    let rows;
    if(cmiM==='gva')rows=Object.entries(C.gva_weights).filter(([d])=>d!=='OD').map(([d,v])=>({industry:v.label,share_2005_06_pct:v.w2005,share_2015_16_pct:v.w2015}));
@@ -1555,7 +1556,7 @@ const CSV={
     export now follows all three.
 
     deflator_estimated is not decoration. The deflator is published only to
-    2024-25; beyond that deflForYears extrapolates it, so a real value for a
+    2025-26; beyond that deflForYears extrapolates it, so a real value for a
     later year rests on an estimate, and a column that says which rows those
     are is the difference between a figure and a guess. */
  budget:()=>{

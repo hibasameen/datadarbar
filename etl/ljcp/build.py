@@ -20,6 +20,8 @@ ALIASES={
 }
 ALIASES['Punjab']['nankana']='nankana sahib'
 ALIASES['Khyber Pakhtunkhwa'].update({'bajour':'bajaur','kohistan':'kohistan upper','lowerkohistan':'kohistan lower'})
+ALIASES['Khyber Pakhtunkhwa']['kolaipallaskohistan']='kolai pallas'  # 2022, 2023, 2025 staffing spelling
+ALIASES['Sindh']['mithi']='tharparkar'  # staffing tables 2022-2025 name the Tharparkar sessions division by its seat, Mithi
 
 def canonical(name,province,pop):
     t=token(name)
@@ -180,7 +182,7 @@ def balochistan_consolidated(rank_rows,pop):
     out=[]
     for (year,unit),rs in sorted(groups.items()):
         # Editions with a consolidated table (2020, 2022) are summed per map unit as printed;
-        # editions with only rank tables (2023, 2024) are summed over the four ranks.
+        # editions with only rank tables (2023-2025) are summed over the four ranks.
         four=[r for r in rs if r['court_tier'] in FOUR_RANKS+['all_courts']];other=[r for r in rs if r['court_tier'] in OTHER_RANKS]
         if not four:continue
         def total(rows,f):
@@ -370,17 +372,38 @@ def main():
     judges=[r for r in judges if r['province']!='Balochistan']+balochistan_consolidated(all_judges,pop)
     _,province_annual=build_cases([{**r,'is_total':False,'session_division':r['province']} for r in obs if r['kind']=='cases' and r['is_total']])
     for r in province_annual:r.pop('session_division');r['geography_level']='province'
-    from aggregates import extract_aggregates
+    from aggregates import extract_aggregates,punjab_2025
+    from overview import extract_overview,overview_checks,reconcile
+    catalog={s['id']:s for s in json.loads((HERE/'sources.json').read_text())}
     aggregates=extract_aggregates(a.raw)
     for r in aggregates:flow_indicators(r)
     for r in aggregates:
         if r['period_type']=='annual':province_annual.append(r)
+    # Punjab 2025: provincial totals from the court-tier category tables (no district tables).
+    punjab25,punjab25_checks=punjab_2025(a.raw,catalog)
+    for r in punjab25:flow_indicators(r);province_annual.append(r)
+    # National overview (superior courts and district judiciary per edition). A province with no
+    # chapter total in a year (Balochistan 2025: staffing tables only) takes the overview row,
+    # labelled as such; overview and chapter totals are otherwise kept apart and reconciled.
+    overview=extract_overview(a.raw)
+    have={(r['year'],r['province']) for r in province_annual if r['category']=='all'}
+    for o in overview:
+        if o['court_level']!='district' or (o['year'],o['province']) in have:continue
+        r=dict(source_id=o['source_id'],year=o['year'],period_type='annual',period_start=o['period_start'],period_end=o['period_end'],province=o['province'],
+               geography_level='province',category='all',court_tier='all_courts',**{f:o[f] for f in ['pending_start','instituted','disposed','pending_end']},
+               transfers_in=None,transfers_out=None,method='overview_table_only',raw_values=None,raw_cells=None,pdf_page=o['pdf_page'],table_index=None,row_index=None,
+               source_url=o['source_url'],source_sha256=o['source_sha256'],source_record_id=o['source_record_id'],
+               scope_note=f"Only the national overview table prints this province's {o['year']} district-judiciary totals; the district chapter has staffing tables only. No civil/criminal split.")
+        flow_indicators(r);province_annual.append(r)
     write_dataset(out,'annual_provinces',province_annual)
+    write_dataset(out,'national_overview',overview)
+    write_dataset(out,'overview_validation',overview_checks(overview))
+    write_dataset(out,'overview_reconciliation',reconcile(overview,province_annual))
     write_dataset(out,'halfyear_provinces',[r for r in aggregates if r['period_type']=='half_year'])
     write_dataset(out,'category_partition_checks',partition_checks(annual,'session_division'))
     write_dataset(out,'halfyear_partition_checks',partition_checks([r for r in aggregates if r['period_type']=='half_year'],'province'))
     district,crosswalk,issues,hosted=district_data(annual,judges,pop)
-    checks=table_quality(obs)
+    checks=table_quality(obs)+punjab25_checks
     for name,rows in [('court_tier_cases',tiers),('annual_sessions',annual),('judicial_strength',judges),('district_indicators',district),('sessions_crosswalk',crosswalk),('table_validation',checks),('geography_issues',issues),('hosted_districts',hosted)]:write_dataset(out,name,rows)
     # One observation per year/province/session: no case-category duplicates in
     # the policy scatterplot or the default map/year-slider feed.
@@ -412,11 +435,15 @@ def main():
     for y in range(2019,2026):
         for p in ['Punjab','Sindh','Khyber Pakhtunkhwa','Balochistan','Islamabad']:
             selected=[r for r in annual if r['year']==y and r['province']==p and r['category']=='all']
-            coverage.append(dict(year=y,province=p,annual_sessions=len(selected),status='extracted' if selected else ('not_located' if y==2019 else 'not_available_in_curated_annual_series')))
+            status='extracted' if selected else ('not_located' if y==2019 else 'not_available_in_curated_annual_series')
+            if not selected and y==2025:
+                status={'Punjab':'province_totals_only_from_court_tier_category_tables','Balochistan':'province_total_only_from_national_overview'}.get(p,status)
+            coverage.append(dict(year=y,province=p,annual_sessions=len(selected),status=status))
     write_dataset(out,'coverage',coverage)
     quality=dict(annual_records=len(annual),source_records=len(obs),judicial_strength_rows=len(judges),district_indicator_rows=len(district),policy_rows=sum(r['category']=='all' and r['court_tier']=='all_courts' for r in district),
                  source_stock_flow_residual_rows=sum(r['stock_flow_check']=='source_residual' for r in annual),table_mismatches=sum(r['status']=='source_mismatch' for r in checks),
                  halfyear_records=sum(r['period_type']=='half_year' for r in aggregates),
+                 national_overview_rows=len(overview),overview_total_mismatches=sum(c['status']!='pass' for c in overview_checks(overview)),
                  rank_specific_staffing_rows=sum(r['court_tier']!='all_courts' for r in all_judges),
                  policy_rows_with_staffing=sum(r['judge_coverage_status']=='matched' for r in policy),
                  category_session_rows=len(category_rows),category_crosscheck_matches=sum(c['status']=='matches' for c in category_checks),
@@ -424,24 +451,26 @@ def main():
                  unresolved_crosswalk_rows=sum(not r['population_rate_eligible'] for r in crosswalk),population_source=str(a.population),population_sha256=hashlib.sha256(a.population.read_bytes()).hexdigest(),population_year=2023,
                  caveats=['Civil/criminal categories are edition-specific and need not sum to all cases.','Sessions divisions are not universally census districts.','Population rates use a fixed 2023 benchmark; they are not annual estimates.','Missing values stay null. Source arithmetic errors are preserved.','A cross-sectional judges/backlog association is descriptive, not a causal staffing effect.'])
     (out/'quality_report.json').write_text(json.dumps(quality,indent=2));print(json.dumps(quality,indent=2))
+    years=sorted({r['year'] for r in annual})
     lines=['# LJCP judicial data — extracted release','',
-           f"{len(annual):,} annual case records across 2020–2024; {quality['halfyear_records']} separately dated half-year provincial records through June 2025.",'',
+           f"{len(annual):,} annual case records across {years[0]}–{years[-1]}; {quality['halfyear_records']} separately dated half-year provincial records through June 2025.",'',
            '## Annual sessions coverage','',
            '| Year | Punjab | Sindh | Khyber Pakhtunkhwa | Balochistan | ICT |','|---|---:|---:|---:|---:|---:|']
     for year in range(2019,2026):
         counts=[next(r['annual_sessions'] for r in coverage if r['year']==year and r['province']==p) for p in ['Punjab','Sindh','Khyber Pakhtunkhwa','Balochistan','Islamabad']]
         lines.append('| '+str(year)+' | '+' | '.join(str(n) if n else '—' for n in counts)+' |')
-    lines += ['', 'A dash means unavailable in this annual extraction, never zero cases. Balochistan 2023 is available at province level. 2025 data are January–June provincial figures, not annual district data. No 2019 annual edition was located.', '',
+    lines += ['', 'A dash means unavailable in this annual extraction, never zero cases. Balochistan 2023 is available at province level. The 2025 edition prints no district all/civil/criminal tables for Punjab (provincial totals come from its court-tier category tables 3.12/3.13) or Balochistan (only the national overview row); both are in `annual_provinces`. The separate January–June 2025 half-year figures remain in `halfyear_provinces`. No 2019 annual edition was located.', '',
               '## Files to use','',
               '- `annual_sessions.csv` / `.json` / `.parquet`: source-geography case counts and flow indicators. One year × province × sessions division × category.',
               '- `district_policy_indicators.csv` / `.json` / `.parquet`: one all-cases observation per year and eligible map unit, with population and staffing indicators. Best starting point for the map/year slider or staffing-versus-pendency scatterplot.',
               '- `district_category_indicators.*`: map unit × year × case category (family, narcotics, murder, bail, rent, civil/criminal appeals and revisions, seven-years-plus, hudood) with per-100k rates and share of all pending cases; `category_sessions.*` is the same at source geography.',
               '- `judicial_strength.*` and `judicial_strength_by_rank.*`: consolidated and rank-specific staffing, kept separate. Balochistan consolidated rows are sums of its rank tables per map district.',
-              '- `annual_provinces.*` and `halfyear_provinces.*`: provincial aggregates; keep annual and half-year periods separate.',
+              '- `annual_provinces.*` and `halfyear_provinces.*`: provincial aggregates; keep annual and half-year periods separate. `method` says whether a row is a chapter table total, a sum of Punjab court-tier totals, or (Balochistan 2025) the overview row.',
+              '- `national_overview.*`: each edition\'s front-of-report table for the Supreme Court, Federal Shariat Court, five High Courts and the five district judiciaries, with printed totals (`overview_validation.*`) and the district rows compared with chapter totals (`overview_reconciliation.*`). In 2025 the Supreme Court transferred 21,570 cases to the new Federal Constitutional Court (table 1.5); the column `transferred_to_fcc` carries them and the 2025 Supreme Court and superior-court balances are a series break, not disposals.',
               '- `sessions_crosswalk.*`: every source unit, candidate ADM2 key, aggregation rule/status and reasons for withholding rates.',
               '- `source_observations.*`: original cells, URLs, PDF checksum, page, table and row. Derived records link back to these IDs.',
               '- `table_validation.*`, `category_partition_checks.*`, `halfyear_partition_checks.*`, `continuity_checks.*`, `category_crosscheck.*`, `coverage.*`, and `quality_report.json`: audit and completeness reports.', '',
-              f"Case-category layers: {quality['district_category_rows']} map-unit/year/category observations from {quality['category_session_rows']} source rows (2020, 2022, 2023, 2024; the scanned 2021 edition is not covered). The automatic table reader also reads the all/civil/criminal tables and is checked against the curated series: {quality['category_crosscheck_matches']} rows match exactly, {quality['category_crosscheck_other']} differ, all of them the 2020 Balochistan printed criminal table that repeats the all-cases table. Categories are edition-specific and not an exhaustive partition of all cases.", '',
+              f"Case-category layers: {quality['district_category_rows']} map-unit/year/category observations from {quality['category_session_rows']} source rows (2020, 2022, 2023, 2024, 2025; the scanned 2021 edition is not covered; Punjab 2025 sums its sessions- and civil-court tables, so its narcotics, bail, rent and family layers are broader than 2024's single tables). The automatic table reader also reads the all/civil/criminal tables and is checked against the curated series: {quality['category_crosscheck_matches']} rows match exactly, {quality['category_crosscheck_other']} differ, all of them the 2020 Balochistan printed criminal table that repeats the all-cases table. Categories are edition-specific and not an exhaustive partition of all cases.", '',
               f"Staffing is matched to {quality['policy_rows_with_staffing']} of {quality['policy_rows']} policy rows. `population_interpolated` and `pending_per_100k_interpolated` use geometric growth between the 2017 and 2023 census counts to the year-end of each judicial year (2024 extrapolated); units with implausible implied growth (boundary changes) keep the fixed 2023 count, recorded in `population_interpolation_basis`.", '',
               '## Interpretation','',
               f"The policy feed contains {quality['policy_rows']} district-year observations. "+(f"{quality['unresolved_crosswalk_rows']} sessions-year correspondences need jurisdiction review; they remain in the source-geography dataset but do not receive population rates." if quality['unresolved_crosswalk_rows'] else 'Every reported sessions unit is keyed to a map unit; see `sessions_crosswalk.*` for the rule applied to each.'), '',
@@ -449,7 +478,7 @@ def main():
               f"Map districts with no court seat of their own in a year (Korangi and Keamari in Karachi East/West; Sujawal in Thatta before 2023; Sherani in Zhob; Sohbatpur in Jaffarabad; Washuk in Kharan before Basima reports; Harnai in Sibi in 2020) receive no observation. Their population is added to the host's denominator for that year, listed in `population_keys`/`hosted_districts` and in `hosted_districts.*` ({len(hosted)} district-years). Counts are never split across polygons.", '',
               f"There are {quality['source_stock_flow_residual_rows']} annual observations with a nonzero reported stock-flow residual and {quality['table_mismatches']} comparable table-sum discrepancies. Values are preserved and flagged. A flag is not an extraction correction.", '',
               'Civil and criminal categories are not a stable exhaustive partition in every edition. Punjab 2020 category tables cover civil courts only; overall totals also include sessions courts. Use the all-cases series for the default historical comparison.', '',
-              'Working judges exclude ex-cadre where the report distinguishes them. Missing gender values remain unknown unless their column reconciles exactly to a printed total; inferred zeros are logged. Punjab staffing in the 2022 edition is withheld from case indicators because its printed reference date is 2021. KP district staffing was not found in the selected 2024 chapter.', '',
+              'Working judges exclude ex-cadre where the report distinguishes them. Missing gender values remain unknown unless their column reconciles exactly to a printed total; inferred zeros are logged. Punjab staffing in the 2022 edition is withheld from case indicators because its printed reference date is 2021. KP district staffing was not found in the selected 2024 chapter; the 2025 edition prints it. ICT 2025 East/West working strength is read from notes inside the merged consolidated cells and reconciled to the printed working totals.', '',
               'The staffing-versus-pendency comparison is descriptive. It cannot establish that staffing differences caused the backlog.', '',
               f"Full methodology and refresh instructions: `{HERE/'README.md'}`.",'']
     (out/'README.md').write_text('\n'.join(lines))

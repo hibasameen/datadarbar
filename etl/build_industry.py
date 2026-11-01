@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """Parse PBS industry statistics (QIM / LSM / CMI) into warehouse + app JSON.
 
-Inputs (../../industry_statistics/):
-  qim/Trend-sheet.xlsx           monthly overall QIM Jul-2016 -> latest
-  qim/Table-2-may-2026.xlsx      monthly sector indices FY2025-26
+Inputs (<Data Darbar>/raw_data/industry_statistics/; release files set in
+TREND_FILE / SECTOR_XLSX below -- bump those when PBS posts a new month):
+  qim/QIM-Series-Base-Year-2015-16-11.xlsx  monthly overall QIM Jul-2016 -> Aug-2026
   qim/Table-3-2024-25.xlsx       monthly sector indices FY2024-25
+  qim/Table-3-25-26-1.xlsx       monthly sector indices FY2025-26 (complete, Aug-2026 revision)
+  qim/Table-2-August-26.xlsx     monthly sector indices FY2026-27 to date (Jul-Aug)
   table2_new/Table-2-YYYY-YY.pdf annual+monthly sector indices, base 2015-16 (2015-16..2023-24)
   table2_old/Table-2-YYYY-YY.pdf same, base 2005-06 (2005-06..2021-22)
   reports/CMI_2015-16_report.pdf summary tables 3.2/3.3/3.5/3.13
 
-Outputs:
-  ../lsm_qim.parquet, ../lsm_sector_indices.parquet (warehouse)
-  econ_data/industry.json (app bundle input)
+Outputs (paths fixed, independent of cwd):
+  <Data Darbar>/data_darbar_warehouse/lsm_qim.parquet, lsm_sector_indices.parquet
+  <Data Darbar>/data_darbar_warehouse/econ_data/industry.json (app bundle input;
+  spliced into app/assets/js/econ_data.js by etl/splice_econ_industry.py)
+
+This file exists in two identical copies: datadarbar/etl/build_industry.py
+(canonical, version-controlled) and data_darbar_warehouse/build/build_industry.py.
+Both sit two levels below <Data Darbar>, so the paths below resolve the same.
 
 Notes: PDF numbers may contain stray spaces ("1, 093, 235", "84. 9").
 Sector rows are matched against canonical sector names taken from the xlsx.
@@ -22,10 +29,21 @@ from pathlib import Path
 import openpyxl
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2] / 'industry_statistics'
-OUT_WH = Path(__file__).resolve().parents[1]
-OUT_JSON = Path(__file__).resolve().parents[1] / 'econ_data'
+BASE = Path(__file__).resolve().parents[2]          # <Data Darbar>
+ROOT = BASE / 'raw_data' / 'industry_statistics'
+OUT_WH = BASE / 'data_darbar_warehouse'
+OUT_JSON = OUT_WH / 'econ_data'
 OUT_JSON.mkdir(exist_ok=True)
+
+# ---- release inputs: bump these when PBS posts a new month ----
+TREND_FILE = 'qim/QIM-Series-Base-Year-2015-16-11.xlsx'   # Aug-2026 release (pbs.gov.pk/?p=29605)
+SECTOR_XLSX = [   # (file, fy_start_year) -> new_base['YYYY-YY']; overrides any PDF for that FY
+    ('qim/Table-3-2024-25.xlsx', 2024),
+    ('qim/Table-3-25-26-1.xlsx', 2025),     # FY2025-26 complete (revised, Aug-2026 release)
+    ('qim/Table-2-August-26.xlsx', 2026),   # FY2026-27 Jul-Aug
+]
+WEIGHTS_FY = 2025          # fallback weights for weight-less PDFs come from this xlsx year
+DOWNLOADED = '2026-10-24'
 
 MONTH_ABBR = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun']
 
@@ -55,7 +73,7 @@ def canon(name):
 
 # ---------------- 1. QIM trend sheet ----------------
 def parse_trend():
-    wb = openpyxl.load_workbook(ROOT / 'qim/Trend-sheet.xlsx', data_only=True)
+    wb = openpyxl.load_workbook(ROOT / TREND_FILE, data_only=True)
     ws = wb[wb.sheetnames[0]]
     rows = []
     for r in ws.iter_rows(min_row=6, values_only=True):
@@ -267,21 +285,24 @@ def parse_cmi():
 # ---------------- main ----------------
 def main():
     trend = parse_trend()
-    fy2526 = parse_sector_xlsx('qim/Table-2-may-2026.xlsx', 2025)
-    fy2425 = parse_sector_xlsx('qim/Table-3-2024-25.xlsx', 2024)
-    canonical = sorted(set(fy2526) | set(fy2425))
-    print(f'trend months: {len(trend)}  canonical sectors: {len(canonical)}')
+    xlsx_years = {f'{y}-{(y + 1) % 100:02d}': parse_sector_xlsx(path, y) for path, y in SECTOR_XLSX}
+    canonical = sorted(set().union(*xlsx_years.values()))
+    wfy = f'{WEIGHTS_FY}-{(WEIGHTS_FY + 1) % 100:02d}'
+    print(f'trend months: {len(trend)} ({trend[0]["month"]}..{trend[-1]["month"]})  canonical sectors: {len(canonical)}')
     for s in canonical:
-        print('  ', s, fy2526.get(s, {}).get('weight'))
+        print('  ', s, xlsx_years[wfy].get(s, {}).get('weight'))
+    for fy, secs in xlsx_years.items():
+        diff = {s for s in canonical if secs.get(s, {}).get('weight') != xlsx_years[wfy].get(s, {}).get('weight')}
+        if diff:
+            print(f'WARNING {fy}: sectors/weights differ from {wfy}: {sorted(diff)}')
 
-    fw = {s: d['weight'] for s, d in fy2526.items()}
+    fw = {s: d['weight'] for s, d in xlsx_years[wfy].items()}
     new_base = {}
     for f in sorted(glob.glob(str(ROOT / 'table2_new/Table-2-*.pdf'))):
         fy = re.search(r'(\d{4}-\d{2})', os.path.basename(f)).group(1)
         new_base[fy] = parse_table2_pdf(f, canonical, fy, fallback_weights=fw)
         print(f'new {fy}: {len(new_base[fy])} sectors')
-    new_base['2024-25'] = fy2425
-    new_base['2025-26'] = fy2526
+    new_base.update(xlsx_years)
 
     # QIM total row absent from 2021-22/2022-23 PDFs: fill from trend sheet
     # (annual = cumulative QIM at June of the fiscal year)
@@ -316,7 +337,7 @@ def main():
                new_base=new_base, old_base=old_base, cmi=cmi,
                meta=dict(source='PBS Industry Statistics (pbs.gov.pk/industry-2)',
                          qim_base='2015-16=100', old_base='2005-06=100',
-                         downloaded='2026-08-09'))
+                         downloaded=DOWNLOADED))
     (OUT_JSON / 'industry.json').write_text(json.dumps(out))
     print('wrote econ_data/industry.json', (OUT_JSON / 'industry.json').stat().st_size // 1024, 'KB')
 

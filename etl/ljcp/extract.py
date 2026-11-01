@@ -57,10 +57,15 @@ def data_name(row, serial):
     return None
 
 
-def read_table(page, table_index, fields, serial=True, ignore_names=()):
+def read_table(page, table_index, fields, serial=True, ignore_names=(), skip_cols=0):
     tables = [t for t in page.find_tables() if t.bbox[2] - t.bbox[0] > 300]
     table = tables[table_index]
     rows = table.extract()
+    if skip_cols:
+        # A leading label column (ICT 2025 7.14 prints "All Cases", "Civil Cases", ... in
+        # a merged first column of each stacked block) is blanked so the row name is the
+        # unit, not the block label. Cell geometry is untouched.
+        rows = [[None] * skip_cols + list(row[skip_cols:]) for row in rows]
     if ignore_names:
         # Header fragments such as "2024 | Out" can look like a serial + name row.
         rows = [row if data_name(row, serial) not in ignore_names else [None] * len(row) for row in rows]
@@ -131,10 +136,12 @@ def read_table(page, table_index, fields, serial=True, ignore_names=()):
 
 def specs():
     out = []
-    def add(year, province, category, refs, section, tier='all_courts', order=STANDARD, count=None, note=''):
+    def add(year, province, category, refs, section, tier='all_courts', order=STANDARD, count=None, note='', skip_cols=0, serial=True):
         out.append(dict(source_id=f'annual_{year}', year=year, province=province,
                         category=category, court_tier=tier, refs=refs, section=section,
-                        fields=order, expected_rows=count, scope_note=note, kind='cases', serial=True))
+                        fields=order, expected_rows=count, scope_note=note, kind='cases', serial=serial))
+        if skip_cols:
+            out[-1]['skip_cols'] = skip_cols
     for y, a in [(2020,58),(2022,57),(2023,65)]:
         if y == 2020:
             add(y,'Punjab','all',[(58,0)],'3.19','civil_courts',count=36)
@@ -179,6 +186,19 @@ def specs():
         (2024,'all',[(274,1)],'7.17'),(2024,'civil',[(275,0)],'7.21'),(2024,'criminal',[(275,2)],'7.23')]:
         add(y,'Islamabad',cat,refs,s,order=FOUR if y==2022 or (y==2020 and cat=='criminal') else STANDARD,count=2,
             note='Civil/criminal table scope varies by edition and may exclude appeals, bail, family or miscellaneous categories. Compare all-cases totals across years.')
+    # 2025 edition: four-column tables (no transfer columns) throughout. Punjab prints no
+    # district all/civil/criminal tables (only district category tables and province
+    # category totals by court tier, see aggregates.py); Balochistan's district chapter has
+    # staffing tables only (its 2025 case totals exist only in the national overview).
+    for cat,refs,s in [('all',[(143,0)],'4.17'),('civil',[(144,0)],'4.18'),('criminal',[(145,0)],'4.19')]:
+        add(2025,'Sindh',cat,refs,s,order=FOUR,count=28)
+    for cat,refs,s in [('all',[(215,1),(216,0)],'5.13'),('criminal',[(219,0),(220,0)],'5.15'),('civil',[(220,1),(221,0)],'unnumbered civil after 5.15')]:
+        add(2025,'Khyber Pakhtunkhwa',cat,refs,s,order=FOUR,count=35,
+            note='5.14 (pp. 217-218) reprints 5.13 cell for cell; only 5.13 is read.' if cat=='all' else
+                 ('Printed civil Total balance (157,821) is 45 below the KP civil category table 5.12 total (157,866); district rows are kept as printed.' if cat=='civil' else ''))
+    for i,cat in enumerate(['all','civil','criminal']):
+        add(2025,'Islamabad',cat,[(282,i)],f'7.14 {cat} block',order=FOUR,count=2,skip_cols=1,serial=False,
+            note='7.14 stacks all/civil/criminal and five category blocks in one table with a merged block-label column. Civil/criminal scope may exclude some categories.')
     def judge(y,province,refs,section,fields=JUDGES,serial=False,note=''):
         out.append(dict(source_id=f'annual_{y}',year=y,province=province,category='judges',court_tier='all_courts',refs=refs,
                         section=section,fields=fields,serial=serial,expected_rows=None,scope_note=note,kind='judges'))
@@ -197,6 +217,10 @@ def specs():
     judge(2023,'Khyber Pakhtunkhwa',[(170,0)],'5.12.2.1',serial=True)
     judge(2023,'Islamabad',[(264,0)],'7.13.1',note='Sanctioned and vacant cells span several institutions. Retain only division-specific working strength for East/West indicators.')
     judge(2024,'Islamabad',[(271,0)],'7.14 consolidated',note='Sanctioned and vacant cells span several institutions. Retain only division-specific working strength for East/West indicators.')
+    judge(2025,'Punjab',[(67,0),(68,0)],'3.11.1')
+    judge(2025,'Sindh',[(137,0)],'4.15 consolidated')
+    judge(2025,'Khyber Pakhtunkhwa',[(208,0)],'unnumbered consolidated before 5.12',
+          note='First edition with KP district staffing. "South Waziristan Lower" is printed with 4 sanctioned posts and blank working cells; the case tables report one South Waziristan unit, so it is kept as its own unmatched staffing row.')
     for province,refs,sec,serial,total in [
         ('Punjab',[(53,0),(54,0)],'3.22',False,False),('Sindh',[(98,0),(99,0)],'4.21',False,False),
         ('Khyber Pakhtunkhwa',[(132,0),(133,0)],'5.26',True,True),('Balochistan',[(162,0),(163,0)],'6.18',False,False),
@@ -214,7 +238,12 @@ def specs():
         (2024,'additional_district_sessions_judges',[(234,1),(235,0)],'6.33'),
         (2024,'senior_civil_judges',[(235,1)],'6.34'),
         (2024,'civil_judges_magistrates_family_judges',[(236,0)],'6.35'),
-        (2024,'majlis_e_shoora',[(237,0)],'6.36'),(2024,'qazi',[(237,1)],'6.37')]:
+        (2024,'majlis_e_shoora',[(237,0)],'6.36'),(2024,'qazi',[(237,1)],'6.37'),
+        (2025,'district_sessions_judges',[(252,0),(253,0)],'6.17'),
+        (2025,'additional_district_sessions_judges',[(253,1),(254,0)],'6.18'),
+        (2025,'senior_civil_judges',[(254,1)],'6.19'),
+        (2025,'civil_judges_magistrates_family_judges',[(255,0)],'6.20'),
+        (2025,'majlis_e_shoora',[(256,0)],'6.21'),(2025,'qazi',[(256,1)],'6.22')]:
         judge(y,'Balochistan',refs,section,note='Rank-specific table; jurisdiction names differ from the case-flow sessions tables. No unreviewed aggregation to district staffing.')
         out[-1]['court_tier']=rank
     # Keep ICT's province-wide sanctioned total separate from East/West working
@@ -252,6 +281,47 @@ def scanned_2021(raw,catalog):
     return output
 
 
+def transcribed_ict_2025(raw, catalog):
+    """ICT 2025 staffing (7.12): the consolidated row is province-wide; East/West working
+    strength is printed only as notes inside the merged working-in-field cells
+    ("Distt Courts- West=29 / East=21" male, "West=8 / East=7" female; special courts 9 and
+    2). The notes are read from the text layer, located in their column bands and checked
+    against the printed working totals (59 male, 17 female) before use."""
+    sid = 'annual_2025'
+    path = raw / 'pdfs' / f'{sid}.pdf'
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    if digest != catalog[sid]['sha256']:
+        raise ValueError('2025 PDF differs from the edition whose ICT staffing notes were reviewed')
+    with pdfplumber.open(path) as pdf:
+        words = pdf.pages[278].extract_words(x_tolerance=1, y_tolerance=2)
+    def note(label, x0, x1, top0, top1):
+        hits = [w['text'] for w in words if w['text'].startswith(label + '=') and x0 <= w['x0'] <= x1 and top0 <= w['top'] <= top1]
+        if len(hits) != 1:
+            raise ValueError(f'ICT 2025 staffing note {label} not found once in its cell: {hits}')
+        return int(hits[0].split('=')[1])
+    def total(x0, x1):
+        hits = [w['text'] for w in words if x0 <= w['x0'] <= x1 and 198 <= w['top'] <= 206]
+        if len(hits) != 1:
+            raise ValueError(f'ICT 2025 consolidated total cell not found: {hits}')
+        return integer(hits[0])
+    male = dict(special=note('Courts', 225, 245, 130, 140), west=note('West', 225, 245, 150, 165), east=note('East', 225, 245, 172, 186))
+    female = dict(west=note('West', 295, 315, 150, 165), east=note('East', 295, 315, 172, 186))
+    female_special = [w['text'] for w in words if 290 <= w['x0'] <= 340 and 130 <= w['top'] <= 150 and re.fullmatch(r'\d+', w['text'])]
+    female['special'] = int(female_special[0]) if len(female_special) == 1 else None
+    if sum(male.values()) != total(240, 255) or None in female.values() or sum(female.values()) != total(308, 320):
+        raise ValueError(f'ICT 2025 staffing notes do not reconcile to the printed working totals: {male} {female}')
+    out = []
+    for i, (division, label) in enumerate([('West', 'District Courts (West) Islamabad'), ('East', 'District Courts (East) Islamabad')]):
+        k = division.lower()
+        out.append(dict(name=label, sanctioned=None, working_male=male[k], working_female=female[k], excadre_male=None, excadre_female=None, vacant=None,
+                        raw_values=[f'Distt Courts- {division}={male[k]}', f'Distt Courts- {division}={female[k]}'], raw_cells=[], pdf_page=279, table_index=0, row_index=None,
+                        is_total=False, source_id=sid, year=2025, province='Islamabad', category='judges', court_tier='all_courts', section='7.12 consolidated (cell notes)', kind='judges',
+                        scope_note='Working strength by division transcribed from the notes inside the merged consolidated cells (special courts excluded); the sanctioned (112) and vacant (29) cells span all ICT institutions and are not assigned to a division.',
+                        extraction_method='text_layer_cell_note_reconciled_to_printed_totals', source_url=catalog[sid]['source_url'], source_sha256=digest,
+                        record_id=f'{sid}:Islamabad:7.12 consolidated (cell notes):279:{k}'))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--raw',type=Path,default=WORKSPACE/'raw_data/ljcp')
@@ -277,12 +347,12 @@ def main():
             parsed=[]
             try:
                 for p,t in cfg['refs']:
-                    parsed += read_table(pdf.pages[p-1],t,cfg['fields'],cfg['serial'])
+                    parsed += read_table(pdf.pages[p-1],t,cfg['fields'],cfg['serial'],skip_cols=cfg.get('skip_cols',0))
                 n=sum(not r['is_total'] for r in parsed)
                 if cfg['expected_rows'] is not None and n != cfg['expected_rows']:
                     raise ValueError(f"Expected {cfg['expected_rows']} rows, found {n}")
                 for r in parsed:
-                    r.update({k:v for k,v in cfg.items() if k not in ('refs','fields','serial','expected_rows')})
+                    r.update({k:v for k,v in cfg.items() if k not in ('refs','fields','serial','expected_rows','skip_cols')})
                     r['source_url']=catalog[sid]['source_url'];r['source_sha256']=digest
                     r['record_id']=f"{sid}:{cfg['province']}:{cfg['section']}:{r['pdf_page']}:{r['table_index']}:{r['row_index']}"
                 records+=parsed
@@ -292,6 +362,8 @@ def main():
         for pdf,digest in handles.values():pdf.close()
     try:records+=scanned_2021(args.raw,catalog)
     except Exception as exc:failures.append(dict(source_id='annual_2021',error=str(exc)))
+    try:records+=transcribed_ict_2025(args.raw,catalog)
+    except Exception as exc:failures.append(dict(source_id='annual_2025',province='Islamabad',section='7.12',error=str(exc)))
     (args.out/'source_observations.json').write_text(json.dumps(records,indent=2,ensure_ascii=False))
     (args.out/'extraction_failures.json').write_text(json.dumps(failures,indent=2))
     print(json.dumps(dict(records=len(records),failures=failures),indent=2))

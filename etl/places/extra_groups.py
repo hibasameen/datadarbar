@@ -29,3 +29,8 @@ GROUPS = [
         },
     },
 ]
+
+# Climate, heat, air, land, fire and water, from Adaad's Issue 4: declared in
+# issue4_groups.py, which the hierarchy and the value builder also read.
+from issue4_groups import vocab as _issue4_vocab
+GROUPS += _issue4_vocab()

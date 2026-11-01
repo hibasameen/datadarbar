@@ -41,7 +41,13 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.row(2021,'Sindh','badin')['transfers_in'],8)
         self.assertEqual(self.row(2021,'Khyber Pakhtunkhwa','tor ghar')['transfers_out'],89)
         mismatches={(r['source_id'],r['province'],r['section'],r['metric'],r['difference']) for r in data('table_validation') if r['status']=='source_mismatch'}
-        self.assertEqual(mismatches,{('annual_2021','Khyber Pakhtunkhwa','5.34','transfers_in',9),('annual_2021','Khyber Pakhtunkhwa','5.34','transfers_out',9),('annual_2024','Balochistan','6.33','sanctioned',1)})
+        self.assertEqual(mismatches,{('annual_2021','Khyber Pakhtunkhwa','5.34','transfers_in',9),('annual_2021','Khyber Pakhtunkhwa','5.34','transfers_out',9),('annual_2024','Balochistan','6.33','sanctioned',1),
+            # 2025: ICT civil Total misprints opening pendency (district rows sum to 2024's closing 25,851);
+            # Balochistan Majlis-e-Shoora/Qazi totals (the Qazi total row repeats the Majlis row);
+            # Punjab civil-court category table 3.13.
+            ('annual_2025','Islamabad','7.14 civil block','pending_start',-60),('annual_2025','Balochistan','6.21','sanctioned',1),
+            ('annual_2025','Balochistan','6.22','sanctioned',5),('annual_2025','Balochistan','6.22','vacant',2),
+            ('annual_2025','Punjab','3.13 civil_courts civil','pending_start',70),('annual_2025','Punjab','3.13 civil_courts civil','disposed',-517)})
 
     def test_punjab_tiers_are_added_once_and_categories_keep_scope(self):
         a=self.row(2023,'Punjab','attock')
@@ -128,16 +134,18 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.policy_row(2024,'karachi west')['population_interpolated'],self.policy_row(2024,'karachi west')['population'])
 
     def test_annual_and_halfyear_coverage_do_not_mix(self):
-        self.assertEqual({r['year'] for r in self.annual},{2020,2021,2022,2023,2024})
+        self.assertEqual({r['year'] for r in self.annual},{2020,2021,2022,2023,2024,2025})
         self.assertFalse(any(r['year']==2023 and r['province']=='Balochistan' for r in self.annual))
         self.assertTrue(any(r['year']==2023 and r['province']=='Balochistan' for r in data('annual_provinces')))
+        # 2025: Punjab and Balochistan print no district all/civil/criminal tables.
+        self.assertFalse(any(r['year']==2025 and r['province'] in ('Punjab','Balochistan') for r in self.annual))
         half=data('halfyear_provinces');self.assertEqual(len(half),72)
         self.assertTrue(all(r['period_type']=='half_year' for r in half))
         self.assertTrue(any(r['period_end']=='2025-06-30' for r in half))
 
     def test_unique_keys_and_provenance(self):
         keys=[(r['year'],r['province'],r['session_division'],r['category']) for r in self.annual]
-        self.assertEqual(len(keys),len(set(keys)));self.assertEqual(len(keys),1848)
+        self.assertEqual(len(keys),len(set(keys)));self.assertEqual(len(keys),2043)
         keys=[(r['year'],r['adm2_key']) for r in self.policy];self.assertEqual(len(keys),len(set(keys)))
         ids={r['record_id'] for r in self.raw};self.assertEqual(len(ids),len(self.raw))
         self.assertTrue(all(r['source_record_ids'] and set(r['source_record_ids'])<=ids for r in self.annual))
@@ -146,9 +154,53 @@ class PipelineTests(unittest.TestCase):
         p=[r for r in self.policy if r['year']==2022 and r['province']=='Punjab']
         self.assertTrue(p);self.assertTrue(all(r['working_judges'] is None for r in p))
 
+    def test_2025_edition_reproduces_printed_totals(self):
+        def tot(year,province,category):
+            rows=[r for r in data('annual_provinces') if (r['year'],r['province'],r['category'])==(year,province,category) and r.get('court_tier','all_courts')=='all_courts']
+            self.assertEqual(len(rows),1);return [rows[0][f] for f in ['pending_start','instituted','disposed','pending_end']]
+        # Chapter totals, and district rows sum to them.
+        self.assertEqual(tot(2025,'Sindh','all'),[142764,450535,411068,178969])
+        self.assertEqual(tot(2025,'Khyber Pakhtunkhwa','all'),[256483,523405,569705,220840])
+        self.assertEqual(tot(2025,'Islamabad','all'),[47854,112177,108807,51224])
+        for prov in ['Sindh','Khyber Pakhtunkhwa','Islamabad']:
+            for cat in ['all','civil','criminal']:
+                rows=[r for r in self.annual if (r['year'],r['province'],r['category'])==(2025,prov,cat)]
+                printed=tot(2025,prov,cat)
+                sums=[sum(r[f] for r in rows) for f in ['pending_start','instituted','disposed','pending_end']]
+                if (prov,cat)!=('Islamabad','civil'):self.assertEqual(sums,printed,(prov,cat))
+            self.assertEqual([a-b-c for a,b,c in zip(tot(2025,prov,'all'),tot(2025,prov,'civil'),tot(2025,prov,'criminal'))][1:],[0,0,0])
+        r=self.row(2025,'Sindh','karachi south');self.assertEqual([r[f] for f in ['pending_start','instituted','disposed','pending_end']],[14611,41863,31072,24053])
+        self.assertIsNone(r['transfers_in']);self.assertEqual(r['stock_flow_check'],'transfers_or_counts_not_reported')
+        # Punjab: sum of the four court-tier category totals; its opening equals 2024's closing.
+        self.assertEqual(tot(2025,'Punjab','all'),[1498671,3796392,3880064,1442613]);self.assertEqual(tot(2025,'Punjab','all')[0],tot(2024,'Punjab','all')[3])
+        # Balochistan: overview row only.
+        b=[r for r in data('annual_provinces') if (r['year'],r['province'])==(2025,'Balochistan')]
+        self.assertEqual(len(b),1);self.assertEqual(b[0]['method'],'overview_table_only');self.assertEqual(b[0]['pending_end'],18424)
+        # National overview: LJCP's headline totals and the Federal Constitutional Court transfer.
+        o={r['court']:r for r in data('national_overview') if r['year']==2025}
+        f=['pending_start','instituted','disposed','pending_end']
+        self.assertEqual([o['total_superior_courts'][k] for k in f],[406379,256657,324813,317999])
+        self.assertEqual([o['total_district_judiciary'][k] for k in f],[1964848,5043940,5185164,1904043])
+        self.assertEqual([o['grand_total'][k] for k in f],[2371227,5300597,5509977,2222042])
+        sc=o['supreme_court'];self.assertEqual(sc['transferred_to_fcc'],21570);self.assertEqual(sc['series_break'],'federal_constitutional_court_transfer_2025')
+        ch=sc['chapter_table_1_5']['all'];self.assertEqual(ch['pending_start']+ch['instituted']-ch['disposed']-ch['transferred_to_fcc'],ch['pending_end'])
+        self.assertTrue(all(r['transferred_to_fcc'] is None for r in data('national_overview') if r['court']!='supreme_court' or r['year']!=2025))
+        # The only overview total that fails is 2025's district institutions/disposals (and so the grand total).
+        bad={(c['year'],c['total_row'],c['metric'],c['difference']) for c in data('overview_validation') if c['status']!='pass'}
+        self.assertEqual(bad,{(2025,t,m,d) for t in ('total_district_judiciary','grand_total') for m,d in (('instituted',35903),('disposed',34200))})
+        # Staffing: KP district staffing (first edition with it), ICT East/West from cell notes.
+        self.assertEqual(self.policy_row(2025,'peshawar')['working_judges'],48+15)
+        self.assertEqual(self.policy_row(2025,'islamabad')['working_judges'],29+8+21+7)
+        self.assertEqual(self.policy_row(2025,'kohistan')['working_judges'],2+2+2)
+        # Punjab 2025 categories sum the sessions and civil-court tables once.
+        cats=data('category_sessions')
+        fam=next(r for r in cats if (r['year'],r['province'],r['session_division'],r['category'])==(2025,'Punjab','attock','family'))
+        self.assertEqual(fam['pending_end'],2284+234);self.assertEqual(fam['method'],'sum_court_tiers')
+        self.assertTrue(any(r['year']==2025 and r['province']=='Islamabad' and r['category']=='narcotics' for r in data('district_category_indicators')))
+
     def test_exports_agree(self):
         con=duckdb.connect()
-        for name in ['annual_sessions','annual_provinces','halfyear_provinces','judicial_strength','judicial_strength_by_rank','district_policy_indicators','sessions_crosswalk']:
+        for name in ['annual_sessions','annual_provinces','halfyear_provinces','judicial_strength','judicial_strength_by_rank','district_policy_indicators','sessions_crosswalk','national_overview']:
             count=len(data(name));pq=str(OUT/f'{name}.parquet').replace("'","''");csv=str(OUT/f'{name}.csv').replace("'","''")
             self.assertEqual(con.execute(f"select count(*) from read_parquet('{pq}')").fetchone()[0],count)
             self.assertEqual(con.execute(f"select count(*) from read_csv('{csv}',header=true)").fetchone()[0],count)

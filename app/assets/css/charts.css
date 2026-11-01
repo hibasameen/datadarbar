@@ -107,9 +107,8 @@ body{padding-bottom:0}
 .navhelp{font-size:12.5px}
 }
 
-/* ── finance.html only. Scoped, because thirteen of these selectors
-   are defined differently on another Economy page and one shared
-   file would otherwise hand all three whichever came last. ── */
+/* ── finance.html only. Scoped from when three Economy pages shared
+   this file and defined some of these selectors differently. ── */
 html[data-page="finance"] .hero h1{font-size:clamp(23px,3.6vw,32px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
 html[data-page="finance"] .hero p{color:var(--body);font-size:15px;max-width:78ch;margin-top:6px}
 html[data-page="finance"] .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
@@ -149,100 +148,23 @@ html[data-page="finance"] .eco-side{position:static;width:auto;height:auto;botto
 html[data-page="finance"] .eco-side .eco-panel{border-bottom:1px solid var(--ground)}
 }
 
-/* ── money.html only. Scoped, because thirteen of these selectors
-   are defined differently on another Economy page and one shared
-   file would otherwise hand all three whichever came last. ── */
-html[data-page="money"] .hero h1{font-size:clamp(23px,3.6vw,32px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
-html[data-page="money"] .hero p{color:var(--body);font-size:15px;max-width:78ch;margin-top:6px}
-html[data-page="money"] .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
-html[data-page="money"] .nodata{padding:26px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:var(--ground);color:var(--body);font-size:13px;line-height:1.5;text-align:center}
-html[data-page="money"] .trend-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
-html[data-page="money"] .tl-item{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--body);font-weight:600}
-html[data-page="money"] .tl-item i{width:11px;height:11px;border-radius:3px;display:inline-block}
-html[data-page="money"] select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;color:var(--body)}
-html[data-page="money"] .cl{font-size:11px;font-weight:700;pointer-events:none}
-html[data-page="money"] .cv{font-size:10px;font-weight:600;pointer-events:none}
-html[data-page="money"] .note{background:var(--gold-100);border:1px solid var(--gold-400);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--gold-800);margin-top:10px}
-html[data-page="money"] .yr-wrap{display:flex;align-items:center;gap:10px;flex:0 1 300px}
-html[data-page="money"] .yr-wrap input{flex:1;accent-color:var(--green-600);min-width:0}
-html[data-page="money"] .legend .li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--body);cursor:pointer}
-html[data-page="money"] .tip{position:fixed;pointer-events:none;z-index:200;background:var(--ink);color:var(--surface);font-size:12px;padding:8px 11px;border-radius:8px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .1s;max-width:280px;line-height:1.45}
-html[data-page="money"] .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
-html[data-page="money"] .crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:10px 0 2px;font-size:13px;font-weight:700;color:var(--body)}
-html[data-page="money"] .crumb a{color:var(--green-700);cursor:pointer;text-decoration:none;padding:3px 6px;border-radius:6px}
-html[data-page="money"] .crumb a:hover{background:var(--ground);text-decoration:underline}
-html[data-page="money"] .crumb .sep{color:var(--muted-2)}
-html[data-page="money"] .crumb .here{color:var(--green-900);padding:3px 6px}
-html[data-page="money"] .crumb .basis{font-weight:500;color:var(--muted);margin-left:auto;font-size:12px}
-html[data-page="money"] #chBop rect.zoom{cursor:pointer}
-html[data-page="money"] #chBop rect.zoom:hover{stroke:var(--ink);stroke-width:1.5}
-html[data-page="money"] .chip{font-size:12px;font-weight:700;font-family:inherit;padding:5px 11px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--body);cursor:pointer;transition:.12s}
-html[data-page="money"] .chip:hover{border-color:var(--green-500)}
-html[data-page="money"] .chip.on{color:var(--surface);border-color:transparent}
-html[data-page="money"] .era-lbl{font-size:9.5px;font-weight:700;fill:var(--muted);letter-spacing:.02em}
-html[data-page="money"] .cursor-line{stroke:var(--green-900);stroke-width:1.4;stroke-dasharray:4 3}
-html[data-page="money"] .eco-side .yr-wrap{flex:none;display:flex;width:100%}
-html[data-page="money"] .eco-side .yr-lbl{font-size:13px;min-width:56px;padding:4px 6px}
-html[data-page="money"] .card{position:relative}
-html[data-page="money"] .grid2 .card .csvbtn{top:12px;right:12px}
-html[data-page="money"] .site-header{position:sticky;top:0;z-index:100;height:56px;background:var(--green-900,var(--green-900));color:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,var(--gold-500));flex-shrink:0}
-@media(max-width:1100px){
-html[data-page="money"] .grid2{grid-template-columns:1fr}
-}
-@media(max-width:1000px){
-html[data-page="money"] .eco-side{position:static;width:auto;height:auto;bottom:auto;border-right:0;border-bottom:1px solid var(--line);box-shadow:none;flex-direction:column}
-html[data-page="money"] .eco-side .eco-panel{border-bottom:1px solid var(--ground)}
-}
-
-/* ── trade.html only. Scoped, because thirteen of these selectors
-   are defined differently on another Economy page and one shared
-   file would otherwise hand all three whichever came last. ── */
-html[data-page="trade"] .header{position:sticky;top:0;z-index:50;height:56px;background:var(--green-900);color:var(--surface);display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:var(--shadow)}
-html[data-page="trade"] .brand{display:flex;align-items:center;gap:11px}
-html[data-page="trade"] .brand-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold-400),var(--gold-600));display:grid;place-items:center;font-weight:800;color:var(--green-900);font-size:15px}
-html[data-page="trade"] .brand-title{font-weight:800;font-size:16px}
-html[data-page="trade"] .brand-tag{font-size:11px;color:var(--gold-300);font-weight:600}
-html[data-page="trade"] .nav{display:flex;gap:6px}
-html[data-page="trade"] .nav a{font-size:13px;font-weight:600;color:var(--green-200);padding:7px 12px;border-radius:8px;text-decoration:none}
-html[data-page="trade"] .nav a:hover{background:rgba(255,255,255,.1);color:var(--surface)}
-html[data-page="trade"] .nav a.active{background:var(--gold-500);color:var(--green-900)}
-html[data-page="trade"] .hero h1{font-size:clamp(23px,3.6vw,34px);font-weight:800;letter-spacing:-.6px;color:var(--green-900)}
-html[data-page="trade"] .hero p{color:var(--body);font-size:15px;max-width:72ch;margin-top:6px}
-html[data-page="trade"] .card h3{font-size:13px;font-weight:800;color:var(--green-800);margin-bottom:2px}
-html[data-page="trade"] .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:20px}
-html[data-page="trade"] select{font-family:inherit;font-weight:600;font-size:13px;padding:8px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);cursor:pointer}
-html[data-page="trade"] .yr-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:200px}
-html[data-page="trade"] .yr-wrap input{flex:1;accent-color:var(--green-600)}
-html[data-page="trade"] .crumb{font-size:13px;font-weight:600;margin:4px 0 8px;color:var(--muted)}
-html[data-page="trade"] .crumb .cr{color:var(--green-600)}
-html[data-page="trade"] .crumb .cr.on{color:var(--ink)}
-html[data-page="trade"] .crumb .cr:hover{text-decoration:underline}
-html[data-page="trade"] .crumb .sep{color:var(--muted-2)}
-html[data-page="trade"] .cl{font-size:11px;font-weight:700;fill:var(--surface);pointer-events:none}
-html[data-page="trade"] .cv{font-size:10px;font-weight:600;fill:rgba(255,255,255,.85);pointer-events:none}
-html[data-page="trade"] .hint{font-size:12px;color:var(--muted);font-weight:600;background:var(--gold-100);border-radius:8px;padding:6px 10px;display:inline-block;margin-bottom:8px}
-html[data-page="trade"] .legend .li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--body)}
-html[data-page="trade"] .tip{position:fixed;pointer-events:none;z-index:100;background:var(--ink);color:var(--surface);font-size:12px;padding:8px 11px;border-radius:8px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .1s;max-width:250px;line-height:1.45}
-html[data-page="trade"] .scrolly{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-top:14px}
-html[data-page="trade"] .sticky-graphic{position:sticky;top:72px;height:78vh;align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column}
-html[data-page="trade"] #sticky{flex:1;position:relative}
-html[data-page="trade"] .sticky-cap{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding-top:6px}
-html[data-page="trade"] .steps{display:flex;flex-direction:column}
-html[data-page="trade"] .step{min-height:82vh;display:flex;align-items:center}
-html[data-page="trade"] .step .step-card{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;opacity:.5;transform:translateY(8px);transition:.4s}
-html[data-page="trade"] .step.active .step-card{opacity:1;transform:none;border-left-color:var(--gold-500)}
-html[data-page="trade"] .step h3{font-size:19px;font-weight:800;color:var(--green-900);margin-bottom:6px}
-html[data-page="trade"] .step p{font-size:14px;color:var(--body)}
-html[data-page="trade"] .site-header{position:sticky;top:0;z-index:1100;height:56px;background:var(--green-900,var(--green-900));color:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;border-bottom:3px solid var(--gold-500,var(--gold-500));flex-shrink:0}
-@media(max-width:1000px){
-html[data-page="trade"] .eco-side{position:static;width:auto;height:auto;bottom:auto;border-right:0;border-bottom:1px solid var(--line);box-shadow:none}
-}
-@media(max-width:820px){
-html[data-page="trade"] .grid2{grid-template-columns:1fr}
-html[data-page="trade"] .scrolly{grid-template-columns:1fr}
-html[data-page="trade"] .sticky-graphic{height:56vh;top:64px}
-html[data-page="trade"] .step{min-height:70vh}
-}
+/* money.html and trade.html were folded into finance.html, and the blocks
+   scoped to them matched nothing after that: most repeated the finance rules
+   above. What finance.html still needs from them is below. The two modules
+   both call their breadcrumb .crumb and style it differently, so each is
+   scoped by its id. */
+html[data-page="finance"] #bopCrumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:10px 0 2px;font-size:13px;font-weight:700;color:var(--body)}
+html[data-page="finance"] #bopCrumb a{color:var(--green-700);cursor:pointer;text-decoration:none;padding:3px 6px;border-radius:6px}
+html[data-page="finance"] #bopCrumb a:hover{background:var(--ground);text-decoration:underline}
+html[data-page="finance"] #bopCrumb .here{color:var(--green-900);padding:3px 6px}
+html[data-page="finance"] #bopCrumb .basis{font-weight:500;color:var(--muted);margin-left:auto;font-size:12px}
+html[data-page="finance"] #chBop rect.zoom{cursor:pointer}
+html[data-page="finance"] #chBop rect.zoom:hover{stroke:var(--ink);stroke-width:1.5}
+html[data-page="finance"] #crumb{font-size:13px;font-weight:600;margin:4px 0 8px;color:var(--muted)}
+html[data-page="finance"] #crumb .cr{color:var(--green-600)}
+html[data-page="finance"] #crumb .cr.on{color:var(--ink)}
+html[data-page="finance"] #crumb .cr:hover{text-decoration:underline}
+html[data-page="finance"] #crumb .sep{color:var(--muted-2)}
 
 /* A proxy marked where it is used, not in a footer. The trade footnote could
    say exports 2017-18 come from a different source in a different calendar,

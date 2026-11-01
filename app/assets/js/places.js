@@ -1486,6 +1486,11 @@
     });
     var n = keep.length;
     var where = prov || 'Pakistan';
+    // A survey of chosen districts averages those districts, not the province
+    // or the country around them (FAO DIEM covers 24 to 47 a round).
+    if ((IX.sampled || []).indexOf(col('group_key', state.row)) >= 0) {
+      where = n + ' surveyed ' + g.noun + (n === 1 ? '' : 's') + (prov ? ' in ' + prov : '');
+    }
 
     /* The source gave more than one figure for the same place and they do not
        agree. Adding them up, or ranking places by whichever arrived last, is
@@ -1548,7 +1553,8 @@
          is out of those aged ten and over, an unemployment rate out of the
          labour force - weighting by population is close to the national rate
          but not identical, and the hover says so. Crop yields are per
-         hectare, not per person, and stay a plain average. */
+         hectare, not per person, and a temperature or a share of land is
+         about the ground: those stay a plain average (IX.plain_average). */
       var vals = keep.map(function (u) { return u.v; })
         .filter(function (v) { return v != null && isFinite(v); })
         .sort(function (a, b) { return a - b; });
@@ -1559,7 +1565,7 @@
         rangeTitle = 'Range across the ' + vals.length + ' ' + g.noun
           + 's shown: ' + fmt(vals[0], dp) + ' to ' + fmt(vals[vals.length - 1], dp)
           + '. Unweighted average ' + fmt(mean, dp) + '.';
-        if (col('group_key', state.row) === 'crops') {
+        if ((IX.plain_average || []).indexOf(col('group_key', state.row)) >= 0) {
           figure = fmt(mean, dp);
           caption = 'Average ' + g.noun + ' \u00b7 unweighted';
         } else {
