@@ -119,3 +119,4 @@ for _g in _ISSUE4:
 # Service's plot estimates), which the group labels say.
 GROUP_TOPIC['agriFarms'] = 'agriculture'
 GROUP_TOPIC['agriLivestock'] = 'agriculture'
+GROUP_TOPIC['agriCrops'] = 'agriculture'

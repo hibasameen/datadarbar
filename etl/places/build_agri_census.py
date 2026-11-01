@@ -84,7 +84,37 @@ LIVESTOCK = {
     'share_tubewells_electric': ('Electric tubewells (%)', '100 * h.tubewells_electric / nullif(h.tubewells, 0)', 1, False),
     'share_tubewells_diesel': ('Diesel tubewells (%)', '100 * h.tubewells_diesel / nullif(h.tubewells, 0)', 1, False),
 }
-GROUPS = {'agriFarms': FARMS, 'agriLivestock': LIVESTOCK}
+
+# Crops as farms report them (Chapter 6), beside the Crop Reporting Service series
+# in the `crops` group. crop -> (table, label, farms-reporting column, area column,
+# irrigated-area column or None); columns matched on PBS's header, normalised.
+CROP_TABLES = {
+    'wheat':      ('T6.9',  'Wheat',      r'^FARMSREPORTINGWHEAT\|NUMBER$', r'^AREAUNDERWHEAT\|TOTAL$', r'^AREAUNDERWHEAT\|IRRIGATED\|AREA$'),
+    'paddy':      ('T6.10', 'Paddy',      r'^FARMSREPORTINGPADDY\|ANYVARIETY\|NUMBER$', r'^FARMSREPORTINGPADDY\|ANYVARIETY\|AREA$', None),
+    'cotton':     ('T6.11', 'Cotton',     r'^FARMSREPORTINGCOTTON\|NUMBER$', r'^AREAUNDERCOTTON$', None),
+    'maize':      ('T6.12', 'Maize',      r'^FARMSREPORTINGMAIZE\|NUMBER$', r'^AREAUNDERMAIZE\|TOTAL$', r'^AREAUNDERMAIZE\|IRRIGATED\|AREA$'),
+    'sugarcane':  ('T6.13', 'Sugarcane',  r'^FARMSREPORTINGSUGARCANE\|NUMBER$', r'^AREAUNDERSUGARCANE$', None),
+    'potatoes':   ('T6.14', 'Potatoes',   r'^FARMSREPORTING\|NUMBER$', r'^AREAUNDERPOTATOES\|TOTAL$', r'^AREAUNDERPOTATOES\|IRRIGATED$'),
+    'oilseeds':   ('T6.15', 'Oilseeds',   r'^FARMSREPORTING\|NUMBER$', r'^AREAUNDEROILSEEDS\|TOTAL$', r'^AREAUNDEROILSEEDS\|IRRIGATED$'),
+    'fodders':    ('T6.16', 'Fodder',     r'^FARMSREPORTING\|NUMBER$', r'^AREAUNDERFODDERS\|TOTAL$', r'^AREAUNDERFODDERS\|IRRIGATED$'),
+    'vegetables': ('T6.17', 'Vegetables', r'^FARMSREPORTING\|NUMBER$', r'^AREAUNDERVEGETABLES\|TOTAL$', r'^AREAUNDERVEGETABLES\|IRRIGATED$'),
+    'orchards':   ('T6.3',  'Orchards',   r'^FARMSREPORTINGORCHARDS\|NUMBER$', r'^FARMSREPORTINGORCHARDS\|AREAUNDERORCHARD$', None),
+}
+
+
+def _crop_indicators():
+    out = {}
+    for c, (tid, label, f_rx, a_rx, i_rx) in CROP_TABLES.items():
+        out[f'{c}_farms_pct'] = (f'Farms reporting {label.lower()} (%)', f'100 * cr.{c}_farms / h.farms', 1, True)
+        out[f'{c}_area_pct_cropped'] = (f'{label} share of cropped area (%)', f'100 * cr.{c}_area_ac / h.cropped_area_ac', 1, False)
+        if i_rx:
+            out[f'{c}_irrigated_pct'] = (f'Irrigated share of {label.lower()} area (%)', f'100 * cr.{c}_irrigated_ac / nullif(cr.{c}_area_ac, 0)', 1, False)
+        out[f'{c}_area_ac'] = (f'{label} area as reported by farms (acres)', f'cr.{c}_area_ac', 0, False)
+    return out
+
+
+CROPS = _crop_indicators()
+GROUPS = {'agriFarms': FARMS, 'agriLivestock': LIVESTOCK, 'agriCrops': CROPS}
 
 
 def vocab():
@@ -144,6 +174,10 @@ _SUB = {
 }
 
 
+for _k, (_l, _e, _dp, _fd) in CROPS.items():
+    _SUB[_k] = ('Crops reported by farms', 'Area (acres)' if _k.endswith('_area_ac') else 'Published percentage / proportion')
+
+
 def mapping(countable):
     """Entries for build_hierarchy, in the crosswalk's own shape."""
     out = []
@@ -154,8 +188,9 @@ def mapping(countable):
                      measure=label, metric='', dp=dp, source='place')
             out.append(dict(
                 proposed_topic='Agriculture', proposed_subtopic=sub,
-                indicator_family=('Farm structure (Agricultural Census 2024)' if gk == 'agriFarms'
-                                  else 'Livestock & machinery (Agricultural Census 2024)'),
+                indicator_family={'agriFarms': 'Farm structure (Agricultural Census 2024)',
+                                  'agriLivestock': 'Livestock & machinery (Agricultural Census 2024)',
+                                  'agriCrops': 'Crops reported by farms (Agricultural Census 2024)'}[gk],
                 metric_form=form, suggested_controls='District', definition_review=HREVIEW,
                 legacy_modes=(['Source value', '% of total population', 'Per 1,000 total population']
                               if countable(o) else ['Source value']),
@@ -225,6 +260,33 @@ def main():
         LEFT JOIN geo g ON g.name = l.unit
         ORDER BY l.prov_file, l.chapter, l.table_no, l.unit_level, l.unit, l.col_index""")
 
+
+    # ── crops as farms report them, one row per district ───────────────────
+    cols = []
+    for c, (tid, label, f_rx, a_rx, i_rx) in CROP_TABLES.items():
+        for suffix, rx in (('farms', f_rx), ('area_ac', a_rx), ('irrigated_ac', i_rx)):
+            if rx is None: continue
+            cols.append(f"sum(CASE WHEN table_id = '{tid}' AND regexp_matches(ncol, '{rx}') THEN value END) AS {c}_{suffix}")
+    con.execute(f"""CREATE TABLE cr AS
+        SELECT district_code, {', '.join(cols)}
+        FROM (SELECT district_code, table_id, value,
+                     regexp_replace(upper("column"), '[^A-Z0-9|]', '', 'g') AS ncol
+              FROM agri_census_2024_long
+              WHERE district_code IS NOT NULL AND category = 'TOTAL' AND table_id LIKE 'T6.%'
+                AND source_file <> 'national'  -- the national workbook repeats ICT
+                AND (unit_level = 'district' OR unit = 'ISLAMABAD CAPITAL TERRITORY'))
+        GROUP BY district_code""")
+    # every crop column must have found its header in every province
+    for c in CROP_TABLES:
+        n = con.sql(f"SELECT count({c}_area_ac) FROM cr").fetchone()[0]
+        assert n >= 120, f'{c}: area column matched in only {n} districts'
+    con.execute("""CREATE TABLE agri_census_2024_district2 AS
+        SELECT d.*, cr.* EXCLUDE (district_code)
+        FROM agri_census_2024_district d LEFT JOIN cr ON cr.district_code = d.district_code
+        ORDER BY unit_level, source_file, unit""")
+    con.execute("DROP TABLE agri_census_2024_district")
+    con.execute("ALTER TABLE agri_census_2024_district2 RENAME TO agri_census_2024_district")
+
     # ── the Places rows ─────────────────────────────────────────────────────
     sel = []
     for gk, ind in GROUPS.items():
@@ -243,6 +305,7 @@ def main():
                 '{gk}' AS group_key, '{k}' AS indicator, NULL AS year,
                 CAST({guard} AS DOUBLE) AS value
               FROM h LEFT JOIN c ON c.district_code = h.district_code
+                     LEFT JOIN cr ON cr.district_code = h.district_code
               WHERE h.unit_level = 'district' OR h.unit = 'ISLAMABAD CAPITAL TERRITORY'""")
     con.execute('CREATE TABLE places AS ' + ' UNION ALL '.join(sel))
     con.execute("DELETE FROM places WHERE value IS NULL OR isnan(value) OR isinf(value)")

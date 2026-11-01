@@ -39,10 +39,10 @@
   {
    "name": "agri_census_2024_district",
    "file": "agri_census_2024_district.parquet",
-   "bytes": 113057,
+   "bytes": 154000,
    "rows": 172,
    "description": "Farms, land, tenure, irrigation, crops, livestock and machinery by district from the Agricultural Census 2024, with derived shares and rates.",
-   "notes": "The 7th Agricultural Census (fieldwork September 2024 to February 2025) is a weighted sample, not a count: PBS drew 11,083 mouzas and urban blocks, listed every household in them, took holdings of 100 acres or 50 cattle at 100 per cent and sub-sampled the rest, and raised the result to the frame. Every count is therefore a fraction, the design aims at a 15 per cent margin of error at district level, and no sampling errors are published. Treat shares and per-farm rates as the usable figures and the counts as approximate. Where the farm count is below 5,000 (farms_implausible), the weighting has plainly gone wrong — Umerkot at 2,098 farms on 210,000 acres, Kech, Nushki, Awaran, Duki, Chagai, Hyderabad and the Karachi districts — and per-farm rates should not be used; Khyber, Harnai and Mohmand, with more farms than one and a half times their rural households in the 2023 census (Khyber 756,000 farms averaging 0.4 acres), are the same problem in the other direction and carry the same flag. rural_hh is the Census 2023 denominator used for the test. The geography is PBS’s 2023 district frame, joining the geography layer on district_code; Cholistan Area and Malakand Protected Area are published as units of their own and carry no code; Gilgit-Baltistan and Azad Jammu & Kashmir were enumerated but are in none of the published tables, so Pakistan is the four provinces plus Islamabad. Crop areas here are what farmers reported and run well above the Crop Reporting Service series in crops_district_fy (wheat 14.4 against 9.1 million hectares nationally); the two are different instruments and should not be read against each other. PBS omits rows that would be zero, so a missing figure is usually a zero; Washuk’s row is missing from the acre table alone and is filled from the hectare table. Areas are in acres as PBS gives them.",
+   "notes": "The 7th Agricultural Census (fieldwork September 2024 to February 2025) is a weighted sample, not a count: PBS drew 11,083 mouzas and urban blocks, listed every household in them, took holdings of 100 acres or 50 cattle at 100 per cent and sub-sampled the rest, and raised the result to the frame. Every count is therefore a fraction, the design aims at a 15 per cent margin of error at district level, and no sampling errors are published. Treat shares and per-farm rates as the usable figures and the counts as approximate. Where the farm count is below 5,000 (farms_implausible), the weighting has plainly gone wrong — Umerkot at 2,098 farms on 210,000 acres, Kech, Nushki, Awaran, Duki, Chagai, Hyderabad and the Karachi districts — and per-farm rates should not be used; Khyber, Harnai and Mohmand, with more farms than one and a half times their rural households in the 2023 census (Khyber 756,000 farms averaging 0.4 acres), are the same problem in the other direction and carry the same flag. rural_hh is the Census 2023 denominator used for the test. The geography is PBS’s 2023 district frame, joining the geography layer on district_code; Cholistan Area and Malakand Protected Area are published as units of their own and carry no code; Gilgit-Baltistan and Azad Jammu & Kashmir were enumerated but are in none of the published tables, so Pakistan is the four provinces plus Islamabad. Crop areas here are what farmers reported and run well above the Crop Reporting Service series in crops_district_fy (wheat 14.4 against 9.1 million hectares nationally); the two are different instruments and should not be read against each other. The <crop>_farms, <crop>_area_ac and <crop>_irrigated_ac columns are Chapter 6 as published, for wheat, paddy, cotton, maize, sugarcane, potatoes, oilseeds, fodders, vegetables and orchards; in Ziarat, Chaman and Killa Abdullah PBS’s orchard table reports more farms with orchards than farms, so that share exceeds 100 per cent as published. PBS omits rows that would be zero, so a missing figure is usually a zero; Washuk’s row is missing from the acre table alone and is filled from the hectare table. Areas are in acres as PBS gives them.",
    "unit": "farms, acres, head, machines; shares as fractions, intensity in per cent",
    "source": "PBS Agricultural Census 2024, Excel tables for the national and four provincial volumes, pull of 2026-11-01",
    "columns": [
@@ -186,27 +186,27 @@
     {
      "name": "wheat_farms",
      "type": "DOUBLE",
-     "description": ""
+     "description": "farms reporting wheat (Table 6.9)"
     },
     {
      "name": "paddy_area_ac",
      "type": "DOUBLE",
-     "description": ""
+     "description": "paddy area, acres"
     },
     {
      "name": "cotton_area_ac",
      "type": "DOUBLE",
-     "description": ""
+     "description": "cotton area, acres"
     },
     {
      "name": "maize_area_ac",
      "type": "DOUBLE",
-     "description": ""
+     "description": "maize area, acres"
     },
     {
      "name": "sugarcane_area_ac",
      "type": "DOUBLE",
-     "description": ""
+     "description": "sugarcane area, acres"
     },
     {
      "name": "tunnel_farms",
@@ -366,7 +366,137 @@
     {
      "name": "rural_hh",
      "type": "DOUBLE",
-     "description": "rural households, Census 2023 (table 20), the denominator for the test"
+     "description": "rural households, Census 2023 (table 20), the denominator for the plausibility test"
+    },
+    {
+     "name": "wheat_farms_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wheat_area_ac_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "wheat_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "wheat area irrigated, acres"
+    },
+    {
+     "name": "paddy_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting paddy, any variety (6.10)"
+    },
+    {
+     "name": "paddy_area_ac_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "cotton_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting cotton (6.11)"
+    },
+    {
+     "name": "cotton_area_ac_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "maize_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting maize for grain (6.12)"
+    },
+    {
+     "name": "maize_area_ac_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "maize_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "maize area irrigated, acres"
+    },
+    {
+     "name": "sugarcane_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting sugarcane (6.13)"
+    },
+    {
+     "name": "sugarcane_area_ac_1",
+     "type": "DOUBLE",
+     "description": ""
+    },
+    {
+     "name": "potatoes_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting potatoes (6.14)"
+    },
+    {
+     "name": "potatoes_area_ac",
+     "type": "DOUBLE",
+     "description": "potato area, acres"
+    },
+    {
+     "name": "potatoes_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "potato area irrigated, acres"
+    },
+    {
+     "name": "oilseeds_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting oilseeds (6.15)"
+    },
+    {
+     "name": "oilseeds_area_ac",
+     "type": "DOUBLE",
+     "description": "oilseed area, acres"
+    },
+    {
+     "name": "oilseeds_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "oilseed area irrigated, acres"
+    },
+    {
+     "name": "fodders_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting fodder crops (6.16)"
+    },
+    {
+     "name": "fodders_area_ac",
+     "type": "DOUBLE",
+     "description": "fodder area, acres"
+    },
+    {
+     "name": "fodders_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "fodder area irrigated, acres"
+    },
+    {
+     "name": "vegetables_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting vegetables incl. potatoes (6.17)"
+    },
+    {
+     "name": "vegetables_area_ac",
+     "type": "DOUBLE",
+     "description": "vegetable area, acres"
+    },
+    {
+     "name": "vegetables_irrigated_ac",
+     "type": "DOUBLE",
+     "description": "vegetable area irrigated, acres"
+    },
+    {
+     "name": "orchards_farms",
+     "type": "DOUBLE",
+     "description": "farms reporting orchards (6.3); exceeds farms in three Balochistan districts as published"
+    },
+    {
+     "name": "orchards_area_ac",
+     "type": "DOUBLE",
+     "description": "area under orchards, acres"
     }
    ],
    "kind": "places",

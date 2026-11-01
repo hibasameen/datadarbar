@@ -2680,7 +2680,12 @@ def register_agri_census(register):
             "four provinces plus Islamabad. Crop areas here are what farmers reported "
             "and run well above the Crop Reporting Service series in crops_district_fy "
             "(wheat 14.4 against 9.1 million hectares nationally); the two are different "
-            "instruments and should not be read against each other. PBS omits rows that "
+            "instruments and should not be read against each other. The <crop>_farms, "
+            "<crop>_area_ac and <crop>_irrigated_ac columns are Chapter 6 as published, "
+            "for wheat, paddy, cotton, maize, sugarcane, potatoes, oilseeds, fodders, "
+            "vegetables and orchards; in Ziarat, Chaman and Killa Abdullah PBS\u2019s "
+            "orchard table reports more farms with orchards than farms, so that share "
+            "exceeds 100 per cent as published. PBS omits rows that "
             "would be zero, so a missing figure is usually a zero; Washuk\u2019s row is "
             "missing from the acre table alone and is filled from the hectare table. "
             "Areas are in acres as PBS gives them.",
@@ -2690,7 +2695,6 @@ def register_agri_census(register):
              "unit_level": "country, province, division, district or other",
              "source_file": "which PBS workbook the row comes from",
              "farms_implausible": "farms below 5,000 or above 1.5 times rural households: per-farm rates unreliable",
-             "rural_hh": "rural households, Census 2023 (table 20), the denominator for the test",
              "farms_filled_from_hectare_table": "Washuk: farms and area taken from Table 1.2",
              "farms": "number of farms, weighted estimate",
              "farm_area_ac": "farm area, acres", "cultivated_area_ac": "cultivated area, acres",
@@ -2705,7 +2709,24 @@ def register_agri_census(register):
              "wheat_area_ac": "area under wheat as reported by farms, acres",
              "cattle": "head", "buffaloes": "head", "sheep": "head", "goats": "head",
              "tractors": "tractors, all ownership", "tubewells": "tubewells",
-             "tubewells_solar": "solar-powered tubewells", "share_tubewells_solar": "share of tubewells solar-powered"},
+             "tubewells_solar": "solar-powered tubewells", "share_tubewells_solar": "share of tubewells solar-powered",
+             "rural_hh": "rural households, Census 2023 (table 20), the denominator for the plausibility test",
+             "wheat_farms": "farms reporting wheat (Table 6.9)", "wheat_irrigated_ac": "wheat area irrigated, acres",
+             "paddy_farms": "farms reporting paddy, any variety (6.10)", "paddy_area_ac": "paddy area, acres",
+             "cotton_farms": "farms reporting cotton (6.11)", "cotton_area_ac": "cotton area, acres",
+             "maize_farms": "farms reporting maize for grain (6.12)", "maize_area_ac": "maize area, acres",
+             "maize_irrigated_ac": "maize area irrigated, acres",
+             "sugarcane_farms": "farms reporting sugarcane (6.13)", "sugarcane_area_ac": "sugarcane area, acres",
+             "potatoes_farms": "farms reporting potatoes (6.14)", "potatoes_area_ac": "potato area, acres",
+             "potatoes_irrigated_ac": "potato area irrigated, acres",
+             "oilseeds_farms": "farms reporting oilseeds (6.15)", "oilseeds_area_ac": "oilseed area, acres",
+             "oilseeds_irrigated_ac": "oilseed area irrigated, acres",
+             "fodders_farms": "farms reporting fodder crops (6.16)", "fodders_area_ac": "fodder area, acres",
+             "fodders_irrigated_ac": "fodder area irrigated, acres",
+             "vegetables_farms": "farms reporting vegetables incl. potatoes (6.17)", "vegetables_area_ac": "vegetable area, acres",
+             "vegetables_irrigated_ac": "vegetable area irrigated, acres",
+             "orchards_farms": "farms reporting orchards (6.3); exceeds farms in three Balochistan districts as published",
+             "orchards_area_ac": "area under orchards, acres"},
             "PBS Agricultural Census 2024, Excel tables for the national and four provincial "
             "volumes, pull of 2026-11-01",
             f"SELECT * FROM '{f.as_posix()}'",

@@ -55,5 +55,10 @@ maize/sugarcane area, tunnel_farms, cattle/buffaloes/sheep/goats/camels/asses, c
 tractors (+ per 1,000 farms, cultivated ac per tractor), tubewells by power (electric/solar/diesel) +
 share_tubewells_solar. Column-to-source mapping in `derived/headline_column_matches.csv`.
 
-Not yet done: warehouse registration (`build_web_warehouse.py`), map layer under Places, and the
-per-crop / per-size-class long views. Population denominators for per-capita rates: Census 2023.
+## On the site (etl/places/build_agri_census.py, commit 2026-11-01)
+Warehouse tables `agri_census_2024_district` (headline + Chapter 6 crop columns + `rural_hh`, `farms_implausible`)
+and `agri_census_2024_long`; Places groups under Agriculture: `agriFarms`, `agriLivestock`, `agriCrops`
+(farms reporting, share of cropped area, irrigated share, reported area for ten crops, beside the CRS `crops`
+group). `farms_implausible` = farms < 5,000 or > 1.5 × rural households (Census 2023): per-farm rates withheld
+with a note (17 districts). Orchards: PBS's Table 6.3 reports more farms with orchards than farms in Ziarat,
+Chaman and Killa Abdullah; shown as published. `etl/catalog_merge.py agri_census` refreshes catalog.json.

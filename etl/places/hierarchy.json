@@ -2,8 +2,8 @@
  "generated_from": "places-metric-crosswalk.json",
  "crosswalk_sha256": "71304d2964dbef12ed4541a56fc15b294b52cb0794e6855eddfb466214126cbb",
  "source_snapshot_sha256": "6b884dce8d87178b94563bd8bd49d1a5e67591442a446bda473b3e9ebadf3ef7",
- "entries": 5269,
- "extra_entries": 68,
+ "entries": 5305,
+ "extra_entries": 104,
  "vocab": {
   "topic": [
    "Population & households",
@@ -79,7 +79,8 @@
    "Farm structure & tenure",
    "Irrigation & cropping",
    "Livestock",
-   "Farm machinery & tubewells"
+   "Farm machinery & tubewells",
+   "Crops reported by farms"
   ],
   "family": [
    "Population growth",
@@ -171,7 +172,8 @@
    "Greenhouse gas emissions",
    "DIEM household surveys",
    "Farm structure (Agricultural Census 2024)",
-   "Livestock & machinery (Agricultural Census 2024)"
+   "Livestock & machinery (Agricultural Census 2024)",
+   "Crops reported by farms (Agricultural Census 2024)"
   ],
   "metric": [
    "Growth rate (%)",
@@ -58275,6 +58277,402 @@
    75,
    8,
    0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fwheat_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fwheat_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fwheat_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fwheat_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpaddy_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpaddy_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpaddy_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fcotton_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fcotton_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fcotton_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fmaize_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fmaize_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fmaize_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fmaize_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fsugarcane_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fsugarcane_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fsugarcane_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpotatoes_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpotatoes_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpotatoes_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fpotatoes_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001foilseeds_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001foilseeds_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001foilseeds_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001foilseeds_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001ffodders_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001ffodders_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001ffodders_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001ffodders_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fvegetables_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fvegetables_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fvegetables_irrigated_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001fvegetables_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001forchards_farms_pct": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001forchards_area_pct_cropped": [
+   9,
+   61,
+   90,
+   6,
+   75,
+   8,
+   0,
+   0,
+   0
+  ],
+  "district\u001fagriCrops\u001forchards_area_ac": [
+   9,
+   61,
+   90,
+   36,
+   75,
+   8,
+   1,
    0,
    0
   ]
