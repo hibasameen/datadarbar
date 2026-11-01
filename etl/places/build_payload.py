@@ -567,6 +567,9 @@ def main():
     # the people on it, so weighting by census population would describe no one.
     import issue4_groups
     P['plain_average'] = ['crops'] + issue4_groups.PLAIN_AVERAGE
+    # Groups that cover only the districts a survey chose: their average is of
+    # those districts, and the readout must not call it Pakistan's.
+    P['sampled'] = issue4_groups.SAMPLED
     print('  featured: ' + ', '.join(
         f"{t.split(' ')[0]} {len(v)}" for t, v in featured['district'].items()))
 

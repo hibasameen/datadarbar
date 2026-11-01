@@ -1486,6 +1486,11 @@
     });
     var n = keep.length;
     var where = prov || 'Pakistan';
+    // A survey of chosen districts averages those districts, not the province
+    // or the country around them (FAO DIEM covers 24 to 47 a round).
+    if ((IX.sampled || []).indexOf(col('group_key', state.row)) >= 0) {
+      where = n + ' surveyed ' + g.noun + (n === 1 ? '' : 's') + (prov ? ' in ' + prov : '');
+    }
 
     /* The source gave more than one figure for the same place and they do not
        agree. Adding them up, or ranking places by whichever arrived last, is

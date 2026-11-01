@@ -21,8 +21,8 @@ already loads (about 15,000 values): 76 years of one temperature measure over
 
   topic, htopic  the picker topic and hierarchy heading, where not Satellite &
         environment / Environment (DIEM files with food security)
-  survey  a household survey: its province readout is averaged by population,
-        not plainly
+  survey  a household survey of chosen districts: its readout is averaged by
+        population, not plainly, and says how many districts it is of
   form  the metric form build_hierarchy classifies (SUM_OK / POP_OK)
   expr  the value, as SQL over the table; where filters it; year gives the
         year column (NULL for a single snapshot)
@@ -202,6 +202,10 @@ SUM_OK = {'Temperature (°C)': False, 'Temperature difference (°C)': False,
 PLAIN_AVERAGE = [g['group_key'] for g in GROUPS
                  if g['group_key'] != 'pm25' and not g.get('survey')
                  and not all(SUM_OK.get(i['form'], False) for i in g['indicators'])]
+
+# Surveys of chosen districts, not of the country: the readout names how many
+# districts its average is of, rather than Pakistan or a province.
+SAMPLED = [g['group_key'] for g in GROUPS if g.get('survey')]
 
 FEATURED = ['climateTmean|tmean_c', 'heatWarmNights|nights_tmin_ge25',
             'climateRain|jjas_precip_mm_chirps', 'pm25|pm25_pop_mean',
