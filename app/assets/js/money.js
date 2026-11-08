@@ -748,7 +748,7 @@ function drawRemit() {
 let emigMode = 'dest';
 
 function wireEmig() {
-  d3.selectAll('#emigMode .seg').on('click', function () {
+  d3.selectAll('#emigMode button').on('click', function () {
     emigMode = this.dataset.em;
     drawEmig();
   });
@@ -757,7 +757,7 @@ function wireEmig() {
 function drawEmig() {
   const M = window.DD_MIGRATION;
   if (!M) return nodata('#chEmig', 'No emigration data.');
-  d3.selectAll('#emigMode .seg').classed('on', function () {
+  d3.selectAll('#emigMode button').classed('on', function () {
     return this.dataset.em === emigMode;
   });
 

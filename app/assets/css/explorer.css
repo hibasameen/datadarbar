@@ -39,9 +39,12 @@ a.tree-item{color:var(--green-800)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
   padding:16px 20px;display:flex;flex-direction:column;gap:12px;flex-grow:1;min-height:0}
 .card-controls{display:flex;flex-wrap:wrap;gap:6px}
-.seg{height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--line-strong);
+/* Two toggles share the name .seg: here it is one button or select (State),
+   in charts.css it is a wrapper holding buttons (Economy). Each rule names its
+   element so neither lands on the other on finance.html, which loads both. */
+button.seg,select.seg{height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--line-strong);
   background:var(--surface);font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
-.seg[aria-pressed="true"]{background:var(--green-900);color:#fff;border-color:var(--green-900);font-weight:700}
+button.seg[aria-pressed="true"]{background:var(--green-900);color:#fff;border-color:var(--green-900);font-weight:700}
 .chart{flex-grow:1;min-height:320px;display:flex;flex-direction:column}
 .chart svg{width:100%;flex:1 1 auto;min-height:0;display:block}
 .chart-lede,.chart-foot{font-size:.74rem;line-height:1.4;color:var(--muted);
@@ -169,7 +172,7 @@ a.tree-item{color:var(--green-800)}
 .ctl-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:0 0 .8rem}
 .ctl-lbl{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
   color:var(--muted);font-weight:700;margin-right:.3rem}
-.ctl-row .seg{height:26px;padding:0 9px;font-size:.78rem}
+.ctl-row button.seg,.ctl-row select.seg{height:26px;padding:0 9px;font-size:.78rem}
 
 /* Coverage chips that name what is absent rather than leaving it to be read
    off a flat line at zero. */
