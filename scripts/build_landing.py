@@ -155,8 +155,8 @@ def main():
         shelf('datasets/', 'Data catalogue',
               f'{f["tables"]} documented tables, source notes, CSV and Parquet'),
         shelf('query.html', 'Query with SQL', 'DuckDB in your browser, no signup'),
-        shelf('datasets/#fields', 'Dictionary',
-              'Every field in every table, searchable'),
+        shelf('methods.html', 'Methods',
+              'Where each figure comes from, and what each source will support'),
     ])
 
     body = f'''<main class="lmain">
