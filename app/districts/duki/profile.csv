@@ -1,67 +1,164 @@
-district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample
-Duki,165,Balochistan,People,pop_2017,"Population, Census 2017",2017,152977.0,,132,136,235481.5,1216293.0,
-Duki,165,Balochistan,People,trans,Transgender population,2023,48.0,,67,134,13.0,47.5,
-Duki,165,Balochistan,People,under_15,Under 15 (% of population),2023,45.04,,59,136,51.935,43.96,
-Duki,165,Balochistan,People,age_15_64,Aged 15–64 (% of population),2023,53.2,,67,136,45.98,53.175,
-Duki,165,Balochistan,People,age_60_plus,Aged 60 and over (% of population),2023,2.91,,128,136,3.36,4.67,
-Duki,165,Balochistan,Agriculture,farms,Farms,,1508.975750973333,,130,135,13925.7256,59404.6376,
-Duki,165,Balochistan,Agriculture,farm_area,Farm area (acres),,130598.17287662924,,111,135,227516.7579,313575.6833,
-Duki,165,Balochistan,Agriculture,cultivated,Cultivated area (acres),,103004.19945277675,,106,135,166845.6914,268069.3914,
-Duki,165,Balochistan,Agriculture,small_farms,Farms under 2.5 acres (%),,14.189606666302481,,129,134,25.8919,54.1234,
-Duki,165,Balochistan,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,22.197668896474866,,32,134,13.9386,11.8603,
-Duki,165,Balochistan,Agriculture,tenant,Tenant farms (%),,0.7289712901552382,,110,135,0.9989,4.6305,
-Duki,165,Balochistan,Agriculture,owner_farms,Owner-operated farms (%),,98.6371489301445,,21,135,96.829,92.1869,
-Duki,165,Balochistan,Agriculture,female_farms,Farms operated by women (%),,0.06627011728683983,,115,135,0.1825,0.5009,
-Duki,165,Balochistan,Agriculture,irrigated,Irrigated share of cultivated area (%),,91.14214413184888,,65,135,80.1139,90.2212,
-Duki,165,Balochistan,Agriculture,crop_intensity,Cropping intensity (%),,114.3,,110,135,114.0,154.1,
-Duki,165,Balochistan,Agriculture,wheat_share,Wheat share of cropped area (%),,77.48153954605682,,7,135,47.5638,46.1094,
-Duki,165,Balochistan,Agriculture,cattle,Cattle,,25377.02634785256,,127,135,88912.5065,316635.919,
-Duki,165,Balochistan,Agriculture,buffaloes,Buffaloes,,826.5379176173559,,119,135,2800.2561,197856.1306,
-Duki,165,Balochistan,Agriculture,sheep,Sheep,,70569.34730277974,,97,135,445002.0417,152328.9296,
-Duki,165,Balochistan,Agriculture,goats,Goats,,320501.715033768,,99,135,539314.2875,536516.0715,
-Duki,165,Balochistan,Agriculture,tractors,Tractors,,165.16873328833333,,124,135,1630.0314,2368.1312,
-Duki,165,Balochistan,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,8.441360603449183,,85,135,19.0667,16.0011,
-Duki,165,Balochistan,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.0,,123,127,0.5311,28.794,
-Duki,165,Balochistan,Climate and environment,tmean,Mean temperature (°C),2025,21.01,,100,156,22.43,23.34,
-Duki,165,Balochistan,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,1.18,,75,156,1.18,1.145,
-Duki,165,Balochistan,Climate and environment,tmax,Mean daily maximum (°C),2025,27.04,,99,156,28.765,29.31,
-Duki,165,Balochistan,Climate and environment,tmin,Mean daily minimum (°C),2025,14.47,,101,156,15.725,17.345,
-Duki,165,Balochistan,Climate and environment,rain,Rainfall in the year (mm),2025,260.9,,89,156,175.8,310.85,
-Duki,165,Balochistan,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,229.5,,83,156,145.5,259.45,
-Duki,165,Balochistan,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,189.7,,93,156,88.55,217.75,
-Duki,165,Balochistan,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,151,156,8.0,18.5,
-Duki,165,Balochistan,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,2.4,,94,156,5.8,10.8,
-Duki,165,Balochistan,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,14.0,,102,156,20.5,86.5,
-Duki,165,Balochistan,Climate and environment,warm_spells,Warm-spell days,2025,19.0,,74,156,18.0,17.0,
-Duki,165,Balochistan,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,37.4,,111,156,37.42,53.27,
-Duki,165,Balochistan,Climate and environment,lc_crop,Cropland (% of land),2020,5.0955,,93,156,2.5335,14.9623,
-Duki,165,Balochistan,Climate and environment,lc_built,Built-up land (% of land),2020,0.242,,145,156,0.4513,4.073,
-Duki,165,Balochistan,Climate and environment,lc_tree,Tree cover (% of land),2020,0.0009,,132,156,0.0006,0.0418,
-Duki,165,Balochistan,Climate and environment,lc_short,Short vegetation (% of land),2020,65.6289,,18,156,20.6485,26.159,
-Duki,165,Balochistan,Climate and environment,lc_bare,Bare ground (% of land),2020,28.680300000000003,,46,156,65.9648,3.0887,
-Duki,165,Balochistan,Climate and environment,lc_water,Open water (% of land),2020,0.07680000000000001,,123,156,0.0414,0.6615,
-Duki,165,Balochistan,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,34.139,,12,156,3.3585,1.219,
-Duki,165,Balochistan,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,0,,154,156,0.0,1.0,
-Duki,165,Balochistan,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.9873,,53,156,0.9487,0.7759,
-Duki,165,Balochistan,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,152,156,0.0,0.0,
-Duki,165,Balochistan,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,3.05,,63,155,0.82,1.35,
-Duki,165,Balochistan,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,151,155,0.0,0.0,
-Duki,165,Balochistan,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,97.46,,114,155,78.56,455.68,
-Duki,165,Balochistan,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,96.31,,8,155,89.67,77.12,
-Duki,165,Balochistan,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,1.0,,135,156,3.0,13.0,
-Duki,165,Balochistan,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,105.0,,35,156,13.0,29.5,
-Duki,165,Balochistan,Buildings and facilities,f_school,Schools,,287.0,,134,156,312.0,1211.0,
-Duki,165,Balochistan,Buildings and facilities,f_college,Colleges,,5.0,,145,154,8.0,52.0,
-Duki,165,Balochistan,Buildings and facilities,f_madrisah,Madrassas,,45.0,,125,155,47.0,170.0,
-Duki,165,Balochistan,Buildings and facilities,f_hospital,Hospitals,,108.0,,127,156,110.0,502.0,
-Duki,165,Balochistan,Buildings and facilities,f_mosque,Mosques,,665.0,,140,156,807.0,2908.5,
-Duki,165,Balochistan,Buildings and facilities,f_bank,Banks,,11.0,,134,155,12.0,61.0,
-Duki,165,Balochistan,Buildings and facilities,f_post,Post offices,,1.0,,155,155,8.0,22.0,
-Duki,165,Balochistan,Buildings and facilities,f_police,Police stations,,13.0,,125,156,18.0,25.5,
-Duki,165,Balochistan,Buildings and facilities,f_govt,Government offices,,17.0,,151,156,46.0,137.0,
-Duki,165,Balochistan,Buildings and facilities,f_factory,Factories,,28.0,,91,149,9.0,52.0,
-Duki,165,Balochistan,Buildings and facilities,f_shop,Retail shops,,1995.0,,131,156,2324.5,10177.5,
-Duki,165,Balochistan,Buildings and facilities,f_hotel,Hotels,,192.0,,126,156,168.5,826.0,
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Duki,165,Balochistan,People,pop,Population,2023,477476.0,397423.0,107,130,313271.0,1460080.5,,Loralai; Duki
+Duki,165,Balochistan,People,pop_2017,"Population, Census 2017",2017,152977.0,,132,136,235481.5,1216293.0,,
+Duki,165,Balochistan,People,pop_m,Male population,2023,249995.0,212502.0,107,130,166679.0,740172.0,,Loralai; Duki
+Duki,165,Balochistan,People,pop_f,Female population,2023,227416.0,184905.0,108,130,146589.0,715230.0,,Loralai; Duki
+Duki,165,Balochistan,People,trans,Transgender population,2023,48.0,,67,134,13.0,47.5,,
+Duki,165,Balochistan,People,growth,Annual growth rate since the previous census (%),2023,3.11,2.47,26,130,2.92,2.46,,Loralai; Duki
+Duki,165,Balochistan,People,area,Area (km²),2023,8018.0,8018.0,28,130,6831.0,3660.5,,Loralai; Duki
+Duki,165,Balochistan,People,density,Population density (people per km²),2023,59.55,49.57,109,130,47.07,404.87,,Loralai; Duki
+Duki,165,Balochistan,People,urban,Urban population (%),2023,14.16,16.33,96,129,19.99,22.99,,Loralai; Duki
+Duki,165,Balochistan,People,urban_pop,Urban population,2023,67169.0,64891.0,98,120,68234.5,357104.0,,Loralai; Duki
+Duki,165,Balochistan,People,rural_pop,Rural population,2023,407239.0,332532.0,99,124,261516.0,1001488.0,,Loralai; Duki
+Duki,165,Balochistan,People,hh_size,Average household size,2023,6.07,7.0,85,130,6.54,6.3,,Loralai; Duki
+Duki,165,Balochistan,People,sex_ratio,Sex ratio (males per 100 females),2023,109.93,114.92,28,130,109.91,104.985,,Loralai; Duki
+Duki,165,Balochistan,People,under_15,Under 15 (% of population),2023,45.04,,59,136,51.935,43.96,,
+Duki,165,Balochistan,People,age_15_64,Aged 15–64 (% of population),2023,53.2,,67,136,45.98,53.175,,
+Duki,165,Balochistan,People,age_60_plus,Aged 60 and over (% of population),2023,2.91,,128,136,3.36,4.67,,
+Duki,165,Balochistan,Education,lit,"Literacy rate, ages 10 and over (%)",2023,43.62,37.16,81,130,38.38,49.05,,Loralai; Duki
+Duki,165,Balochistan,Education,lit_f,"Female literacy rate, ages 10 and over (%)",2023,31.99,21.32,81,130,27.95,39.21,,Loralai; Duki
+Duki,165,Balochistan,Education,lit_m,"Male literacy rate, ages 10 and over (%)",2023,54.11,50.76,85,130,45.86,60.62,,Loralai; Duki
+Duki,165,Balochistan,Education,literate,"Literate people, ages 10 and over",2023,133345.0,94157.0,102,130,74678.0,522970.5,,Loralai; Duki
+Duki,165,Balochistan,Education,in_school_g,Girls aged 5–16 in school (%),,26.44,,113,130,29.88,48.74,,Loralai; Duki
+Duki,165,Balochistan,Education,in_school_b,Boys aged 5–16 in school (%),,53.56,,87,130,41.75,61.225,,Loralai; Duki
+Duki,165,Balochistan,Education,oos,"Out-of-school children, ages 5–16",,94157.0,,94,130,73649.0,154795.0,,Loralai; Duki
+Duki,165,Balochistan,Education,oos_g,"Out-of-school girls, ages 5–16",,55947.0,,90,130,36651.0,89443.5,,Loralai; Duki
+Duki,165,Balochistan,Education,oos_b,"Out-of-school boys, ages 5–16",,38198.0,,101,130,36572.0,73010.5,,Loralai; Duki
+Duki,165,Balochistan,Education,never_school,"Never attended school, ages 5 and over (%)",2023,65.09,63.55,29,130,65.09,52.11,,Loralai; Duki
+Duki,165,Balochistan,Education,matric_plus,"Matric or above, ages 5 and over (%)",2023,9.29,10.56,96,130,9.01,14.37,,Loralai; Duki
+Duki,165,Balochistan,Education,graduate,"Graduates, ages 5 and over (%)",2023,1.83,1.84,86,130,1.56,2.2,,Loralai; Duki
+Duki,165,Balochistan,Education,ner,"Net enrolment rate, ages 5–16 (%)",,53.83,,81,124,48.12,62.025,,Loralai; Duki
+Duki,165,Balochistan,Education,ner_g,"Net enrolment rate, girls (%)",,35.37,,97,124,37.135,53.06,,Loralai; Duki
+Duki,165,Balochistan,Education,ner_b,"Net enrolment rate, boys (%)",,67.57,,74,124,57.775,72.41,,Loralai; Duki
+Duki,165,Balochistan,Education,pslm_lit,"Literacy rate, survey measure (%)",,42.89,,89,124,43.13,50.8,,Loralai; Duki
+Duki,165,Balochistan,Education,numeracy,Numeracy rate (%),,58.52,,111,124,82.82,79.585,,Loralai; Duki
+Duki,165,Balochistan,Education,private_school,Pupils in private schools (%),,25.46,,42,124,7.38,20.775,,Loralai; Duki
+Duki,165,Balochistan,Work,lfpr,"Labour force participation, ages 10 and over (%)",2023,63.91,27.98,10,130,61.28,52.065,,Loralai; Duki
+Duki,165,Balochistan,Work,lfpr_f,Female labour force participation (%),2023,51.61,3.24,11,130,45.86,30.405,,Loralai; Duki
+Duki,165,Balochistan,Work,lfpr_m,Male labour force participation (%),2023,74.97,49.2,25,130,74.18,72.5,,Loralai; Duki
+Duki,165,Balochistan,Work,unemp,Unemployment rate (%),2023,35.51,23.77,35,130,37.09,26.805,,Loralai; Duki
+Duki,165,Balochistan,Work,unemp_f,Female unemployment rate (%),2023,46.77,28.0,48,130,47.62,42.51,,Loralai; Duki
+Duki,165,Balochistan,Work,unemp_m,Male unemployment rate (%),2023,28.53,23.53,37,130,31.52,20.975,,Loralai; Duki
+Duki,165,Balochistan,Work,employed,People in work,2023,125967.0,54039.0,103,130,70853.0,393310.5,,Loralai; Duki
+Duki,165,Balochistan,Work,paid_emp,Workers who are paid employees (%),2023,13.13,,104,130,12.48,24.19,,Loralai; Duki
+Duki,165,Balochistan,Work,self_emp,Workers who are self-employed (%),2023,45.13,,52,130,42.98,42.45,,Loralai; Duki
+Duki,165,Balochistan,Work,unpaid_fam,Unpaid family workers (%),2023,41.74,,33,130,43.46,32.075,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_lfpr,Labour force participation (%),,51.37,,31,127,38.69,44.55,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_unemp,Unemployment rate (%),,2.6,,109,127,4.03,7.56,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_agri,Employed in agriculture (%),,59.86,,11,127,33.62,33.52,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_manu,Employed in manufacturing (%),,3.39,,116,127,4.46,10.32,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_trade,Employed in trade (%),,8.51,,113,127,13.11,14.52,,Loralai; Duki
+Duki,165,Balochistan,Work,lfs_youth,Youth aged 15–24 in work (%),,57.01,,11,127,30.96,36.33,,Loralai; Duki
+Duki,165,Balochistan,Work,estab,Business establishments,,13308.0,,96,129,6195.0,39168.0,,Loralai; Duki
+Duki,165,Balochistan,Work,workforce,People working in establishments,,61115.0,,91,126,25399.0,134212.0,,Loralai; Duki
+Duki,165,Balochistan,Work,workers_per_est,Workers per establishment,,4.59,,35,126,4.55,3.395,,Loralai; Duki
+Duki,165,Balochistan,Work,est_manu,Establishments in manufacturing (%),,8.33,,69,129,5.6,8.47,,Loralai; Duki
+Duki,165,Balochistan,Work,est_trade,Establishments in wholesale and retail trade (%),,50.82,,28,129,48.96,45.67,,Loralai; Duki
+Duki,165,Balochistan,Work,est_services,Establishments in services (%),,35.03,,44,129,36.74,32.83,,Loralai; Duki
+Duki,165,Balochistan,Health and children,stunting,Children under 5 stunted (%),,52.9,,38,145,54.2,38.3,,Loralai; Duki
+Duki,165,Balochistan,Health and children,underweight,Children under 5 underweight (%),,33.5,,41,145,33.5,24.4,,Loralai; Duki
+Duki,165,Balochistan,Health and children,wasting,Children under 5 wasted (%),,12.7,,39,145,11.3,8.8,,Loralai; Duki
+Duki,165,Balochistan,Health and children,inst_delivery,Births in a health facility (%),,41.2,,114,145,25.1,66.1,,Loralai; Duki
+Duki,165,Balochistan,Health and children,anc4,Mothers with four or more antenatal visits (%),,27.8,,108,135,24.6,51.7,,Loralai; Duki
+Duki,165,Balochistan,Health and children,sba,Births attended by skilled staff (%),,47.0,,113,135,49.1,73.2,,Loralai; Duki
+Duki,165,Balochistan,Health and children,birth_reg,Children under 5 with a registered birth (%),,70.3,,39,145,41.6,39.5,,Loralai; Duki
+Duki,165,Balochistan,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,46.7,,137,145,61.5,80.7,,Loralai; Duki
+Duki,165,Balochistan,Health and children,careseek,Care sought for a child with fever (%),,36.8,,132,138,59.6,67.45,,Loralai; Duki
+Duki,165,Balochistan,Health and children,child_func,Children aged 5–17 with a functional difficulty (%),,13.8,,85,138,17.9,18.05,,Loralai; Duki
+Duki,165,Balochistan,Health and children,ceb,Children ever born per woman aged 15–49,,4.0,,21,128,3.56,3.43,,Loralai; Duki
+Duki,165,Balochistan,Health and children,child_loss,"Children who died, share of births (%)",,13.9,,6,128,4.45,6.4,,Loralai; Duki
+Duki,165,Balochistan,Health and children,morbidity,Ill or injured in the last two weeks (%),,9.16,,34,124,5.66,6.905,,Loralai; Duki
+Duki,165,Balochistan,Health and children,sought_tx,Sought treatment when ill (%),,94.08,,91,123,94.25,96.9,,Loralai; Duki
+Duki,165,Balochistan,Health and children,govt_facility,Treated at a government facility (%),,56.47,,20,123,50.75,39.19,,Loralai; Duki
+Duki,165,Balochistan,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,79.8,,27,147,89.7,17.3,,Loralai; Duki
+Duki,165,Balochistan,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,503.0,,28,147,530.0,127.0,,Loralai; Duki
+Duki,165,Balochistan,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,63.4,,23,147,62.8,9.9,,Loralai; Duki
+Duki,165,Balochistan,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,94.4,,39,147,97.5,77.4,,Loralai; Duki
+Duki,165,Balochistan,Women,cpr,"Contraceptive use, any method (%)",,15.8,,107,127,13.0,26.9,,Loralai; Duki
+Duki,165,Balochistan,Women,cpr_modern,"Contraceptive use, modern method (%)",,11.5,,102,127,7.65,21.9,,Loralai; Duki
+Duki,165,Balochistan,Women,unmet_need,Unmet need for family planning (%),,5.8,,123,127,23.0,18.7,,Loralai; Duki
+Duki,165,Balochistan,Women,married_u18,Women aged 20–49 married before 18 (%),,36.2,,35,145,28.4,28.0,,Loralai; Duki
+Duki,165,Balochistan,Women,women_lit,"Women aged 15–49 literate, tested (%)",,14.0,,114,145,10.9,35.7,,Loralai; Duki
+Duki,165,Balochistan,Women,dv_justified,Women who say wife-beating can be justified (%),,41.1,,71,145,39.6,39.6,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,mpi,Multidimensional poverty index (MPI),,0.38,,46,118,0.4395,0.301,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,mpi_h,"Multidimensionally poor (headcount, %)",,61.13,,46,118,69.955,53.485,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,mpi_a,Intensity of deprivation among the poor (%),,62.15,,32,118,63.945,56.42,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_electricity,Poor and without electricity (%),,5.44,,25,118,2.25,1.33,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_water,Poor and without safe drinking water (%),,16.21,,38,118,27.895,6.435,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_sanitation,Poor and without adequate sanitation (%),,36.67,,52,118,59.195,31.41,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_fuel,Poor and cooking with solid fuel (%),,58.92,,42,118,64.57,46.195,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_housing,Poor and in inadequate housing (%),,58.9,,31,118,65.105,40.85,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_schooling,Poor and no member with five years of schooling (%),,42.07,,37,118,41.595,34.13,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,dep_attendance,Poor and with a school-age child out of school (%),,39.44,,46,118,38.415,34.63,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,piped_water,Households with piped water (%),,19.34,,54,124,19.135,17.2,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,flush_toilet,Households with a flush toilet (%),,80.06,,56,124,23.34,76.84,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,no_toilet,Households with no toilet (%),,12.7,,52,124,14.58,9.91,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,open_def,Households practising open defecation (%),,37.9,,20,135,18.4,13.9,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,ecoli_source,E. coli in water at the source (%),,87.8,,41,138,96.5,68.4,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,internet,"Internet users, ages 10 and over (%)",,19.16,,27,124,9.025,11.6,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,internet_f,"Female internet users, ages 10 and over (%)",,7.85,,48,124,2.24,5.86,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,internet_m,"Male internet users, ages 10 and over (%)",,27.88,,22,124,14.875,18.315,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,smartphone,"Smartphone owners, ages 10 and over (%)",,15.84,,26,124,9.195,10.68,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,hh_mobile,Households with a mobile phone (%),,94.63,,57,124,93.205,94.31,,Loralai; Duki
+Duki,165,Balochistan,Poverty and living standards,food_insecure,Households moderately or severely food insecure (%),,25.0,,26,111,22.0,17.0,,Loralai; Duki
+Duki,165,Balochistan,Agriculture,farms,Farms,,1508.975750973333,,130,135,13925.7256,59404.6376,,
+Duki,165,Balochistan,Agriculture,farm_area,Farm area (acres),,130598.17287662924,,111,135,227516.7579,313575.6833,,
+Duki,165,Balochistan,Agriculture,cultivated,Cultivated area (acres),,103004.19945277675,,106,135,166845.6914,268069.3914,,
+Duki,165,Balochistan,Agriculture,small_farms,Farms under 2.5 acres (%),,14.189606666302481,,129,134,25.8919,54.1234,,
+Duki,165,Balochistan,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,22.197668896474866,,32,134,13.9386,11.8603,,
+Duki,165,Balochistan,Agriculture,tenant,Tenant farms (%),,0.7289712901552382,,110,135,0.9989,4.6305,,
+Duki,165,Balochistan,Agriculture,owner_farms,Owner-operated farms (%),,98.6371489301445,,21,135,96.829,92.1869,,
+Duki,165,Balochistan,Agriculture,female_farms,Farms operated by women (%),,0.06627011728683983,,115,135,0.1825,0.5009,,
+Duki,165,Balochistan,Agriculture,irrigated,Irrigated share of cultivated area (%),,91.14214413184888,,65,135,80.1139,90.2212,,
+Duki,165,Balochistan,Agriculture,crop_intensity,Cropping intensity (%),,114.3,,110,135,114.0,154.1,,
+Duki,165,Balochistan,Agriculture,wheat_share,Wheat share of cropped area (%),,77.48153954605682,,7,135,47.5638,46.1094,,
+Duki,165,Balochistan,Agriculture,cattle,Cattle,,25377.02634785256,,127,135,88912.5065,316635.919,,
+Duki,165,Balochistan,Agriculture,buffaloes,Buffaloes,,826.5379176173559,,119,135,2800.2561,197856.1306,,
+Duki,165,Balochistan,Agriculture,sheep,Sheep,,70569.34730277974,,97,135,445002.0417,152328.9296,,
+Duki,165,Balochistan,Agriculture,goats,Goats,,320501.715033768,,99,135,539314.2875,536516.0715,,
+Duki,165,Balochistan,Agriculture,tractors,Tractors,,165.16873328833333,,124,135,1630.0314,2368.1312,,
+Duki,165,Balochistan,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,8.441360603449183,,85,135,19.0667,16.0011,,
+Duki,165,Balochistan,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.0,,123,127,0.5311,28.794,,
+Duki,165,Balochistan,Climate and environment,tmean,Mean temperature (°C),2025,21.01,,100,156,22.43,23.34,,
+Duki,165,Balochistan,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,1.18,,75,156,1.18,1.145,,
+Duki,165,Balochistan,Climate and environment,tmax,Mean daily maximum (°C),2025,27.04,,99,156,28.765,29.31,,
+Duki,165,Balochistan,Climate and environment,tmin,Mean daily minimum (°C),2025,14.47,,101,156,15.725,17.345,,
+Duki,165,Balochistan,Climate and environment,rain,Rainfall in the year (mm),2025,260.9,,89,156,175.8,310.85,,
+Duki,165,Balochistan,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,229.5,,83,156,145.5,259.45,,
+Duki,165,Balochistan,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,189.7,,93,156,88.55,217.75,,
+Duki,165,Balochistan,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,151,156,8.0,18.5,,
+Duki,165,Balochistan,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,2.4,,94,156,5.8,10.8,,
+Duki,165,Balochistan,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,14.0,,102,156,20.5,86.5,,
+Duki,165,Balochistan,Climate and environment,warm_spells,Warm-spell days,2025,19.0,,74,156,18.0,17.0,,
+Duki,165,Balochistan,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,37.4,,111,156,37.42,53.27,,
+Duki,165,Balochistan,Climate and environment,lc_crop,Cropland (% of land),2020,5.0955,,93,156,2.5335,14.9623,,
+Duki,165,Balochistan,Climate and environment,lc_built,Built-up land (% of land),2020,0.242,,145,156,0.4513,4.073,,
+Duki,165,Balochistan,Climate and environment,lc_tree,Tree cover (% of land),2020,0.0009,,132,156,0.0006,0.0418,,
+Duki,165,Balochistan,Climate and environment,lc_short,Short vegetation (% of land),2020,65.6289,,18,156,20.6485,26.159,,
+Duki,165,Balochistan,Climate and environment,lc_bare,Bare ground (% of land),2020,28.680300000000003,,46,156,65.9648,3.0887,,
+Duki,165,Balochistan,Climate and environment,lc_water,Open water (% of land),2020,0.07680000000000001,,123,156,0.0414,0.6615,,
+Duki,165,Balochistan,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,34.139,,12,156,3.3585,1.219,,
+Duki,165,Balochistan,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,0,,154,156,0.0,1.0,,
+Duki,165,Balochistan,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.9873,,53,156,0.9487,0.7759,,
+Duki,165,Balochistan,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,152,156,0.0,0.0,,
+Duki,165,Balochistan,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,3.05,,63,155,0.82,1.35,,
+Duki,165,Balochistan,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,151,155,0.0,0.0,,
+Duki,165,Balochistan,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,97.46,,114,155,78.56,455.68,,
+Duki,165,Balochistan,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,96.31,,8,155,89.67,77.12,,
+Duki,165,Balochistan,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,1.0,,135,156,3.0,13.0,,
+Duki,165,Balochistan,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,105.0,,35,156,13.0,29.5,,
+Duki,165,Balochistan,Buildings and facilities,f_school,Schools,,287.0,,134,156,312.0,1211.0,,
+Duki,165,Balochistan,Buildings and facilities,f_college,Colleges,,5.0,,145,154,8.0,52.0,,
+Duki,165,Balochistan,Buildings and facilities,f_madrisah,Madrassas,,45.0,,125,155,47.0,170.0,,
+Duki,165,Balochistan,Buildings and facilities,f_hospital,Hospitals,,108.0,,127,156,110.0,502.0,,
+Duki,165,Balochistan,Buildings and facilities,f_mosque,Mosques,,665.0,,140,156,807.0,2908.5,,
+Duki,165,Balochistan,Buildings and facilities,f_bank,Banks,,11.0,,134,155,12.0,61.0,,
+Duki,165,Balochistan,Buildings and facilities,f_post,Post offices,,1.0,,155,155,8.0,22.0,,
+Duki,165,Balochistan,Buildings and facilities,f_police,Police stations,,13.0,,125,156,18.0,25.5,,
+Duki,165,Balochistan,Buildings and facilities,f_govt,Government offices,,17.0,,151,156,46.0,137.0,,
+Duki,165,Balochistan,Buildings and facilities,f_factory,Factories,,28.0,,91,149,9.0,52.0,,
+Duki,165,Balochistan,Buildings and facilities,f_shop,Retail shops,,1995.0,,131,156,2324.5,10177.5,,
+Duki,165,Balochistan,Buildings and facilities,f_hotel,Hotels,,192.0,,126,156,168.5,826.0,,
 Duki,165,Balochistan,Tehsils,DDS-BA-0022,Duki (sub-division),2023,137294.0,,,,,,
 Duki,165,Balochistan,Tehsils,DDS-BA-0025,Thal Chutyali (sub-division),2023,32205.0,,,,,,
 Duki,165,Balochistan,Tehsils,DDS-BA-0024,Talao (sub-tehsil),2023,21930.0,,,,,,

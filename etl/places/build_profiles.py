@@ -363,14 +363,35 @@ def main():
     # ── values ─────────────────────────────────────────────────────────────
     rows = q(f"""SELECT map_key, group_key, indicator, year, value, relation, note
         FROM {tbl('place_indicators')} WHERE level='district'""")
+    # A map_key of several codes ("086 164") is one figure published for a
+    # footprint that is now more than one district - Kalat before Surab was
+    # cut from it - and the map draws it across all of them. Each member gets
+    # the value and the note, and remembers the footprint, so a ranking
+    # counts the figure once rather than once per member. A district's own
+    # row wins over a footprint's where both exist.
     cell = {}        # (group, indicator, year) -> {code: value}
-    meta = {}        # (group, code) -> (relation, note)
-    for code, g, ind, y, v, rel, note in rows:
+    footprint = {}   # (group, indicator, year) -> {code: map_key of the shared figure}
+    meta = {}        # (group, code) -> note
+    singles = [r for r in rows if ' ' not in r[0]]
+    shared = [r for r in rows if ' ' in r[0]]
+    for code, g, ind, y, v, rel, note in singles:
         if code not in by_code or v is None:
             continue
         cell.setdefault((g, ind, y), {})[code] = v
         if rel != 'exact' and note:
             meta[(g, code)] = note
+    for mk, g, ind, y, v, rel, note in shared:
+        if v is None:
+            continue
+        members = [c for c in mk.split() if c in by_code]
+        for code in members:
+            k = (g, ind, y)
+            if code in cell.get(k, {}) and code not in footprint.get(k, {}):
+                continue
+            cell.setdefault(k, {})[code] = v
+            footprint.setdefault(k, {})[code] = mk
+            if note:
+                meta[(g, code)] = note
 
     low_n = {}       # (group, code) -> True
     for g, (fg, fi) in LOW_N.items():
@@ -382,30 +403,41 @@ def main():
     values = {c: {} for c in codes}
     notes = {c: {} for c in codes}
 
-    def put(iid, label, fmt, by_code_values, source_group=None, year=None, unit_note=None):
+    def put(iid, label, fmt, by_code_values, source_group=None, year=None, shared=None):
+        """Record one indicator for every district that has it. `shared` maps
+        a code to the footprint it takes its figure from; the ranking and
+        the medians are over footprints, so a figure drawn across three
+        districts is one observation, not three."""
         vals = {c: v for c, v in by_code_values.items() if c in by_code and v is not None}
         if not vals:
             print(f'  no values for {iid}')
             return
-        order = sorted(vals, key=lambda c: -vals[c])
-        rank = {c: i + 1 for i, c in enumerate(order)}
+        shared = shared or {}
+        unit_of = {c: shared.get(c, c) for c in vals}
+        units = {}
+        for c, v in vals.items():
+            units.setdefault(unit_of[c], v)
+        order = sorted(units, key=lambda u: -units[u])
+        unit_rank = {u: i + 1 for i, u in enumerate(order)}
         prov_med = {}
         for prov in {d['province'] for d in frame}:
-            xs = [vals[c] for c in vals if by_code[c]['province'] == prov]
+            xs = [units[u] for u in units if by_code[u.split()[0]]['province'] == prov]
             if len(xs) >= 3:
                 prov_med[prov] = median(xs)
-        indicators[iid] = {'label': label, 'fmt': fmt, 'n': len(vals), 'median': median(vals.values()),
+        indicators[iid] = {'label': label, 'fmt': fmt, 'n': len(units), 'median': median(units.values()),
                            'prov_median': prov_med, 'year': year, 'group': source_group}
         for c, v in vals.items():
-            rec = {'v': v, 'r': rank[c]}
+            rec = {'v': v, 'r': unit_rank[unit_of[c]]}
             if source_group and low_n.get((source_group, c)):
                 rec['low_n'] = True
+            if c in shared:
+                rec['fp'] = [by_code[m]['name'] for m in shared[c].split() if m in by_code]
             values[c][iid] = rec
             if source_group and (source_group, c) in meta:
                 notes[c][meta[(source_group, c)]] = True
 
     for iid, g, ind, y, label, fmt in SPEC:
-        put(iid, label, fmt, cell.get((g, ind, y), {}), g, y)
+        put(iid, label, fmt, cell.get((g, ind, y), {}), g, y, footprint.get((g, ind, y)))
         if y == Y_CENSUS and (g, ind, '2017') in cell:
             # the earlier census beside the latest, for the same shape
             prev = cell[(g, ind, '2017')]

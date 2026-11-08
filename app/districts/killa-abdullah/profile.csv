@@ -1,80 +1,186 @@
-district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample
-Killa Abdullah,100,Balochistan,People,pop_2017,"Population, Census 2017",2017,323793.0,,105,136,235481.5,1216293.0,
-Killa Abdullah,100,Balochistan,People,trans,Transgender population,2023,16.0,,96,134,13.0,47.5,
-Killa Abdullah,100,Balochistan,People,under_15,Under 15 (% of population),2023,49.39,,35,136,51.935,43.96,
-Killa Abdullah,100,Balochistan,People,age_15_64,Aged 15–64 (% of population),2023,48.72,,100,136,45.98,53.175,
-Killa Abdullah,100,Balochistan,People,age_60_plus,Aged 60 and over (% of population),2023,2.97,,127,136,3.36,4.67,
-Killa Abdullah,100,Balochistan,Poverty and living standards,diem_poor_fc,Households with poor food consumption (%),2024 (round 6),10.18,,9,24,6.045,8.565,
-Killa Abdullah,100,Balochistan,Poverty and living standards,diem_skipped,Households where someone skipped a meal in the last month (%),2024 (round 6),24.89,,11,24,27.635,21.585,
-Killa Abdullah,100,Balochistan,Poverty and living standards,diem_shock,Households hit by a shock (%),2024 (round 6),84.07,,6,24,78.19,68.5,
-Killa Abdullah,100,Balochistan,Agriculture,farms,Farms,,18585.65250397522,,100,135,13925.7256,59404.6376,
-Killa Abdullah,100,Balochistan,Agriculture,farm_area,Farm area (acres),,260469.92844141836,,81,135,227516.7579,313575.6833,
-Killa Abdullah,100,Balochistan,Agriculture,cultivated,Cultivated area (acres),,180780.6451547244,,86,135,166845.6914,268069.3914,
-Killa Abdullah,100,Balochistan,Agriculture,farm_size,Average farm size (acres),,14.014570023070611,,20,118,16.7291,5.1899,
-Killa Abdullah,100,Balochistan,Agriculture,small_farms,Farms under 2.5 acres (%),,17.924131308999577,,125,134,25.8919,54.1234,
-Killa Abdullah,100,Balochistan,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,6.92238695601855,,95,134,13.9386,11.8603,
-Killa Abdullah,100,Balochistan,Agriculture,tenant,Tenant farms (%),,0.46492471805974517,,116,135,0.9989,4.6305,
-Killa Abdullah,100,Balochistan,Agriculture,owner_farms,Owner-operated farms (%),,97.10044118242448,,35,135,96.829,92.1869,
-Killa Abdullah,100,Balochistan,Agriculture,female_farms,Farms operated by women (%),,0.04515898334952493,,120,135,0.1825,0.5009,
-Killa Abdullah,100,Balochistan,Agriculture,irrigated,Irrigated share of cultivated area (%),,88.17925872326721,,75,135,80.1139,90.2212,
-Killa Abdullah,100,Balochistan,Agriculture,crop_intensity,Cropping intensity (%),,101.7,,124,135,114.0,154.1,
-Killa Abdullah,100,Balochistan,Agriculture,wheat_share,Wheat share of cropped area (%),,25.1837156660941,,125,135,47.5638,46.1094,
-Killa Abdullah,100,Balochistan,Agriculture,cattle,Cattle,,70254.10471125433,,116,135,88912.5065,316635.919,
-Killa Abdullah,100,Balochistan,Agriculture,buffaloes,Buffaloes,,2037.413633561203,,114,135,2800.2561,197856.1306,
-Killa Abdullah,100,Balochistan,Agriculture,sheep,Sheep,,441509.5103498229,,28,135,445002.0417,152328.9296,
-Killa Abdullah,100,Balochistan,Agriculture,goats,Goats,,129866.0904118812,,128,135,539314.2875,536516.0715,
-Killa Abdullah,100,Balochistan,Agriculture,tractors,Tractors,,2289.639554016013,,69,135,1630.0314,2368.1312,
-Killa Abdullah,100,Balochistan,Agriculture,tractors_per_farm,"Tractors per 1,000 farms",,123.19392894741198,,43,118,100.6803,76.563,
-Killa Abdullah,100,Balochistan,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,97.06757063128026,,11,135,19.0667,16.0011,
-Killa Abdullah,100,Balochistan,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.5310867249640566,,94,127,0.5311,28.794,
-Killa Abdullah,100,Balochistan,Climate and environment,tmean,Mean temperature (°C),2025,17.36,,117,156,22.43,23.34,
-Killa Abdullah,100,Balochistan,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,1.69,,19,156,1.18,1.145,
-Killa Abdullah,100,Balochistan,Climate and environment,tmax,Mean daily maximum (°C),2025,23.39,,116,156,28.765,29.31,
-Killa Abdullah,100,Balochistan,Climate and environment,tmin,Mean daily minimum (°C),2025,10.55,,123,156,15.725,17.345,
-Killa Abdullah,100,Balochistan,Climate and environment,rain,Rainfall in the year (mm),2025,177.5,,127,156,175.8,310.85,
-Killa Abdullah,100,Balochistan,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,212.7,,91,156,145.5,259.45,
-Killa Abdullah,100,Balochistan,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,15.5,,152,156,88.55,217.75,
-Killa Abdullah,100,Balochistan,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,111,156,8.0,18.5,
-Killa Abdullah,100,Balochistan,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,120,156,5.8,10.8,
-Killa Abdullah,100,Balochistan,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,124,156,20.5,86.5,
-Killa Abdullah,100,Balochistan,Climate and environment,warm_spells,Warm-spell days,2025,45.0,,21,156,18.0,17.0,
-Killa Abdullah,100,Balochistan,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,35.56,,122,156,37.42,53.27,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_crop,Cropland (% of land),2020,4.7303,,94,156,2.5335,14.9623,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_built,Built-up land (% of land),2020,0.49300000000000005,,132,156,0.4513,4.073,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_tree,Tree cover (% of land),2020,0.0,,150,156,0.0006,0.0418,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_short,Short vegetation (% of land),2020,3.7350000000000003,,134,156,20.6485,26.159,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_bare,Bare ground (% of land),2020,91.0281,,9,156,65.9648,3.0887,
-Killa Abdullah,100,Balochistan,Climate and environment,lc_water,Open water (% of land),2020,0.0114,,153,156,0.0414,0.6615,
-Killa Abdullah,100,Balochistan,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,0.839,,83,156,3.3585,1.219,
-Killa Abdullah,100,Balochistan,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,0,,130,156,0.0,1.0,
-Killa Abdullah,100,Balochistan,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,1.0,,32,156,0.9487,0.7759,
-Killa Abdullah,100,Balochistan,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,107,156,0.0,0.0,
-Killa Abdullah,100,Balochistan,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,1.27,,81,155,0.82,1.35,
-Killa Abdullah,100,Balochistan,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,106,155,0.0,0.0,
-Killa Abdullah,100,Balochistan,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,102.92,,111,155,78.56,455.68,
-Killa Abdullah,100,Balochistan,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,77.12,,77,155,89.67,77.12,
-Killa Abdullah,100,Balochistan,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,0.0,,140,156,3.0,13.0,
-Killa Abdullah,100,Balochistan,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,0.0,,140,156,13.0,29.5,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_school,Schools,,272.0,,138,156,312.0,1211.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_college,Colleges,,6.0,,138,154,8.0,52.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_madrisah,Madrassas,,80.0,,106,155,47.0,170.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_hospital,Hospitals,,114.0,,123,156,110.0,502.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_mosque,Mosques,,828.0,,126,156,807.0,2908.5,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_bank,Banks,,6.0,,145,155,12.0,61.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_post,Post offices,,3.0,,146,155,8.0,22.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_police,Police stations,,22.0,,94,156,18.0,25.5,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_govt,Government offices,,18.0,,150,156,46.0,137.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_factory,Factories,,35.0,,86,149,9.0,52.0,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_shop,Retail shops,,2133.0,,128,156,2324.5,10177.5,
-Killa Abdullah,100,Balochistan,Buildings and facilities,f_hotel,Hotels,,144.0,,133,156,168.5,826.0,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",emig,Emigrants registered in the year,2024,297.0,,110,146,87.0,2322.5,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",emig_total,"Emigrants registered, all years on record",,3314.0,,111,146,2028.0,41936.0,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",pending,Cases pending in the district courts at year end,2024,945,,90,124,263,4237.0,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",instituted,Cases instituted in the year,2024,3221,,97,124,603,14193.0,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",disposed,Cases disposed in the year,2024,2515,,99,124,692,13800.0,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",clearance,Clearance rate (disposed as % of instituted),2024,78.08,,122,124,104.84,100.14,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",pending_100k,"Pending cases per 100,000 people",2024,114.1,,88,124,59.18,343.305,
-Killa Abdullah,100,Balochistan,"Migration, courts and policing",judges,Judges working,2024,7,,71,94,4,19.5,
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Killa Abdullah,100,Balochistan,People,pop,Population,2023,828189.0,758354.0,92,130,313271.0,1460080.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,pop_2017,"Population, Census 2017",2017,323793.0,,105,136,235481.5,1216293.0,,
+Killa Abdullah,100,Balochistan,People,pop_m,Male population,2023,450366.0,399299.0,89,130,166679.0,740172.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,pop_f,Female population,2023,377794.0,359051.0,95,130,146589.0,715230.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,trans,Transgender population,2023,16.0,,96,134,13.0,47.5,,
+Killa Abdullah,100,Balochistan,People,growth,Annual growth rate since the previous census (%),2023,1.48,3.99,119,130,2.92,2.46,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,area,Area (km²),2023,4894.0,4894.0,54,130,6831.0,3660.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,density,Population density (people per km²),2023,169.23,154.96,93,130,47.07,404.87,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,urban,Urban population (%),2023,19.99,19.69,78,129,19.99,22.99,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,urban_pop,Urban population,2023,165523.0,149330.0,79,120,68234.5,357104.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,rural_pop,Rural population,2023,662666.0,609024.0,83,124,261516.0,1001488.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,hh_size,Average household size,2023,6.54,7.55,51,130,6.54,6.3,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,sex_ratio,Sex ratio (males per 100 females),2023,119.21,111.21,3,130,109.91,104.985,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,People,under_15,Under 15 (% of population),2023,49.39,,35,136,51.935,43.96,,
+Killa Abdullah,100,Balochistan,People,age_15_64,Aged 15–64 (% of population),2023,48.72,,100,136,45.98,53.175,,
+Killa Abdullah,100,Balochistan,People,age_60_plus,Aged 60 and over (% of population),2023,2.97,,127,136,3.36,4.67,,
+Killa Abdullah,100,Balochistan,Education,lit,"Literacy rate, ages 10 and over (%)",2023,38.38,42.87,99,130,38.38,49.05,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,lit_f,"Female literacy rate, ages 10 and over (%)",2023,27.88,26.84,93,130,27.95,39.21,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,lit_m,"Male literacy rate, ages 10 and over (%)",2023,47.54,57.41,100,130,45.86,60.62,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,literate,"Literate people, ages 10 and over",2023,196694.0,202427.0,92,130,74678.0,522970.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,in_school_g,Girls aged 5–16 in school (%),,17.79,,128,130,29.88,48.74,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,in_school_b,Boys aged 5–16 in school (%),,38.29,,117,130,41.75,61.225,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,oos,"Out-of-school children, ages 5–16",,210175.0,,54,130,73649.0,154795.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,oos_g,"Out-of-school girls, ages 5–16",,107536.0,,52,130,36651.0,89443.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,oos_b,"Out-of-school boys, ages 5–16",,102627.0,,49,130,36572.0,73010.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,never_school,"Never attended school, ages 5 and over (%)",2023,72.41,59.0,13,130,65.09,52.11,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,matric_plus,"Matric or above, ages 5 and over (%)",2023,4.35,5.15,127,130,9.01,14.37,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,graduate,"Graduates, ages 5 and over (%)",2023,0.6,0.62,127,130,1.56,2.2,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,ner,"Net enrolment rate, ages 5–16 (%)",,44.61,,103,124,48.12,62.025,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,ner_g,"Net enrolment rate, girls (%)",,30.02,,105,124,37.135,53.06,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,ner_b,"Net enrolment rate, boys (%)",,55.51,,102,124,57.775,72.41,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,pslm_lit,"Literacy rate, survey measure (%)",,38.97,,103,124,43.13,50.8,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,numeracy,Numeracy rate (%),,61.44,,108,124,82.82,79.585,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Education,private_school,Pupils in private schools (%),,8.47,,102,124,7.38,20.775,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfpr,"Labour force participation, ages 10 and over (%)",2023,68.32,26.08,5,130,61.28,52.065,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfpr_f,Female labour force participation (%),2023,56.01,4.69,5,130,45.86,30.405,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfpr_m,Male labour force participation (%),2023,79.06,45.48,7,130,74.18,72.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,unemp,Unemployment rate (%),2023,39.68,18.81,14,130,37.09,26.805,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,unemp_f,Female unemployment rate (%),2023,49.11,22.57,32,130,47.62,42.51,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,unemp_m,Male unemployment rate (%),2023,33.86,18.45,14,130,31.52,20.975,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,employed,People in work,2023,211201.0,99995.0,85,130,70853.0,393310.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,paid_emp,Workers who are paid employees (%),2023,7.18,,129,130,12.48,24.19,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,self_emp,Workers who are self-employed (%),2023,41.51,,70,130,42.98,42.45,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,unpaid_fam,Unpaid family workers (%),2023,51.31,,13,130,43.46,32.075,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_lfpr,Labour force participation (%),,32.81,,126,127,38.69,44.55,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_unemp,Unemployment rate (%),,1.65,,123,127,4.03,7.56,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_agri,Employed in agriculture (%),,25.59,,88,127,33.62,33.52,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_manu,Employed in manufacturing (%),,4.1,,109,127,4.46,10.32,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_trade,Employed in trade (%),,24.55,,12,127,13.11,14.52,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,lfs_youth,Youth aged 15–24 in work (%),,27.81,,109,127,30.96,36.33,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,estab,Business establishments,,13479.0,,95,129,6195.0,39168.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,workforce,People working in establishments,,50959.0,,96,126,25399.0,134212.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,workers_per_est,Workers per establishment,,3.78,,53,126,4.55,3.395,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,est_manu,Establishments in manufacturing (%),,5.52,,107,129,5.6,8.47,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,est_trade,Establishments in wholesale and retail trade (%),,52.73,,15,129,48.96,45.67,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Work,est_services,Establishments in services (%),,31.73,,75,129,36.74,32.83,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,stunting,Children under 5 stunted (%),,57.3,,24,145,54.2,38.3,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,underweight,Children under 5 underweight (%),,36.8,,34,145,33.5,24.4,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,wasting,Children under 5 wasted (%),,6.0,,110,145,11.3,8.8,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,inst_delivery,Births in a health facility (%),,22.2,,132,145,25.1,66.1,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,anc4,Mothers with four or more antenatal visits (%),,18.4,,117,135,24.6,51.7,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,sba,Births attended by skilled staff (%),,58.7,,96,135,49.1,73.2,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,birth_reg,Children under 5 with a registered birth (%),,48.5,,58,145,41.6,39.5,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,47.5,,136,145,61.5,80.7,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,careseek,Care sought for a child with fever (%),,45.3,,120,138,59.6,67.45,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,child_func,Children aged 5–17 with a functional difficulty (%),,34.9,,10,138,17.9,18.05,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,ceb,Children ever born per woman aged 15–49,,5.33,,2,128,3.56,3.43,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,child_loss,"Children who died, share of births (%)",,3.2,,116,128,4.45,6.4,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,morbidity,Ill or injured in the last two weeks (%),,6.41,,68,124,5.66,6.905,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,sought_tx,Sought treatment when ill (%),,92.21,,100,123,94.25,96.9,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,govt_facility,Treated at a government facility (%),,23.34,,104,123,50.75,39.19,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,89.7,,23,147,89.7,17.3,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,706.0,,12,147,530.0,127.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,57.1,,29,147,62.8,9.9,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,100.0,,16,147,97.5,77.4,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,cpr,"Contraceptive use, any method (%)",,40.3,,25,127,13.0,26.9,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,cpr_modern,"Contraceptive use, modern method (%)",,23.6,,55,127,7.65,21.9,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,unmet_need,Unmet need for family planning (%),,15.2,,90,127,23.0,18.7,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,married_u18,Women aged 20–49 married before 18 (%),,17.3,,130,145,28.4,28.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,women_lit,"Women aged 15–49 literate, tested (%)",,0.8,,145,145,10.9,35.7,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,dv_justified,Women who say wife-beating can be justified (%),,33.2,,87,145,39.6,39.6,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,not_permitted_work,Rural women not permitted to work (%),,77.7,,2,108,35.4,13.15,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Women,health_consulted,Rural women consulted on their own healthcare (%),,2.1,,94,108,1.7,18.15,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,mpi,Multidimensional poverty index (MPI),,0.539,,11,118,0.4395,0.301,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,mpi_h,"Multidimensionally poor (headcount, %)",,83.75,,10,118,69.955,53.485,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,mpi_a,Intensity of deprivation among the poor (%),,64.36,,24,118,63.945,56.42,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_electricity,Poor and without electricity (%),,5.35,,26,118,2.25,1.33,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_water,Poor and without safe drinking water (%),,42.5,,13,118,27.895,6.435,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_sanitation,Poor and without adequate sanitation (%),,59.95,,21,118,59.195,31.41,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_fuel,Poor and cooking with solid fuel (%),,81.41,,10,118,64.57,46.195,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_housing,Poor and in inadequate housing (%),,82.17,,10,118,65.105,40.85,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_schooling,Poor and no member with five years of schooling (%),,48.39,,20,118,41.595,34.13,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,dep_attendance,Poor and with a school-age child out of school (%),,58.69,,9,118,38.415,34.63,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,piped_water,Households with piped water (%),,43.71,,21,124,19.135,17.2,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,flush_toilet,Households with a flush toilet (%),,35.56,,103,124,23.34,76.84,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,no_toilet,Households with no toilet (%),,28.1,,19,124,14.58,9.91,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,open_def,Households practising open defecation (%),,3.4,,109,135,18.4,13.9,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,ecoli_source,E. coli in water at the source (%),,100.0,,11,138,96.5,68.4,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,internet,"Internet users, ages 10 and over (%)",,5.14,,107,124,9.025,11.6,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,internet_f,"Female internet users, ages 10 and over (%)",,0.69,,109,124,2.24,5.86,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,internet_m,"Male internet users, ages 10 and over (%)",,8.48,,109,124,14.875,18.315,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,smartphone,"Smartphone owners, ages 10 and over (%)",,6.62,,95,124,9.195,10.68,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,hh_mobile,Households with a mobile phone (%),,96.04,,42,124,93.205,94.31,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,food_insecure,Households moderately or severely food insecure (%),,27.0,,16,111,22.0,17.0,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_electricity,Rural households with electricity (%),,64.1,,74,106,63.3,86.35,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_pucca,Rural households in a fully pucca house (%),,1.6,,71,106,0.6,4.1,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_katcha,Rural households in a katcha house (%),,50.0,,20,106,62.1,12.35,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_owner,Rural households owning their home (%),,89.1,,56,106,87.5,90.6,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_internet,Rural internet users (%),,33.5,,78,114,27.9,42.2,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_smartphone,Rural smartphone owners (%),,47.8,,31,114,40.55,38.7,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,r_food_insecure,Rural households food insecure (%),,20.3,,55,106,25.0,20.4,,Killa Abdullah; Chaman
+Killa Abdullah,100,Balochistan,Poverty and living standards,diem_poor_fc,Households with poor food consumption (%),2024 (round 6),10.18,,9,24,6.045,8.565,,
+Killa Abdullah,100,Balochistan,Poverty and living standards,diem_skipped,Households where someone skipped a meal in the last month (%),2024 (round 6),24.89,,11,24,27.635,21.585,,
+Killa Abdullah,100,Balochistan,Poverty and living standards,diem_shock,Households hit by a shock (%),2024 (round 6),84.07,,6,24,78.19,68.5,,
+Killa Abdullah,100,Balochistan,Agriculture,farms,Farms,,18585.65250397522,,100,135,13925.7256,59404.6376,,
+Killa Abdullah,100,Balochistan,Agriculture,farm_area,Farm area (acres),,260469.92844141836,,81,135,227516.7579,313575.6833,,
+Killa Abdullah,100,Balochistan,Agriculture,cultivated,Cultivated area (acres),,180780.6451547244,,86,135,166845.6914,268069.3914,,
+Killa Abdullah,100,Balochistan,Agriculture,farm_size,Average farm size (acres),,14.014570023070611,,20,118,16.7291,5.1899,,
+Killa Abdullah,100,Balochistan,Agriculture,small_farms,Farms under 2.5 acres (%),,17.924131308999577,,125,134,25.8919,54.1234,,
+Killa Abdullah,100,Balochistan,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,6.92238695601855,,95,134,13.9386,11.8603,,
+Killa Abdullah,100,Balochistan,Agriculture,tenant,Tenant farms (%),,0.46492471805974517,,116,135,0.9989,4.6305,,
+Killa Abdullah,100,Balochistan,Agriculture,owner_farms,Owner-operated farms (%),,97.10044118242448,,35,135,96.829,92.1869,,
+Killa Abdullah,100,Balochistan,Agriculture,female_farms,Farms operated by women (%),,0.04515898334952493,,120,135,0.1825,0.5009,,
+Killa Abdullah,100,Balochistan,Agriculture,irrigated,Irrigated share of cultivated area (%),,88.17925872326721,,75,135,80.1139,90.2212,,
+Killa Abdullah,100,Balochistan,Agriculture,crop_intensity,Cropping intensity (%),,101.7,,124,135,114.0,154.1,,
+Killa Abdullah,100,Balochistan,Agriculture,wheat_share,Wheat share of cropped area (%),,25.1837156660941,,125,135,47.5638,46.1094,,
+Killa Abdullah,100,Balochistan,Agriculture,cattle,Cattle,,70254.10471125433,,116,135,88912.5065,316635.919,,
+Killa Abdullah,100,Balochistan,Agriculture,buffaloes,Buffaloes,,2037.413633561203,,114,135,2800.2561,197856.1306,,
+Killa Abdullah,100,Balochistan,Agriculture,sheep,Sheep,,441509.5103498229,,28,135,445002.0417,152328.9296,,
+Killa Abdullah,100,Balochistan,Agriculture,goats,Goats,,129866.0904118812,,128,135,539314.2875,536516.0715,,
+Killa Abdullah,100,Balochistan,Agriculture,tractors,Tractors,,2289.639554016013,,69,135,1630.0314,2368.1312,,
+Killa Abdullah,100,Balochistan,Agriculture,tractors_per_farm,"Tractors per 1,000 farms",,123.19392894741198,,43,118,100.6803,76.563,,
+Killa Abdullah,100,Balochistan,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,97.06757063128026,,11,135,19.0667,16.0011,,
+Killa Abdullah,100,Balochistan,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.5310867249640566,,94,127,0.5311,28.794,,
+Killa Abdullah,100,Balochistan,Climate and environment,tmean,Mean temperature (°C),2025,17.36,,117,156,22.43,23.34,,
+Killa Abdullah,100,Balochistan,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,1.69,,19,156,1.18,1.145,,
+Killa Abdullah,100,Balochistan,Climate and environment,tmax,Mean daily maximum (°C),2025,23.39,,116,156,28.765,29.31,,
+Killa Abdullah,100,Balochistan,Climate and environment,tmin,Mean daily minimum (°C),2025,10.55,,123,156,15.725,17.345,,
+Killa Abdullah,100,Balochistan,Climate and environment,rain,Rainfall in the year (mm),2025,177.5,,127,156,175.8,310.85,,
+Killa Abdullah,100,Balochistan,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,212.7,,91,156,145.5,259.45,,
+Killa Abdullah,100,Balochistan,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,15.5,,152,156,88.55,217.75,,
+Killa Abdullah,100,Balochistan,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,111,156,8.0,18.5,,
+Killa Abdullah,100,Balochistan,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,120,156,5.8,10.8,,
+Killa Abdullah,100,Balochistan,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,124,156,20.5,86.5,,
+Killa Abdullah,100,Balochistan,Climate and environment,warm_spells,Warm-spell days,2025,45.0,,21,156,18.0,17.0,,
+Killa Abdullah,100,Balochistan,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,35.56,,122,156,37.42,53.27,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_crop,Cropland (% of land),2020,4.7303,,94,156,2.5335,14.9623,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_built,Built-up land (% of land),2020,0.49300000000000005,,132,156,0.4513,4.073,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_tree,Tree cover (% of land),2020,0.0,,150,156,0.0006,0.0418,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_short,Short vegetation (% of land),2020,3.7350000000000003,,134,156,20.6485,26.159,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_bare,Bare ground (% of land),2020,91.0281,,9,156,65.9648,3.0887,,
+Killa Abdullah,100,Balochistan,Climate and environment,lc_water,Open water (% of land),2020,0.0114,,153,156,0.0414,0.6615,,
+Killa Abdullah,100,Balochistan,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,0.839,,83,156,3.3585,1.219,,
+Killa Abdullah,100,Balochistan,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,0,,130,156,0.0,1.0,,
+Killa Abdullah,100,Balochistan,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,1.0,,32,156,0.9487,0.7759,,
+Killa Abdullah,100,Balochistan,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,107,156,0.0,0.0,,
+Killa Abdullah,100,Balochistan,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,1.27,,81,155,0.82,1.35,,
+Killa Abdullah,100,Balochistan,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,106,155,0.0,0.0,,
+Killa Abdullah,100,Balochistan,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,102.92,,111,155,78.56,455.68,,
+Killa Abdullah,100,Balochistan,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,77.12,,77,155,89.67,77.12,,
+Killa Abdullah,100,Balochistan,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,0.0,,140,156,3.0,13.0,,
+Killa Abdullah,100,Balochistan,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,0.0,,140,156,13.0,29.5,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_school,Schools,,272.0,,138,156,312.0,1211.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_college,Colleges,,6.0,,138,154,8.0,52.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_madrisah,Madrassas,,80.0,,106,155,47.0,170.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_hospital,Hospitals,,114.0,,123,156,110.0,502.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_mosque,Mosques,,828.0,,126,156,807.0,2908.5,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_bank,Banks,,6.0,,145,155,12.0,61.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_post,Post offices,,3.0,,146,155,8.0,22.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_police,Police stations,,22.0,,94,156,18.0,25.5,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_govt,Government offices,,18.0,,150,156,46.0,137.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_factory,Factories,,35.0,,86,149,9.0,52.0,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_shop,Retail shops,,2133.0,,128,156,2324.5,10177.5,,
+Killa Abdullah,100,Balochistan,Buildings and facilities,f_hotel,Hotels,,144.0,,133,156,168.5,826.0,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",emig,Emigrants registered in the year,2024,297.0,,110,146,87.0,2322.5,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",emig_total,"Emigrants registered, all years on record",,3314.0,,111,146,2028.0,41936.0,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",pending,Cases pending in the district courts at year end,2024,945,,90,124,263,4237.0,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",instituted,Cases instituted in the year,2024,3221,,97,124,603,14193.0,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",disposed,Cases disposed in the year,2024,2515,,99,124,692,13800.0,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",clearance,Clearance rate (disposed as % of instituted),2024,78.08,,122,124,104.84,100.14,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",pending_100k,"Pending cases per 100,000 people",2024,114.1,,88,124,59.18,343.305,,
+Killa Abdullah,100,Balochistan,"Migration, courts and policing",judges,Judges working,2024,7,,71,94,4,19.5,,
 Killa Abdullah,100,Balochistan,Tehsils,DDS-BA-0074,Killa Abdullah (sub-division),2023,165738.0,,,,,,
 Killa Abdullah,100,Balochistan,Tehsils,DDS-BA-0073,Gulistan (sub-division),2023,126474.0,,,,,,
 Killa Abdullah,100,Balochistan,Tehsils,DDS-BA-0072,Dobandi (sub-tehsil),2023,69759.0,,,,,,

@@ -1,72 +1,160 @@
-district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample
-Upper Kohistan,168,Khyber Pakhtunkhwa,People,pop_2017,"Population, Census 2017",2017,307286.0,,110,136,895460.0,1216293.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,People,trans,Transgender population,2023,4.0,,128,134,15.0,47.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,People,under_15,Under 15 (% of population),2023,56.44,,6,136,45.47,43.96,
-Upper Kohistan,168,Khyber Pakhtunkhwa,People,age_15_64,Aged 15–64 (% of population),2023,42.0,,131,136,51.66,53.175,
-Upper Kohistan,168,Khyber Pakhtunkhwa,People,age_60_plus,Aged 60 and over (% of population),2023,2.53,,132,136,5.13,4.67,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_poor_fc,Households with poor food consumption (%),2024 (round 6),2.78,,18,24,7.805,8.565,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_skipped,Households where someone skipped a meal in the last month (%),2024 (round 6),0.79,,24,24,9.485,21.585,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_shock,Households hit by a shock (%),2024 (round 6),33.33,,24,24,42.885,68.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farms,Farms,,57296.550015900975,,69,135,60432.907,59404.6376,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farm_area,Farm area (acres),,119476.99987031748,,112,135,235439.1597,313575.6833,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,cultivated,Cultivated area (acres),,86705.20968000693,,110,135,182900.3808,268069.3914,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farm_size,Average farm size (acres),,2.0852389862419316,,103,118,3.0956,5.1899,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,small_farms,Farms under 2.5 acres (%),,83.72193933250455,,20,134,84.2602,54.1234,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,2.1320904460778634,,113,134,2.0611,11.8603,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tenant,Tenant farms (%),,0.501961789948672,,114,135,3.2781,4.6305,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,owner_farms,Owner-operated farms (%),,93.82258880290236,,59,135,94.2071,92.1869,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,female_farms,Farms operated by women (%),,0.03676632070718708,,123,135,0.2667,0.5009,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,irrigated,Irrigated share of cultivated area (%),,96.91191391384275,,43,135,73.8319,90.2212,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,crop_intensity,Cropping intensity (%),,117.9,,104,135,156.15,154.1,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,wheat_share,Wheat share of cropped area (%),,16.85304930852598,,133,135,48.751,46.1094,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,cattle,Cattle,,334941.5242069899,,64,135,319912.2129,316635.919,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,buffaloes,Buffaloes,,1897.4359521145127,,115,135,38805.9565,197856.1306,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,sheep,Sheep,,12902.667009437597,,133,135,103499.7597,152328.9296,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,goats,Goats,,882330.4125075672,,33,135,525794.6318,536516.0715,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tractors,Tractors,,0.0,,135,135,1209.9629,2368.1312,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tractors_per_farm,"Tractors per 1,000 farms",,0.0,,118,118,16.0147,76.563,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,0.02453139791541797,,127,135,4.2139,16.0011,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.0,,126,127,0.5816,28.794,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmean,Mean temperature (°C),2025,1.19,,144,156,17.24,23.34,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,2.18,,5,156,1.49,1.145,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmax,Mean daily maximum (°C),2025,5.56,,145,156,23.35,29.31,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmin,Mean daily minimum (°C),2025,-2.98,,144,156,11.95,17.345,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,rain,Rainfall in the year (mm),2025,516.7,,55,156,630.0,310.85,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,563.4,,40,156,617.5,259.45,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,186.5,,95,156,330.5,217.75,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,154,156,0.0,18.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,154,156,0.0,10.8,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,154,156,2.0,86.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,warm_spells,Warm-spell days,2025,67.0,,7,156,23.0,17.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,32.61,,139,156,40.48,53.27,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_crop,Cropland (% of land),2020,0.1515,,144,156,13.3634,14.9623,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_built,Built-up land (% of land),2020,1.2461,,110,156,4.6691,4.073,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_tree,Tree cover (% of land),2020,13.6996,,27,156,11.488,0.0418,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_short,Short vegetation (% of land),2020,62.3299,,22,156,51.7746,26.159,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_bare,Bare ground (% of land),2020,15.826199999999998,,56,156,0.6524,3.0887,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_water,Open water (% of land),2020,0.7216,,75,156,0.3453,0.6615,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,43.704,,9,156,14.736,1.219,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,179,,14,156,71,1.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.1522,,138,156,0.3394,0.7759,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,154,156,0.0,0.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,0.44999999999999996,,115,155,0.56,1.35,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,153,155,0.0,0.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,480.57,,74,155,474.71,455.68,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,97.84,,5,155,85.22,77.12,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,8.0,,92,156,23.0,13.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,7.0,,114,156,19.0,29.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_school,Schools,,273.0,,137,156,1053.0,1211.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_college,Colleges,,14.0,,114,154,42.0,52.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_madrisah,Madrassas,,26.0,,144,155,233.0,170.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_hospital,Hospitals,,57.0,,146,156,404.0,502.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_mosque,Mosques,,733.0,,131,156,2925.0,2908.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_bank,Banks,,13.0,,130,155,50.0,61.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_post,Post offices,,2.0,,152,155,21.5,22.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_police,Police stations,,15.0,,116,156,28.0,25.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_govt,Government offices,,63.0,,118,156,104.0,137.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_factory,Factories,,3.0,,139,149,21.0,52.0,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_shop,Retail shops,,1054.0,,148,156,10241.0,10177.5,
-Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_hotel,Hotels,,113.0,,139,156,543.0,826.0,
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,pop,Population,2023,1043126.0,784711.0,82,130,1063346.0,1460080.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,pop_2017,"Population, Census 2017",2017,307286.0,,110,136,895460.0,1216293.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,pop_m,Male population,2023,532427.0,424643.0,83,130,534858.5,740172.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,pop_f,Female population,2023,510682.0,360055.0,82,130,529993.0,715230.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,trans,Transgender population,2023,4.0,,128,134,15.0,47.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,growth,Annual growth rate since the previous census (%),2023,4.86,2.71,10,130,2.45,2.46,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,area,Area (km²),2023,7492.0,7492.0,31,130,1969.5,3660.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,density,Population density (people per km²),2023,139.23,104.74,98,130,443.245,404.87,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,rural_pop,Rural population,2023,914214.0,784711.0,68,124,986277.0,1001488.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,hh_size,Average household size,2023,6.33,7.84,63,130,6.95,6.3,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,sex_ratio,Sex ratio (males per 100 females),2023,104.26,117.94,77,130,104.155,104.985,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,under_15,Under 15 (% of population),2023,56.44,,6,136,45.47,43.96,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,age_15_64,Aged 15–64 (% of population),2023,42.0,,131,136,51.66,53.175,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,People,age_60_plus,Aged 60 and over (% of population),2023,2.53,,132,136,5.13,4.67,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,lit,"Literacy rate, ages 10 and over (%)",2023,19.96,22.01,130,130,46.675,49.05,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,lit_f,"Female literacy rate, ages 10 and over (%)",2023,11.04,8.63,130,130,30.31,39.21,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,lit_m,"Male literacy rate, ages 10 and over (%)",2023,28.52,32.85,129,130,62.295,60.62,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,literate,"Literate people, ages 10 and over",2023,103087.0,113613.0,108,130,329122.5,522970.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,in_school_g,Girls aged 5–16 in school (%),,12.0,,130,130,48.725,48.74,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,in_school_b,Boys aged 5–16 in school (%),,26.32,,130,130,72.235,61.225,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,oos,"Out-of-school children, ages 5–16",,280944.0,,26,130,141157.5,154795.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,oos_g,"Out-of-school girls, ages 5–16",,147354.0,,24,130,85118.0,89443.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,oos_b,"Out-of-school boys, ages 5–16",,133583.0,,27,130,53687.0,73010.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,never_school,"Never attended school, ages 5 and over (%)",2023,82.44,77.86,1,130,51.855,52.11,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,matric_plus,"Matric or above, ages 5 and over (%)",2023,3.26,3.02,129,130,14.37,14.37,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,graduate,"Graduates, ages 5 and over (%)",2023,0.51,0.29,128,130,2.205,2.2,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,ner,"Net enrolment rate, ages 5–16 (%)",,39.73,,114,124,63.355,62.025,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,ner_g,"Net enrolment rate, girls (%)",,10.49,,123,124,47.465,53.06,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,ner_b,"Net enrolment rate, boys (%)",,66.93,,78,124,76.465,72.41,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,pslm_lit,"Literacy rate, survey measure (%)",,30.09,,115,124,47.49,50.8,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,numeracy,Numeracy rate (%),,70.26,,88,124,74.875,79.585,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Education,private_school,Pupils in private schools (%),,3.94,,116,124,20.18,20.775,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfpr,"Labour force participation, ages 10 and over (%)",2023,59.57,36.43,26,130,42.495,52.065,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfpr_f,Female labour force participation (%),2023,44.76,1.19,21,130,21.67,30.405,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfpr_m,Male labour force participation (%),2023,73.78,64.98,42,130,63.85,72.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,unemp,Unemployment rate (%),2023,43.05,29.47,5,130,34.41,26.805,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,unemp_f,Female unemployment rate (%),2023,49.41,0.0,31,130,50.62,42.51,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,unemp_m,Male unemployment rate (%),2023,39.35,29.9,4,130,27.605,20.975,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,employed,People in work,2023,175199.0,132638.0,92,130,196666.0,393310.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,paid_emp,Workers who are paid employees (%),2023,8.67,,127,130,32.645,24.19,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,self_emp,Workers who are self-employed (%),2023,30.92,,113,130,34.435,42.45,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,unpaid_fam,Unpaid family workers (%),2023,60.41,,4,130,31.635,32.075,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_lfpr,Labour force participation (%),,47.81,,53,127,41.725,44.55,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_unemp,Unemployment rate (%),,5.92,,81,127,9.775,7.56,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_agri,Employed in agriculture (%),,52.72,,22,127,24.73,33.52,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_manu,Employed in manufacturing (%),,2.96,,118,127,10.985,10.32,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_trade,Employed in trade (%),,6.11,,121,127,15.49,14.52,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,lfs_youth,Youth aged 15–24 in work (%),,42.55,,35,127,32.985,36.33,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,estab,Business establishments,,10654.0,,101,129,25304.0,39168.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,est_manu,Establishments in manufacturing (%),,3.28,,125,129,7.52,8.47,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,est_trade,Establishments in wholesale and retail trade (%),,20.0,,128,129,46.77,45.67,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Work,est_services,Establishments in services (%),,33.64,,57,129,34.035,32.83,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,stunting,Children under 5 stunted (%),,63.0,,12,145,35.2,38.3,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,underweight,Children under 5 underweight (%),,28.1,,53,145,23.4,24.4,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,wasting,Children under 5 wasted (%),,3.9,,131,145,9.85,8.8,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,inst_delivery,Births in a health facility (%),,14.1,,135,145,64.8,66.1,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,anc4,Mothers with four or more antenatal visits (%),,15.4,,121,135,56.35,51.7,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,sba,Births attended by skilled staff (%),,17.8,,130,135,73.6,73.2,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,birth_reg,Children under 5 with a registered birth (%),,54.9,,54,145,22.75,39.5,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,73.3,,106,145,84.4,80.7,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,careseek,Care sought for a child with fever (%),,64.4,,82,138,64.5,67.45,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,child_func,Children aged 5–17 with a functional difficulty (%),,38.5,,8,138,19.0,18.05,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,morbidity,Ill or injured in the last two weeks (%),,10.81,,16,124,7.895,6.905,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,sought_tx,Sought treatment when ill (%),,96.11,,68,123,97.45,96.9,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,govt_facility,Treated at a government facility (%),,50.79,,29,123,41.855,39.19,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,220.4,,4,147,19.65,17.3,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,511.0,,27,147,128.0,127.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,77.2,,13,147,13.0,9.9,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,98.6,,24,147,81.25,77.4,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Women,married_u18,Women aged 20–49 married before 18 (%),,47.5,,7,145,35.7,28.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Women,women_lit,"Women aged 15–49 literate, tested (%)",,2.5,,141,145,26.65,35.7,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Women,dv_justified,Women who say wife-beating can be justified (%),,74.4,,17,145,66.6,39.6,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,mpi,Multidimensional poverty index (MPI),,0.632,,4,118,0.305,0.301,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,mpi_h,"Multidimensionally poor (headcount, %)",,90.98,,3,118,53.045,53.485,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,mpi_a,Intensity of deprivation among the poor (%),,69.43,,6,118,55.77,56.42,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_electricity,Poor and without electricity (%),,50.87,,2,118,0.435,1.33,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_water,Poor and without safe drinking water (%),,81.7,,1,118,16.575,6.435,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_sanitation,Poor and without adequate sanitation (%),,51.7,,31,118,21.295,31.41,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_fuel,Poor and cooking with solid fuel (%),,90.56,,2,118,50.115,46.195,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_housing,Poor and in inadequate housing (%),,85.66,,5,118,41.52,40.85,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_schooling,Poor and no member with five years of schooling (%),,43.66,,33,118,28.525,34.13,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,dep_attendance,Poor and with a school-age child out of school (%),,64.83,,5,118,34.955,34.63,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,piped_water,Households with piped water (%),,15.54,,68,124,29.775,17.2,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,flush_toilet,Households with a flush toilet (%),,61.4,,86,124,84.595,76.84,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,no_toilet,Households with no toilet (%),,38.33,,13,124,10.925,9.91,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,open_def,Households practising open defecation (%),,14.4,,67,135,9.7,13.9,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,ecoli_source,E. coli in water at the source (%),,86.9,,43,138,84.45,68.4,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,internet,"Internet users, ages 10 and over (%)",,10.75,,72,124,11.3,11.6,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,internet_f,"Female internet users, ages 10 and over (%)",,0.89,,108,124,3.45,5.86,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,internet_m,"Male internet users, ages 10 and over (%)",,20.95,,47,124,19.48,18.315,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,smartphone,"Smartphone owners, ages 10 and over (%)",,9.93,,72,124,10.68,10.68,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,hh_mobile,Households with a mobile phone (%),,94.04,,64,124,95.68,94.31,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,food_insecure,Households moderately or severely food insecure (%),,24.0,,28,111,13.0,17.0,,Kolai Palas Kohistan; Upper Kohistan; Lower Kohistan
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_poor_fc,Households with poor food consumption (%),2024 (round 6),2.78,,18,24,7.805,8.565,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_skipped,Households where someone skipped a meal in the last month (%),2024 (round 6),0.79,,24,24,9.485,21.585,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Poverty and living standards,diem_shock,Households hit by a shock (%),2024 (round 6),33.33,,24,24,42.885,68.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farms,Farms,,57296.550015900975,,69,135,60432.907,59404.6376,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farm_area,Farm area (acres),,119476.99987031748,,112,135,235439.1597,313575.6833,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,cultivated,Cultivated area (acres),,86705.20968000693,,110,135,182900.3808,268069.3914,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,farm_size,Average farm size (acres),,2.0852389862419316,,103,118,3.0956,5.1899,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,small_farms,Farms under 2.5 acres (%),,83.72193933250455,,20,134,84.2602,54.1234,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,2.1320904460778634,,113,134,2.0611,11.8603,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tenant,Tenant farms (%),,0.501961789948672,,114,135,3.2781,4.6305,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,owner_farms,Owner-operated farms (%),,93.82258880290236,,59,135,94.2071,92.1869,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,female_farms,Farms operated by women (%),,0.03676632070718708,,123,135,0.2667,0.5009,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,irrigated,Irrigated share of cultivated area (%),,96.91191391384275,,43,135,73.8319,90.2212,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,crop_intensity,Cropping intensity (%),,117.9,,104,135,156.15,154.1,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,wheat_share,Wheat share of cropped area (%),,16.85304930852598,,133,135,48.751,46.1094,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,cattle,Cattle,,334941.5242069899,,64,135,319912.2129,316635.919,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,buffaloes,Buffaloes,,1897.4359521145127,,115,135,38805.9565,197856.1306,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,sheep,Sheep,,12902.667009437597,,133,135,103499.7597,152328.9296,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,goats,Goats,,882330.4125075672,,33,135,525794.6318,536516.0715,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tractors,Tractors,,0.0,,135,135,1209.9629,2368.1312,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tractors_per_farm,"Tractors per 1,000 farms",,0.0,,118,118,16.0147,76.563,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,0.02453139791541797,,127,135,4.2139,16.0011,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.0,,126,127,0.5816,28.794,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmean,Mean temperature (°C),2025,1.19,,144,156,17.24,23.34,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,2.18,,5,156,1.49,1.145,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmax,Mean daily maximum (°C),2025,5.56,,145,156,23.35,29.31,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,tmin,Mean daily minimum (°C),2025,-2.98,,144,156,11.95,17.345,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,rain,Rainfall in the year (mm),2025,516.7,,55,156,630.0,310.85,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,563.4,,40,156,617.5,259.45,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,186.5,,95,156,330.5,217.75,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,154,156,0.0,18.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,154,156,0.0,10.8,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,154,156,2.0,86.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,warm_spells,Warm-spell days,2025,67.0,,7,156,23.0,17.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,32.61,,139,156,40.48,53.27,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_crop,Cropland (% of land),2020,0.1515,,144,156,13.3634,14.9623,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_built,Built-up land (% of land),2020,1.2461,,110,156,4.6691,4.073,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_tree,Tree cover (% of land),2020,13.6996,,27,156,11.488,0.0418,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_short,Short vegetation (% of land),2020,62.3299,,22,156,51.7746,26.159,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_bare,Bare ground (% of land),2020,15.826199999999998,,56,156,0.6524,3.0887,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,lc_water,Open water (% of land),2020,0.7216,,75,156,0.3453,0.6615,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,43.704,,9,156,14.736,1.219,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,179,,14,156,71,1.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.1522,,138,156,0.3394,0.7759,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,154,156,0.0,0.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,0.44999999999999996,,115,155,0.56,1.35,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,153,155,0.0,0.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,480.57,,74,155,474.71,455.68,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,97.84,,5,155,85.22,77.12,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,8.0,,92,156,23.0,13.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,7.0,,114,156,19.0,29.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_school,Schools,,273.0,,137,156,1053.0,1211.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_college,Colleges,,14.0,,114,154,42.0,52.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_madrisah,Madrassas,,26.0,,144,155,233.0,170.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_hospital,Hospitals,,57.0,,146,156,404.0,502.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_mosque,Mosques,,733.0,,131,156,2925.0,2908.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_bank,Banks,,13.0,,130,155,50.0,61.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_post,Post offices,,2.0,,152,155,21.5,22.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_police,Police stations,,15.0,,116,156,28.0,25.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_govt,Government offices,,63.0,,118,156,104.0,137.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_factory,Factories,,3.0,,139,149,21.0,52.0,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_shop,Retail shops,,1054.0,,148,156,10241.0,10177.5,,
+Upper Kohistan,168,Khyber Pakhtunkhwa,Buildings and facilities,f_hotel,Hotels,,113.0,,139,156,543.0,826.0,,
 Upper Kohistan,168,Khyber Pakhtunkhwa,Tehsils,DDS-KP-0306,Kandia (sub-division),2023,165232.0,,,,,,
 Upper Kohistan,168,Khyber Pakhtunkhwa,Tehsils,DDS-KP-0304,Dassu (sub-division),2023,148914.0,,,,,,
 Upper Kohistan,168,Khyber Pakhtunkhwa,Tehsils,DDS-KP-0307,Seo (sub-division),2023,59557.0,,,,,,

@@ -245,20 +245,30 @@ def locator_paths(max_w=230, max_h=250, step=3.2):
     x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
     s = min(max_w / (x1 - x0), max_h / (y1 - y0))
     w, h = (x1 - x0) * s, (y1 - y0) * s
-    paths = {}
-    for code, r in rings:
+    def thin(r, step, dp):
         pts, last = [], None
         for lon, lat in r:
-            p = (round((lon * k - x0) * s), round((y1 - lat) * s))
+            p = (round((lon * k - x0) * s, dp), round((y1 - lat) * s, dp))
             if last is None or abs(p[0] - last[0]) + abs(p[1] - last[1]) >= step:
                 pts.append(p)
                 last = p
-        if len(pts) >= 3:
-            # relative moves: "l2 -1" is shorter than "L123 456"
-            d = f"M{pts[0][0]} {pts[0][1]}"
-            for (a, b), (c, e) in zip(pts, pts[1:]):
-                d += f"l{c - a} {e - b}"
-            paths[code] = paths.get(code, "") + d + "Z"
+        return pts
+
+    paths = {}
+    for code, r in rings:
+        # Thinning that leaves fewer than three points has eaten a district
+        # whole - Karachi Central and South are a few pixels at this size -
+        # so such a ring is drawn from its full outline instead of dropped.
+        pts = thin(r, step, 0)
+        if len(pts) < 3:
+            pts = thin(r, 0, 1)
+        if len(pts) < 3:
+            continue
+        # relative moves: "l2 -1" is shorter than "L123 456"
+        d = f"M{pts[0][0]:g} {pts[0][1]:g}"
+        for (a, b), (c, e) in zip(pts, pts[1:]):
+            d += f"l{round(c - a, 1):g} {round(e - b, 1):g}"
+        paths[code] = paths.get(code, "") + d + "Z"
     return paths, w, h
 
 
@@ -348,6 +358,8 @@ def row_html(iid, rec, I, d, census_cols):
         q = f"/places.html?lv=district&g={g}&i={i}" + (f"&y={y}" if y else "") + f"&p={d['code']}"
         label = f'<a href="{E(q)}" title="See this indicator on the map">{label}</a>'
     flag = ' <abbr class="dp-lown" title="Small survey sample: read with caution">†</abbr>' if rec.get("low_n") else ""
+    if rec.get("fp"):
+        flag += f' <abbr class="dp-lown" title="One figure for {E(", ".join(rec["fp"]), quote=True)} together: the source published it for the district before it was divided">‡</abbr>'
     cells = [f"<th scope=\"row\">{label}</th>", f'<td class="dp-v">{fmt(rec["v"], kind)}{flag}</td>']
     if census_cols:
         cells.append(f'<td class="dp-prev">{fmt(rec.get("prev"), kind) if rec.get("prev") is not None else ""}</td>')
@@ -476,6 +488,8 @@ def notes_html(d, I):
         items.append("PBS has not published Census 2023 district tables for Gilgit-Baltistan or Azad Jammu and Kashmir, so the census rows are absent and the surveys that reach here are shown instead.")
     items.append("Rank 1 is the highest value among the districts that have a figure, whichever way is better. The province and Pakistan columns are the median district, not a population-weighted total.")
     items.append("Survey estimates (PSLM, MICS, DHS, LFS, HIES) are indicative at district level: the surveys were designed for provinces, and Data Darbar post-stratifies and suppresses small samples." + (" Rows marked † rest on a small sample." if low else ""))
+    if any(r.get("fp") for r in d["values"].values()):
+        items.append("Rows marked ‡ are one figure the source published for the district before it was divided, shown for each of its successors; it counts once in the ranks and medians.")
     items.append("Climate figures are district means of ERA5-Land and CHIRPS grids; the normal is 1981–2010. Travel times are from the Malaria Atlas accessibility surfaces weighted by where people live.")
     items += merged
     return ('<section class="dp-sec" id="notes"><div class="dp-sec-head"><h2>How to read this profile</h2></div><ul class="dp-notes">'
@@ -509,7 +523,7 @@ def write_csv(path, d, I):
     with path.open("w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["district", "district_code", "province", "section", "indicator", "label", "year", "value",
-                    "value_2017", "rank", "districts_with_value", "median_province", "median_pakistan", "small_sample"])
+                    "value_2017", "rank", "districts_with_value", "median_province", "median_pakistan", "small_sample", "shared_with"])
         for key, title, _, ids in SECTIONS:
             for i in ids:
                 if i not in d["values"]:
@@ -517,7 +531,7 @@ def write_csv(path, d, I):
                 r, ind = d["values"][i], I[i]
                 w.writerow([d["name"], d["code"], d["province"], title, i, ind["label"], ind["year"] or "",
                             r["v"], r.get("prev", ""), r["r"], ind["n"], ind["prov_median"].get(d["province"], ""),
-                            ind["median"], "yes" if r.get("low_n") else ""])
+                            ind["median"], "yes" if r.get("low_n") else "", "; ".join(r.get("fp", []))])
         for t in d["tehsils"]:
             w.writerow([d["name"], d["code"], d["province"], "Tehsils", t["id"], t["name"] + " (" + t["kind"] + ")", "2023",
                         "" if t["pop"] is None else t["pop"], "", "", "", "", "", ""])
