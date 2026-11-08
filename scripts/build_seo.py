@@ -3,7 +3,6 @@
 
 Run from any directory. No network, third-party packages or data reconstruction.
 """
-import csv
 import html
 import json
 import re
@@ -37,21 +36,6 @@ PUBLISHER = {"@type": "Organization", "@id": ADAAD + "#publisher", "name": "Adaa
 PERSON = {"@type": "Person", "@id": ADAAD + "about/#hiba-sameen", "name": "Hiba Sameen", "url": ADAAD + "about/", "sameAs": ["https://github.com/hibasameen", "https://www.linkedin.com/in/hiba-sameen-86750819/", "https://scholar.google.com/citations?user=FaZDLEUAAAAJ"]}
 # Share-card tags for generated pages; the hand-written pages keep their own og:image.
 SHARE_TAGS = f'<meta property="og:type" content="website"><meta property="og:site_name" content="{SITE_NAME}"><meta property="og:image" content="{OG_IMAGE}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{OG_IMAGE}">'
-PROFILES = ["lahore", "faisalabad", "rawalpindi", "multan", "gujranwala", "bahawalpur", "islamabad", "karachi central", "karachi east", "karachi south", "hyderabad", "sukkur", "larkana", "peshawar", "abbottabad", "swat", "mardan", "quetta", "gwadar"]
-FIELDS = [
-    ("t1_2023_pop_total", "Population", "people"),
-    ("t1_2023_pop_male", "Male population", "people"),
-    ("t1_2023_pop_female", "Female population", "people"),
-    ("t1_2023_pop_transgender", "Transgender population", "people"),
-    ("t1_2023_area_sq_km", "Area", "km²"),
-    ("t1_2023_density_per_sq_km", "Population density", "people per km²"),
-    ("t1_2023_urban_proportion", "Urban population share", "%"),
-    ("t1_2023_avg_household_size", "Average household size", "people per household"),
-    ("t12_2023_literacy_ratio_all", "Literacy, ages 10+", "%"),
-    ("t12_2023_literacy_ratio_male", "Male literacy, ages 10+", "%"),
-    ("t12_2023_literacy_ratio_female", "Female literacy, ages 10+", "%"),
-    ("t12_2023_out_of_school_5_16", "Out-of-school children, ages 5–16", "children"),
-]
 DATASET_NAMES = {
     "budget_lines": "Pakistan federal budget line items",
     "census_panel_2017": "Pakistan Census 2017 district and tehsil tables",
@@ -278,38 +262,11 @@ def modal_content(variable):
 
 
 def build():
-    districts = json.loads((APP / "data/districts.json").read_text())
-    geo = json.loads((APP / "data/pakistan_districts_province_boundries.geojson").read_text())
-    labels = {norm(f["properties"]["districts"]): f["properties"] for f in geo["features"]}
-    catalog = json.loads((APP / "data/warehouse/catalog.json").read_text())
-    links = []
-    for key in PROFILES:
-        d = districts[key]
-        assert d.get("t1_2023_pop_total") and d.get("t12_2023_literacy_ratio_all") is not None, key
-        assert not any(v for k, v in d.items() if k.endswith("_boundary_change")), key
-        name = labels[key]["districts"].title()
-        province = labels[key]["province_territory"]
-        slug = key.replace(" ", "-")
-        path = f"/districts/{slug}/"
-        title = f"{name} district: Census 2023 population and literacy"
-        description = f"{name} district, {province}, recorded {number(d['t1_2023_pop_total'])} people in Census 2023. Read its population, literacy, urban share and schooling counts, with definitions and a CSV download."
-        rows = [(label, number(d.get(field)), unit) for field, label, unit in FIELDS]
-        csv_path = APP / path.strip("/") / "census-2023.csv"
-        csv_path.parent.mkdir(parents=True, exist_ok=True)
-        with csv_path.open("w", newline="") as stream:
-            writer = csv.writer(stream)
-            writer.writerow(["district", "province", "year", "indicator", "value", "unit", "source_field"])
-            for field, label, unit in FIELDS:
-                writer.writerow([name, province, 2023, label, "" if d.get(field) is None else d[field], unit, field])
-        notes = "These figures describe the district, not necessarily the city of the same name. Literacy covers ages 10 and over; out-of-school counts cover ages 5–16. Missing values are unavailable, not zero. This profile uses 2023 figures only: boundary changes make some 2017 comparisons unsafe. School attendance and literacy are different measures."
-        body = f'<p><a href="/districts/">All district profiles</a> · <a href="/map.html">Explore the interactive district map</a> · <a href="census-2023.csv" download>Download this profile (CSV)</a></p>'
-        body += table(["Indicator", "2023 value", "Unit"], rows, f"{name} district — Census 2023")
-        body += f'<aside><h2>How to read this profile</h2><p>{notes}</p></aside><h2>Source and method</h2><p>Pakistan Bureau of Statistics, Population and Housing Census 2023, Tables 1 and 12; processed by Data Darbar. The table and CSV are generated from the same district record used by the explorer.</p><p><a href="https://www.pbs.gov.pk/census/">PBS census publications</a> · <a href="/datasets/district-indicators/">Data dictionary and full district dataset</a> · <a href="/methods.html">Methodology</a></p>'
-        body += f'<h2>Cite this profile</h2><p>Hiba Sameen / Data Darbar. {ESC(title)}. {ORIGIN}{path}. Derived data licensed CC BY 4.0; cite PBS as the original source.</p>'
-        schema = {"@type": "Dataset", "name": title, "description": description + " " + notes, "url": ORIGIN + path, "creator": PERSON, "publisher": PUBLISHER, "license": LICENSE, "temporalCoverage": "2023", "spatialCoverage": {"@type": "Place", "name": f"{name} district, {province}, Pakistan"}, "isBasedOn": "https://www.pbs.gov.pk/census/", "distribution": [{"@type": "DataDownload", "encodingFormat": "text/csv", "contentUrl": ORIGIN + path + "census-2023.csv"}]}
-        page(path, title, description, body, schema)
-        links.append(f'<li><a href="{path}">{ESC(name)} district</a><span>{ESC(str(province))} · Population {number(d["t1_2023_pop_total"])}</span></li>')
-    page("/districts/", "Pakistan district profiles: Census 2023", "Population, literacy and schooling figures for selected districts of Pakistan, with readable tables, source definitions and CSV downloads.", '<p>These initial profiles use districts with available population and literacy data and no explicit boundary-change flag in the source record. More places and survey indicators remain available in the <a href="/map.html">district map</a>.</p><ul class="cards">' + ''.join(links) + '</ul><p><a href="/datasets/district-indicators/">Download the full district indicator dataset</a>.</p>')
+    # District profiles - one for each of the 156 districts on the 2023
+    # frame, and their index - are their own module, which reads the
+    # profile data etl/places/build_profiles.py writes from the warehouse.
+    from build_districts import build_districts
+    n_profiles = build_districts(sys.modules[__name__])
     # The catalogue - index, a page per table, the boundaries - is its own
     # module; it reads the same catalog.json and uses this file's chrome.
     from build_catalogue import build_catalogue
@@ -360,7 +317,7 @@ def build():
         SubElement(SubElement(sitemap, "url"), "loc").text = ORIGIN + path
     (APP / "sitemap.xml").write_bytes(tostring(sitemap, encoding="utf-8", xml_declaration=True))
     (APP / "robots.txt").write_text(robots_txt())
-    print(f"Built {len(PROFILES)} district profiles, {n_tables} dataset pages and {len(set(paths))} sitemap entries.")
+    print(f"Built {n_profiles} district profiles, {n_tables} dataset pages and {len(set(paths))} sitemap entries.")
 
 
 # Crawlers that collect pages for AI training or bulk datasets, kept off the

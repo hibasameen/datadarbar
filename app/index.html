@@ -3,8 +3,8 @@
 <meta name="theme-color" content="#0c3a1e"/>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png"/><link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="stylesheet" href="assets/css/shell.css?v=a90ddbc5"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="assets/css/landing.css?v=a90ddbc5"/>
+<link rel="stylesheet" href="assets/css/shell.css?v=1a28f1a1"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="assets/css/landing.css?v=1a28f1a1"/>
 <!-- SEO:START -->
 <title>Data Darbar — Pakistan Census, Trade &amp; Economic Data</title>
 <meta name="description" content="Data Darbar by Adaad brings Pakistan&#x27;s official census, trade, budget and economic statistics together, with maps, downloadable datasets and source notes.">
@@ -32,6 +32,14 @@
       <h1>Pakistan&rsquo;s official statistics, by place, by sector and by institution</h1>
       <p class="llede">Census, survey, trade and macroeconomic data from PBS and
         the State Bank, as maps and charts. Every chart downloads as CSV.</p>
+      <form class="lfind" action="districts/" role="search" autocomplete="off">
+        <label class="lfind-box"><span class="visually-hidden">Find a district</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input type="search" id="lfind" name="q" placeholder="Find a district: Lahore, Skardu…" aria-label="Find a district" aria-autocomplete="list" aria-controls="lfindList" aria-expanded="false" role="combobox"/>
+        </label>
+        <ul class="lfind-list" id="lfindList" role="listbox" hidden></ul>
+        <p class="lfind-hint">One profile for each of 156 districts, or <a href="districts/">browse them all</a>.</p>
+      </form>
     </div>
 
     <div class="lcards">
@@ -46,6 +54,7 @@
             <li><a href="places.html?lv=district&amp;g=employment&amp;i=lfpr">Work</a></li>
             <li><a href="places.html?lv=district&amp;g=mpi&amp;i=H">Poverty</a></li>
             <li><a href="places.html?lv=district&amp;g=crops&amp;i=crop%7C4%7Cproduction_000t">Crops</a></li>
+            <li><a href="districts/">District profiles</a></li>
           </ul>
           <div class="lcard-stat">156 districts · 649 tehsils · 5,404 indicators</div>
         </div>
@@ -103,12 +112,49 @@
 
   </div>
 </main>
+<script>
+/* Find a district: the 156 names are inlined, so the box answers on the first
+   keystroke with nothing fetched. Enter opens the first match; the form falls
+   back to the index with ?q= when scripts are off. */
+(function(){
+  var D=[["Bannu","bannu","Khyber Pakhtunkhwa"],["Lakki Marwat","lakki-marwat","Khyber Pakhtunkhwa"],["Dera Ismail Khan","dera-ismail-khan","Khyber Pakhtunkhwa"],["Tank","tank","Khyber Pakhtunkhwa"],["Abbottabad","abbottabad","Khyber Pakhtunkhwa"],["Batagram","batagram","Khyber Pakhtunkhwa"],["Haripur","haripur","Khyber Pakhtunkhwa"],["Kolai Palas Kohistan","kolai-palas-kohistan","Khyber Pakhtunkhwa"],["Mansehra","mansehra","Khyber Pakhtunkhwa"],["Torghar","torghar","Khyber Pakhtunkhwa"],["Hangu","hangu","Khyber Pakhtunkhwa"],["Karak","karak","Khyber Pakhtunkhwa"],["Kohat","kohat","Khyber Pakhtunkhwa"],["Buner","buner","Khyber Pakhtunkhwa"],["Lower Chitral","lower-chitral","Khyber Pakhtunkhwa"],["Lower Dir","lower-dir","Khyber Pakhtunkhwa"],["Malakand Protected Area","malakand-protected-area","Khyber Pakhtunkhwa"],["Shangla","shangla","Khyber Pakhtunkhwa"],["Swat","swat","Khyber Pakhtunkhwa"],["Upper Dir","upper-dir","Khyber Pakhtunkhwa"],["Mardan","mardan","Khyber Pakhtunkhwa"],["Swabi","swabi","Khyber Pakhtunkhwa"],["Charsadda","charsadda","Khyber Pakhtunkhwa"],["Nowshera","nowshera","Khyber Pakhtunkhwa"],["Peshawar","peshawar","Khyber Pakhtunkhwa"],["Bahawalnagar","bahawalnagar","Punjab"],["Bahawalpur","bahawalpur","Punjab"],["Rahim Yar Khan","rahim-yar-khan","Punjab"],["Dera Ghazi Khan","dera-ghazi-khan","Punjab"],["Layyah","layyah","Punjab"],["Muzaffargarh","muzaffargarh","Punjab"],["Rajanpur","rajanpur","Punjab"],["Chiniot","chiniot","Punjab"],["Faisalabad","faisalabad","Punjab"],["Jhang","jhang","Punjab"],["Toba Tek Singh","toba-tek-singh","Punjab"],["Gujranwala","gujranwala","Punjab"],["Gujrat","gujrat","Punjab"],["Hafizabad","hafizabad","Punjab"],["Mandi Bahauddin","mandi-bahauddin","Punjab"],["Narowal","narowal","Punjab"],["Sialkot","sialkot","Punjab"],["Kasur","kasur","Punjab"],["Lahore","lahore","Punjab"],["Nankana Sahib","nankana-sahib","Punjab"],["Sheikhupura","sheikhupura","Punjab"],["Khanewal","khanewal","Punjab"],["Lodhran","lodhran","Punjab"],["Multan","multan","Punjab"],["Vehari","vehari","Punjab"],["Attock","attock","Punjab"],["Chakwal","chakwal","Punjab"],["Jhelum","jhelum","Punjab"],["Rawalpindi","rawalpindi","Punjab"],["Okara","okara","Punjab"],["Pakpattan","pakpattan","Punjab"],["Sahiwal","sahiwal","Punjab"],["Bhakkar","bhakkar","Punjab"],["Khushab","khushab","Punjab"],["Mianwali","mianwali","Punjab"],["Sargodha","sargodha","Punjab"],["Badin","badin","Sindh"],["Dadu","dadu","Sindh"],["Hyderabad","hyderabad","Sindh"],["Jamshoro","jamshoro","Sindh"],["Matiari","matiari","Sindh"],["Tando Allahyar","tando-allahyar","Sindh"],["Tando Muhammad Khan","tando-muhammad-khan","Sindh"],["Thatta","thatta","Sindh"],["Jacobabad","jacobabad","Sindh"],["Kashmore","kashmore","Sindh"],["Larkana","larkana","Sindh"],["Kambar Shahdad Kot","kambar-shahdad-kot","Sindh"],["Shikarpur","shikarpur","Sindh"],["Mirpur Khas","mirpur-khas","Sindh"],["Sanghar","sanghar","Sindh"],["Tharparkar","tharparkar","Sindh"],["Umer Kot","umer-kot","Sindh"],["Ghotki","ghotki","Sindh"],["Khairpur","khairpur","Sindh"],["Naushahro Feroze","naushahro-feroze","Sindh"],["Shaheed Benazirabad","shaheed-benazirabad","Sindh"],["Sukkur","sukkur","Sindh"],["Awaran","awaran","Balochistan"],["Kalat","kalat","Balochistan"],["Kharan","kharan","Balochistan"],["Khuzdar","khuzdar","Balochistan"],["Lasbela","lasbela","Balochistan"],["Mastung","mastung","Balochistan"],["Washuk","washuk","Balochistan"],["Gwadar","gwadar","Balochistan"],["Kech","kech","Balochistan"],["Panjgur","panjgur","Balochistan"],["Jaffarabad","jaffarabad","Balochistan"],["Jhal Magsi","jhal-magsi","Balochistan"],["Kachhi","kachhi","Balochistan"],["Nasirabad","nasirabad","Balochistan"],["Chagai","chagai","Balochistan"],["Killa Abdullah","killa-abdullah","Balochistan"],["Nushki","nushki","Balochistan"],["Pishin","pishin","Balochistan"],["Quetta","quetta","Balochistan"],["Dera Bugti","dera-bugti","Balochistan"],["Harnai","harnai","Balochistan"],["Kohlu","kohlu","Balochistan"],["Sibi","sibi","Balochistan"],["Ziarat","ziarat","Balochistan"],["Barkhan","barkhan","Balochistan"],["Killa Saifullah","killa-saifullah","Balochistan"],["Loralai","loralai","Balochistan"],["Musakhel","musakhel","Balochistan"],["Sherani","sherani","Balochistan"],["Zhob","zhob","Balochistan"],["Bajaur","bajaur","Khyber Pakhtunkhwa"],["Khyber","khyber","Khyber Pakhtunkhwa"],["Kurram","kurram","Khyber Pakhtunkhwa"],["Mohmand","mohmand","Khyber Pakhtunkhwa"],["North Waziristan","north-waziristan","Khyber Pakhtunkhwa"],["Orakzai","orakzai","Khyber Pakhtunkhwa"],["South Waziristan","south-waziristan","Khyber Pakhtunkhwa"],["Islamabad","islamabad","Islamabad Capital Territory"],["Skardu","skardu","Gilgit-Baltistan"],["Ghanche","ghanche","Gilgit-Baltistan"],["Astore","astore","Gilgit-Baltistan"],["Diamer","diamer","Gilgit-Baltistan"],["Ghizer","ghizer","Gilgit-Baltistan"],["Gilgit","gilgit","Gilgit-Baltistan"],["Hunza","hunza","Gilgit-Baltistan"],["Bhimber","bhimber","Azad Jammu & Kashmir"],["Kotli","kotli","Azad Jammu & Kashmir"],["Mirpur","mirpur","Azad Jammu & Kashmir"],["Jhelum Valley","jhelum-valley","Azad Jammu & Kashmir"],["Muzaffarabad","muzaffarabad","Azad Jammu & Kashmir"],["Neelum","neelum","Azad Jammu & Kashmir"],["Bagh","bagh","Azad Jammu & Kashmir"],["Haveli","haveli","Azad Jammu & Kashmir"],["Poonch","poonch","Azad Jammu & Kashmir"],["Sudhnoti","sudhnoti","Azad Jammu & Kashmir"],["Karachi East","karachi-east","Sindh"],["Karachi West","karachi-west","Sindh"],["Malir","malir","Sindh"],["Karachi Central","karachi-central","Sindh"],["Karachi South","karachi-south","Sindh"],["Sujawal","sujawal","Sindh"],["Sohbatpur","sohbatpur","Balochistan"],["Korangi","korangi","Sindh"],["Kharmang","kharmang","Gilgit-Baltistan"],["Shigar","shigar","Gilgit-Baltistan"],["Nagar","nagar","Gilgit-Baltistan"],["Surab","surab","Balochistan"],["Duki","duki","Balochistan"],["Keamari","keamari","Sindh"],["Chaman","chaman","Balochistan"],["Upper Kohistan","upper-kohistan","Khyber Pakhtunkhwa"],["Lower Kohistan","lower-kohistan","Khyber Pakhtunkhwa"],["Upper Chitral","upper-chitral","Khyber Pakhtunkhwa"]];
+  var inp=document.getElementById('lfind'),list=document.getElementById('lfindList');
+  if(!inp||!list)return;
+  var hits=[],sel=-1;
+  function norm(s){return s.toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();}
+  function match(q){
+    q=norm(q);if(!q)return[];
+    var starts=[],words=[],within=[];
+    D.forEach(function(d){var n=norm(d[0]);
+      if(n.indexOf(q)===0)starts.push(d);
+      else if((' '+n).indexOf(' '+q)>=0)words.push(d);
+      else if(n.indexOf(q)>=0||norm(d[2]).indexOf(q)===0)within.push(d);});
+    return starts.concat(words,within).slice(0,8);
+  }
+  function render(){
+    list.innerHTML=hits.map(function(d,i){
+      return '<li role="option" id="lfind-'+i+'" aria-selected="'+(i===sel)+'"'+(i===sel?' class="is-sel"':'')+'><a href="districts/'+d[1]+'/"><b>'+d[0]+'</b><span>'+d[2]+'</span></a></li>';}).join('');
+    list.hidden=!hits.length;inp.setAttribute('aria-expanded',hits.length?'true':'false');
+    inp.setAttribute('aria-activedescendant',sel>=0?'lfind-'+sel:'');
+  }
+  inp.addEventListener('input',function(){hits=match(inp.value);sel=hits.length?0:-1;render();});
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'&&hits.length){sel=(sel+1)%hits.length;render();e.preventDefault();}
+    else if(e.key==='ArrowUp'&&hits.length){sel=(sel-1+hits.length)%hits.length;render();e.preventDefault();}
+    else if(e.key==='Escape'){hits=[];sel=-1;render();}
+    else if(e.key==='Enter'&&sel>=0&&hits[sel]){e.preventDefault();location.href='districts/'+hits[sel][1]+'/';}
+  });
+  inp.form.addEventListener('submit',function(e){if(hits.length){e.preventDefault();location.href='districts/'+hits[0][1]+'/';}});
+  document.addEventListener('click',function(e){if(!inp.form.contains(e.target)){hits=[];sel=-1;render();}});
+  inp.addEventListener('focus',function(){if(inp.value){hits=match(inp.value);sel=hits.length?0:-1;render();}});
+})();
+</script>
 
 <!-- dd:footer -->
 <footer class="site-footer">
   <span>&copy; 2026 Hiba Sameen</span><span class="footer-sep">&middot;</span><span>Data: <a href="https://www.pbs.gov.pk/" target="_blank" rel="noopener">Pakistan Bureau of Statistics</a>, <a href="https://www.sbp.org.pk/" target="_blank" rel="noopener">State Bank of Pakistan</a> and the sources <a href="about.html#acknowledgements">acknowledged</a></span><span class="footer-sep">&middot;</span><span>Code: <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT Licence</a> &middot; Derived data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> unless <a href="datasets/#licences">stated otherwise</a></span><span class="footer-sep">&middot;</span><span><a href="datasets/">Data Catalogue</a> &middot; <a href="districts/">District Profiles</a> &middot; <a href="methods.html">Methods</a> &middot; <a href="https://adaad.org/" target="_blank" rel="noopener">Adaad</a> &middot; <a href="https://aiwan.adaad.org/" target="_blank" rel="noopener">Aiwan-e-Jamhoor</a></span>
 </footer>
 <!-- /dd:footer -->
-<script src="assets/js/analytics.js?v=a90ddbc5"></script>
-<script src="assets/js/shell.js?v=a90ddbc5"></script>
+<script src="assets/js/analytics.js?v=1a28f1a1"></script>
+<script src="assets/js/shell.js?v=1a28f1a1"></script>
 </body></html>

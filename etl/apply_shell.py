@@ -24,7 +24,9 @@ APP = pathlib.Path(__file__).resolve().parent.parent / 'app'
 # does not exist yet: it is shown, because the structure is the point, and it is
 # not a link, because a link to nothing is worse than a label.
 NAV = [
-    {'href': 'places.html',   'label': 'Places',    'match': ('places.html',)},
+    # The district profiles under /districts/ are Places' reading view, so
+    # Places is the entry that lights up there.
+    {'href': 'places.html',   'label': 'Places',    'match': ('places.html', 'districts/')},
     {'href': 'finance.html',  'label': 'Economy',   'match': ('finance.html', 'money.html', 'trade.html', 'economy.html')},
     {'href': 'state.html',    'label': 'State',     'match': ('state.html',)},
 ]
