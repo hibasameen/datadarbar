@@ -40,7 +40,13 @@
 .dp-locator{width:100%;height:auto;display:block}
 .dp-loc-all{fill:var(--green-100);stroke:var(--green-300);stroke-width:.5;stroke-linejoin:round}
 .dp-loc-this{fill:var(--green-700);stroke:var(--green-900);stroke-width:.8;stroke-linejoin:round}
+.dp-loc-win{fill:none;stroke:var(--gold-600);stroke-width:1.2;stroke-dasharray:2 1.5}
+.dp-inset{margin-top:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.dp-inset text{font-size:7px;fill:var(--muted);text-anchor:middle;font-family:var(--sans)}
+.dp-map-cap{margin-top:4px;font-size:11.5px;color:var(--muted);text-align:center}
 .dp-pkmap{width:100%;height:auto;display:block}
+.dp-pkmap-inset rect{fill:var(--surface);stroke:var(--line-strong);stroke-width:.6}
+.dp-pkmap-inset text{font-size:7px;font-weight:700;fill:var(--green-900);text-anchor:middle;font-family:var(--sans)}
 .dp-pkmap path{fill:var(--green-100);stroke:var(--green-400);stroke-width:.5;stroke-linejoin:round;transition:fill .12s}
 .dp-pkmap a:hover path,.dp-pkmap a:focus path{fill:var(--gold-400);stroke:var(--green-900)}
 .dp-pkmap a:focus{outline:none}

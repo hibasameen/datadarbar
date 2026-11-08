@@ -224,73 +224,185 @@ def comp_bars(items, limit=6, cls="dp-comp"):
 
 # ── the locator map ─────────────────────────────────────────────────────────
 
+KARACHI = ["146", "147", "148", "149", "150", "154", "166"]   # Karachi division's seven
+KARACHI_CITY = ["146", "147", "149", "150", "154", "166"]       # the six the city is; Malir is the hinterland
+SMALL_PX = 9          # a district narrower than this on the national map gets an inset
+
+
 def _geo():
     js = (APP / "data" / "districts_2023_geo.js").read_text()
     return json.loads(js[js.index("{"):js.rindex("}") + 1])
 
 
-def locator_paths(max_w=230, max_h=250, step=3.2):
-    """Every district as a thinned path, keyed by code, in one coordinate
-    frame; the page fills its own district and draws the rest as context."""
-    g = _geo()
-    k = math.cos(math.radians(30))
-    rings = []
-    for f in g["features"]:
-        geom = f["geometry"]
-        polys = geom["coordinates"] if geom["type"] == "MultiPolygon" else [geom["coordinates"]]
-        for poly in polys:
-            rings.append((f["properties"]["code"], poly[0]))
-    xs = [p[0] * k for _, r in rings for p in r]
-    ys = [p[1] for _, r in rings for p in r]
-    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
-    s = min(max_w / (x1 - x0), max_h / (y1 - y0))
-    w, h = (x1 - x0) * s, (y1 - y0) * s
-    def thin(r, step, dp):
-        pts, last = [], None
-        for lon, lat in r:
-            p = (round((lon * k - x0) * s, dp), round((y1 - lat) * s, dp))
-            if last is None or abs(p[0] - last[0]) + abs(p[1] - last[1]) >= step:
-                pts.append(p)
-                last = p
-        return pts
+class Locator:
+    """Every district projected once, at the national map's scale, so the
+    same coordinates draw the small national locator, the zoomed inset a
+    small district needs, and the index's clickable map.
 
-    paths = {}
-    for code, r in rings:
-        # Thinning that leaves fewer than three points has eaten a district
-        # whole - Karachi Central and South are a few pixels at this size -
-        # so such a ring is drawn from its full outline instead of dropped.
-        pts = thin(r, step, 0)
-        if len(pts) < 3:
-            pts = thin(r, 0, 1)
-        if len(pts) < 3:
-            continue
-        # relative moves: "l2 -1" is shorter than "L123 456"
-        d = f"M{pts[0][0]:g} {pts[0][1]:g}"
-        for (a, b), (c, e) in zip(pts, pts[1:]):
+    Karachi Central is two pixels wide on a 230-pixel Pakistan, and twenty
+    other districts are under nine. For those the page shows the country
+    with a rectangle on it, and under that the rectangle's contents at a
+    size where the district has a shape and neighbours."""
+
+    def __init__(self, max_w=230, max_h=250, step=3.2):
+        g = _geo()
+        k = math.cos(math.radians(30))
+        raw = []
+        for f in g["features"]:
+            geom = f["geometry"]
+            polys = geom["coordinates"] if geom["type"] == "MultiPolygon" else [geom["coordinates"]]
+            for poly in polys:
+                raw.append((f["properties"]["code"], poly[0]))
+        xs = [p[0] * k for _, r in raw for p in r]
+        ys = [p[1] for _, r in raw for p in r]
+        x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+        s = min(max_w / (x1 - x0), max_h / (y1 - y0))
+        self.w, self.h = (x1 - x0) * s, (y1 - y0) * s
+        self.rings = [(code, [((lon * k - x0) * s, (y1 - lat) * s) for lon, lat in r]) for code, r in raw]
+        self.bbox = {}
+        for code, pts in self.rings:
+            bx = [x for x, _ in pts]
+            by = [y for _, y in pts]
+            b = self.bbox.get(code)
+            self.bbox[code] = (min(bx), min(by), max(bx), max(by)) if b is None else \
+                (min(b[0], min(bx)), min(b[1], min(by)), max(b[2], max(bx)), max(b[3], max(by)))
+        self.step = step
+        self.paths = {}
+        for code, pts in self.rings:
+            d = self._path(pts, step)
+            if d:
+                self.paths[code] = self.paths.get(code, "") + d
+
+    @staticmethod
+    def _thin(pts, step, dp):
+        out, last = [], None
+        for x, y in pts:
+            q = (round(x, dp), round(y, dp))
+            if last is None or abs(q[0] - last[0]) + abs(q[1] - last[1]) >= step:
+                out.append(q)
+                last = q
+        return out
+
+    def _path(self, pts, step, dp=0):
+        """One ring as a path. Thinning that leaves fewer than three points
+        has eaten a district whole - Karachi Central and South are a few
+        pixels at this size - so such a ring is drawn from its full outline
+        at a tenth of a pixel instead of dropped."""
+        q = self._thin(pts, step, dp)
+        if len(q) < 3:
+            q = self._thin(pts, 0, 1)
+        if len(q) < 3:
+            return ""
+        d = f"M{q[0][0]:g} {q[0][1]:g}"
+        for (a, b), (c, e) in zip(q, q[1:]):
             d += f"l{round(c - a, 1):g} {round(e - b, 1):g}"
-        paths[code] = paths.get(code, "") + d + "Z"
-    return paths, w, h
+        return d + "Z"
 
+    def size(self, code):
+        b = self.bbox[code]
+        return max(b[2] - b[0], b[3] - b[1])
 
-def locator_svg(paths, w, h, code, name):
-    others = "".join(d for c, d in paths.items() if c != code)
-    return (f'<svg class="dp-locator" viewBox="0 0 {w:.0f} {h:.0f}" role="img" '
-            f'aria-label="{E(name, quote=True)} district within Pakistan">'
-            f'<path class="dp-loc-all" d="{others}"/>'
-            f'<path class="dp-loc-this" d="{paths.get(code, "")}"/></svg>')
+    def window(self, code):
+        """The rectangle an inset shows, in national coordinates, or None
+        when the district is large enough to be seen as it is. Karachi's
+        districts share one window: the division, which is the city."""
+        if code in KARACHI:
+            # framed on the six urban districts: Malir is nine times their
+            # size and would shrink them to the corner of their own inset
+            bs = [self.bbox[c] for c in KARACHI_CITY]
+            x0, y0, x1, y1 = min(b[0] for b in bs), min(b[1] for b in bs), max(b[2] for b in bs), max(b[3] for b in bs)
+            pad = 0.12 * max(x1 - x0, y1 - y0)
+            return (x0 - pad, y0 - pad, x1 + pad, y1 + pad)
+        if self.size(code) >= SMALL_PX:
+            return None
+        b = self.bbox[code]
+        cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+        half = max(5 * self.size(code), 24) / 2
+        return (cx - half, cy - half, cx + half, cy + half)
 
+    def _zoom_paths(self, win, codes, out_w):
+        x0, y0, x1, y1 = win
+        f = out_w / (x1 - x0)
+        out = {}
+        for code, pts in self.rings:
+            if codes is not None and code not in codes:
+                continue
+            b = self.bbox[code]
+            if b[2] < x0 or b[0] > x1 or b[3] < y0 or b[1] > y1:
+                continue
+            z = [((x - x0) * f, (y - y0) * f) for x, y in pts]
+            d = self._path(z, 2.5, 1)
+            if d:
+                out[code] = out.get(code, "") + d
+        return out, out_w, (y1 - y0) * f
 
-def clickable_map(paths, w, h, districts):
-    """The index's map: every district a link to its profile."""
-    by = {d["code"]: d for d in districts}
-    parts = [f'<svg class="dp-pkmap" viewBox="0 0 {w:.0f} {h:.0f}" role="img" aria-label="Pakistan’s districts; choose one to open its profile">']
-    for code, d in paths.items():
-        dd = by.get(code)
-        if not dd:
-            continue
-        parts.append(f'<a href="/districts/{dd["slug"]}/" data-n="{E(dd["name"] + ", " + dd["province"], quote=True)}" aria-label="{E(dd["name"], quote=True)}, {E(dd["province"], quote=True)}"><path d="{d}"/></a>')
-    parts.append("</svg>")
-    return "".join(parts)
+    def svg(self, code, name):
+        """The national locator; with the inset's rectangle drawn on it
+        when there is an inset."""
+        others = "".join(d for c, d in self.paths.items() if c != code)
+        win = self.window(code)
+        rect = ""
+        if win:
+            rect = (f'<rect class="dp-loc-win" x="{win[0]:.1f}" y="{win[1]:.1f}" '
+                    f'width="{win[2] - win[0]:.1f}" height="{win[3] - win[1]:.1f}"/>')
+        return (f'<svg class="dp-locator" viewBox="0 0 {self.w:.0f} {self.h:.0f}" role="img" '
+                f'aria-label="{E(name, quote=True)} district within Pakistan">'
+                f'<path class="dp-loc-all" d="{others}"/>'
+                f'<path class="dp-loc-this" d="{self.paths.get(code, "")}"/>{rect}</svg>')
+
+    def inset(self, code, name, by_code):
+        """The zoomed inset, or an empty string."""
+        win = self.window(code)
+        if not win:
+            return ""
+        only = KARACHI if code in KARACHI else None
+        paths, w, h = self._zoom_paths(win, only, 230)
+        others = "".join(d for c, d in paths.items() if c != code)
+        # label the neighbours that have room for a word
+        labels = []
+        for c, d in paths.items():
+            if c == code or c not in by_code:
+                continue
+            b = self.bbox[c]
+            f = 230 / (win[2] - win[0])
+            lx, ly = ((b[0] + b[2]) / 2 - win[0]) * f, ((b[1] + b[3]) / 2 - win[1]) * f
+            nm = by_code[c]["name"]
+            room = min(b[2] - b[0], b[3] - b[1]) * f
+            # a word is about four pixels a letter at this size; a name that
+            # would run past its district is left off rather than clipped
+            if 6 < lx < w - 6 and 6 < ly < h - 4 and room > 28 and len(nm) * 4 < max(room, (b[2] - b[0]) * f) + 12:
+                labels.append(f'<text x="{lx:.0f}" y="{ly:.0f}">{E(nm)}</text>')
+        cap = ("Karachi\u2019s districts; Malir runs beyond the frame" if code in KARACHI else f"{name} and its neighbours")
+        return (f'<svg class="dp-locator dp-inset" viewBox="0 0 {w:.0f} {h:.0f}" role="img" '
+                f'aria-label="{E(cap, quote=True)}; {E(name, quote=True)} highlighted">'
+                f'<path class="dp-loc-all" d="{others}"/>'
+                f'<path class="dp-loc-this" d="{paths.get(code, "")}"/>{"".join(labels)}</svg>'
+                f'<p class="dp-map-cap">{cap}</p>')
+
+    def index_map(self, districts):
+        """The index's map: every district a link to its profile, and
+        Karachi again at a size where its districts can be told apart."""
+        by = {d["code"]: d for d in districts}
+
+        def link(code, d):
+            dd = by.get(code)
+            if not dd:
+                return ""
+            return (f'<a href="/districts/{dd["slug"]}/" data-n="{E(dd["name"] + ", " + dd["province"], quote=True)}" '
+                    f'aria-label="{E(dd["name"], quote=True)}, {E(dd["province"], quote=True)}"><path d="{d}"/></a>')
+        parts = [f'<svg class="dp-pkmap" viewBox="0 0 {self.w:.0f} {self.h:.0f}" role="img" '
+                 f'aria-label="Pakistan\u2019s districts; choose one to open its profile">']
+        parts += [link(c, d) for c, d in self.paths.items()]
+        # Karachi, top left, where the map has only Afghanistan
+        win = self.window(KARACHI[0])
+        kp, kw, kh = self._zoom_paths(win, KARACHI, 62)
+        ox, oy = 4, 4
+        parts.append(f'<g class="dp-pkmap-inset" transform="translate({ox} {oy})">'
+                     f'<rect x="-3" y="-3" width="{kw + 6:.0f}" height="{kh + 16:.0f}" rx="4"/>'
+                     + "".join(link(c, d) for c, d in kp.items())
+                     + f'<text x="{kw / 2:.0f}" y="{kh + 10:.0f}">Karachi</text></g>')
+        parts.append("</svg>")
+        return "".join(parts)
 
 
 # ── a profile ───────────────────────────────────────────────────────────────
@@ -543,7 +655,7 @@ def write_csv(path, d, I):
             w.writerow([d["name"], d["code"], d["province"], "Religion", "share", name + " (%)", "2023", share, "", "", "", "", "", ""])
 
 
-def profile_page(d, P, paths, w, h, seo):
+def profile_page(d, P, loc, seo):
     I, S = P["indicators"], P["sources"]
     path = f"/districts/{d['slug']}/"
     title = f"{d['name']} district: population, literacy, poverty, work and climate" if not d["outside_census"] \
@@ -564,7 +676,7 @@ def profile_page(d, P, paths, w, h, seo):
         f'<div class="dp-actions"><a class="dp-btn primary" href="{E(map_q)}">Open in the map</a>'
         f'<a class="dp-btn" href="profile.csv" download>Download the profile (CSV)</a>'
         f'<a class="dp-btn" href="/query.html">Query the tables</a></div></div>'
-        f'<div class="dp-hero-map">{locator_svg(paths, w, h, d["code"], d["name"])}</div></header>'
+        f'<div class="dp-hero-map">{loc.svg(d["code"], d["name"])}{loc.inset(d["code"], d["name"], {x["code"]: x for x in P["districts"]})}</div></header>'
         + tiles_html(d, I) + toc
         + "".join(section_html(sec, d, I) for sec in SECTIONS)
         + tehsils_html(d) + nearby_html(d, P["districts"]) + notes_html(d, I) + sources_html(d, I, S))
@@ -593,7 +705,7 @@ def prov_id(p):
     return re.sub(r"[^a-z0-9]+", "-", p.lower()).strip("-")
 
 
-def index_page(P, paths, w, h, seo):
+def index_page(P, loc, seo):
     I = P["indicators"]
     ds = P["districts"]
     provs = []
@@ -622,7 +734,7 @@ def index_page(P, paths, w, h, seo):
         f'<header class="dp-hero"><div class="dp-hero-text"><p class="dp-kicker">Districts</p><h1>Pakistan’s districts, one profile each</h1>'
         f'<p class="dp-lede">A page for every one of the {len(ds)} districts on the 2023 census frame: population since 1951, literacy and schooling, work, health, poverty, farms, climate and what the census counted, each figure ranked and set beside the median district in its province and in Pakistan. Choose a district on the map, search for one, or browse by province.</p>'
         f'<label class="dp-search"><span class="visually-hidden">Find a district</span><input type="search" id="dpFind" placeholder="Find a district…" autocomplete="off"></label></div>'
-        f'<div class="dp-hero-map dp-hero-map-wide">{clickable_map(paths, w, h, ds)}<p class="dp-map-name" id="dpMapName" aria-live="polite">Hover over or tap a district</p></div></header>'
+        f'<div class="dp-hero-map dp-hero-map-wide">{loc.index_map(ds)}<p class="dp-map-name" id="dpMapName" aria-live="polite">Hover over or tap a district</p></div></header>'
         + "".join(sections)
         + '<section class="dp-sec" id="about"><div class="dp-sec-head"><h2>About these profiles</h2></div>'
         '<p class="dp-p">The profiles are generated from the same tables as the <a href="/places.html">Places map</a> and the <a href="/datasets/">catalogue</a>, on the Pakistan Bureau of Statistics’ 2023 district frame. Census 2023 does not publish district tables for Gilgit-Baltistan or Azad Jammu and Kashmir, so their pages carry the surveys and satellite sources that reach them. Each page has a CSV of its figures; the full tables are in the <a href="/datasets/place-indicators/">place_indicators</a> dataset. <a href="/methods.html">Methods</a>.</p></section>'
@@ -671,7 +783,7 @@ def build_districts(seo):
     MAP.clear()
     for iid, g, ind, y, _, _ in SPEC:
         MAP[iid] = (g, ind, y)
-    paths, w, h = locator_paths()
+    loc = Locator()
     # stale pages from an earlier frame or an earlier file name do not linger
     keep = {d["slug"] for d in P["districts"]}
     root = APP / "districts"
@@ -687,6 +799,6 @@ def build_districts(seo):
                         if f.name not in ("index.html", "profile.csv"):
                             f.unlink()
     for d in P["districts"]:
-        profile_page(d, P, paths, w, h, seo)
-    index_page(P, paths, w, h, seo)
+        profile_page(d, P, loc, seo)
+    index_page(P, loc, seo)
     return len(P["districts"])
