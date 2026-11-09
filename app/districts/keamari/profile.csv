@@ -1,0 +1,184 @@
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Keamari,166,Sindh,People,pop,Population,2023,2068451.0,3907065.0,40,130,1774845.5,1460080.5,,
+Keamari,166,Sindh,People,pop_2017,"Population, Census 2017",2017,1829837.0,,37,136,1581218.5,1216293.0,,
+Keamari,166,Sindh,People,pop_m,Male population,2023,1100626.0,2056119.0,37,130,910975.0,740172.0,,
+Keamari,166,Sindh,People,pop_f,Female population,2023,967613.0,1850580.0,40,130,851983.0,715230.0,,
+Keamari,166,Sindh,People,trans,Transgender population,2023,212.0,,24,134,74.5,47.5,,
+Keamari,166,Sindh,People,growth,Annual growth rate since the previous census (%),2023,2.07,3.34,100,130,1.97,2.46,,
+Keamari,166,Sindh,People,area,Area (km²),2023,559.0,929.0,124,130,2811.5,3660.5,,
+Keamari,166,Sindh,People,density,Population density (people per km²),2023,3700.27,4205.67,7,130,494.275,404.87,,
+Keamari,166,Sindh,People,urban,Urban population (%),2023,100.0,92.76,6,129,30.05,22.99,,
+Keamari,166,Sindh,People,urban_pop,Urban population,2023,2066574.0,3624207.0,11,120,499284.5,357104.0,,
+Keamari,166,Sindh,People,hh_size,Average household size,2023,6.4,6.13,62,130,5.5,6.3,,
+Keamari,166,Sindh,People,sex_ratio,Sex ratio (males per 100 females),2023,113.75,111.11,9,130,108.565,104.985,,
+Keamari,166,Sindh,People,under_15,Under 15 (% of population),2023,38.46,,105,136,44.02,43.96,,
+Keamari,166,Sindh,People,age_15_64,Aged 15–64 (% of population),2023,58.81,,24,136,53.145,53.175,,
+Keamari,166,Sindh,People,age_60_plus,Aged 60 and over (% of population),2023,4.45,,81,136,4.51,4.67,,
+Keamari,166,Sindh,Education,lit,"Literacy rate, ages 10 and over (%)",2023,62.07,65.6,34,130,46.505,49.05,,
+Keamari,166,Sindh,Education,lit_f,"Female literacy rate, ages 10 and over (%)",2023,56.51,60.92,30,130,36.61,39.21,,
+Keamari,166,Sindh,Education,lit_m,"Male literacy rate, ages 10 and over (%)",2023,66.86,69.75,48,130,55.83,60.62,,
+Keamari,166,Sindh,Education,literate,"Literate people, ages 10 and over",2023,944213.0,1900176.0,36,130,541932.0,522970.5,,
+Keamari,166,Sindh,Education,in_school_g,Girls aged 5–16 in school (%),,55.22,,58,130,45.84,48.74,,
+Keamari,166,Sindh,Education,in_school_b,Boys aged 5–16 in school (%),,59.64,,71,130,55.825,61.225,,
+Keamari,166,Sindh,Education,oos,"Out-of-school children, ages 5–16",,251655.0,,40,130,263181.5,154795.0,,
+Keamari,166,Sindh,Education,oos_g,"Out-of-school girls, ages 5–16",,125825.0,,42,130,137441.5,89443.5,,
+Keamari,166,Sindh,Education,oos_b,"Out-of-school boys, ages 5–16",,125817.0,,31,130,123595.0,73010.5,,
+Keamari,166,Sindh,Education,never_school,"Never attended school, ages 5 and over (%)",2023,43.35,36.11,81,130,55.15,52.11,,
+Keamari,166,Sindh,Education,matric_plus,"Matric or above, ages 5 and over (%)",2023,19.55,21.04,35,130,13.275,14.37,,
+Keamari,166,Sindh,Education,graduate,"Graduates, ages 5 and over (%)",2023,1.89,2.39,82,130,2.485,2.2,,
+Keamari,166,Sindh,Education,ner,"Net enrolment rate, ages 5–16 (%)",,69.76,,45,124,51.12,62.025,,Karachi West; Keamari
+Keamari,166,Sindh,Education,ner_g,"Net enrolment rate, girls (%)",,66.78,,41,124,41.78,53.06,,Karachi West; Keamari
+Keamari,166,Sindh,Education,ner_b,"Net enrolment rate, boys (%)",,72.25,,63,124,57.53,72.41,,Karachi West; Keamari
+Keamari,166,Sindh,Education,pslm_lit,"Literacy rate, survey measure (%)",,66.51,,23,124,47.49,50.8,,Karachi West; Keamari
+Keamari,166,Sindh,Education,numeracy,Numeracy rate (%),,79.17,,65,124,87.59,79.585,,Karachi West; Keamari
+Keamari,166,Sindh,Education,private_school,Pupils in private schools (%),,59.35,,5,124,14.6,20.775,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfpr,"Labour force participation, ages 10 and over (%)",2023,45.54,33.49,101,130,55.16,52.065,,
+Keamari,166,Sindh,Work,lfpr_f,Female labour force participation (%),2023,15.66,5.35,122,130,35.725,30.405,,
+Keamari,166,Sindh,Work,lfpr_m,Male labour force participation (%),2023,71.24,58.38,80,130,73.78,72.5,,
+Keamari,166,Sindh,Work,unemp,Unemployment rate (%),2023,17.06,4.1,110,130,24.34,26.805,,
+Keamari,166,Sindh,Work,unemp_f,Female unemployment rate (%),2023,41.79,12.07,70,130,39.23,42.51,,
+Keamari,166,Sindh,Work,unemp_m,Male unemployment rate (%),2023,12.37,3.46,105,130,18.82,20.975,,
+Keamari,166,Sindh,Work,employed,People in work,2023,574589.0,930164.0,39,130,460224.0,393310.5,,
+Keamari,166,Sindh,Work,paid_emp,Workers who are paid employees (%),2023,72.85,,4,130,20.965,24.19,,
+Keamari,166,Sindh,Work,self_emp,Workers who are self-employed (%),2023,21.8,,126,130,41.35,42.45,,
+Keamari,166,Sindh,Work,unpaid_fam,Unpaid family workers (%),2023,5.36,,124,130,32.32,32.075,,
+Keamari,166,Sindh,Work,lfs_lfpr,Labour force participation (%),,41.72,,81,127,45.43,44.55,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfs_unemp,Unemployment rate (%),,6.59,,73,127,6.59,7.56,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfs_agri,Employed in agriculture (%),,4.11,,122,127,40.51,33.52,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfs_manu,Employed in manufacturing (%),,28.37,,3,127,10.17,10.32,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfs_trade,Employed in trade (%),,27.2,,4,127,13.0,14.52,,Karachi West; Keamari
+Keamari,166,Sindh,Work,lfs_youth,Youth aged 15–24 in work (%),,31.53,,92,127,40.52,36.33,,Karachi West; Keamari
+Keamari,166,Sindh,Work,estab,Business establishments,,67551.0,,37,129,42818.5,39168.0,,
+Keamari,166,Sindh,Work,workforce,People working in establishments,,432116.0,,15,126,137754.0,134212.0,,
+Keamari,166,Sindh,Work,workers_per_est,Workers per establishment,,6.4,,7,126,3.35,3.395,,
+Keamari,166,Sindh,Work,est_manu,Establishments in manufacturing (%),,10.81,,23,129,8.71,8.47,,
+Keamari,166,Sindh,Work,est_trade,Establishments in wholesale and retail trade (%),,58.3,,5,129,46.48,45.67,,
+Keamari,166,Sindh,Work,est_services,Establishments in services (%),,29.21,,96,129,33.62,32.83,,
+Keamari,166,Sindh,Health and children,stunting,Children under 5 stunted (%),,45.3,,56,145,53.7,38.3,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,underweight,Children under 5 underweight (%),,33.2,,44,145,42.7,24.4,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,wasting,Children under 5 wasted (%),,9.5,,59,145,14.3,8.8,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,inst_delivery,Births in a health facility (%),,86.6,,13,145,70.6,66.1,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,anc4,Mothers with four or more antenatal visits (%),,72.6,,17,135,53.1,51.7,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,sba,Births attended by skilled staff (%),,93.9,,12,135,87.1,73.2,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,birth_reg,Children under 5 with a registered birth (%),,79.6,,27,145,22.0,39.5,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,89.3,,25,145,80.7,80.7,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,careseek,Care sought for a child with fever (%),,53.8,,110,138,66.8,67.45,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,child_func,Children aged 5–17 with a functional difficulty (%),,12.8,,92,138,9.2,18.05,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,ceb,Children ever born per woman aged 15–49,,2.73,,122,128,3.5,3.43,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,child_loss,"Children who died, share of births (%)",,3.8,,112,128,6.2,6.4,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,morbidity,Ill or injured in the last two weeks (%),,8.74,,38,124,8.37,6.905,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,sought_tx,Sought treatment when ill (%),,90.25,,107,123,96.07,96.9,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,govt_facility,Treated at a government facility (%),,20.62,,112,123,40.06,39.19,,Karachi West; Keamari
+Keamari,166,Sindh,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,1.2,,140,147,13.45,17.3,,
+Keamari,166,Sindh,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,14.0,,143,147,105.5,127.0,,
+Keamari,166,Sindh,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,0.0,,147,147,4.6,9.9,,
+Keamari,166,Sindh,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,14.5,,139,147,69.4,77.4,,
+Keamari,166,Sindh,Women,cpr,"Contraceptive use, any method (%)",,42.2,,23,127,27.45,26.9,,Karachi West; Keamari
+Keamari,166,Sindh,Women,cpr_modern,"Contraceptive use, modern method (%)",,26.6,,43,127,26.15,21.9,,Karachi West; Keamari
+Keamari,166,Sindh,Women,unmet_need,Unmet need for family planning (%),,12.1,,109,127,17.1,18.7,,Karachi West; Keamari
+Keamari,166,Sindh,Women,married_u18,Women aged 20–49 married before 18 (%),,31.3,,52,145,30.7,28.0,,Karachi West; Keamari
+Keamari,166,Sindh,Women,women_lit,"Women aged 15–49 literate, tested (%)",,60.8,,29,145,23.7,35.7,,Karachi West; Keamari
+Keamari,166,Sindh,Women,dv_justified,Women who say wife-beating can be justified (%),,15.4,,133,145,33.8,39.6,,Karachi West; Keamari
+Keamari,166,Sindh,Women,not_permitted_work,Rural women not permitted to work (%),,29.1,,28,108,7.0,13.15,,Karachi West; Keamari
+Keamari,166,Sindh,Women,health_consulted,Rural women consulted on their own healthcare (%),,14.8,,65,108,13.2,18.15,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,piped_water,Households with piped water (%),,57.85,,11,124,11.38,17.2,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,flush_toilet,Households with a flush toilet (%),,98.42,,11,124,68.08,76.84,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,no_toilet,Households with no toilet (%),,0.18,,117,124,8.42,9.91,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,open_def,Households practising open defecation (%),,1.6,,120,135,26.9,13.9,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,ecoli_source,E. coli in water at the source (%),,91.6,,36,138,61.9,68.4,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,internet,"Internet users, ages 10 and over (%)",,25.54,,15,124,12.4,11.6,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,internet_f,"Female internet users, ages 10 and over (%)",,19.04,,16,124,5.35,5.86,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,internet_m,"Male internet users, ages 10 and over (%)",,31.12,,18,124,18.6,18.315,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,smartphone,"Smartphone owners, ages 10 and over (%)",,18.0,,24,124,9.68,10.68,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,hh_mobile,Households with a mobile phone (%),,98.27,,11,124,89.6,94.31,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,food_insecure,Households moderately or severely food insecure (%),,12.0,,82,111,21.0,17.0,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_electricity,Rural households with electricity (%),,79.2,,58,106,50.7,86.35,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_pucca,Rural households in a fully pucca house (%),,24.0,,30,106,1.0,4.1,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_katcha,Rural households in a katcha house (%),,0.0,,106,106,33.3,12.35,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_owner,Rural households owning their home (%),,62.0,,101,106,83.9,90.6,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_internet,Rural internet users (%),,48.1,,34,114,27.4,42.2,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_smartphone,Rural smartphone owners (%),,53.1,,19,114,35.1,38.7,,Karachi West; Keamari
+Keamari,166,Sindh,Poverty and living standards,r_food_insecure,Rural households food insecure (%),,37.5,,14,106,26.6,20.4,,Karachi West; Keamari
+Keamari,166,Sindh,Agriculture,farms,Farms,,410.38636364,,135,135,44478.3297,59404.6376,,
+Keamari,166,Sindh,Agriculture,farm_area,Farm area (acres),,2197.45738636875,,135,135,238446.959,313575.6833,,
+Keamari,166,Sindh,Agriculture,cultivated,Cultivated area (acres),,571.82102272875,,135,135,213120.9967,268069.3914,,
+Keamari,166,Sindh,Agriculture,small_farms,Farms under 2.5 acres (%),,59.998892396433526,,51,134,43.0813,54.1234,,
+Keamari,166,Sindh,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,63.25492401456505,,3,134,21.1668,11.8603,,
+Keamari,166,Sindh,Agriculture,tenant,Tenant farms (%),,0.24367281386503914,,118,135,9.0622,4.6305,,
+Keamari,166,Sindh,Agriculture,owner_farms,Owner-operated farms (%),,99.75632718613497,,8,135,90.0257,92.1869,,
+Keamari,166,Sindh,Agriculture,female_farms,Farms operated by women (%),,14.3545439442711,,1,135,0.8079,0.5009,,
+Keamari,166,Sindh,Agriculture,irrigated,Irrigated share of cultivated area (%),,79.65630138957268,,90,135,97.1418,90.2212,,
+Keamari,166,Sindh,Agriculture,crop_intensity,Cropping intensity (%),,151.9,,72,135,164.2,154.1,,
+Keamari,166,Sindh,Agriculture,wheat_share,Wheat share of cropped area (%),,48.424022861487536,,53,135,46.4895,46.1094,,
+Keamari,166,Sindh,Agriculture,cattle,Cattle,,258983.06818450004,,79,135,333121.9318,316635.919,,
+Keamari,166,Sindh,Agriculture,buffaloes,Buffaloes,,344594.0454586301,,53,135,371776.0783,197856.1306,,
+Keamari,166,Sindh,Agriculture,sheep,Sheep,,100404.61363760002,,85,135,100987.0836,152328.9296,,
+Keamari,166,Sindh,Agriculture,goats,Goats,,436042.18182268,,82,135,481800.0643,536516.0715,,
+Keamari,166,Sindh,Agriculture,tractors,Tractors,,69.5,,131,135,1962.6962,2368.1312,,
+Keamari,166,Sindh,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,60.7707632611543,,22,135,7.2059,16.0011,,
+Keamari,166,Sindh,Agriculture,solar_tubewells,Solar-powered tubewells (%),,0.0,,124,127,52.1549,28.794,,
+Keamari,166,Sindh,Climate and environment,tmean,Mean temperature (°C),2025,26.25,,43,156,27.265,23.34,,
+Keamari,166,Sindh,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,0.54,,107,156,0.3,1.145,,
+Keamari,166,Sindh,Climate and environment,tmax,Mean daily maximum (°C),2025,30.36,,69,156,33.875,29.31,,
+Keamari,166,Sindh,Climate and environment,tmin,Mean daily minimum (°C),2025,22.69,,1,156,21.365,17.345,,
+Keamari,166,Sindh,Climate and environment,rain,Rainfall in the year (mm),2025,220.4,,109,156,219.6,310.85,,
+Keamari,166,Sindh,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,158.6,,108,156,128.4,259.45,,
+Keamari,166,Sindh,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,192.0,,92,156,195.0,217.75,,
+Keamari,166,Sindh,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,152,156,64.0,18.5,,
+Keamari,166,Sindh,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.3,,105,156,53.2,10.8,,
+Keamari,166,Sindh,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,176.0,,1,156,161.0,86.5,,
+Keamari,166,Sindh,Climate and environment,warm_spells,Warm-spell days,2025,28.0,,46,156,7.5,17.0,,
+Keamari,166,Sindh,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,53.31,,78,156,57.27,53.27,,
+Keamari,166,Sindh,Climate and environment,lc_crop,Cropland (% of land),2020,2.012,,113,156,31.3707,14.9623,,
+Keamari,166,Sindh,Climate and environment,lc_built,Built-up land (% of land),2020,15.0944,,20,156,5.086,4.073,,
+Keamari,166,Sindh,Climate and environment,lc_tree,Tree cover (% of land),2020,0.0402,,80,156,0.0324,0.0418,,
+Keamari,166,Sindh,Climate and environment,lc_short,Short vegetation (% of land),2020,54.79820000000001,,28,156,14.9234,26.159,,
+Keamari,166,Sindh,Climate and environment,lc_bare,Bare ground (% of land),2020,22.740099999999998,,51,156,8.0899,3.0887,,
+Keamari,166,Sindh,Climate and environment,lc_water,Open water (% of land),2020,1.4683,,48,156,3.3144,0.6615,,
+Keamari,166,Sindh,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,1.277,,78,156,0.188,1.219,,
+Keamari,166,Sindh,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,1,,82,156,0.0,1.0,,
+Keamari,166,Sindh,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.9214,,63,156,0.7732,0.7759,,
+Keamari,166,Sindh,Climate and environment,water_extreme,District under extremely high water stress (%),,99.52,,5,156,0.0,0.0,,
+Keamari,166,Sindh,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,5431.65,,7,155,767.66,455.68,,
+Keamari,166,Sindh,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,41.27,,123,155,74.06,77.12,,
+Keamari,166,Sindh,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,91.0,,31,156,14.0,13.0,,
+Keamari,166,Sindh,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,10.0,,102,156,28.0,29.5,,
+Keamari,166,Sindh,Buildings and facilities,f_school,Schools,,1352.0,,76,156,1667.0,1211.0,,
+Keamari,166,Sindh,Buildings and facilities,f_college,Colleges,,61.0,,72,154,55.0,52.0,,
+Keamari,166,Sindh,Buildings and facilities,f_madrisah,Madrassas,,427.0,,26,155,140.5,170.0,,
+Keamari,166,Sindh,Buildings and facilities,f_hospital,Hospitals,,1210.0,,35,156,763.0,502.0,,
+Keamari,166,Sindh,Buildings and facilities,f_mosque,Mosques,,1663.0,,100,156,3750.5,2908.5,,
+Keamari,166,Sindh,Buildings and facilities,f_bank,Banks,,157.0,,39,155,98.5,61.0,,
+Keamari,166,Sindh,Buildings and facilities,f_post,Post offices,,29.0,,63,155,24.5,22.0,,
+Keamari,166,Sindh,Buildings and facilities,f_police,Police stations,,26.0,,78,156,38.0,25.5,,
+Keamari,166,Sindh,Buildings and facilities,f_govt,Government offices,,228.0,,50,156,208.5,137.0,,
+Keamari,166,Sindh,Buildings and facilities,f_factory,Factories,,557.0,,9,149,95.5,52.0,,
+Keamari,166,Sindh,Buildings and facilities,f_shop,Retail shops,,33579.0,,27,156,17770.0,10177.5,,
+Keamari,166,Sindh,Buildings and facilities,f_hotel,Hotels,,3015.0,,28,156,1511.5,826.0,,
+Keamari,166,Sindh,Tehsils,DDS-SD-0506,Baldia (sub-division),2023,948597.0,,,,,,
+Keamari,166,Sindh,Tehsils,DDS-SD-0507,Keamari (sub-division),2023,451801.0,,,,,,
+Keamari,166,Sindh,Tehsils,DDS-SD-0509,Site (sub-division),2023,449120.0,,,,,,
+Keamari,166,Sindh,Tehsils,DDS-SD-0508,Mauripur (sub-division),2023,218933.0,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Pashto (%),2023,33.14,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Urdu (%),2023,22.05,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Punjabi (%),2023,10.84,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Sindhi (%),2023,9.25,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Hindko (%),2023,7.75,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Balochi (%),2023,7.11,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Others (%),2023,5.88,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Saraiki (%),2023,2.73,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Brahui (%),2023,0.63,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Kashmiri (%),2023,0.31,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Kohistani (%),2023,0.16,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Mewati (%),2023,0.06,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Shina (%),2023,0.05,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Balti (%),2023,0.03,,,,,,
+Keamari,166,Sindh,Mother tongue,share,Kalasha (%),2023,0.0,,,,,,
+Keamari,166,Sindh,Religion,share,Muslim (%),2023,98.15,,,,,,
+Keamari,166,Sindh,Religion,share,Christian (%),2023,1.27,,,,,,
+Keamari,166,Sindh,Religion,share,Hindu (%),2023,0.47,,,,,,
+Keamari,166,Sindh,Religion,share,Others (%),2023,0.07,,,,,,
+Keamari,166,Sindh,Religion,share,Scheduled castes (%),2023,0.02,,,,,,
+Keamari,166,Sindh,Religion,share,Ahmadi (%),2023,0.01,,,,,,
+Keamari,166,Sindh,Religion,share,Sikh (%),2023,0.01,,,,,,
+Keamari,166,Sindh,Religion,share,Parsi (%),2023,0.0,,,,,,

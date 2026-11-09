@@ -107,6 +107,12 @@ def main():
 
     places = load('data/places_index.js')
     state = load('data/state_data.js')
+    # The districts, for the hero's search box: name, address, province. The
+    # profile pages draw most of the site's search traffic, and a visitor who
+    # arrives at the front door is as likely to want one district as a map.
+    profiles = json.loads((APP / 'data/district_profiles.json').read_text())
+    districts = json.dumps([[d['name'], d['slug'], d['province']] for d in profiles['districts']],
+                           ensure_ascii=False, separators=(',', ':'))
     by = {t['name']: t['rows'] for t in tables}
 
     f = {
@@ -129,7 +135,8 @@ def main():
               (P + 'g=literacy&i=literacy_ratio_all', 'Literacy'),
               (P + 'g=employment&i=lfpr', 'Work'),
               (P + 'g=mpi&i=H', 'Poverty'),
-              (P + 'g=crops&i=crop%7C4%7Cproduction_000t', 'Crops')]),
+              (P + 'g=crops&i=crop%7C4%7Cproduction_000t', 'Crops'),
+              ('districts/', 'District profiles')]),
         card('finance.html', 'economy', 'Economy',
              'Output and growth since 1951, industry, trade by product and '
              'partner, prices, the rupee, the external balance, mining, crop '
@@ -165,6 +172,14 @@ def main():
       <h1>Pakistan&rsquo;s official statistics, by place, by sector and by institution</h1>
       <p class="llede">Census, survey, trade and macroeconomic data from PBS and
         the State Bank, as maps and charts. Every chart downloads as CSV.</p>
+      <form class="lfind" action="districts/" role="search" autocomplete="off">
+        <label class="lfind-box"><span class="visually-hidden">Find a district</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input type="search" id="lfind" name="q" placeholder="Find a district: Lahore, Skardu…" aria-label="Find a district" aria-autocomplete="list" aria-controls="lfindList" aria-expanded="false" role="combobox"/>
+        </label>
+        <ul class="lfind-list" id="lfindList" role="listbox" hidden></ul>
+        <p class="lfind-hint">One profile for each of {len(profiles['districts'])} districts, or <a href="districts/">browse them all</a>.</p>
+      </form>
     </div>
 
     <div class="lcards">
@@ -181,6 +196,43 @@ def main():
 
   </div>
 </main>
+<script>
+/* Find a district: the 156 names are inlined, so the box answers on the first
+   keystroke with nothing fetched. Enter opens the first match; the form falls
+   back to the index with ?q= when scripts are off. */
+(function(){{
+  var D={districts};
+  var inp=document.getElementById('lfind'),list=document.getElementById('lfindList');
+  if(!inp||!list)return;
+  var hits=[],sel=-1;
+  function norm(s){{return s.toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();}}
+  function match(q){{
+    q=norm(q);if(!q)return[];
+    var starts=[],words=[],within=[];
+    D.forEach(function(d){{var n=norm(d[0]);
+      if(n.indexOf(q)===0)starts.push(d);
+      else if((' '+n).indexOf(' '+q)>=0)words.push(d);
+      else if(n.indexOf(q)>=0||norm(d[2]).indexOf(q)===0)within.push(d);}});
+    return starts.concat(words,within).slice(0,8);
+  }}
+  function render(){{
+    list.innerHTML=hits.map(function(d,i){{
+      return '<li role="option" id="lfind-'+i+'" aria-selected="'+(i===sel)+'"'+(i===sel?' class="is-sel"':'')+'><a href="districts/'+d[1]+'/"><b>'+d[0]+'</b><span>'+d[2]+'</span></a></li>';}}).join('');
+    list.hidden=!hits.length;inp.setAttribute('aria-expanded',hits.length?'true':'false');
+    inp.setAttribute('aria-activedescendant',sel>=0?'lfind-'+sel:'');
+  }}
+  inp.addEventListener('input',function(){{hits=match(inp.value);sel=hits.length?0:-1;render();}});
+  inp.addEventListener('keydown',function(e){{
+    if(e.key==='ArrowDown'&&hits.length){{sel=(sel+1)%hits.length;render();e.preventDefault();}}
+    else if(e.key==='ArrowUp'&&hits.length){{sel=(sel-1+hits.length)%hits.length;render();e.preventDefault();}}
+    else if(e.key==='Escape'){{hits=[];sel=-1;render();}}
+    else if(e.key==='Enter'&&sel>=0&&hits[sel]){{e.preventDefault();location.href='districts/'+hits[sel][1]+'/';}}
+  }});
+  inp.form.addEventListener('submit',function(e){{if(hits.length){{e.preventDefault();location.href='districts/'+hits[0][1]+'/';}}}});
+  document.addEventListener('click',function(e){{if(!inp.form.contains(e.target)){{hits=[];sel=-1;render();}}}});
+  inp.addEventListener('focus',function(){{if(inp.value){{hits=match(inp.value);sel=hits.length?0:-1;render();}}}});
+}})();
+</script>
 '''
 
     page = APP / 'index.html'

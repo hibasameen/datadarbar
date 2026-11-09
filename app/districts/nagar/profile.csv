@@ -1,0 +1,65 @@
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Nagar,157,Gilgit-Baltistan,Health and children,stunting,Children under 5 stunted (%),,33.1,,96,145,43.9,38.3,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,underweight,Children under 5 underweight (%),,8.9,,140,145,13.6,24.4,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,wasting,Children under 5 wasted (%),,1.3,,142,145,1.9,8.8,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,inst_delivery,Births in a health facility (%),,90.7,,5,145,62.3,66.1,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,anc4,Mothers with four or more antenatal visits (%),,49.3,,72,135,27.9,51.7,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,sba,Births attended by skilled staff (%),,95.5,,8,135,65.4,73.2,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,birth_reg,Children under 5 with a registered birth (%),,45.6,,61,145,17.3,39.5,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,54.2,,130,145,63.5,80.7,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,ceb,Children ever born per woman aged 15–49,,4.16,,11,128,4.05,3.43,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,child_loss,"Children who died, share of births (%)",,6.0,,72,128,8.4,6.4,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,84.8,,24,147,112.5,17.3,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,309.0,,38,147,524.0,127.0,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,54.2,,32,147,65.4,9.9,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,82.5,,62,147,95.9,77.4,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,cpr,"Contraceptive use, any method (%)",,50.9,,4,127,44.4,26.9,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,cpr_modern,"Contraceptive use, modern method (%)",,31.4,,21,127,29.3,21.9,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,unmet_need,Unmet need for family planning (%),,24.3,,35,127,27.8,18.7,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,married_u18,Women aged 20–49 married before 18 (%),,41.5,,19,145,43.4,28.0,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,women_lit,"Women aged 15–49 literate, tested (%)",,68.1,,21,145,45.4,35.7,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Women,dv_justified,Women who say wife-beating can be justified (%),,68.7,,25,145,79.0,39.6,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Poverty and living standards,open_def,Households practising open defecation (%),,0.6,,127,135,1.8,13.9,,Hunza; Nagar
+Nagar,157,Gilgit-Baltistan,Climate and environment,tmean,Mean temperature (°C),2025,-8.56,,153,156,-5.5856,23.34,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,1.77,,15,156,1.5467,1.145,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,tmax,Mean daily maximum (°C),2025,-3.75,,153,156,-1.178,29.31,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,tmin,Mean daily minimum (°C),2025,-13.76,,153,156,-10.1929,17.345,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,rain,Rainfall in the year (mm),2025,256.8,,92,156,294.4,310.85,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,274.7,,75,156,282.7,259.45,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,134.1,,114,156,127.5,217.75,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,149,156,0.0,18.5,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,151,156,0.0,10.8,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,151,156,0.0,86.5,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,warm_spells,Warm-spell days,2025,67.0,,6,156,57.7918,17.0,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,30.9,,153,156,31.62,53.27,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_crop,Cropland (% of land),2020,0.051699999999999996,,150,156,0.2072,14.9623,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_built,Built-up land (% of land),2020,0.5884999999999999,,126,156,0.3829,4.073,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_tree,Tree cover (% of land),2020,1.2150000000000003,,48,156,0.214,0.0418,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_short,Short vegetation (% of land),2020,33.223299999999995,,62,156,41.46,26.159,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_bare,Bare ground (% of land),2020,28.9136,,45,156,34.9569,3.0887,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,lc_water,Open water (% of land),2020,0.8996000000000001,,66,156,0.7804,0.6615,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,22.398,,26,156,26.056,1.219,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,2,,66,156,1.0,1.0,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.1253,,148,156,0.1187,0.7759,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,150,156,0.0,0.0,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,0.26,,131,155,0.3844,1.35,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,149,155,0.0,0.0,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,1.09,,152,155,1.105,455.68,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,4.49,,151,155,4.595,77.12,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,ghg,Greenhouse gas emissions (kt CO₂e),2024-25,3.309,,110,111,8.7755,2040.265,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,0.0,,153,156,0.0,13.0,,
+Nagar,157,Gilgit-Baltistan,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,0.0,,153,156,0.0,29.5,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_school,Schools,,126.0,,156,156,288.5,1211.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_college,Colleges,,5.0,,143,154,7.5,52.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_madrisah,Madrassas,,12.0,,154,155,36.0,170.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_hospital,Hospitals,,62.0,,142,156,94.0,502.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_mosque,Mosques,,417.0,,154,156,672.5,2908.5,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_bank,Banks,,16.0,,126,155,24.0,61.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_post,Post offices,,6.0,,138,155,9.5,22.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_police,Police stations,,4.0,,154,156,6.5,25.5,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_govt,Government offices,,33.0,,143,156,65.5,137.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_factory,Factories,,5.0,,132,149,16.5,52.0,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_shop,Retail shops,,855.0,,150,156,1674.0,10177.5,,
+Nagar,157,Gilgit-Baltistan,Buildings and facilities,f_hotel,Hotels,,120.0,,136,156,187.5,826.0,,
+Nagar,157,Gilgit-Baltistan,Tehsils,PBS-506,Nagar-I (sub-division),2023,,,,,,,
+Nagar,157,Gilgit-Baltistan,Tehsils,PBS-676,Nagar-Ii (sub-division),2023,,,,,,,

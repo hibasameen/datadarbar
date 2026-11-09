@@ -89,6 +89,12 @@
     return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
+  /* The address of a district's profile page: the census name as a slug,
+     the same rule etl/places/build_profiles.py uses to write the pages. */
+  function profileSlug(name) {
+    return String(name).toLowerCase().replace(/\s+district$/, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
   function fmt(v, dp) {
     if (v == null || isNaN(v)) return '—';
     return Number(v).toLocaleString(undefined,
@@ -1910,6 +1916,15 @@
     var h = '<div><div class="eyebrow">Selected</div>'
           + '<div class="unit-name">' + esc(name) + '</div>'
           + '<div class="unit-where">' + esc(title(where)) + '</div></div>';
+    /* The profile page: everything the site knows about the district on one
+       page a reader can keep and cite. A tehsil links to its district's. */
+    var pd = props && (state.level === 'district' ? props.n : props.d);
+    if (pd) {
+      h += '<a class="profile-link" href="districts/' + profileSlug(pd) + '/">'
+         + (state.level === 'district' ? 'Full profile of this district'
+            : 'Profile of ' + esc(title(String(pd).replace(/\s+DISTRICT$/, ''))) + ' district')
+         + ' \u2192</a>';
+    }
 
     if (v == null || isNaN(v)) {
       h += '<p class="notice">No figure here for this indicator. '

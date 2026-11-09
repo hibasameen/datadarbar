@@ -102,6 +102,10 @@
   padding:10px 13px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.45;color:var(--body)}
 :root[data-theme="dark"] .notice{background:rgba(212,160,23,.12)}
 .placeholder{color:var(--muted);font-size:13px;line-height:1.5}
+/* The door from the map to a district's profile page. */
+.detail .profile-link{display:inline-block;margin:6px 0 2px;font-size:12.5px;font-weight:700;color:var(--green-800);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--surface)}
+.detail .profile-link:hover{border-color:var(--green-700);background:var(--green-100)}
+:root[data-theme="dark"] .detail .profile-link:hover{background:rgba(30,107,62,.16)}
 
 @media(max-width:1100px){.detail{width:260px}.picker{width:280px}}
 @media(max-width:860px){

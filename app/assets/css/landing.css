@@ -25,6 +25,27 @@
 .lhero{max-width:none}
 .lhero h1{max-width:34ch;margin:0 auto}
 
+/* Find a district. The profiles are what search engines send people to, so
+   the front door asks for a district before it offers the three explorers.
+   The list is positioned, not in flow, so opening it moves nothing below. */
+.lfind{position:relative;max-width:520px;margin:.9rem auto 0;text-align:left}
+.lfind-box{display:flex;align-items:center;gap:9px;height:44px;padding:0 14px;
+  border:1px solid var(--line-strong);border-radius:999px;background:var(--surface);color:var(--muted);
+  box-shadow:var(--shadow)}
+.lfind-box:focus-within{border-color:var(--green-700);box-shadow:0 0 0 3px rgba(30,107,62,.12)}
+.lfind-box input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:.95rem;color:var(--ink)}
+.lfind-box input::-webkit-search-cancel-button{-webkit-appearance:none}
+.lfind-list{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;list-style:none;margin:0;padding:6px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-lg)}
+.lfind-list li a{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:8px 12px;
+  border-radius:var(--radius-sm);text-decoration:none;color:var(--ink);font-size:.92rem}
+.lfind-list li a b{font-weight:700;color:var(--green-900)}
+.lfind-list li a span{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.lfind-list li a:hover,.lfind-list li.is-sel a{background:var(--green-100)}
+.lfind-hint{margin:.45rem 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
+.lfind-hint a{color:var(--green-800)}
+@media(min-width:861px) and (max-height:780px){.lfind{margin-top:.6rem}.lfind-box{height:40px}.lfind-hint{display:none}}
+
 .lcards{display:grid;gap:1.1rem;
   grid-template-columns:repeat(auto-fit,minmax(272px,1fr))}
 .lcard{display:flex;flex-direction:column;background:var(--surface);

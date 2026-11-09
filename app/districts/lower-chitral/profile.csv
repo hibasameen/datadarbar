@@ -1,0 +1,200 @@
+district,district_code,province,section,indicator,label,year,value,value_2017,rank,districts_with_value,median_province,median_pakistan,small_sample,shared_with
+Lower Chitral,015,Khyber Pakhtunkhwa,People,pop,Population,2023,515935.0,447625.0,105,130,1063346.0,1460080.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,pop_2017,"Population, Census 2017",2017,278328.0,,111,136,895460.0,1216293.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,People,pop_m,Male population,2023,264079.0,225669.0,105,130,534858.5,740172.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,pop_f,Female population,2023,251856.0,221934.0,105,130,529993.0,715230.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,growth,Annual growth rate since the previous census (%),2023,2.4,1.8,74,130,2.45,2.46,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,area,Area (km²),2023,14850.0,14850.0,13,130,1969.5,3660.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,density,Population density (people per km²),2023,34.74,30.14,119,130,443.245,404.87,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,urban,Urban population (%),2023,10.82,11.12,102,129,8.62,22.99,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,urban_pop,Urban population,2023,55524.0,49780.0,101,120,101938.0,357104.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,rural_pop,Rural population,2023,457871.0,397845.0,93,124,986277.0,1001488.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,hh_size,Average household size,2023,7.09,7.23,25,130,6.95,6.3,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,sex_ratio,Sex ratio (males per 100 females),2023,104.85,101.68,67,130,104.155,104.985,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,People,under_15,Under 15 (% of population),2023,38.07,,108,136,45.47,43.96,,
+Lower Chitral,015,Khyber Pakhtunkhwa,People,age_15_64,Aged 15–64 (% of population),2023,56.79,,37,136,51.66,53.175,,
+Lower Chitral,015,Khyber Pakhtunkhwa,People,age_60_plus,Aged 60 and over (% of population),2023,7.31,,11,136,5.13,4.67,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,lit,"Literacy rate, ages 10 and over (%)",2023,69.15,64.67,20,130,46.675,49.05,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,lit_f,"Female literacy rate, ages 10 and over (%)",2023,57.67,51.81,27,130,30.31,39.21,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,lit_m,"Male literacy rate, ages 10 and over (%)",2023,80.0,77.47,15,130,62.295,60.62,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,literate,"Literate people, ages 10 and over",2023,263932.0,214193.0,86,130,329122.5,522970.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,in_school_g,Girls aged 5–16 in school (%),,80.59,,12,130,48.725,48.74,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,in_school_b,Boys aged 5–16 in school (%),,84.93,,7,130,72.235,61.225,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,oos,"Out-of-school children, ages 5–16",,21895.0,,130,130,141157.5,154795.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,oos_g,"Out-of-school girls, ages 5–16",,12180.0,,130,130,85118.0,89443.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,oos_b,"Out-of-school boys, ages 5–16",,9715.0,,130,130,53687.0,73010.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,never_school,"Never attended school, ages 5 and over (%)",2023,30.26,35.28,111,130,51.855,52.11,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,matric_plus,"Matric or above, ages 5 and over (%)",2023,35.31,28.06,5,130,14.37,14.37,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,graduate,"Graduates, ages 5 and over (%)",2023,4.88,4.14,10,130,2.205,2.2,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,ner,"Net enrolment rate, ages 5–16 (%)",,73.14,,40,124,63.355,62.025,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,ner_g,"Net enrolment rate, girls (%)",,69.28,,34,124,47.465,53.06,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,ner_b,"Net enrolment rate, boys (%)",,76.44,,48,124,76.465,72.41,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,pslm_lit,"Literacy rate, survey measure (%)",,61.26,,34,124,47.49,50.8,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,numeracy,Numeracy rate (%),,74.96,,76,124,74.875,79.585,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Education,private_school,Pupils in private schools (%),,19.61,,65,124,20.18,20.775,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfpr,"Labour force participation, ages 10 and over (%)",2023,46.36,30.07,93,130,42.495,52.065,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfpr_f,Female labour force participation (%),2023,28.88,9.88,70,130,21.67,30.405,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfpr_m,Male labour force participation (%),2023,62.86,50.16,118,130,63.85,72.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,unemp,Unemployment rate (%),2023,38.35,19.6,21,130,34.41,26.805,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,unemp_f,Female unemployment rate (%),2023,50.64,31.37,22,130,50.62,42.51,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,unemp_m,Male unemployment rate (%),2023,33.02,17.29,20,130,27.605,20.975,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,employed,People in work,2023,109073.0,80080.0,106,130,196666.0,393310.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,paid_emp,Workers who are paid employees (%),2023,45.7,,16,130,32.645,24.19,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,self_emp,Workers who are self-employed (%),2023,23.86,,123,130,34.435,42.45,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,unpaid_fam,Unpaid family workers (%),2023,30.43,,72,130,31.635,32.075,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_lfpr,Labour force participation (%),,44.59,,63,127,41.725,44.55,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_unemp,Unemployment rate (%),,11.36,,23,127,9.775,7.56,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_agri,Employed in agriculture (%),,24.4,,96,127,24.73,33.52,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_manu,Employed in manufacturing (%),,7.37,,87,127,10.985,10.32,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_trade,Employed in trade (%),,13.73,,71,127,15.49,14.52,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,lfs_youth,Youth aged 15–24 in work (%),,33.03,,83,127,32.985,36.33,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,estab,Business establishments,,38353.0,,66,129,25304.0,39168.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,workforce,People working in establishments,,76419.0,,83,126,93332.0,134212.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,workers_per_est,Workers per establishment,,1.99,,126,126,4.08,3.395,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,est_manu,Establishments in manufacturing (%),,5.3,,111,129,7.52,8.47,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,est_trade,Establishments in wholesale and retail trade (%),,33.63,,121,129,46.77,45.67,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Work,est_services,Establishments in services (%),,21.43,,127,129,34.035,32.83,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,stunting,Children under 5 stunted (%),,46.6,,51,145,35.2,38.3,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,underweight,Children under 5 underweight (%),,25.5,,65,145,23.4,24.4,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,wasting,Children under 5 wasted (%),,10.3,,54,145,9.85,8.8,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,inst_delivery,Births in a health facility (%),,64.8,,77,145,64.8,66.1,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,anc4,Mothers with four or more antenatal visits (%),,43.3,,83,135,56.35,51.7,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,sba,Births attended by skilled staff (%),,72.6,,72,135,73.6,73.2,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,birth_reg,Children under 5 with a registered birth (%),,48.4,,59,145,22.75,39.5,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,violent_disc,Children aged 1–14 facing violent discipline (%),,86.7,,43,145,84.4,80.7,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,careseek,Care sought for a child with fever (%),,45.8,,119,138,64.5,67.45,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,child_func,Children aged 5–17 with a functional difficulty (%),,18.8,,66,138,19.0,18.05,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,ceb,Children ever born per woman aged 15–49,,3.45,,62,128,3.525,3.43,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,child_loss,"Children who died, share of births (%)",,4.8,,94,128,5.55,6.4,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,morbidity,Ill or injured in the last two weeks (%),,4.01,,99,124,7.895,6.905,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,sought_tx,Sought treatment when ill (%),,97.08,,58,123,97.45,96.9,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,govt_facility,Treated at a government facility (%),,79.66,,4,123,41.855,39.19,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,tt_mot,"Travel time to the nearest health facility, motorised, median (minutes)",,65.3,,32,147,19.65,17.3,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,tt_walk,"Travel time to the nearest health facility, walking, median (minutes)",,308.0,,39,147,128.0,127.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,tt_mot_60,People more than an hour’s drive from care (%),,51.8,,35,147,13.0,9.9,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Health and children,tt_walk_60,People more than an hour’s walk from care (%),,91.9,,42,147,81.25,77.4,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,cpr,"Contraceptive use, any method (%)",,37.0,,38,127,25.3,26.9,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,cpr_modern,"Contraceptive use, modern method (%)",,33.2,,14,127,20.9,21.9,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,unmet_need,Unmet need for family planning (%),,20.4,,59,127,20.5,18.7,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,married_u18,Women aged 20–49 married before 18 (%),,41.1,,21,145,35.7,28.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,women_lit,"Women aged 15–49 literate, tested (%)",,53.6,,39,145,26.65,35.7,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,dv_justified,Women who say wife-beating can be justified (%),,64.3,,32,145,66.6,39.6,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,not_permitted_work,Rural women not permitted to work (%),,27.1,,35,108,28.85,13.15,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Women,health_consulted,Rural women consulted on their own healthcare (%),,4.7,,91,108,16.5,18.15,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,mpi,Multidimensional poverty index (MPI),,0.201,,83,118,0.305,0.301,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,mpi_h,"Multidimensionally poor (headcount, %)",,37.39,,85,118,53.045,53.485,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,mpi_a,Intensity of deprivation among the poor (%),,53.69,,81,118,55.77,56.42,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_electricity,Poor and without electricity (%),,3.08,,39,118,0.435,1.33,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_water,Poor and without safe drinking water (%),,18.79,,33,118,16.575,6.435,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_sanitation,Poor and without adequate sanitation (%),,4.32,,116,118,21.295,31.41,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_fuel,Poor and cooking with solid fuel (%),,36.21,,76,118,50.115,46.195,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_housing,Poor and in inadequate housing (%),,37.2,,67,118,41.52,40.85,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_schooling,Poor and no member with five years of schooling (%),,21.45,,91,118,28.525,34.13,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,dep_attendance,Poor and with a school-age child out of school (%),,19.02,,91,118,34.955,34.63,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,piped_water,Households with piped water (%),,32.92,,29,124,29.775,17.2,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,flush_toilet,Households with a flush toilet (%),,96.49,,16,124,84.595,76.84,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,no_toilet,Households with no toilet (%),,1.98,,100,124,10.925,9.91,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,open_def,Households practising open defecation (%),,8.2,,89,135,9.7,13.9,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,ecoli_source,E. coli in water at the source (%),,83.6,,47,138,84.45,68.4,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,internet,"Internet users, ages 10 and over (%)",,6.41,,99,124,11.3,11.6,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,internet_f,"Female internet users, ages 10 and over (%)",,1.62,,97,124,3.45,5.86,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,internet_m,"Male internet users, ages 10 and over (%)",,11.0,,94,124,19.48,18.315,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,smartphone,"Smartphone owners, ages 10 and over (%)",,10.28,,68,124,10.68,10.68,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,hh_mobile,Households with a mobile phone (%),,96.61,,32,124,95.68,94.31,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,food_insecure,Households moderately or severely food insecure (%),,12.0,,81,111,13.0,17.0,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_electricity,Rural households with electricity (%),,79.7,,57,106,90.4,86.35,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_pucca,Rural households in a fully pucca house (%),,10.9,,38,106,30.0,4.1,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_katcha,Rural households in a katcha house (%),,14.1,,52,106,5.6,12.35,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_owner,Rural households owning their home (%),,85.9,,67,106,88.3,90.6,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_internet,Rural internet users (%),,53.2,,24,114,47.0,42.2,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_smartphone,Rural smartphone owners (%),,37.0,,69,114,38.7,38.7,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,r_food_insecure,Rural households food insecure (%),,21.9,,45,106,12.5,20.4,,Lower Chitral; Upper Chitral
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,diem_poor_fc,Households with poor food consumption (%),2024 (round 6),29.64,,1,24,7.805,8.565,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,diem_skipped,Households where someone skipped a meal in the last month (%),2024 (round 6),21.74,,12,24,9.485,21.585,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Poverty and living standards,diem_shock,Households hit by a shock (%),2024 (round 6),41.11,,22,24,42.885,68.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,farms,Farms,,25912.722991744475,,92,135,60432.907,59404.6376,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,farm_area,Farm area (acres),,63095.79391578569,,122,135,235439.1597,313575.6833,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,cultivated,Cultivated area (acres),,54250.53838070426,,118,135,182900.3808,268069.3914,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,farm_size,Average farm size (acres),,2.4349349134742555,,100,118,3.0956,5.1899,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,small_farms,Farms under 2.5 acres (%),,96.95770825957452,,2,134,84.2602,54.1234,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,large_area,Farm area in holdings of 25 acres or more (%),,6.668930830518108,,97,134,2.0611,11.8603,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,tenant,Tenant farms (%),,0.07966399944669791,,125,135,3.2781,4.6305,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,owner_farms,Owner-operated farms (%),,99.30867897898766,,15,135,94.2071,92.1869,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,female_farms,Farms operated by women (%),,1.8924103531420429,,14,135,0.2667,0.5009,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,irrigated,Irrigated share of cultivated area (%),,95.50329412872807,,51,135,73.8319,90.2212,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,crop_intensity,Cropping intensity (%),,132.6,,87,135,156.15,154.1,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,wheat_share,Wheat share of cropped area (%),,48.501654758635496,,52,135,48.751,46.1094,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,cattle,Cattle,,378607.11003390176,,55,135,319912.2129,316635.919,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,buffaloes,Buffaloes,,394.148938810258,,124,135,38805.9565,197856.1306,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,sheep,Sheep,,181038.9010728488,,61,135,103499.7597,152328.9296,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,goats,Goats,,642294.486334866,,55,135,525794.6318,536516.0715,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,tractors,Tractors,,242.5116718353792,,119,135,1209.9629,2368.1312,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,tractors_per_farm,"Tractors per 1,000 farms",,9.358787647004172,,106,118,16.0147,76.563,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Agriculture,tubewells,"Tubewells per 1,000 cultivated acres",,0.0,,131,135,4.2139,16.0011,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,tmean,Mean temperature (°C),2025,-0.18,,146,156,17.24,23.34,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,tanom,Temperature against the 1981–2010 normal (°C),2025,2.33,,2,156,1.49,1.145,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,tmax,Mean daily maximum (°C),2025,4.6,,146,156,23.35,29.31,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,tmin,Mean daily minimum (°C),2025,-5.03,,146,156,11.95,17.345,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,rain,Rainfall in the year (mm),2025,386.8,,69,156,630.0,310.85,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,rain_normal,"Rainfall, 1981–2010 average (mm)",1981–2010,441.8,,53,156,617.5,259.45,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,monsoon,"Monsoon rainfall, June–September (mm)",2025,81.4,,137,156,330.5,217.75,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,hot_days,Days reaching 40°C,2025,0.0,,104,156,0.0,18.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,hot_days_normal,"Days reaching 40°C, 1981–2010 average",1981–2010,0.0,,113,156,0.0,10.8,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,warm_nights,Nights staying at 25°C or warmer,2025,0.0,,117,156,2.0,86.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,warm_spells,Warm-spell days,2025,90.0,,3,156,23.0,17.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,pm25,PM2.5 where people live (µg/m³),2025,30.81,,154,156,40.48,53.27,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_crop,Cropland (% of land),2020,0.3156,,135,156,13.3634,14.9623,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_built,Built-up land (% of land),2020,1.3615,,108,156,4.6691,4.073,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_tree,Tree cover (% of land),2020,5.1979999999999995,,37,156,11.488,0.0418,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_short,Short vegetation (% of land),2020,45.3407,,47,156,51.7746,26.159,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_bare,Bare ground (% of land),2020,43.462500000000006,,35,156,0.6524,3.0887,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,lc_water,Open water (% of land),2020,0.9228000000000001,,65,156,0.3453,0.6615,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,grassland,Grassland and open shrubland (% of district),2024,15.822,,34,156,14.736,1.219,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,forest_loss_total,"Tree cover lost, 2001–2025 (hectares)",2001–2025,326,,10,156,71,1.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,water_stress,Water withdrawn as a share of supply (0 to 1),,0.3579,,117,156,0.3394,0.7759,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,water_extreme,District under extremely high water stress (%),,0.0,,32,156,0.0,0.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,flood_peak,2022 floods: most of the district under water in any week (%),,0.5599999999999999,,104,155,0.56,1.35,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,flood_weeks,2022 floods: weeks with 5% or more under water,,0.0,,65,155,0.0,0.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,ghg_km2,Greenhouse gas emissions per km² (t CO₂e),2024-25,75.17,,118,155,474.71,455.68,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,ghg_agri,Share of emissions from agriculture (%),2024-25,92.25,,23,155,85.22,77.12,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,fires_rice,"Fire detections, October–November (rice residue)",2025,54.0,,47,156,23.0,13.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Climate and environment,fires_wheat,"Fire detections, April–May (wheat)",2025,21.0,,84,156,19.0,29.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_school,Schools,,568.0,,108,156,1053.0,1211.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_college,Colleges,,42.0,,81,154,42.0,52.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_university,Universities and campuses,,1.0,,45,74,2.0,2.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_madrisah,Madrassas,,177.0,,76,155,233.0,170.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_hospital,Hospitals,,185.0,,107,156,404.0,502.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_mosque,Mosques,,1259.0,,111,156,2925.0,2908.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_bank,Banks,,53.0,,86,155,50.0,61.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_post,Post offices,,31.0,,55,155,21.5,22.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_police,Police stations,,21.0,,97,156,28.0,25.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_govt,Government offices,,135.0,,79,156,104.0,137.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_factory,Factories,,4.0,,133,149,21.0,52.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_shop,Retail shops,,6439.0,,94,156,10241.0,10177.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Buildings and facilities,f_hotel,Hotels,,543.0,,93,156,543.0,826.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,"Migration, courts and policing",emig,Emigrants registered in the year,2024,1794.0,,78,146,5428.0,2322.5,,
+Lower Chitral,015,Khyber Pakhtunkhwa,"Migration, courts and policing",emig_total,"Emigrants registered, all years on record",,36319.0,,78,146,76636.0,41936.0,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Tehsils,DDS-KP-0219,Chitral (sub-division),2023,211374.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Tehsils,DDS-KP-0220,Drosh (sub-division),2023,109033.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Others (%),2023,87.76,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Pashto (%),2023,9.36,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Kalasha (%),2023,1.59,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Urdu (%),2023,0.74,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Kohistani (%),2023,0.45,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Punjabi (%),2023,0.04,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Hindko (%),2023,0.02,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Shina (%),2023,0.02,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Balochi (%),2023,0.01,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Balti (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Kashmiri (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Mewati (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Saraiki (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Mother tongue,share,Sindhi (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Muslim (%),2023,98.39,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Others (%),2023,1.45,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Christian (%),2023,0.16,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Hindu (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Parsi (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Ahmadi (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Scheduled castes (%),2023,0.0,,,,,,
+Lower Chitral,015,Khyber Pakhtunkhwa,Religion,share,Sikh (%),2023,0.0,,,,,,

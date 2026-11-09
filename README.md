@@ -83,6 +83,24 @@ The site deploys automatically to GitHub Pages via GitHub Actions on every push 
 
 To set up Pages for the first time: push the repo, go to **Settings → Pages**, and set the source to **GitHub Actions**. The site will be live at `https://<user>.github.io/datadarbar/`.
 
+## District profiles
+
+`app/districts/<slug>/` holds a page for each of the 156 districts on the PBS
+2023 frame, and `app/districts/` an index with a clickable map. They are
+generated, never edited:
+
+```bash
+python3 etl/places/build_profiles.py   # warehouse → app/data/district_profiles.json (needs duckdb)
+python3 scripts/build_seo.py           # renders the pages, CSVs and sitemap (scripts/build_districts.py)
+```
+
+`build_profiles.py` chooses the indicators (its `SPEC` list), fixes one year
+per indicator so ranks are comparable, and writes each district's values with
+its rank and the median district in its province and in Pakistan, plus the
+series behind the sparklines, the tehsils, the main crops and the census
+composition tables. Rerun it after rebuilding `place_indicators` or the
+census panels; the deploy only re-renders the JSON.
+
 ## Rebuild the data
 
 The local [weather-related event pipeline](etl/climate_events/README.md) collects
