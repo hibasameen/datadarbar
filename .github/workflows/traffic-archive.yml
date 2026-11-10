@@ -1,0 +1,56 @@
+name: Archive traffic
+
+# GitHub keeps repository traffic for 14 days only. This saves it daily to
+# the traffic-data branch, so the figures build into a long series without
+# adding commits to main or redeploying the site.
+#
+# Needs a repository secret TRAFFIC_TOKEN: a fine-grained personal access
+# token for this repository with "Administration: Read-only". The built-in
+# GITHUB_TOKEN cannot read traffic.
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: traffic-archive
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open the traffic-data branch
+        run: |
+          if git ls-remote --exit-code --heads origin traffic-data >/dev/null; then
+            git fetch --depth 1 origin traffic-data
+            git worktree add traffic-data FETCH_HEAD
+            git -C traffic-data switch -c traffic-data
+          else
+            git worktree add --detach traffic-data
+            git -C traffic-data switch --orphan traffic-data
+          fi
+
+      - name: Fetch and merge traffic
+        env:
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+        run: python3 scripts/archive_traffic.py traffic-data
+
+      - name: Save
+        working-directory: traffic-data
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Traffic archive $(date -u +%F)"
+          git push origin traffic-data
