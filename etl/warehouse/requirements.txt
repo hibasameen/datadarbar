@@ -1,0 +1,10 @@
+# Versions the builders were last checked with (Python 3.10, November 2026).
+pandas
+pyarrow==25.0.1
+duckdb
+openpyxl            # trade and national-accounts workbooks
+pdfplumber          # build_budget.py
+pymupdf             # NEPRA PDF extraction only; build_nepra_soi.py --from-cells runs without it
+beautifulsoup4      # build_nepra_month.py
+lxml                # parser for the above
+# System: pdftotext (poppler-utils) for extract_budget_text.py, build_budget_tree2.py, build_trade_pdf.py

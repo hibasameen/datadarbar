@@ -9,7 +9,7 @@ Raw files (5.9 GB, 12,198 files) are in the iCloud folder `Adaad/` (chosen at do
 `SOI Reports/`, `PER/`, `html/` (the Excel-as-HTML sheets), `Detail of Generation/` and
 `SOI Data/` (the daily PDFs). `Adaad/nepra_download_manifest.json` has every URL, local path, status
 and size (45 links were 404 on nepra.org.pk). nepra.org.pk is blocked from the sandbox: files were
-streamed to disk from Chrome with the File System Access API (see `build/` docstrings).
+streamed to disk from Chrome with the File System Access API (see the script docstrings).
 
 ## Tables / views (all Parquet, registered as views in `data_darbar.duckdb`)
 
@@ -63,7 +63,7 @@ second (or a year column) to `row_label`.
   half the comparable cells and must beat the runner-up, and KE/K-ELECTRIC/KEL vote as one company.
   "K-Electric Limited" (SOI 2015) and "KESC" (SOI 2011) are read as K-ELECTRIC; "Supply to KESC"-type
   rows keep their label. Net effect: 29 groups relabelled (was 53); 31 groups / 1,011 rows changed
-  label, listed in `build/_pre_relabel_fix_2026-10-17/changed_groups.csv` beside the previous parquets;
+  label, listed in `data_darbar_warehouse/build/_pre_relabel_fix_2026-10-17/changed_groups.csv` beside the previous parquets;
   newly recovered are PESCO's feeder tables in SOI 2016–2018 and QESCO's consumption per connection in
   SOI 2018. KE still appears as KE, K-ELECTRIC or KEL depending on the report — filter on all three.
 * **Mid-table headers read since 17 Oct 2026.** Some grids restart their header partway down — most
@@ -77,7 +77,7 @@ second (or a year column) to `row_label`.
   `col_label` moves (9,558 cells in 151 grids: KE statistics tables, the 2022 daily-generation
   month blocks, IPP gas vs furnace-oil blocks, the 2022 subsidy table's KE columns, KE feeder counts),
   and 1,914 header-text cells are no longer stored as values. Lists in
-  `build/_pre_ke_header_fix_2026-10-17/changed_tables.csv` and `changed_labels.csv`. For the scanned
+  `data_darbar_warehouse/build/_pre_ke_header_fix_2026-10-17/changed_tables.csv` and `changed_labels.csv`. For the scanned
   2025 report, labels borrowed from 2024 now come from the same company's rows first. Re-tidy without
   the PDFs: `python build_nepra_soi.py --from-cells`.
 * Figures are **as published, revisions included**: the same DISCO-year appears in up to five reports
@@ -100,7 +100,7 @@ second (or a year column) to `row_label`.
 ## Rebuild
 ```
 export NEPRA_RAW="<path to Adaad>"     # default ~/Library/Mobile Documents/com~apple~CloudDocs/Adaad
-cd data_darbar_warehouse/build
+cd etl/warehouse
 python build_nepra_month.py            # sheets -> nepra_plant_month
 python build_nepra_daily.py            # daily PDFs -> nepra_plant_day (+ QA file table), ~1 min on 4 cores
 python build_nepra_soi.py [years]      # SOI PDFs -> soi_cells/long (30-90 s per report; per-year cache in $NEPRA_CACHE)

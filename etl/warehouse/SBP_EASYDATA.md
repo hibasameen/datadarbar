@@ -1,7 +1,7 @@
 # SBP EasyData → warehouse
 
 Source: <https://easydata.sbp.org.pk> · API docs under **Help → Developer Guide**
-Pipeline: `build/build_sbp.py` · Tests: `build/test_build_sbp.py` (20 tests, offline)
+Pipeline: `build_sbp.py` · Tests: `test_build_sbp.py` (20 tests, offline)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ itself, so `cmd_load` uses that. Fetching needs nothing beyond the standard libr
 ```bash
 pip3 install duckdb
 export SBP_API_KEY=your_key          # rotates every 90 days
-cd data_darbar_warehouse/build
+cd etl/warehouse
 
 python3 test_build_sbp.py            # 27 offline tests, spends no API budget
 python3 build_sbp.py catalog         # 226 requests, ~1 hr at default rate
@@ -59,12 +59,12 @@ Integrity on the finished set: 0 orphan observations, 0 duplicate (series, date)
 ```bash
 pip3 install duckdb
 export SBP_API_KEY=...
-cd data_darbar_warehouse/build
+cd etl/warehouse
 python3 build_sbp.py catalog                        # refreshes the 226-dataset inventory
 python3 build_sbp.py plan --select --tier headline core
 python3 build_sbp.py observations --select --tier headline core
 python3 build_sbp.py load                           # idempotent; safe to re-run
-cd ../../datadarbar && python3 etl/build_web_warehouse.py
+cd ../.. && python3 etl/build_web_warehouse.py
 ```
 
 Still unfetched by design: the `granular` tier (country-level trade and services, FDI by country,
@@ -262,7 +262,7 @@ Largest surveyed: SCRA daily position by country (495), FDI abroad by economic
 group (408), FPI equity by economic group (408), FPI by country (384), FDI abroad
 by country (336), BOP FY2003-12 (336), inward direct investment positions (290).
 
-## Curated selection (`build/sbp_selection.json`)
+## Curated selection (`sbp_selection.json`)
 
 Four tiers, sized against measured series counts rather than guesses. Select with
 `--select [--tier NAME ...]`; omit `--tier` to take everything in the file.
@@ -335,7 +335,7 @@ So every transfer goes through a SHA-256 gate, and the payload is condensed firs
    2,000 still flips characters occasionally; 13,000 in one shot truncates outright.
 4. Reassemble, then check base64 hash, decoded-JSON hash, and structure counts.
 
-`build/sbp_state_from_raw.py` reads the resulting `cond__*.json` (and verbatim `meta__`/`data__`/
+`sbp_state_from_raw.py` reads the resulting `cond__*.json` (and verbatim `meta__`/`data__`/
 `bulk__`) files back into pipeline state. If a helper is defined in the page, give it a unique name —
 parallel agents sharing one tab have collided on `window.__p2` and silently got the wrong granularity.
 

@@ -60,12 +60,13 @@ datadarbar/
 │   ├── build_industry.py    ← QIM / LSM / CMI → econ_industry.json
 │   ├── build_structure.py   ← long-arc growth/shares/backcast → econ_structure.json
 │   ├── parse_pdfs.py, scrape_pbs.py
+│   ├── warehouse/           ← raw downloads → DuckDB/Parquet warehouse (trade, budget, national accounts, NEPRA, SBP)
 │   └── README_industry.md   ← industry/structure build notes
 ├── LICENSE, SECURITY.md
 └── README.md
 ```
 
-Note: the economy/trade/poverty JSON is published in the repo, but some of the generators that produce it (trade parsing, the detailed budget-from-PDF parser, the input-output builder, and the poverty-data bundler) run against a local DuckDB/Parquet warehouse of raw PBS downloads that is not committed. The `etl/` scripts that only need public sources — `build_dataset.py`, `dhs_district.py`, `build_industry.py`, `build_structure.py` — are included for reproducibility.
+Note: the Economy and State pages are built from a local DuckDB/Parquet warehouse of raw PBS, Finance Division, NEPRA and State Bank downloads. The warehouse and the raw files are not committed, but the scripts that build it are: see [`etl/warehouse/`](etl/warehouse/README.md) for the trade, budget, national-accounts, input-output, NEPRA and SBP builders, their run order, and what is still not scripted (the district MPI build among them).
 
 ## Run locally
 
