@@ -1,0 +1,136 @@
+{
+  "_comment": [
+    "Curated SBP EasyData selection for Data Darbar, chosen 2026-08-16.",
+    "Run with:  python3 build_sbp.py plan --select --tier headline core",
+    "           python3 build_sbp.py observations --select --tier headline core",
+    "Series counts below are measured from live dataset metadata, not guessed.",
+    "Entries are {dataset} for all series, {dataset, include|exclude} for a regex",
+    "on the series name, or {series:[...]} for exact keys."
+  ],
+
+  "tiers": {
+
+    "headline": {
+      "description": "~20 series that carry a macro dashboard on their own. Exact keys, verified against live metadata. Pull this first - it is cheap and immediately usable in finance.html.",
+      "approx_series": 20,
+      "entries": [
+        {
+          "_panel": "Rupee",
+          "series": [
+            "TS_GP_ER_FAERPKR_M.E00220",
+            "TS_GP_ER_REERNEER_M.R00010",
+            "TS_GP_ER_REERNEER_M.N00010"
+          ],
+          "_note": "E00220 = average PKR per U.S. Dollar, monthly from Aug-1947. R/N00010 = REER/NEER base 2010. An overvalued-rupee chart is just REER against 100."
+        },
+        {
+          "_panel": "Policy and market rates",
+          "series": [
+            "TS_GP_IR_SIRPR_AH.SBPOL0030",
+            "TS_GP_IR_SIRPR_AH.SBPOL0010",
+            "TS_GP_IR_SIRPR_AH.SBPOL0020",
+            "TS_GP_BAM_SIRKIBOR_D.KIBOR0030"
+          ],
+          "_note": "SBPOL0030 = policy (target) rate, as-needed since Jan-1956 - the single longest policy-rate series available anywhere for Pakistan. KIBOR0030 = 6-month offer rate, daily."
+        },
+        {
+          "_panel": "Inflation",
+          "series": [
+            "TS_GP_PT_CPI_M.P00011516",
+            "TS_GP_PT_CPI_M.P00021516",
+            "TS_GP_PT_CPI_M.P00031516",
+            "TS_GP_PT_CPI_M.P00041516",
+            "TS_GP_PT_CPI_M.P00051516"
+          ],
+          "_note": "National / urban / rural / urban-food / rural-food CPI, YoY percent, 2015-16 base. The urban-rural food gap is a good story on its own."
+        },
+        {
+          "_panel": "External",
+          "series": [
+            "TS_GP_BOP_WR_M.WR0010",
+            "TS_GP_ES_SWR_M.SWR0002"
+          ],
+          "_note": "Total workers' remittances monthly from Jul-1972, plus the seasonally adjusted version. SWR0002 verified against live metadata 2026-08-30 (SWR0001 = raw, SWR0002 = seasonally adjusted)."
+        },
+        {
+          "_panel": "Growth",
+          "series": [
+            "TS_GP_RLS_PAKGDP15_Y.GDP00150000",
+            "TS_GP_RLS_PAKGDP15_Y.GDP00160000"
+          ],
+          "_note": "Real GDP level (Mn PKR, 2015-16 basic prices) and its growth rate. Level reconciles exactly with warehouse national_accounts."
+        },
+        {
+          "_panel": "Uncertainty",
+          "entries_note": "EPU has only 2 series, take both",
+          "dataset": "TS_GP_MFS_EPUI_M"
+        }
+      ]
+    },
+
+    "core": {
+      "description": "The full small-to-medium datasets behind those headlines, so charts can be broken out without another API run. ~1,300 series, comfortably inside one day's 1,900 budget.",
+      "approx_series": 1300,
+      "entries": [
+        {"dataset": "TS_GP_ER_REERNEER_M",  "_n": 4,   "_why": "NEER/REER levels + MoM change"},
+        {"dataset": "TS_GP_IR_SIRPR_AH",    "_n": 3,   "_why": "policy, repo, reverse repo since 1956"},
+        {"dataset": "TS_GP_ES_SWR_M",       "_n": 2,   "_why": "seasonally adjusted remittances"},
+        {"dataset": "TS_GP_RLS_PAKGDP15_Y", "_n": 6,   "_why": "GDP, current base"},
+        {"dataset": "TS_GP_PDL_NSSOA_M",    "_n": 6,   "_why": "national savings schemes outstanding"},
+        {"dataset": "TS_GP_RS_QGDP1516_Q",  "_n": 8,   "_why": "quarterly GDP - the only high-frequency real-activity aggregate"},
+        {"dataset": "TS_GP_RLS_POLSALE_M",  "_n": 8,   "_why": "POL sales by sector, a good activity nowcast"},
+        {"dataset": "TS_GP_ES_KSORDA_M",    "_n": 11,  "_why": "Roshan Digital Account"},
+        {"dataset": "TS_GP_RL_LSM1516_M",   "_n": 11,  "_why": "LSM quantum index, current base"},
+        {"dataset": "TS_GP_BAM_M3_M",       "_n": 11,  "_why": "monetary aggregates M3 monthly"},
+        {"dataset": "TS_GP_RLS_ELECGEN_M",  "_n": 13,  "_why": "electricity generation by source"},
+        {"dataset": "TS_GP_PF_SPF_Y",       "_n": 13,  "_why": "consolidated federal+provincial public finance summary"},
+        {"dataset": "TS_GP_RLS_PSAUTO_M",   "_n": 14,  "_why": "auto production and sales"},
+        {"dataset": "TS_GP_MFS_ASTQLTYB_Q", "_n": 15,  "_why": "banking asset quality"},
+        {"dataset": "TS_GP_BAM_SIRKIBOR_D", "_n": 18,  "_why": "full KIBOR/KIBID curve, daily"},
+        {"dataset": "TS_GP_EXT_PAKRES_M",   "_n": 19,  "_why": "FX and gold reserves from Jun-1948"},
+        {"dataset": "TS_GP_BAM_PKDLP_Q",    "_n": 27,  "_why": "debt and liabilities summary"},
+        {"dataset": "TS_GP_PF_CPRE_Y",      "_n": 30,  "_why": "consolidated provincial receipts and expenditures"},
+        {"dataset": "TS_GP_BOP_XMGS_M",     "_n": 32,  "_why": "exports and imports of goods and services"},
+        {"dataset": "TS_GP_BOP_WR_M",       "_n": 36,  "_why": "remittances by source country - a strong map/treemap candidate"},
+        {"dataset": "TS_GP_BAM_M2_Q",       "_n": 47,  "_why": "quarterly broad money"},
+        {"dataset": "TS_GP_ER_FAERPKR_M",   "_n": 48,  "_why": "PKR against 24 currencies, monthly from Aug-1947"},
+        {"dataset": "TS_GP_BAM_DCS_M",      "_n": 50,  "_why": "depository corporations survey"},
+        {"dataset": "TS_GP_BAM_CENGOVTD_M", "_n": 52,  "_why": "central government debt"},
+        {"dataset": "TS_GP_PT_CPI_M",       "_n": 60,  "_why": "inflation snapshot, all cuts, current base"},
+        {"dataset": "TS_GP_MFS_SGADVNPL_Q", "_n": 72,  "_why": "segment-wise advances and NPLs"},
+        {"dataset": "TS_GP_BOP_BPM6SUM_M",  "_n": 74,  "_why": "monthly balance of payments summary"},
+        {"dataset": "TS_GP_RL_CCSIND_M",    "_n": 118, "_why": "consumer confidence (count verified 2026-08-30). NOTE: this dataset's JSON contains raw control characters; handled by decode_payload()"},
+        {"dataset": "TS_GP_RL_BCSIND_M",    "_n": 107, "_why": "business confidence"},
+        {"dataset": "TS_GP_MFS_PSD_Q",      "_n": 112, "_why": "payment systems - digital payments growth"},
+        {"dataset": "TS_GP_BAM_WALDR_M",    "_n": 145, "_why": "weighted average lending and deposit rates"},
+        {"dataset": "TS_GP_BAM_ADVDEP_HY",  "_n": 162, "_why": "province-wise advances and deposits. The ONLY sub-national dataset worth mapping - 9 regions x 9 categories. Stops Jun-2023."}
+      ]
+    },
+
+    "granular": {
+      "description": "Country- and commodity-level detail. ~1,100 series, so this is a second day of budget. Only worth it if you want treemaps/flow maps rather than line charts.",
+      "approx_series": 1100,
+      "entries": [
+        {"dataset": "TS_GP_BOP_XRECCOU_M", "_n": 220, "_why": "export receipts by country, monthly - payments-basis complement to trade_hs8"},
+        {"dataset": "TS_GP_BOP_MRECCOU_M", "_n": 220, "_why": "import payments by country, monthly"},
+        {"dataset": "TS_GP_ES_SEREXP_M",   "_n": 248, "_why": "services exports by country - NOT in the PBS customs data at all"},
+        {"dataset": "TS_GP_ES_SERIMP_M",   "_n": 248, "_why": "services imports by country"},
+        {"dataset": "TS_GP_FI_FIPKBYCOU_M","_n": 153, "_why": "foreign investment by country"}
+      ]
+    },
+
+    "deep_history": {
+      "description": "Long historical runs that no other Pakistani source publishes machine-readable. Cheap and high archival value.",
+      "approx_series": 780,
+      "entries": [
+        {"dataset": "TS_GP_ES_PKBPM4964_Y", "_n": 20,  "_why": "balance of payments FY1949-64"},
+        {"dataset": "TS_GP_ES_BPMIN4964_Y", "_n": 20,  "_why": "BOP invisibles FY1949-64"},
+        {"dataset": "TS_GP_ES_BPMIN6520_Y", "_n": 22,  "_why": "BOP invisibles FY1965-2023"},
+        {"dataset": "TS_GP_ES_PKBPM7384_Y", "_n": 126, "_why": "balance of payments FY1973-84"},
+        {"dataset": "TS_GP_ES_PKBPM8502_Y", "_n": 210, "_why": "balance of payments FY1985-2002"},
+        {"dataset": "TS_GP_ES_PKBPM0312_Y", "_n": 336, "_why": "balance of payments FY2003-12"},
+        {"dataset": "TS_GP_RLS_PAKGDP80_Y", "_n": null,"_why": "GDP at 1980-81 factor cost, 1950-2000"}
+      ]
+    }
+  }
+}
