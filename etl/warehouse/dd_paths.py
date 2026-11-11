@@ -34,3 +34,6 @@ ECON = WORK / 'econ_data'       # chart JSON written by build_econ*, build_ind, 
 BUD = WORK / 'bud'              # pdftotext output of the budget PDFs (extract_budget_text.py)
 NEPRA_RAW = _env('NEPRA_RAW', Path.home() / 'Library/Mobile Documents/com~apple~CloudDocs/Adaad')
 NEPRA_CACHE = _env('NEPRA_CACHE', WORK / 'nepra' / 'cache')
+
+for _d in (WORK, STAGE, ECON, BUD):      # scratch only; RAW and WAREHOUSE are never created here
+    _d.mkdir(parents=True, exist_ok=True)
