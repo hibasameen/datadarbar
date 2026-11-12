@@ -2663,7 +2663,20 @@
       onChange: function (row, norm) { state.norm = norm || ''; choose(row); },
       onLevel: function (lv) { setLevel(lv); },
     });
-    if (!readUrl() && rail) rail.fire();
+    if (!readUrl() && rail) {
+      /* No indicator in the link, but there may be a place and some words:
+         a district profile's search sends what it could not find on its own
+         page here, with its district still selected. */
+      var uq = new URLSearchParams(location.search);
+      if (uq.get('p')) state.place = uq.get('p');
+      rail.fire();
+      var want = (uq.get('q') || '').trim(), sbox = $('indSearch');
+      if (want && sbox) {
+        sbox.value = want;
+        sbox.dispatchEvent(new Event('input', { bubbles: true }));
+        sbox.focus();
+      }
+    }
   }
 
   function setLevel(lv) {

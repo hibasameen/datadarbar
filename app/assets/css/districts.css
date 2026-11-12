@@ -61,9 +61,37 @@
 @media(max-width:860px){.dp-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.dp-tile-v{font-size:19px}}
 
 /* on-this-page */
-.dp-toc{display:flex;flex-wrap:wrap;gap:6px 4px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.dp-toc{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 14px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.dp-toc-links{display:flex;flex-wrap:wrap;gap:6px 4px;flex:1 1 320px;min-width:0;padding-top:3px}
 .dp-toc a{font-size:12.5px;font-weight:600;color:var(--green-800);text-decoration:none;padding:4px 9px;border-radius:999px}
-.dp-toc a:hover{background:var(--green-100)}
+.dp-toc-links a:hover{background:var(--green-100)}
+
+/* find an indicator: completes over this page's rows (districts.js) */
+.dp-find{position:relative;flex:0 1 300px;min-width:220px}
+.dp-find[hidden]{display:none}
+.dp-find-box{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:1px solid var(--line-strong);
+  border-radius:var(--radius-sm);background:var(--ground);color:var(--muted)}
+.dp-find-box:focus-within{border-color:var(--green-700);background:var(--surface);box-shadow:0 0 0 3px rgba(30,107,62,.1)}
+.dp-find-box input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:13px;color:var(--ink)}
+.dp-find-box input::-webkit-search-cancel-button{-webkit-appearance:none}
+.dp-find-box kbd{font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--line-strong);border-radius:4px;padding:0 5px;line-height:16px}
+.dp-find-box:focus-within kbd{display:none}
+.dp-find-list{position:absolute;left:0;top:calc(100% + 6px);z-index:30;width:min(460px,calc(100vw - 56px));list-style:none;margin:0;padding:6px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-height:min(70vh,460px);overflow:auto}
+.dp-find-list li[data-i]{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer}
+.dp-find-list li[data-i]:hover,.dp-find-list li.is-sel{background:var(--green-100)}
+.dp-find-k{display:flex;flex-direction:column;min-width:0}
+.dp-find-k b{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35}
+.dp-find-k i{font-style:normal;font-size:11px;color:var(--muted)}
+.dp-find-v{font-size:13px;font-weight:700;color:var(--green-900);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dp-find-none{padding:7px 10px;font-size:12px;color:var(--muted)}
+.dp-find-map{border-top:1px solid var(--line);margin-top:4px;border-radius:0 0 var(--radius-sm) var(--radius-sm)!important}
+.dp-find-map a{font-size:12.5px;font-weight:600;color:var(--green-800);text-decoration:none;padding:0;display:block;flex:1}
+@media(max-width:700px){.dp-find{flex-basis:100%}.dp-find-box kbd{display:none}.dp-find-list{width:100%}}
+
+/* the row a search or a shared link lands on */
+.dp-table tbody tr{scroll-margin-top:calc(var(--header-h) + 16px)}
+.dp-table tbody tr.dp-hit th,.dp-table tbody tr.dp-hit td{background:var(--gold-100)!important;box-shadow:inset 0 1px 0 var(--gold-400),inset 0 -1px 0 var(--gold-400)}
 
 /* sections */
 .dp-sec{display:flex;flex-direction:column;gap:12px;min-width:0;scroll-margin-top:calc(var(--header-h) + 14px)}
@@ -134,5 +162,7 @@
 :root[data-theme="dark"] .dp-loc-all{fill:rgba(30,107,62,.18);stroke:var(--green-500)}
 :root[data-theme="dark"] .dp-pkmap path{fill:rgba(30,107,62,.18)}
 :root[data-theme="dark"] .dp-table tbody tr:hover td,:root[data-theme="dark"] .dp-table tbody tr:hover th,
-:root[data-theme="dark"] .dp-toc a:hover,:root[data-theme="dark"] .dp-chip:hover{background:rgba(30,107,62,.16)}
+:root[data-theme="dark"] .dp-toc a:hover,:root[data-theme="dark"] .dp-chip:hover,
+:root[data-theme="dark"] .dp-find-list li[data-i]:hover,:root[data-theme="dark"] .dp-find-list li.is-sel{background:rgba(30,107,62,.16)}
+:root[data-theme="dark"] .dp-table tbody tr.dp-hit th,:root[data-theme="dark"] .dp-table tbody tr.dp-hit td{background:rgba(212,160,23,.14)!important}
 :root[data-theme="dark"] .dp-comp-bar{background:rgba(30,107,62,.18)}
