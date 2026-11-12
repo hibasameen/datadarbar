@@ -533,11 +533,17 @@ def section_html(sec, d, I):
 CROPS_FY = None
 
 
+def row_slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-")
+
+
 def crops_table(crops):
     def num(v, dp):
         return "—" if v is None else f"{v:,.{dp}f}"
+    # an address per row, like the indicator rows: the page's search writes
+    # it to the URL, and a row without one left the previous row's there
     rows = "".join(
-        f'<tr><th scope="row">{E(c["crop"])}</th><td class="dp-v">{num(c["area_000ha"], 1)}</td>'
+        f'<tr id="i-crop-{row_slug(c["crop"])}"><th scope="row">{E(c["crop"])}</th><td class="dp-v">{num(c["area_000ha"], 1)}</td>'
         f'<td class="dp-v">{num(c["production_000t"], 1)}</td><td class="dp-v">{num(c["yield_t_ha"], 2)}</td></tr>'
         for c in crops)
     return (f'<div class="dp-table dp-table-narrow" data-find="Main crops, area sown"><table><caption>Main crops by area sown, {E(str(CROPS_FY))} (PBS crop statistics)</caption>'
@@ -567,7 +573,7 @@ def tehsils_html(d):
         return ""
     has_pop = any(t["pop"] is not None for t in d["tehsils"])
     rows = "".join(
-        f'<tr><th scope="row"><a href="/places.html?lv=tehsil&g=demographics&i=pop_total&p={E(t["id"])}">{E(t["name"])}</a></th>'
+        f'<tr id="i-tehsil-{row_slug(t["id"])}"><th scope="row"><a href="/places.html?lv=tehsil&g=demographics&i=pop_total&p={E(t["id"])}">{E(t["name"])}</a></th>'
         f'<td>{E(t["kind"])}</td>' + (f'<td class="dp-v">{fmt(t["pop"], "int")}</td>' if has_pop else "") + "</tr>"
         for t in d["tehsils"])
     n = len(d["tehsils"])

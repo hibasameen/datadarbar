@@ -134,7 +134,9 @@
     if (!r) return;
     list.hidden = true; box.setAttribute('aria-expanded', 'false');
     box.value = r.label; box.blur();
-    if (r.tr.id) history.replaceState(null, '', '#' + r.tr.id);
+    /* The address follows the row chosen. A row with no id clears it rather
+       than leave the last row's there for the next person to copy. */
+    history.replaceState(null, '', r.tr.id ? '#' + r.tr.id : location.pathname + location.search);
     mark(r.tr, true);
   }
 
