@@ -479,7 +479,8 @@ def row_html(iid, rec, I, d, census_cols):
     pm = ind["prov_median"].get(d["province"])
     cells.append(f'<td class="dp-med">{fmt(pm, kind) if pm is not None else "—"}</td>')
     cells.append(f'<td class="dp-med">{fmt(ind["median"], kind)}</td>')
-    return "<tr>" + "".join(cells) + "</tr>"
+    # the id is what the page's search scrolls to and what a shared link names
+    return f'<tr id="i-{iid}">' + "".join(cells) + "</tr>"
 
 
 def section_html(sec, d, I):
@@ -532,14 +533,20 @@ def section_html(sec, d, I):
 CROPS_FY = None
 
 
+def row_slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-")
+
+
 def crops_table(crops):
     def num(v, dp):
         return "—" if v is None else f"{v:,.{dp}f}"
+    # an address per row, like the indicator rows: the page's search writes
+    # it to the URL, and a row without one left the previous row's there
     rows = "".join(
-        f'<tr><th scope="row">{E(c["crop"])}</th><td class="dp-v">{num(c["area_000ha"], 1)}</td>'
+        f'<tr id="i-crop-{row_slug(c["crop"])}"><th scope="row">{E(c["crop"])}</th><td class="dp-v">{num(c["area_000ha"], 1)}</td>'
         f'<td class="dp-v">{num(c["production_000t"], 1)}</td><td class="dp-v">{num(c["yield_t_ha"], 2)}</td></tr>'
         for c in crops)
-    return (f'<div class="dp-table dp-table-narrow"><table><caption>Main crops by area sown, {E(str(CROPS_FY))} (PBS crop statistics)</caption>'
+    return (f'<div class="dp-table dp-table-narrow" data-find="Main crops, area sown"><table><caption>Main crops by area sown, {E(str(CROPS_FY))} (PBS crop statistics)</caption>'
             '<thead><tr><th scope="col">Crop</th><th scope="col">Area (thousand ha)</th>'
             '<th scope="col">Production (thousand t)</th><th scope="col">Yield (t/ha)</th></tr></thead>'
             f'<tbody>{rows}</tbody></table></div>')
@@ -566,7 +573,7 @@ def tehsils_html(d):
         return ""
     has_pop = any(t["pop"] is not None for t in d["tehsils"])
     rows = "".join(
-        f'<tr><th scope="row"><a href="/places.html?lv=tehsil&g=demographics&i=pop_total&p={E(t["id"])}">{E(t["name"])}</a></th>'
+        f'<tr id="i-tehsil-{row_slug(t["id"])}"><th scope="row"><a href="/places.html?lv=tehsil&g=demographics&i=pop_total&p={E(t["id"])}">{E(t["name"])}</a></th>'
         f'<td>{E(t["kind"])}</td>' + (f'<td class="dp-v">{fmt(t["pop"], "int")}</td>' if has_pop else "") + "</tr>"
         for t in d["tehsils"])
     n = len(d["tehsils"])
@@ -665,7 +672,17 @@ def profile_page(d, P, loc, seo):
     if d["tehsils"]:
         toc_ids.append(("tehsils", "Tehsils"))
     toc_ids.append(("sources", "Sources"))
-    toc = '<nav class="dp-toc" aria-label="On this page">' + "".join(f'<a href="#{k}">{E(t)}</a>' for k, t in toc_ids) + "</nav>"
+    # Find an indicator: completes over this page's own rows (districts.js
+    # reads them from the tables), so it is hidden until the script runs.
+    find = ('<div class="dp-find" role="search" hidden><label class="dp-find-box">'
+            '<span class="visually-hidden">Find an indicator on this page</span>'
+            '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>'
+            f'<input type="search" id="dpInd" data-code="{E(d["code"], quote=True)}" placeholder="Find an indicator: literacy, rainfall…" '
+            'autocomplete="off" spellcheck="false" role="combobox" aria-label="Find an indicator on this page" '
+            'aria-autocomplete="list" aria-controls="dpIndList" aria-expanded="false"/><kbd aria-hidden="true">/</kbd></label>'
+            '<ul class="dp-find-list" id="dpIndList" role="listbox" hidden></ul></div>')
+    toc = ('<div class="dp-toc">' + find + '<nav class="dp-toc-links" aria-label="On this page">'
+           + "".join(f'<a href="#{k}">{E(t)}</a>' for k, t in toc_ids) + "</nav></div>")
     map_q = f"/places.html?lv=district&g=demographics&i=pop_total&p={d['code']}" if not d["outside_census"] \
         else f"/places.html?lv=district&g=climateTmean&i=tmean_c&y=2025&p={d['code']}"
     body = (
@@ -765,6 +782,7 @@ def page_shell(path, title, description, body, extra, seo):
 {body}
 </main>
 {seo._shell.footer(root="/")}
+<script src="{seo.asset("/assets/js/districts.js")}"></script>
 <script src="{seo.asset("/assets/js/modals.js")}"></script>
 <script src="{seo.asset("/assets/js/analytics.js")}"></script>
 <script src="{seo.asset("/assets/js/shell.js")}"></script>
