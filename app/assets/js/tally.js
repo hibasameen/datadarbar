@@ -35,6 +35,7 @@
 			s: window.screen.width,
 			b: is_bot(),
 			q: location.search,
+			v: pv,
 		}
 
 		var rcb, pcb, tcb  // Save callbacks to apply later.
@@ -175,6 +176,13 @@
 			img.addEventListener('load', rm, false)
 			document.body.appendChild(img)
 		}
+
+		// A counted page view starts the reading-time clock (see below).
+		if (!(vars && vars.event) && !goatcounter.event && viewed === null) {
+			viewed = get_path()
+			if (!('visibilityState' in document) || document.visibilityState === 'visible')
+				since = Date.now()
+		}
 	}
 
 	// Get a query parameter.
@@ -258,6 +266,38 @@
 			alert('GoatCounter tracking is now DISABLED in this browser until ' + location + ' is loaded again.')
 		}
 	}
+
+	// Reading time. When the page is hidden or closed, tell the relay how many
+	// seconds it was visible. The message carries `l` (the path) in place of
+	// `p`, so the relay logs it and forwards nothing to GoatCounter: pageview
+	// counts are unaffected. `v` is a random id for this page load, sent with
+	// the page view too, so the two can be joined. Only a page whose view was
+	// counted sends it, so the skipgc flag and Global Privacy Control cover it.
+	var pv = Math.random().toString(36).substr(2, 8),
+		viewed = null, shown = 0, since = 0, told = -1
+	var leave = function() {
+		if (since) {
+			shown += Date.now() - since
+			since = 0
+		}
+		var secs = Math.round(shown / 1000)
+		if (viewed === null || secs === told || !navigator || !navigator.sendBeacon)
+			return
+		told = secs
+		navigator.sendBeacon(get_endpoint() + urlencode({
+			l: viewed, v: pv, d: secs, rnd: Math.random().toString(36).substr(2, 5),
+		}))
+	}
+	var resume = function() {
+		if (viewed !== null && !since && document.visibilityState !== 'hidden')
+			since = Date.now()
+	}
+	document.addEventListener('visibilitychange', function() {
+		if (document.visibilityState === 'hidden') leave()
+		else resume()
+	}, false)
+	window.addEventListener('pagehide', leave, false)
+	window.addEventListener('pageshow', resume, false)
 
 	if (!goatcounter.no_onload)
 		on_load(function() {
