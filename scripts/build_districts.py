@@ -379,6 +379,21 @@ class Locator:
                 f'<path class="dp-loc-this" d="{paths.get(code, "")}"/>{"".join(labels)}</svg>'
                 f'<p class="dp-map-cap">{cap}</p>')
 
+    def hero(self, code, name, by_code):
+        """The map beside the title. A district large enough to see gets the
+        country with itself filled in. A small one gets the zoom as the map
+        and the country as a thumbnail beside it, marked where the zoom is.
+
+        The two were stacked at first, country over zoom, which made the map
+        column twice the height of the words beside it and left 200 pixels
+        of nothing under the buttons. Side by side the zoom is the same
+        height as the plain locator, so every profile's top is one size."""
+        zoom = self.inset(code, name, by_code)
+        if not zoom:
+            return f'<div class="dp-hero-map">{self.svg(code, name)}</div>'
+        return (f'<div class="dp-hero-map dp-hero-zoom"><div class="dp-zoom-nat">{self.svg(code, name)}'
+                f'<p class="dp-map-cap">In Pakistan</p></div><div class="dp-zoom-in">{zoom}</div></div>')
+
     def index_map(self, districts):
         """The index's map: every district a link to its profile, and
         Karachi again at a size where its districts can be told apart."""
@@ -693,7 +708,7 @@ def profile_page(d, P, loc, seo):
         f'<div class="dp-actions"><a class="dp-btn primary" href="{E(map_q)}">Open in the map</a>'
         f'<a class="dp-btn" href="profile.csv" download>Download the profile (CSV)</a>'
         f'<a class="dp-btn" href="/query.html">Query the tables</a></div></div>'
-        f'<div class="dp-hero-map">{loc.svg(d["code"], d["name"])}{loc.inset(d["code"], d["name"], {x["code"]: x for x in P["districts"]})}</div></header>'
+        + loc.hero(d["code"], d["name"], {x["code"]: x for x in P["districts"]}) + '</header>'
         + tiles_html(d, I) + toc
         + "".join(section_html(sec, d, I) for sec in SECTIONS)
         + tehsils_html(d) + nearby_html(d, P["districts"]) + notes_html(d, I) + sources_html(d, I, S))
