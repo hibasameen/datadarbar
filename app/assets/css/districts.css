@@ -27,7 +27,17 @@
 .dp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .dp-hero-map{flex:0 0 230px;width:230px}
 .dp-hero-map-wide{flex-basis:300px;width:300px}
-@media(max-width:860px){.dp-hero{flex-direction:column}.dp-hero-map{flex-basis:auto;width:100%;max-width:280px;align-self:flex-end}.dp-hero-map-wide{max-width:340px;align-self:center}}
+/* A small district: the zoom is the map, the country a thumbnail beside it.
+   Stacked, the pair stood twice as tall as the words and left a hole under
+   them; side by side the zoom is the height of the plain locator. */
+.dp-hero-zoom{flex-basis:346px;width:346px;display:flex;gap:12px;align-items:flex-start}
+.dp-zoom-nat{flex:0 0 104px;min-width:0}
+.dp-zoom-in{flex:1;min-width:0}
+.dp-hero-zoom .dp-inset{margin-top:0}
+.dp-zoom-nat .dp-loc-all{stroke-width:.35}
+.dp-zoom-nat .dp-loc-this{stroke:none}
+.dp-zoom-nat .dp-loc-win{stroke-width:2.6;stroke-dasharray:none;fill:rgba(212,160,23,.28)}
+@media(max-width:860px){.dp-hero{flex-direction:column}.dp-hero-map{flex-basis:auto;width:100%;max-width:280px;align-self:flex-end}.dp-hero-map-wide{max-width:340px;align-self:center}.dp-hero-zoom{max-width:346px}.dp-zoom-nat{flex-basis:28%}}
 
 .dp-btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:var(--radius-sm);
   font:inherit;font-size:12.5px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap;
