@@ -590,12 +590,12 @@ def main():
         ORDER BY group_key, indicator, map_key""").fetchall()
     PV = columnar(prov, 'level map_key group_key indicator value'.split(),
                   {'level', 'map_key', 'group_key', 'indicator'})
-    np = write(out / 'places' / 'provenance.js', 'DD_PLACES_PROV', PV,
+    np = write(out / 'place-groups' / 'provenance.js', 'DD_PLACES_PROV', PV,
                f'Places provenance flags, {len(prov):,} rows')
-    print(f'  places/provenance.js {len(prov):>6,} flags      {np/1e6:5.2f} MB')
+    print(f'  place-groups/provenance.js {len(prov):>6,} flags      {np/1e6:5.2f} MB')
 
     # ── the curated values, one file per group ─────────────────────────────
-    vdir = out / 'places'
+    vdir = out / 'place-groups'
     vdir.mkdir(parents=True, exist_ok=True)
     for stale in vdir.glob('*.js'):
         if stale.name not in ('overlay_schools.js', 'overlay_health.js', 'provenance.js'):
@@ -628,7 +628,7 @@ def main():
     gz = len(gzip.compress((out / 'places_index.js').read_bytes()))
     print(f'  places_index.js  {len(ix):>6,} indicators  {n1/1e6:5.2f} MB raw, '
           f'{gz/1e6:.3f} MB gzipped   [eager]')
-    print(f'  places/*.js      {total_vals:>6,} values in {len(groups)} groups, '
+    print(f'  place-groups/*.js      {total_vals:>6,} values in {len(groups)} groups, '
           f'{total_bytes/1e6:5.2f} MB total   [on demand]')
     print(f'    average {total_bytes/len(groups)/1e3:.0f} KB, '
           f'largest {biggest[0]} at {biggest[1]/1e3:.0f} KB')

@@ -5,7 +5,7 @@
    searching all of them needs no query engine. Values arrive by a route chosen
    on size, which is the decision Phase 0 measured rather than assumed:
 
-     curated   one file per indicator group under data/places/, about 34 KB,
+     curated   one file per indicator group under data/place-groups/, about 34 KB,
                fetched the first time something in that group is chosen.
      census    17 MB across two Parquet panels, read by range request through
                DuckDB-WASM when a census series is picked. The engine is 6.3 MB,
@@ -155,7 +155,7 @@
      Three routes, one interface. Each returns {key -> value} for the facets
      currently chosen. */
   /* The build stamps one hash on every asset and payload link in the page,
-     and the hash covers data/places/ too - but these files are fetched from
+     and the hash covers data/place-groups/ too - but these files are fetched from
      script, where no stamp was ever applied, so a returning reader kept
      yesterday's group file under today's code. It is read off this script's
      own address. */
@@ -169,7 +169,7 @@
     if (groupCache[gk]) return Promise.resolve(groupCache[gk]);
     var safe = gk.replace(/[^A-Za-z0-9_-]/g, '_');
     var name = 'DD_PLACES_G_' + gk.replace(/[^A-Za-z0-9_]/g, '_');
-    return script('data/places/' + safe + '.js' + STAMP).then(function () {
+    return script('data/place-groups/' + safe + '.js' + STAMP).then(function () {
       groupCache[gk] = window[name];
       return groupCache[gk];
     });
@@ -632,7 +632,7 @@
   var provCache = null;
   function loadProvenance() {
     if (provCache) return Promise.resolve(provCache);
-    return script('data/places/provenance.js' + STAMP).then(function () {
+    return script('data/place-groups/provenance.js' + STAMP).then(function () {
       provCache = window.DD_PLACES_PROV;
       return provCache;
     });
@@ -2146,7 +2146,7 @@
       label: 'Government schools', box: 'ovSchools',
       data: function () { return window.DD_SCHOOL_POINTS; },
       ink: '--pt-schools', note: 'ovSchoolsN', idle: '123k', cap: [12000, 60000],
-      file: 'data/places/overlay_schools.js' + STAMP,
+      file: 'data/place-groups/overlay_schools.js' + STAMP,
       filled: function (f) { return f >= 100; }, big: function () { return false; },
       filter: { a: 'all', b: 'all' },
       show: function (f, q) {
@@ -2175,7 +2175,7 @@
       data: function () { return window.DD_HEALTH_POINTS; },
       // 20,536 points draw quickly, so the whole set is drawn at every zoom.
       ink: '--pt-health', note: 'ovHealthN', idle: '21k', cap: [30000, 30000],
-      file: 'data/places/overlay_health.js' + STAMP,
+      file: 'data/place-groups/overlay_health.js' + STAMP,
       filled: function (f) { return f >= 10; }, big: function (f) { return f % 10 === 0; },
       filter: { a: 'all', b: 'all' },
       show: function (f, q) {
