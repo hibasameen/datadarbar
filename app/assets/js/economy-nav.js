@@ -363,7 +363,7 @@
     cards = $('cards'); side = $('paneSide'); ctl = $('topicCtl');
     if (!cards || !$('rail')) return;
     build();
-    if (!index.length) return;
+    if (!index.length) { document.documentElement.classList.add('eco-ready'); return; }
     moveControls();
     var help = document.querySelector('.navhelp');
     if (help) help.remove();
@@ -380,6 +380,7 @@
     if (first) { state.topic = first.topic; state.ind = first.ind; }
     rail.sync(false);
     show(first);
+    document.documentElement.classList.add('eco-ready');
     if (!location.hash) history.replaceState(null, '', location.pathname + location.search + '#t=overview');
     // A link by page topic (#t=factories) names no module topic; say it in
     // the module's terms so the module draws it.
