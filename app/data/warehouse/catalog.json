@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-11-01",
+ "generated": "2026-11-21",
  "license": "Data Darbar’s derived data CC BY 4.0 unless a table states other terms (each table’s licence field) · code MIT",
  "kinds": [
   {
@@ -8105,8 +8105,8 @@
   {
    "name": "lsm_qim",
    "file": "lsm_qim.parquet",
-   "bytes": 3403,
-   "rows": 122,
+   "bytes": 6295,
+   "rows": 123,
    "description": "Monthly Quantum Index of Manufacturing (large-scale manufacturing).",
    "notes": "Index; mom/yoy/cum_chg are percentages.",
    "unit": null,
@@ -8166,15 +8166,15 @@
    "span": {
     "column": "month",
     "from": "2016-07",
-    "to": "2026-08"
+    "to": "2026-09"
    },
    "keys": []
   },
   {
    "name": "lsm_sector_indices",
    "file": "lsm_sector_indices.parquet",
-   "bytes": 24635,
-   "rows": 6777,
+   "bytes": 24712,
+   "rows": 6800,
    "description": "LSM indices by manufacturing sector, annual and monthly, with CMI weights.",
    "notes": "weight is the sector's share in the index (per the stated base year).",
    "unit": null,

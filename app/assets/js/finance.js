@@ -46,7 +46,7 @@ const TOPICS=[
   title:'Inside industry: what Pakistan’s factories make',
   lede:'Large-scale manufacturing is a fifth of industry and the part measured monthly. Two decades of sector production indices, and the monthly quantum index that tracks them.',
   desc:'Large-scale manufacturing: annual sector production indices and the monthly quantum index.',
-  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: August 2026.'},
+  meta:'PBS Quantum Index of Manufacturing (QIM), base 2015-16, spliced to the 2005-06-base series. Latest month: September 2026.'},
  {k:'censuses',label:'Manufacturing censuses',
   title:'What the manufacturing censuses show',
   lede:'Roughly once a decade PBS counts every registered factory. Comparing the 2005-06 and 2015-16 rounds shows which industries employ, produce and proliferate — and how much textiles receded.',
