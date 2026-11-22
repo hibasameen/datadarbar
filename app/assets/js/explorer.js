@@ -539,5 +539,54 @@
     };
   }
 
-  window.DDExplorer = { mount: mount, tabs: mountTabs, mobileToggle: mobileToggle, ALL: '\u0000all' };
+  /* A trend line for an overview tile: the tile's headline series, drawn
+     from the payload the charts use, so the picture cannot say something the
+     chart behind it does not. No axis - the tile states the latest value and
+     the caption states the span; the line is only the shape between them.
+     `vals` are numbers in time order; `zero` draws the zero line where the
+     series crosses it (growth, a balance). Returns '' for under three points. */
+  function spark(vals, opt) {
+    opt = opt || {};
+    vals = (vals || []).filter(function (v) { return v != null && isFinite(v); });
+    if (vals.length < 3) return '';
+    var W = 132, H = 40, pad = 4;
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if (opt.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+    if (hi === lo) { hi += 1; lo -= 1; }
+    var x = function (i) { return pad + i * (W - 2 * pad) / (vals.length - 1); };
+    var y = function (v) { return pad + (hi - v) * (H - 2 * pad) / (hi - lo); };
+    var pts = vals.map(function (v, i) { return x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+    var base = opt.zero ? y(0) : H - 1;
+    var area = 'M' + x(0).toFixed(1) + ',' + base.toFixed(1) + 'L' + pts.join('L')
+             + 'L' + x(vals.length - 1).toFixed(1) + ',' + base.toFixed(1) + 'Z';
+    var n = vals.length - 1;
+    return '<span class="ovtile-spark"><svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H
+      + '" aria-hidden="true" focusable="false">'
+      + '<path class="spark-area" d="' + area + '"/>'
+      + (opt.zero && lo < 0 ? '<line class="spark-zero" x1="' + pad + '" x2="' + (W - pad) + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '"/>' : '')
+      + '<path class="spark-line" d="M' + pts.join('L') + '"/>'
+      + '<circle class="spark-dot" cx="' + x(n).toFixed(1) + '" cy="' + y(vals[n]).toFixed(1) + '" r="2.6"/>'
+      + '</svg><span class="spark-span"></span></span>';
+  }
+  /* One tile, for both overviews. h is { n, u, p, spark, span, zero } or null. */
+  function tile(theme, h, fallbackP, topicLabels) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ovtile';
+    var sp = h && h.spark ? spark(h.spark, { zero: h.zero }) : '';
+    b.innerHTML = '<span class="eyebrow"></span>'
+      + (h ? '<span class="ovtile-head"><span class="ovtile-n"><span class="n"></span><small></small></span>' + sp + '</span>' : '')
+      + '<p class="ovtile-p"></p><span class="ovtile-topics"></span>';
+    b.querySelector('.eyebrow').textContent = theme;
+    if (h) { b.querySelector('.n').textContent = h.n; b.querySelector('small').textContent = h.u; }
+    if (sp) b.querySelector('.spark-span').textContent = h.span || '';
+    b.querySelector('.ovtile-p').textContent = h ? h.p : fallbackP || '';
+    var tl = b.querySelector('.ovtile-topics');
+    topicLabels.forEach(function (t) {
+      var s = document.createElement('span'); s.textContent = t; tl.appendChild(s);
+    });
+    return b;
+  }
+
+  window.DDExplorer = { mount: mount, tabs: mountTabs, mobileToggle: mobileToggle, tile: tile, ALL: '\u0000all' };
 })();

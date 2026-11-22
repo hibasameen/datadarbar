@@ -3,10 +3,10 @@
 
 Inputs (<Data Darbar>/raw_data/industry_statistics/; release files set in
 TREND_FILE / SECTOR_XLSX below -- bump those when PBS posts a new month):
-  qim/QIM-Series-Base-Year-2015-16-11.xlsx  monthly overall QIM Jul-2016 -> Aug-2026
+  qim/Trend-Sheet-1.xlsx         monthly overall QIM Jul-2016 -> Sep-2026
   qim/Table-3-2024-25.xlsx       monthly sector indices FY2024-25
-  qim/Table-3-25-26-1.xlsx       monthly sector indices FY2025-26 (complete, Aug-2026 revision)
-  qim/Table-2-August-26.xlsx     monthly sector indices FY2026-27 to date (Jul-Aug)
+  qim/Table-3-25-26-1.xlsx       monthly sector indices FY2025-26 (complete; Table-3-2025-26.xlsx of the Sep-2026 release is cell-for-cell identical)
+  qim/Table-2-Sep-26.xlsx        monthly sector indices FY2026-27 to date (Jul-Sep)
   table2_new/Table-2-YYYY-YY.pdf annual+monthly sector indices, base 2015-16 (2015-16..2023-24)
   table2_old/Table-2-YYYY-YY.pdf same, base 2005-06 (2005-06..2021-22)
   reports/CMI_2015-16_report.pdf summary tables 3.2/3.3/3.5/3.13
@@ -36,14 +36,14 @@ OUT_JSON = OUT_WH / 'econ_data'
 OUT_JSON.mkdir(exist_ok=True)
 
 # ---- release inputs: bump these when PBS posts a new month ----
-TREND_FILE = 'qim/QIM-Series-Base-Year-2015-16-11.xlsx'   # Aug-2026 release (pbs.gov.pk/?p=29605)
+TREND_FILE = 'qim/Trend-Sheet-1.xlsx'   # Sep-2026 release (19 Nov 2026, pbs.gov.pk/industry-2/); revises Jul and Aug 2026
 SECTOR_XLSX = [   # (file, fy_start_year) -> new_base['YYYY-YY']; overrides any PDF for that FY
     ('qim/Table-3-2024-25.xlsx', 2024),
     ('qim/Table-3-25-26-1.xlsx', 2025),     # FY2025-26 complete (revised, Aug-2026 release)
-    ('qim/Table-2-August-26.xlsx', 2026),   # FY2026-27 Jul-Aug
+    ('qim/Table-2-Sep-26.xlsx', 2026),      # FY2026-27 Jul-Sep
 ]
 WEIGHTS_FY = 2025          # fallback weights for weight-less PDFs come from this xlsx year
-DOWNLOADED = '2026-10-24'
+DOWNLOADED = '2026-11-21'
 
 MONTH_ABBR = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun']
 
