@@ -2,11 +2,17 @@
 """Add or refresh a few tables in catalog.json without rebuilding the warehouse.
 
     python3 etl/catalog_merge.py agri_census
+    python3 etl/catalog_merge.py --refresh lsm_qim lsm_sector_indices
 
 The full build (build_web_warehouse.py) regenerates every table from the desktop
 warehouse and needs its whole dependency set; a new source whose Parquet is
 already in app/data/warehouse only needs its catalogue entry. Each family here is
 a function in build_web_warehouse.py that takes a `register` callback.
+
+--refresh is for a routine update of tables already in the catalogue (a new
+month of an existing series): the Parquet in app/data/warehouse has been
+rewritten, and its rows, bytes, schema, span and sample rows are re-read while
+the descriptions already in catalog.json are kept.
 """
 import json, sys
 from pathlib import Path
@@ -54,5 +60,26 @@ def main(family):
     print(f"catalog.json: {len(cat['tables'])} tables ({', '.join(sorted(names))} merged)")
 
 
+def refresh(names):
+    cat = json.loads((W.OUT / "catalog.json").read_text())
+    have = {t["name"]: t for t in cat["tables"]}
+    missing = [n for n in names if n not in have]
+    if missing:
+        raise SystemExit(f"not in catalog.json: {', '.join(missing)}")
+
+    def family(register):
+        for n in names:
+            t = have[n]
+            register(n, t["description"], t["notes"],
+                     {c["name"]: c.get("description", "") for c in t["columns"]},
+                     t["source"], unit=t.get("unit"))
+
+    FAMILIES["refresh"] = family
+    main("refresh")
+
+
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "agri_census")
+    if len(sys.argv) > 2 and sys.argv[1] == "--refresh":
+        refresh(sys.argv[2:])
+    else:
+        main(sys.argv[1] if len(sys.argv) > 1 else "agri_census")

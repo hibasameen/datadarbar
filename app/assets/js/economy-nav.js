@@ -279,26 +279,47 @@
      give one cheaply, nothing invented where they do not ─────────────── */
   function headline(theme) {
     try {
-      if (theme === 'Output & growth' && window.DD_GROWTH && window.DD_GROWTH.headline) {
-        var hl = window.DD_GROWTH.headline, last = hl[hl.length - 1];
-        if (last && last.value != null) return { n: (last.value > 0 ? '+' : '') + last.value.toFixed(1) + '%', u: 'real GDP growth, ' + last.year,
-          p: 'Growth in gross value added at basic prices, from the national accounts, and what each sector added to it.' };
+      var M = window.DD_MONEY && window.DD_MONEY.series;
+      var yr = function (d) { return d.slice(0, 4); };
+      var mon = function (d) { return d.slice(0, 7); };
+      if (theme === 'Output & growth' && window.DD_GROWTH && window.DD_GROWTH.total) {
+        var hl = window.DD_GROWTH.total.filter(function (d) { return d.value != null; }), last = hl[hl.length - 1];
+        if (last) return { n: (last.value > 0 ? '+' : '') + last.value.toFixed(1) + '%', u: 'real growth, ' + last.year,
+          p: 'Growth in gross value added at basic prices, from the national accounts, and what each sector added to it.',
+          spark: hl.map(function (d) { return d.value; }), zero: true, span: hl[0].year + ' to ' + last.year };
       }
-      if (theme === 'Trade' && window.ECON && window.ECON.totals) {
-        var T = window.ECON.totals, ys = Object.keys(T).sort(), y = ys[ys.length - 1];
-        var ex = T[y] && (T[y].exp || T[y].export || T[y].exports);
-        if (ex) return { n: 'Rs ' + (ex / 1000).toFixed(1) + 'tn', u: 'exports, ' + y,
-          p: 'Goods exports as PBS publishes them; imports, the balance, every product and partner, and what is growing and shrinking.' };
+      if (theme === 'Trade' && window.ECON && window.ECON.totals && window.ECON.totals.export) {
+        // Complete years only: a year with two months published is not a fall.
+        var T = window.ECON.totals;
+        var ys = T.years.filter(function (y) { return (T.months || {})[y] === 12 && T.export[y] != null; });
+        var y = ys[ys.length - 1];
+        if (y) return { n: 'Rs ' + (T.export[y] / 1000).toFixed(1) + 'tn', u: 'goods exports, ' + y,
+          p: 'Goods exports as PBS publishes them; imports, the balance, every product and partner, and what is growing and shrinking.',
+          spark: ys.map(function (k) { return T.export[k]; }), span: ys[0] + ' to ' + y + ', current rupees' };
       }
-      if (theme === 'Prices & money' && window.DD_MONEY && window.DD_MONEY.series && window.DD_MONEY.series.cpi_nat) {
-        var c = window.DD_MONEY.series.cpi_nat, lc = c[c.length - 1];
-        if (lc) return { n: lc[1].toFixed(1) + '%', u: 'inflation, ' + lc[0].slice(0, 7),
-          p: 'Consumer prices on a year earlier; the policy rate and what banks charge; money and bad loans; the rupee.' };
+      if (theme === 'Prices & money' && M && M.cpi_nat) {
+        var c = M.cpi_nat, lc = c[c.length - 1];
+        if (lc) return { n: lc[1].toFixed(1) + '%', u: 'inflation, ' + mon(lc[0]),
+          p: 'Consumer prices on a year earlier; the policy rate and what banks charge; money and bad loans; the rupee.',
+          spark: c.map(function (d) { return d[1]; }), zero: true, span: mon(c[0][0]) + ' to ' + mon(lc[0]) };
       }
-      if (theme === 'External' && window.DD_MONEY && window.DD_MONEY.series && window.DD_MONEY.series.res_total) {
-        var r = window.DD_MONEY.series.res_total, lr = r[r.length - 1];
-        if (lr) return { n: '$' + (lr[1] / 1000).toFixed(1) + 'bn', u: 'reserves, ' + lr[0].slice(0, 7),
-          p: 'Foreign exchange reserves and the balance of payments; remittances by the country they come from; where emigrants go.' };
+      if (theme === 'External' && M && M.res_sbp) {
+        // The State Bank's own reserves, in million dollars; the last 20 years.
+        var r = M.res_sbp.slice(-240), lr = r[r.length - 1];
+        if (lr) return { n: '$' + (lr[1] / 1000).toFixed(1) + 'bn', u: 'State Bank reserves, ' + mon(lr[0]),
+          p: 'Foreign exchange reserves and the balance of payments; remittances by the country they come from; where emigrants go.',
+          spark: r.map(function (d) { return d[1]; }), span: mon(r[0][0]) + ' to ' + mon(lr[0]) };
+      }
+      if (theme === 'Land & resources' && window.DD_RESOURCES && window.DD_RESOURCES.meta.min_natural_gas) {
+        // Thousand million cubic metres as printed, which is billion cubic metres.
+        var g = window.DD_RESOURCES.meta.min_natural_gas.levels, lg = g[g.length - 1];
+        if (lg) return { n: lg[1].toFixed(1) + 'bn m³', u: 'natural gas produced, ' + lg[0],
+          p: OVERVIEW_P[theme], spark: g.map(function (d) { return d[1]; }), span: g[0][0] + ' to ' + lg[0] };
+      }
+      if (theme === 'The long view' && window.DD_HISTORY && window.DD_HISTORY.series.gdp_level) {
+        var v = window.DD_HISTORY.series.gdp_level, f = v[0], l = v[v.length - 1];
+        if (f && l && f[1] > 0) return { n: Math.round(l[1] / f[1]) + '×', u: 'the economy of ' + yr(f[0]) + ', by ' + yr(l[0]),
+          p: OVERVIEW_P[theme], spark: v.map(function (d) { return d[1]; }), span: yr(f[0]) + ' to ' + yr(l[0]) + ', 2005-06 prices' };
       }
     } catch (e) { /* a headline is a courtesy, never a reason to fail */ }
     return null;
@@ -316,19 +337,8 @@
     host.innerHTML = '';
     PAGE.forEach(function (g) {
       var h = headline(g.theme);
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'ovtile';
-      b.innerHTML = '<span class="eyebrow"></span>'
-        + (h ? '<span class="ovtile-n"><span class="n"></span><small></small></span>' : '')
-        + '<p class="ovtile-p"></p><span class="ovtile-topics"></span>';
-      b.querySelector('.eyebrow').textContent = g.theme;
-      if (h) { b.querySelector('.n').textContent = h.n; b.querySelector('small').textContent = h.u; }
-      b.querySelector('.ovtile-p').textContent = h ? h.p : OVERVIEW_P[g.theme] || '';
-      var tl = b.querySelector('.ovtile-topics');
-      g.topics.forEach(function (t) {
-        var sp = document.createElement('span'); sp.textContent = t.label; tl.appendChild(sp);
-      });
+      var b = window.DDExplorer.tile(g.theme, h, OVERVIEW_P[g.theme],
+        g.topics.map(function (t) { return t.label; }));
       b.onclick = function () { go(index.filter(function (r) { return r.topic === g.topics[0].k; })[0]); };
       host.appendChild(b);
     });

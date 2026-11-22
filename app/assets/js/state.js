@@ -524,7 +524,11 @@
     reservoirArea: renderReservoirs,
   };
 
+  /* render(row) draws a chart, render(null) the overview. A chart's own
+     controls (year, side, prices) call render() bare to redraw the chart on
+     screen, which is not the same as asking for no chart. */
   function render(row) {
+    if (row === undefined) row = current;
     if (!row) return renderOverview();
     current = row;
     var t = TOPICS[current.topic] || {};
@@ -569,7 +573,12 @@
   function headlineTax() {
     var T = taxTable(false), last = T.data[T.data.length - 1];
     return last && last.gdp ? { n: pct(100 * last.total / last.gdp), u: 'of GDP',
-      p: 'Federal tax collected in ' + fyOf(last.year) + '. The ratio has moved less than two points since 1991-92; the mix is what changed.' } : null;
+      p: 'Federal tax collected in ' + fyOf(last.year) + '. The ratio has moved less than two points since 1991-92; the mix is what changed.',
+      spark: T.data.filter(function (d) { return d.gdp; }).map(function (d) { return 100 * d.total / d.gdp; }),
+      span: sparkSpan(T.data.filter(function (d) { return d.gdp; }).map(function (d) { return fyOf(d.year); })) } : null;
+  }
+  function sparkSpan(labels, note) {
+    return labels.length ? labels[0] + ' to ' + labels[labels.length - 1] + (note ? ', ' + note : '') : '';
   }
   function headlineCourts() {
     var all = courts.filter(function (d) { return d.category === 'all'; });
@@ -583,14 +592,30 @@
       return d.year === y && d.pending_start != null && d.pending_end < d.pending_start;
     }).map(function (d) { return NAME[d.province] || d.province; });
     var list = fell.length < 2 ? fell.join('') : fell.slice(0, -1).join(', ') + ' and ' + fell[fell.length - 1];
+    /* The line sums only the courts that report in every year: Balochistan
+       has no 2023 row, and a total that lost a province would dip for a
+       reason that is not the backlog. */
+    var yrs = Array.from(new Set(all.map(function (d) { return d.year; }))).sort(d3.ascending);
+    var provs = Array.from(new Set(all.map(function (d) { return d.province; })));
+    var steady = provs.filter(function (p) {
+      return yrs.every(function (yy) { return all.some(function (d) { return d.year === yy && d.province === p && d.pending_end != null; }); });
+    });
+    var left = provs.filter(function (p) { return steady.indexOf(p) < 0; });
+    var line = yrs.map(function (yy) {
+      return d3.sum(all.filter(function (d) { return d.year === yy && steady.indexOf(d.province) >= 0; }), function (d) { return d.pending_end; });
+    });
     return tot ? { n: (tot / 1e6).toFixed(2) + 'm', u: 'cases pending',
+      spark: line, span: sparkSpan(yrs, left.length ? 'without ' + left.map(function (p) { return NAME[p] || p; }).join(', ') : ''),
       p: 'At the end of ' + y + (pj ? ', ' + (pj.pending_end / 1e6).toFixed(1) + 'm of them in Punjab' : '') + '. '
          + (fell.length ? list + ' ended the year with fewer than they began.' : 'Every court ended the year with more than it began.') } : null;
   }
   function headlineCrime() {
     var y = d3.max(crime, function (d) { return d.year; });
     var tot = d3.sum(crime.filter(function (d) { return d.year === y && d.value != null; }), function (d) { return d.value; });
+    var cys = Array.from(new Set(crime.map(function (d) { return d.year; }))).sort(d3.ascending);
     return tot ? { n: tot >= 1e6 ? (tot / 1e6).toFixed(1) + 'm' : Math.round(tot / 1e3) + 'k', u: 'offences reported',
+      spark: cys.map(function (yy) { return d3.sum(crime.filter(function (d) { return d.year === yy && d.value != null; }), function (d) { return d.value; }); }),
+      span: sparkSpan(cys),
       p: 'Across eight forces in ' + y + ', on PBS\u2019s definition. Punjab is nearly all of the rise since 2020.' } : null;
   }
   function headlinePower() {
@@ -598,11 +623,16 @@
     var fy = fys[fys.length - 1];
     var mw = d3.sum(plants.filter(function (d) { return d.fy === fy && d.mw != null; }), function (d) { return d.mw; });
     return mw ? { n: Math.round(mw / 1e3).toLocaleString(), u: 'GW installed',
+      spark: fys.map(function (f) { return d3.sum(plants.filter(function (d) { return d.fy === f && d.mw != null; }), function (d) { return d.mw; }); }),
+      span: sparkSpan(fys),
       p: 'Capacity on the grid in ' + fy + ', by plant and fuel; what the distribution companies sold and lost; load shedding; rooftop solar; gas.' } : null;
   }
   function headlineWater() {
-    var r = reservoirs.filter(function (d) { return d.reservoir === 'Tarbela'; }).pop();
-    return r ? { n: Math.round(r.km2) + ' km\u00b2', u: 'Tarbela, ' + d3.timeFormat('%B %Y')(new Date(r.year, r.month - 1, 1)),
+    var tb = reservoirs.filter(function (d) { return d.reservoir === 'Tarbela' && d.km2 != null; });
+    var r = tb[tb.length - 1];
+    var ten = r ? tb.filter(function (d) { return d.year > r.year - 10; }) : [];
+    return r ? { spark: ten.map(function (d) { return d.km2; }),
+      span: sparkSpan(ten.map(function (d) { return d.ym; }), 'monthly'), n: Math.round(r.km2) + ' km\u00b2', u: 'Tarbela, ' + d3.timeFormat('%B %Y')(new Date(r.year, r.month - 1, 1)),
       p: 'Water surface seen from space' + (r.anomaly_pct != null ? ', ' + signed(r.anomaly_pct) + '% against the month\u2019s norm' : '') + '. Also the 2022 floods week by week, the 2026 monsoon and every GDACS alert since 2001.' } : null;
   }
   var HEADLINE = { 'Public money': headlineTax, 'Justice': headlineCourts, 'Crime & policing': headlineCrime,
@@ -628,19 +658,8 @@
       if (!topics.length) return;
       var h = null;
       try { h = HEADLINE[theme] ? HEADLINE[theme]() : null; } catch (e) { h = null; }
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'ovtile';
-      b.innerHTML = '<span class="eyebrow"></span>'
-        + (h ? '<span class="ovtile-n"><span class="n"></span><small></small></span>' : '')
-        + '<p class="ovtile-p"></p><span class="ovtile-topics"></span>';
-      b.querySelector('.eyebrow').textContent = theme;
-      if (h) { b.querySelector('.n').textContent = h.n; b.querySelector('small').textContent = h.u; }
-      b.querySelector('.ovtile-p').textContent = h ? h.p : '';
-      var tl = b.querySelector('.ovtile-topics');
-      topics.forEach(function (t) {
-        var sp = document.createElement('span'); sp.textContent = t.topicLabel; tl.appendChild(sp);
-      });
+      var b = window.DDExplorer.tile(theme, h, '',
+        topics.map(function (t) { return t.topicLabel; }));
       b.onclick = function () {
         state.topic = topics[0].topic; state.ind = null;
         render(rail.sync(false)); writeUrl();
