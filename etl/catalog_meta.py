@@ -74,6 +74,9 @@ KIND = {
     'crops_district_fy': 'places',
     'agri_census_2024_district': 'places',
     'agri_census_2024_long': 'places',
+    'agri_census_2010_district': 'places',
+    'agri_census_2010_long': 'places',
+    'agri_census_2010_tables': 'places',
     'diaspora_emigrants_district': 'places',
 
     'national_accounts': 'economy',
@@ -262,6 +265,9 @@ LICENCE = {
     'crops_district_fy': (['pbs-open'], ''),
     'agri_census_2024_district': (['pbs-open'], 'PBS\u2019s weighted estimates; the shares and per-farm rates are Data Darbar\u2019s arithmetic on them.'),
     'agri_census_2024_long': (['pbs-open'], ''),
+    'agri_census_2010_district': (['pbs-open'], 'PBS\u2019s figures read from its PDFs; the shares and averages are Data Darbar\u2019s arithmetic on them.'),
+    'agri_census_2010_long': (['pbs-open'], 'PBS\u2019s figures, read from the text of its PDFs by Data Darbar.'),
+    'agri_census_2010_tables': (['pbs-open'], 'PBS\u2019s titles; the column headers are placed by Data Darbar and are a guess.'),
     'diaspora_destinations': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_emigrants_by_skill': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
     'diaspora_emigrants_district': (['pbs-open'], 'Bureau of Emigration figures as disseminated by PBS.'),
@@ -380,6 +386,15 @@ PROVENANCE = {
         'sbp_handbook_series', 'sbp_observations', 'sbp_series_catalog',
         'sindh_crime_annual', 'sindh_fir_daily', 'trade_by_group', 'trade_hs8',
         'trade_monthly_totals', 'wdi_comparators']},
+    'agri_census_2010_long': ('published', 'Every printed cell of PBS\u2019s tabulations, read from the PDF '
+                              'text layer; no figure is changed.', []),
+    'agri_census_2010_district': ('mixed', 'Counts and areas are PBS\u2019s; the average farm size, the '
+                                  'shares and the cropping intensity are computed from them.',
+                                  ['avg_farm_size_ac', 'share_cultivated', 'share_farms_under_5ac',
+                                   'share_area_25ac_plus', 'share_farms_owner', 'share_farms_tenant',
+                                   'cropping_intensity_pct']),
+    'agri_census_2010_tables': ('mixed', 'Titles and notes are PBS\u2019s; header_guess is assigned by '
+                                'position and is not PBS\u2019s layout.', ['header_guess']),
     'agri_census_2024_long': ('published', 'Every cell of PBS\u2019s 357 published tables, as published, '
                               'including the fractional weighted estimates.', []),
     'agri_census_2024_district': ('mixed', 'Counts are PBS\u2019s weighted estimates; every share and rate '

@@ -23,7 +23,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import build_web_warehouse as W
 
-FAMILIES = {"agri_census": W.register_agri_census}
+FAMILIES = {"agri_census": W.register_agri_census,
+            "agri_census_2010": W.register_agri_census_2010}
 
 
 def main(family):

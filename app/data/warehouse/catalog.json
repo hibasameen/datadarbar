@@ -1,7 +1,7 @@
 {
  "name": "Data Darbar",
  "version": 1,
- "generated": "2026-11-21",
+ "generated": "2026-11-23",
  "license": "Data Darbar’s derived data CC BY 4.0 unless a table states other terms (each table’s licence field) · code MIT",
  "kinds": [
   {
@@ -36,6 +36,350 @@
   }
  ],
  "tables": [
+  {
+   "name": "agri_census_2010_district",
+   "file": "agri_census_2010_district.parquet",
+   "bytes": 10081,
+   "rows": 100,
+   "description": "Farms, farm area, tenure, size classes and cropped area by district from the Agricultural Census 2010, for Punjab, Sindh and Khyber Pakhtunkhwa.",
+   "notes": "The 6th Agricultural Census (fieldwork December 2009 to June 2010) was a sample: PBS listed every household in the selected mouzas and urban blocks, enumerated clusters of them and all large holdings, and raised the result to the frame. These figures are read from the text layer of PBS’s province tabulation PDFs, not from a data file. Punjab, Sindh and Khyber Pakhtunkhwa are complete, in acres: 37 Punjab districts including Islamabad, the De-excluded Areas of D.G. Khan and Rajanpur, and Cholistan; 23 Sindh districts, with Karachi as one; 24 Khyber Pakhtunkhwa districts, the Malakand, Bajaur, Khyber and Mohmand agencies and six Frontier Regions. Balochistan’s districts are missing: the Balochistan link on PBS’s page serves the Sindh file, so the province appears only as a total. The geography is the 2010 district frame under PBS’s own unit names and spellings (JACCOBABAD, SHANGLAPAR); nothing is keyed to the 2023 districts, so do not join it to agri_census_2024_district by name without checking for the districts created or divided since. This table is Tables 1.1, 1.2 and 6.1 brought to one row per unit; every count sums exactly from districts to province, and the provinces with Balochistan to Pakistan’s 8,264,480 farms. Shares are in per cent.",
+   "unit": "farms, acres; shares and intensity in per cent",
+   "source": "PBS Agricultural Census 2010, province tabulation PDFs (Punjab, Sindh, Khyber Pakhtunkhwa), saved 2026-11-01",
+   "columns": [
+    {
+     "name": "province",
+     "type": "VARCHAR",
+     "description": "PUNJAB, SINDH or KHYBER PAKHTUNKHWA"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "the administrative unit as PBS prints it"
+    },
+    {
+     "name": "unit_type",
+     "type": "VARCHAR",
+     "description": "province, district, agency, frontier_region or special_area"
+    },
+    {
+     "name": "farms",
+     "type": "BIGINT",
+     "description": "private farms (Table 1.1)"
+    },
+    {
+     "name": "farm_area_ac",
+     "type": "BIGINT",
+     "description": "farm area, acres"
+    },
+    {
+     "name": "cultivated_area_ac",
+     "type": "BIGINT",
+     "description": "cultivated area, acres"
+    },
+    {
+     "name": "avg_farm_size_ac",
+     "type": "DOUBLE",
+     "description": "farm area divided by farms",
+     "derived": true
+    },
+    {
+     "name": "share_cultivated",
+     "type": "DOUBLE",
+     "description": "cultivated share of farm area, per cent",
+     "derived": true
+    },
+    {
+     "name": "share_farms_under_5ac",
+     "type": "DOUBLE",
+     "description": "farms under 5 acres, per cent of farms",
+     "derived": true
+    },
+    {
+     "name": "share_area_25ac_plus",
+     "type": "DOUBLE",
+     "description": "farm area in holdings of 25 acres and above, per cent",
+     "derived": true
+    },
+    {
+     "name": "owner_farms",
+     "type": "BIGINT",
+     "description": "owner farms (Table 1.2)"
+    },
+    {
+     "name": "owner_cum_tenant_farms",
+     "type": "BIGINT",
+     "description": "owner-cum-tenant farms"
+    },
+    {
+     "name": "tenant_farms",
+     "type": "BIGINT",
+     "description": "tenant farms"
+    },
+    {
+     "name": "share_farms_owner",
+     "type": "DOUBLE",
+     "description": "owner farms, per cent of farms",
+     "derived": true
+    },
+    {
+     "name": "share_farms_tenant",
+     "type": "DOUBLE",
+     "description": "tenant farms, per cent of farms",
+     "derived": true
+    },
+    {
+     "name": "cropped_area_ac",
+     "type": "BIGINT",
+     "description": "cropped area, acres (Table 6.1)"
+    },
+    {
+     "name": "kharif_area_ac",
+     "type": "BIGINT",
+     "description": "kharif cropped area, acres"
+    },
+    {
+     "name": "rabi_area_ac",
+     "type": "BIGINT",
+     "description": "rabi cropped area, acres"
+    },
+    {
+     "name": "orchard_area_ac",
+     "type": "BIGINT",
+     "description": "orchard area, acres"
+    },
+    {
+     "name": "cropping_intensity_pct",
+     "type": "DOUBLE",
+     "description": "cropped area as a percentage of cultivated area",
+     "derived": true
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PBS’s figures read from its PDFs; the shares and averages are Data Darbar’s arithmetic on them.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Counts and areas are PBS’s; the average farm size, the shares and the cropping intensity are computed from them.",
+    "derived_columns": [
+     "avg_farm_size_ac",
+     "share_cultivated",
+     "share_farms_under_5ac",
+     "share_area_25ac_plus",
+     "share_farms_owner",
+     "share_farms_tenant",
+     "cropping_intensity_pct"
+    ]
+   },
+   "keys": [
+    "province"
+   ]
+  },
+  {
+   "name": "agri_census_2010_long",
+   "file": "agri_census_2010_long.parquet",
+   "bytes": 5167663,
+   "rows": 1085364,
+   "description": "Every cell of the Agricultural Census 2010 tabulations: 90 tables for Punjab, Sindh and Khyber Pakhtunkhwa by district, and 86 for Pakistan and the provinces.",
+   "notes": "The 6th Agricultural Census (fieldwork December 2009 to June 2010) was a sample: PBS listed every household in the selected mouzas and urban blocks, enumerated clusters of them and all large holdings, and raised the result to the frame. These figures are read from the text layer of PBS’s province tabulation PDFs, not from a data file. Punjab, Sindh and Khyber Pakhtunkhwa are complete, in acres: 37 Punjab districts including Islamabad, the De-excluded Areas of D.G. Khan and Rajanpur, and Cholistan; 23 Sindh districts, with Karachi as one; 24 Khyber Pakhtunkhwa districts, the Malakand, Bajaur, Khyber and Mohmand agencies and six Frontier Regions. Balochistan’s districts are missing: the Balochistan link on PBS’s page serves the Sindh file, so the province appears only as a total. The geography is the 2010 district frame under PBS’s own unit names and spellings (JACCOBABAD, SHANGLAPAR); nothing is keyed to the 2023 districts, so do not join it to agri_census_2024_district by name without checking for the districts created or divided since. One row per printed figure. The tables run from farms and tenure (Chapter 1) through fragmentation, land use, irrigation, intensities, crops, inputs, households and labour (8), credit, machinery, livestock and housing to land ownership (13). Table 8.1 counts all households by type and Table 13.1 counts owners by area owned, which the 2024 census does not publish. col_index is the column number PBS prints under each header, not a header: read it with agri_census_2010_tables, and check the PDF page before relying on a column under a spanning header. The source file ‘PAKISTAN (hectares file)’ is in hectares and repeats the provincial totals, so sum within one source_file. flag marks a dash (nil, value 0), an asterisk or plus (lt_half, no value) and X (na). qc marks 72 rows with a blank cell, whose column numbers are positional guesses (count_mismatch), and one row split across a page whose unit is taken from the row above (unit_carried). Across all tables 96.5 per cent of province figures of 1,000 or more equal the sum of their districts; the rest are tables printed in hundreds or thousands, blank cells and source typos, and a few tables not yet traced (Sindh 8.5 and 6.20, Khyber Pakhtunkhwa 11.4, Punjab and Sindh 12.1). table_id is text (6.10 is not 6.1).",
+   "unit": "as each table states: farms, households, acres or hectares, head, per cent",
+   "source": "PBS Agricultural Census 2010, province tabulation PDFs and the Pakistan tables in hectares, saved 2026-11-01",
+   "columns": [
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": "PUNJAB, SINDH, KHYBER PAKHTUNKHWA or PAKISTAN (hectares file)"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "<chapter>.<table>, text"
+    },
+    {
+     "name": "chapter",
+     "type": "INTEGER",
+     "description": "1–13"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "PBS’s title"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "the area note under the title, where printed"
+    },
+    {
+     "name": "unit",
+     "type": "VARCHAR",
+     "description": "administrative unit as printed"
+    },
+    {
+     "name": "unit_level",
+     "type": "VARCHAR",
+     "description": "country, province, district, agency, frontier_region or special_area"
+    },
+    {
+     "name": "group",
+     "type": "VARCHAR",
+     "description": "sub-heading inside a table, if any"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "row label: size class, tenure, household type; empty in one-row-per-unit tables"
+    },
+    {
+     "name": "col_index",
+     "type": "INTEGER",
+     "description": "PBS’s printed column number; headers are in agri_census_2010_tables"
+    },
+    {
+     "name": "value_raw",
+     "type": "VARCHAR",
+     "description": "the cell as printed"
+    },
+    {
+     "name": "value",
+     "type": "DOUBLE",
+     "description": "the figure; empty where less than half a unit"
+    },
+    {
+     "name": "flag",
+     "type": "VARCHAR",
+     "description": "nil, lt_half, na or sci_rounded"
+    },
+    {
+     "name": "qc",
+     "type": "VARCHAR",
+     "description": "count_mismatch, dup_label or unit_carried where the row needs care"
+    },
+    {
+     "name": "pdf_page",
+     "type": "INTEGER",
+     "description": "page of the source PDF"
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PBS’s figures, read from the text of its PDFs by Data Darbar.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "published",
+    "label": "As published",
+    "note": "Every printed cell of PBS’s tabulations, read from the PDF text layer; no figure is changed.",
+    "derived_columns": []
+   },
+   "keys": []
+  },
+  {
+   "name": "agri_census_2010_tables",
+   "file": "agri_census_2010_tables.parquet",
+   "bytes": 17653,
+   "rows": 3639,
+   "description": "The index to the Agricultural Census 2010 tables: each table’s title, area note, source PDF page and a header for every column number.",
+   "notes": "One row per table, source file and column. header_guess is the header text nearest each column by position on the page: reliable under single-level headers, unreliable where a header spans several columns, so confirm it against the PDF page given before using a column. Join to agri_census_2010_long on source_file, table_id and col_index.",
+   "unit": null,
+   "source": "PBS Agricultural Census 2010 tabulation PDFs, saved 2026-11-01; headers placed by Data Darbar",
+   "columns": [
+    {
+     "name": "source_file",
+     "type": "VARCHAR",
+     "description": "PUNJAB, SINDH, KHYBER PAKHTUNKHWA or PAKISTAN (hectares file)"
+    },
+    {
+     "name": "table_id",
+     "type": "VARCHAR",
+     "description": "<chapter>.<table>, text"
+    },
+    {
+     "name": "chapter",
+     "type": "INTEGER",
+     "description": "1–13"
+    },
+    {
+     "name": "table_title",
+     "type": "VARCHAR",
+     "description": "PBS’s title"
+    },
+    {
+     "name": "notes",
+     "type": "VARCHAR",
+     "description": "the area note under the title, where printed"
+    },
+    {
+     "name": "n_cols",
+     "type": "INTEGER",
+     "description": "columns in the table"
+    },
+    {
+     "name": "first_pdf_page",
+     "type": "INTEGER",
+     "description": "page of the source PDF where the table starts"
+    },
+    {
+     "name": "source_pdf",
+     "type": "VARCHAR",
+     "description": "the PDF file"
+    },
+    {
+     "name": "col_index",
+     "type": "INTEGER",
+     "description": "PBS’s printed column number"
+    },
+    {
+     "name": "header_guess",
+     "type": "VARCHAR",
+     "description": "header text assigned to the column by position; a guess",
+     "derived": true
+    }
+   ],
+   "kind": "places",
+   "licence": {
+    "reuse": "open",
+    "label": "Open",
+    "note": "PBS’s titles; the column headers are placed by Data Darbar and are a guess.",
+    "terms": [
+     {
+      "key": "pbs-open",
+      "name": "PBS open licence",
+      "url": "https://www.pbs.gov.pk/wp-content/uploads/2020/07/policy.pdf",
+      "summary": "PBS Data Dissemination Policy (August 2026), section 9.1: copy, adapt and redistribute, commercially too, acknowledging PBS as the source, marking changes, and not presenting derived figures as official PBS statistics."
+     }
+    ]
+   },
+   "provenance": {
+    "type": "mixed",
+    "label": "Includes derived",
+    "note": "Titles and notes are PBS’s; header_guess is assigned by position and is not PBS’s layout.",
+    "derived_columns": [
+     "header_guess"
+    ]
+   },
+   "keys": []
+  },
   {
    "name": "agri_census_2024_district",
    "file": "agri_census_2024_district.parquet",

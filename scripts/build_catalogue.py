@@ -381,13 +381,43 @@ duckdb.sql("""SELECT district, pending_end, pending_per_100k
 {btn("/query.html", "Open the SQL console", "primary", icon="sql")}</div></div></section>'''
     extra = {"@type": "DataCatalog", "name": "Data Darbar Pakistan open data catalogue",
              "url": seo.ORIGIN + "/datasets/",
-             "dataset": [{"@type": "Dataset", "name": name_of[t["name"]],
-                          "url": seo.ORIGIN + "/datasets/" + slug(t["name"]) + "/",
-                          "description": t["description"]} for t in tables]}
+             "dataset": [dataset_schema(t, name_of, seo) for t in tables]}
     page_shell("/datasets/", "Pakistan open data catalogue",
                "Every Pakistan census, survey, trade, budget, State Bank, court and energy "
                "table Data Darbar publishes, with field definitions, periods, join keys, "
                "sample rows and Parquet downloads.", body, extra, seo)
+
+
+# ── structured data shared by the index and the table pages ─────────────────
+
+def table_licence(t, seo):
+    """The terms that govern a table (etl/catalog_meta.py), and the URL to
+    declare in its Dataset markup. A table cannot be offered on freer terms
+    than its source: SBP's figures are non-commercial, OpenStreetMap's
+    share-alike, and a public body that states no licence has to be asked
+    before commercial reuse."""
+    lic = t.get("licence") or {"reuse": "open", "label": "Open", "note": "", "terms": [
+        {"name": "CC BY 4.0", "url": seo.LICENSE, "summary": ""}]}
+    return lic, (lic["terms"][0]["url"] or seo.LICENSE)
+
+
+def dataset_description(t):
+    """Dataset.description for Google: 50 to 5,000 characters. The one-line
+    catalogue description alone is under 50 for a few tables, so the notes
+    are appended, as the table page already does."""
+    d = " ".join(x for x in (t["description"], t.get("notes") or "") if x).strip()
+    if len(d) < 50:
+        d += " Published by Data Darbar as a Parquet table with field definitions and sample rows."
+    return d[:5000]
+
+
+def dataset_schema(t, name_of, seo):
+    """The fields every Dataset entry carries, on the index and on its page."""
+    _, lic_url = table_licence(t, seo)
+    return {"@type": "Dataset", "name": name_of[t["name"]], "alternateName": t["name"],
+            "url": seo.ORIGIN + "/datasets/" + slug(t["name"]) + "/",
+            "description": dataset_description(t),
+            "license": lic_url, "creator": seo.PERSON, "publisher": seo.PUBLISHER}
 
 
 # ── a table's page ───────────────────────────────────────────────────────────
@@ -474,13 +504,7 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
            + "".join(f'<li><a href="/datasets/{slug(x["name"])}/">{E(short_title(name_of[x["name"]]))}</a>'
                      f'<code class="ctbl">{E(x["name"])}</code></li>' for x in related[:8])
            + '</ul></div>') if related else ""
-    # Each table carries the terms that govern it (etl/catalog_meta.py). A
-    # table cannot be offered on freer terms than its source: SBP's figures
-    # are non-commercial, OpenStreetMap's share-alike, and a public body that
-    # states no licence has to be asked before commercial reuse.
-    lic = t.get("licence") or {"reuse": "open", "label": "Open", "note": "", "terms": [
-        {"name": "CC BY 4.0", "url": seo.LICENSE, "summary": ""}]}
-    lic_url = lic["terms"][0]["url"] or seo.LICENSE
+    lic, _ = table_licence(t, seo)
     names = " + ".join(x["name"] for x in lic["terms"])
     lic_txt = {"open": f"Reuse under {names}; cite the original source above",
                "share-alike": f"{names}: share-alike; cite the original source above",
@@ -520,17 +544,15 @@ def dataset_page(t, cat, name_of, safety, samples, seo):
             + f'<div class="dside-box"><h2>Use it in code</h2><pre class="ccode"><code>{E(code)}</code></pre>'
             + f'<button type="button" class="cbtn ghost sm" data-copy-code>Copy</button></div>'
             + ex_html + rel + cite + '</aside></div>')
-    schema = {"@type": "Dataset", "name": title, "alternateName": t["name"],
-              "description": t["description"] + " " + (t.get("notes") or ""),
-              "url": seo.ORIGIN + path, "license": lic_url, "creator": seo.PERSON,
-              "publisher": seo.PUBLISHER, "spatialCoverage": {"@type": "Place", "name": "Pakistan"},
+    schema = dataset_schema(t, name_of, seo)
+    schema.update({"spatialCoverage": {"@type": "Place", "name": "Pakistan"},
               "variableMeasured": [{"@type": "PropertyValue", "name": c["name"],
                                     "description": c["description"]} for c in t["columns"]],
               "distribution": [{"@type": "DataDownload",
                                 "encodingFormat": "application/vnd.apache.parquet",
                                 "contentUrl": url}],
               "includedInDataCatalog": {"@type": "DataCatalog", "name": "Data Darbar",
-                                        "url": seo.ORIGIN + "/datasets/"}}
+                                        "url": seo.ORIGIN + "/datasets/"}})
     if sp:
         schema["temporalCoverage"] = f'{sp["from"]}/{sp["to"]}'
     page_shell(path, title, t["description"], body, schema, seo)
