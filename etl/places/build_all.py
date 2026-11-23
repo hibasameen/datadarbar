@@ -35,6 +35,7 @@ def main():
         entix = pathlib.Path(tmp) / 'entities_index.parquet'
         i4 = pathlib.Path(tmp) / 'issue4.parquet'
         agri = pathlib.Path(tmp) / 'agri_census.parquet'
+        land = pathlib.Path(tmp) / 'pslm_land.parquet'
         run('build_place_indicators.py', '--src', APP / 'data' / 'warehouse',
             '--geo', APP / 'data' / 'districts_2023_geo.js', '--out', d)
         run('build_place_tehsils.py', '--src', APP / 'data' / 'warehouse',
@@ -62,6 +63,8 @@ def main():
             '--out-district', APP / 'data' / 'warehouse' / 'agri_census_2024_district.parquet',
             '--out-long', APP / 'data' / 'warehouse' / 'agri_census_2024_long.parquet',
             '--out-places', agri)
+        run('build_pslm_land.py', '--src', REPO / 'etl' / 'pslm2019_district_land.csv',
+            '--geo', APP / 'data' / 'districts_2023_geo.js', '--out-places', land)
         run('build_issue4.py', '--warehouse', APP / 'data' / 'warehouse', '--out', i4)
         run('build_geography_keys.py', '--app', APP,
             '--pbs-d', RAW / 'geospatial' / 'boundaries' / 'pbs-census2023-2026-09-27'
@@ -73,7 +76,7 @@ def main():
             '--pbs', PBS_T,
             '--out-values', APP / 'data' / 'warehouse' / 'place_indicators.parquet',
             '--out-index', APP / 'data' / 'warehouse' / 'place_indicator_index.parquet',
-            '--extra', dia, ent, i4, agri, '--extra-index', cropix, entix)
+            '--extra', dia, ent, i4, agri, land, '--extra-index', cropix, entix)
 
 
 if __name__ == '__main__':

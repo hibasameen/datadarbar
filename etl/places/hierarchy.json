@@ -2,8 +2,8 @@
  "generated_from": "places-metric-crosswalk.json",
  "crosswalk_sha256": "71304d2964dbef12ed4541a56fc15b294b52cb0794e6855eddfb466214126cbb",
  "source_snapshot_sha256": "6b884dce8d87178b94563bd8bd49d1a5e67591442a446bda473b3e9ebadf3ef7",
- "entries": 5305,
- "extra_entries": 104,
+ "entries": 5310,
+ "extra_entries": 109,
  "vocab": {
   "topic": [
    "Population & households",
@@ -80,7 +80,8 @@
    "Irrigation & cropping",
    "Livestock",
    "Farm machinery & tubewells",
-   "Crops reported by farms"
+   "Crops reported by farms",
+   "Land ownership"
   ],
   "family": [
    "Population growth",
@@ -173,7 +174,8 @@
    "DIEM household surveys",
    "Farm structure (Agricultural Census 2024)",
    "Livestock & machinery (Agricultural Census 2024)",
-   "Crops reported by farms (Agricultural Census 2024)"
+   "Crops reported by farms (Agricultural Census 2024)",
+   "Land ownership (PSLM 2019-20, rural households)"
   ],
   "metric": [
    "Growth rate (%)",
@@ -303,7 +305,8 @@
    "Column total rather than a measure; retain original selectable entry; the source prints it as 100 per cent where the table has data",
    "Check duplicate-looking crop labels against source crop IDs; retain separately",
    "Unresolved source label; retain original selectable entry",
-   "Weighted sample estimate (PBS Agricultural Census 2024); 15% design margin at district level"
+   "Weighted sample estimate (PBS Agricultural Census 2024); 15% design margin at district level",
+   "Data Darbar estimate from PSLM 2019-20 microdata (Section G), rural households, PSU weights; districts with fewer than 30 sampled rural households (or 30 owners, for holding size) are not drawn"
   ],
   "note": [
    "",
@@ -58673,6 +58676,61 @@
    75,
    8,
    1,
+   0,
+   0
+  ],
+  "district\u001fpslmLand\u001flandless_pct": [
+   9,
+   62,
+   91,
+   6,
+   75,
+   9,
+   0,
+   0,
+   0
+  ],
+  "district\u001fpslmLand\u001fowners_under_2_5ac_pct": [
+   9,
+   62,
+   91,
+   6,
+   75,
+   9,
+   0,
+   0,
+   0
+  ],
+  "district\u001fpslmLand\u001fmedian_owned_ac": [
+   9,
+   62,
+   91,
+   3,
+   75,
+   9,
+   0,
+   0,
+   0
+  ],
+  "district\u001fpslmLand\u001frent_in_pct": [
+   9,
+   62,
+   91,
+   6,
+   75,
+   9,
+   0,
+   0,
+   0
+  ],
+  "district\u001fpslmLand\u001frent_out_pct": [
+   9,
+   62,
+   91,
+   6,
+   75,
+   9,
+   0,
    0,
    0
   ]
