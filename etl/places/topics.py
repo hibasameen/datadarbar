@@ -120,3 +120,8 @@ for _g in _ISSUE4:
 GROUP_TOPIC['agriFarms'] = 'agriculture'
 GROUP_TOPIC['agriLivestock'] = 'agriculture'
 GROUP_TOPIC['agriCrops'] = 'agriculture'
+
+# Land ownership among rural households (PSLM 2019-20) sits beside the
+# Agricultural Census: the census counts operated farms, the survey asks
+# households what they own, so landlessness is only visible here.
+GROUP_TOPIC['pslmLand'] = 'agriculture'
