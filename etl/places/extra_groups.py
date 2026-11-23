@@ -39,3 +39,8 @@ GROUPS += _issue4_vocab()
 # Declared in build_agri_census.py, next to the expressions that make them.
 from build_agri_census import vocab as _agri_vocab
 GROUPS += _agri_vocab()
+
+# Rural land ownership from PSLM 2019-20 Section G: who owns land, how much,
+# who rents. Declared in build_pslm_land.py.
+from build_pslm_land import vocab as _pslm_land_vocab
+GROUPS += _pslm_land_vocab()
