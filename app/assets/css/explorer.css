@@ -307,6 +307,9 @@ button.seg[aria-pressed="true"]{background:var(--green-900);color:#fff;border-co
 html[data-explorer="economy"] .explorer{display:block;min-height:0}
 html[data-explorer="economy"] .eco-side{padding:.9rem .85rem;gap:.7rem;width:var(--sidebar-w)}
 html[data-explorer="economy"] #sidePanels{display:none}
+/* finance.html ships every chart card in its markup; until economy-nav.js has
+   picked the view, keep them unseen (still laid out, so charts measure true widths). */
+html[data-explorer="economy"]:not(.eco-ready) #paneBody{visibility:hidden;max-height:0;overflow:hidden}
 html[data-explorer="economy"] .wrap.pane{max-width:1480px;margin-left:var(--sidebar-w);padding:18px 28px 28px}
 html[data-explorer="economy"] .pane-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:12px}
 html[data-explorer="economy"] .xcards{display:flex;flex-direction:column;min-width:0}
