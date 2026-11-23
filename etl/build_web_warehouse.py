@@ -2793,6 +2793,115 @@ def register_agri_census(register):
         )
 
 
+def register_agri_census_2010(register):
+    """The Agricultural Census 2010 tables, built by etl/agri_census_2010/build_warehouse.py
+    from the province tabulation PDFs. Added with catalog_merge.py agri_census_2010."""
+    common = ("The 6th Agricultural Census (fieldwork December 2009 to June 2010) was a sample: "
+              "PBS listed every household in the selected mouzas and urban blocks, enumerated "
+              "clusters of them and all large holdings, and raised the result to the frame. "
+              "These figures are read from the text layer of PBS\u2019s province tabulation PDFs, "
+              "not from a data file. Punjab, Sindh and Khyber Pakhtunkhwa are complete, in acres: "
+              "37 Punjab districts including Islamabad, the De-excluded Areas of D.G. Khan and "
+              "Rajanpur, and Cholistan; 23 Sindh districts, with Karachi as one; 24 Khyber "
+              "Pakhtunkhwa districts, the Malakand, Bajaur, Khyber and Mohmand agencies and six "
+              "Frontier Regions. Balochistan\u2019s districts are missing: the Balochistan link "
+              "on PBS\u2019s page serves the Sindh file, so the province appears only as a total. "
+              "The geography is the 2010 district frame under PBS\u2019s own unit names and "
+              "spellings (JACCOBABAD, SHANGLAPAR); nothing is keyed to the 2023 districts, so do "
+              "not join it to agri_census_2024_district by name without checking for the "
+              "districts created or divided since. ")
+    f = OUT / "agri_census_2010_district.parquet"
+    if f.exists():
+        register(
+            "agri_census_2010_district",
+            "Farms, farm area, tenure, size classes and cropped area by district from the "
+            "Agricultural Census 2010, for Punjab, Sindh and Khyber Pakhtunkhwa.",
+            common + "This table is Tables 1.1, 1.2 and 6.1 brought to one row per unit; every "
+            "count sums exactly from districts to province, and the provinces with Balochistan "
+            "to Pakistan\u2019s 8,264,480 farms. Shares are in per cent.",
+            {"province": "PUNJAB, SINDH or KHYBER PAKHTUNKHWA",
+             "unit": "the administrative unit as PBS prints it",
+             "unit_type": "province, district, agency, frontier_region or special_area",
+             "farms": "private farms (Table 1.1)", "farm_area_ac": "farm area, acres",
+             "cultivated_area_ac": "cultivated area, acres",
+             "avg_farm_size_ac": "farm area divided by farms",
+             "share_cultivated": "cultivated share of farm area, per cent",
+             "share_farms_under_5ac": "farms under 5 acres, per cent of farms",
+             "share_area_25ac_plus": "farm area in holdings of 25 acres and above, per cent",
+             "owner_farms": "owner farms (Table 1.2)", "owner_cum_tenant_farms": "owner-cum-tenant farms",
+             "tenant_farms": "tenant farms",
+             "share_farms_owner": "owner farms, per cent of farms",
+             "share_farms_tenant": "tenant farms, per cent of farms",
+             "cropped_area_ac": "cropped area, acres (Table 6.1)", "kharif_area_ac": "kharif cropped area, acres",
+             "rabi_area_ac": "rabi cropped area, acres", "orchard_area_ac": "orchard area, acres",
+             "cropping_intensity_pct": "cropped area as a percentage of cultivated area"},
+            "PBS Agricultural Census 2010, province tabulation PDFs (Punjab, Sindh, Khyber "
+            "Pakhtunkhwa), saved 2026-11-01",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="farms, acres; shares and intensity in per cent",
+        )
+    f = OUT / "agri_census_2010_long.parquet"
+    if f.exists():
+        register(
+            "agri_census_2010_long",
+            "Every cell of the Agricultural Census 2010 tabulations: 90 tables for Punjab, "
+            "Sindh and Khyber Pakhtunkhwa by district, and 86 for Pakistan and the provinces.",
+            common + "One row per printed figure. The tables run from farms and tenure (Chapter "
+            "1) through fragmentation, land use, irrigation, intensities, crops, inputs, "
+            "households and labour (8), credit, machinery, livestock and housing to land "
+            "ownership (13). Table 8.1 counts all households by type and Table 13.1 counts "
+            "owners by area owned, which the 2024 census does not publish. col_index is the "
+            "column number PBS prints under each header, not a header: read it with "
+            "agri_census_2010_tables, and check the PDF page before relying on a column under "
+            "a spanning header. The source file \u2018PAKISTAN (hectares file)\u2019 is in "
+            "hectares and repeats the provincial totals, so sum within one source_file. "
+            "flag marks a dash (nil, value 0), an asterisk or plus (lt_half, no value) and X "
+            "(na). qc marks 72 rows with a blank cell, whose column numbers are positional "
+            "guesses (count_mismatch), and one row split across a page whose unit is taken "
+            "from the row above (unit_carried). Across all tables 96.5 per cent of province figures of "
+            "1,000 or more equal the sum of their districts; the rest are tables printed in "
+            "hundreds or thousands, blank cells and source typos, and a few tables not yet "
+            "traced (Sindh 8.5 and 6.20, Khyber Pakhtunkhwa 11.4, Punjab and Sindh 12.1). "
+            "table_id is text (6.10 is not 6.1).",
+            {"source_file": "PUNJAB, SINDH, KHYBER PAKHTUNKHWA or PAKISTAN (hectares file)",
+             "table_id": "<chapter>.<table>, text", "chapter": "1\u201313",
+             "table_title": "PBS\u2019s title", "notes": "the area note under the title, where printed",
+             "unit": "administrative unit as printed",
+             "unit_level": "country, province, district, agency, frontier_region or special_area",
+             "group": "sub-heading inside a table, if any",
+             "category": "row label: size class, tenure, household type; empty in one-row-per-unit tables",
+             "col_index": "PBS\u2019s printed column number; headers are in agri_census_2010_tables",
+             "value_raw": "the cell as printed", "value": "the figure; empty where less than half a unit",
+             "flag": "nil, lt_half, na or sci_rounded",
+             "qc": "count_mismatch, dup_label or unit_carried where the row needs care",
+             "pdf_page": "page of the source PDF"},
+            "PBS Agricultural Census 2010, province tabulation PDFs and the Pakistan tables in "
+            "hectares, saved 2026-11-01",
+            f"SELECT * FROM '{f.as_posix()}'",
+            unit="as each table states: farms, households, acres or hectares, head, per cent",
+        )
+    f = OUT / "agri_census_2010_tables.parquet"
+    if f.exists():
+        register(
+            "agri_census_2010_tables",
+            "The index to the Agricultural Census 2010 tables: each table\u2019s title, area "
+            "note, source PDF page and a header for every column number.",
+            "One row per table, source file and column. header_guess is the header text nearest "
+            "each column by position on the page: reliable under single-level headers, "
+            "unreliable where a header spans several columns, so confirm it against the PDF "
+            "page given before using a column. Join to agri_census_2010_long on source_file, "
+            "table_id and col_index.",
+            {"source_file": "PUNJAB, SINDH, KHYBER PAKHTUNKHWA or PAKISTAN (hectares file)",
+             "table_id": "<chapter>.<table>, text", "chapter": "1\u201313", "table_title": "PBS\u2019s title",
+             "notes": "the area note under the title, where printed", "n_cols": "columns in the table",
+             "first_pdf_page": "page of the source PDF where the table starts",
+             "source_pdf": "the PDF file", "col_index": "PBS\u2019s printed column number",
+             "header_guess": "header text assigned to the column by position; a guess"},
+            "PBS Agricultural Census 2010 tabulation PDFs, saved 2026-11-01; headers placed by Data Darbar",
+            f"SELECT * FROM '{f.as_posix()}'",
+        )
+
+
 def finalise_catalog(tables, con):
     """Stamp shelf, licence, provenance, span, keys and sample rows onto each
     table entry (in place) and return the samples dict. Fails on a table the
